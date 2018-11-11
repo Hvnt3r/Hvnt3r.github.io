@@ -1,0 +1,23 @@
+User-agent: *
+
+Allow: /
+
+Allow: /archives/
+
+Allow: /categories/
+
+Allow: /tags/ 
+
+Disallow: /vendors/
+
+Disallow: /js/
+
+Disallow: /css/
+
+Disallow: /fonts/
+
+Disallow: /vendors/
+
+Disallow: /fancybox/
+Sitemap: https://hvnt3r.top/sitemap.xml
+Sitemap: https://hvnt3r.top/baidusitemap.xml
