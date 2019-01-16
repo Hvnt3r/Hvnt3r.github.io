@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://hvnt3r.top/"/>
-  <updated>2019-01-09T10:17:44.918Z</updated>
+  <updated>2019-01-16T09:08:53.249Z</updated>
   <id>https://hvnt3r.top/</id>
   
   <author>
@@ -15,6 +15,45 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>前言</title>
+    <link href="https://hvnt3r.top/2019/01/%E5%89%8D%E8%A8%80/"/>
+    <id>https://hvnt3r.top/2019/01/前言/</id>
+    <published>2019-01-16T09:01:31.000Z</published>
+    <updated>2019-01-16T09:08:53.249Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>书山有路勤为径，学海无涯苦作舟。在拜读《恶意代码分析实战》一书之后，我自己已经被这些黑客与安全人员之间斗智斗勇的高超技术所吸引，但是在学习书中内容的同时又觉得“纸上得来终觉浅，绝知此事要躬行”，书中有很多难以吃透的要点需要我多次深入学习研究，因此我开始了对此书的第二遍阅读，并以博文形式记录下此次的学习过程，此次学习主要通过实践将理论与动手能力结合起来从而加深印象，同时会记录下我在学习过程中的个人想法和新的点子。</p><p><strong>加油！💪</strong></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;书山有路勤为径，学海无涯苦作舟。在拜读《恶意代码分析实战》一书之后，我自己已经被这些黑客与安全人员之间斗智斗勇的高超技术所吸引，但是在学习书
+      
+    
+    </summary>
+    
+      <category term="二进制安全" scheme="https://hvnt3r.top/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/"/>
+    
+    
+      <category term="恶意代码分析实战" scheme="https://hvnt3r.top/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E5%AE%9E%E6%88%98/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>静态分析基础技术</title>
+    <link href="https://hvnt3r.top/2019/01/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80%E6%8A%80%E6%9C%AF/"/>
+    <id>https://hvnt3r.top/2019/01/静态分析基础技术/</id>
+    <published>2019-01-16T09:00:58.000Z</published>
+    <updated>2019-01-16T09:00:58.943Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>Python离线翻译</title>
@@ -47,23 +86,25 @@
     <link href="https://hvnt3r.top/2018/12/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E5%AE%9E%E6%88%98%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     <id>https://hvnt3r.top/2018/12/恶意代码分析实战学习笔记/</id>
     <published>2018-12-02T07:23:09.000Z</published>
-    <updated>2018-12-02T08:12:31.043Z</updated>
+    <updated>2019-01-16T09:12:47.943Z</updated>
     
-    <content type="html"><![CDATA[<p>1</p><ul><li>查找导出表函数名可以直接在导出表窗口<code>Ctrl+F</code>然后输入函数名的一部分进行快速定位</li><li>在寻找某函数的调用者时，先双击函数，然后在新的界面中<code>Ctrl+X</code></li><li></li></ul>]]></content>
+    <content type="html"><![CDATA[<h1 id="我的学习笔记"><a href="#我的学习笔记" class="headerlink" title="我的学习笔记"></a>我的学习笔记</h1><ul><li><a href="">前言</a></li><li><a href="">静态分析基础技术</a></li><li><a href=""></a></li><li><a href=""></a></li><li><a href=""></a></li><li><a href=""></a></li></ul>]]></content>
     
     <summary type="html">
     
       
       
-        &lt;p&gt;1&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;查找导出表函数名可以直接在导出表窗口&lt;code&gt;Ctrl+F&lt;/code&gt;然后输入函数名的一部分进行快速定位&lt;/li&gt;
-&lt;li&gt;在寻找某函数的调用者时，先双击函数，然后在新的界面中&lt;code&gt;Ctrl+X&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;/l
+        &lt;h1 id=&quot;我的学习笔记&quot;&gt;&lt;a href=&quot;#我的学习笔记&quot; class=&quot;headerlink&quot; title=&quot;我的学习笔记&quot;&gt;&lt;/a&gt;我的学习笔记&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;&quot;&gt;前言&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;&quot;&gt;静态分析基础技术&lt;/
       
     
     </summary>
     
+      <category term="二进制安全" scheme="https://hvnt3r.top/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/"/>
+    
+    
+      <category term="恶意代码分析实战" scheme="https://hvnt3r.top/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E5%AE%9E%E6%88%98/"/>
     
   </entry>
   
@@ -188,9 +229,9 @@
       <category term="二进制安全" scheme="https://hvnt3r.top/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/"/>
     
     
-      <category term="CTF" scheme="https://hvnt3r.top/tags/CTF/"/>
-    
       <category term="PWN" scheme="https://hvnt3r.top/tags/PWN/"/>
+    
+      <category term="CTF" scheme="https://hvnt3r.top/tags/CTF/"/>
     
       <category term="ROP" scheme="https://hvnt3r.top/tags/ROP/"/>
     
@@ -325,9 +366,9 @@
       <category term="CTF" scheme="https://hvnt3r.top/categories/CTF/"/>
     
     
-      <category term="PWN" scheme="https://hvnt3r.top/tags/PWN/"/>
-    
       <category term="2018护网杯" scheme="https://hvnt3r.top/tags/2018%E6%8A%A4%E7%BD%91%E6%9D%AF/"/>
+    
+      <category term="PWN" scheme="https://hvnt3r.top/tags/PWN/"/>
     
   </entry>
   
@@ -382,9 +423,9 @@
       <category term="CTF" scheme="https://hvnt3r.top/categories/CTF/"/>
     
     
-      <category term="CTF" scheme="https://hvnt3r.top/tags/CTF/"/>
-    
       <category term="PWN" scheme="https://hvnt3r.top/tags/PWN/"/>
+    
+      <category term="CTF" scheme="https://hvnt3r.top/tags/CTF/"/>
     
   </entry>
   
@@ -407,9 +448,9 @@
       <category term="CTF" scheme="https://hvnt3r.top/categories/CTF/"/>
     
     
-      <category term="CTF" scheme="https://hvnt3r.top/tags/CTF/"/>
-    
       <category term="PWN" scheme="https://hvnt3r.top/tags/PWN/"/>
+    
+      <category term="CTF" scheme="https://hvnt3r.top/tags/CTF/"/>
     
   </entry>
   
@@ -433,9 +474,9 @@
       <category term="CTF" scheme="https://hvnt3r.top/categories/CTF/"/>
     
     
-      <category term="CTF" scheme="https://hvnt3r.top/tags/CTF/"/>
-    
       <category term="PWN" scheme="https://hvnt3r.top/tags/PWN/"/>
+    
+      <category term="CTF" scheme="https://hvnt3r.top/tags/CTF/"/>
     
   </entry>
   
@@ -483,65 +524,11 @@
       <category term="二进制安全" scheme="https://hvnt3r.top/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/"/>
     
     
-      <category term="CTF" scheme="https://hvnt3r.top/tags/CTF/"/>
-    
       <category term="PWN" scheme="https://hvnt3r.top/tags/PWN/"/>
     
+      <category term="CTF" scheme="https://hvnt3r.top/tags/CTF/"/>
+    
       <category term="栈溢出" scheme="https://hvnt3r.top/tags/%E6%A0%88%E6%BA%A2%E5%87%BA/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>信息安全学习路径</title>
-    <link href="https://hvnt3r.top/2018/09/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E8%B7%AF%E5%BE%84/"/>
-    <id>https://hvnt3r.top/2018/09/信息安全学习路径/</id>
-    <published>2018-09-25T12:31:00.000Z</published>
-    <updated>2018-10-08T06:25:43.322Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="学习路径"><a href="#学习路径" class="headerlink" title="学习路径"></a>学习路径</h1><h2 id="WEB安全"><a href="#WEB安全" class="headerlink" title="WEB安全"></a>WEB安全</h2><h3 id="编程语言"><a href="#编程语言" class="headerlink" title="编程语言"></a>编程语言</h3><p>C&amp;C++</p><p>Python</p><p>PHP</p><p>HTML</p><p>JavaScript</p><a id="more"></a><h3 id="常见WEB漏洞"><a href="#常见WEB漏洞" class="headerlink" title="常见WEB漏洞"></a>常见WEB漏洞</h3><p>SQL注入</p><p>暴力破解</p><p>文件上传漏洞</p><p>文件包含漏洞</p><p>XSS漏洞</p><p>CSRF漏洞</p><p>（OWASP TOP 10）</p><h3 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h3><p>Kali Linux</p><p>FTP</p><p>SSH</p><p>NetCat</p><p>WireShark</p><p>DNS Lookup</p><p>ShoDan</p><p>RECON-NG</p><p>BurpSuite</p><p>Nmap</p><p>Nessues</p><p>AWVS</p><p>SQLMap</p><h3 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h3><p>计算机网络</p><p>WEB中间件安全</p><p>逻辑漏洞</p><p>数据库</p><p>防火墙</p><p>代理</p><p>内网穿透</p><p>身份认证与会话管理</p><p>提权</p><p>Google高级搜索</p><p>HTTP协议</p><p>隐藏痕迹&amp;销毁数据</p><p>常见的加密解密原理</p><p>敏感信息泄露</p><p>无线网络安全（可选）</p><p>工业系统安全（可选）</p><h3 id="靶机-amp-练手网站"><a href="#靶机-amp-练手网站" class="headerlink" title="靶机&amp;练手网站"></a>靶机&amp;练手网站</h3><p>metasploitable</p><p>bwapp</p><p>在线练习平台合集：<a href="https://www.cnblogs.com/hotboy/p/6396387.html" target="_blank" rel="noopener">https://www.cnblogs.com/hotboy/p/6396387.html</a></p><p><strong>ctf综合练习：</strong></p><p>1、网络安全实验室 网络信息安全攻防学习平台</p><p>2、光棍节程序员闯关秀第1关(总共10关) 光棍节程序员闯关秀</p><p>3、黑客游戏–Hackers game 黑客丛林之旅</p><p>4、梦之光芒/Monyer——Monyer’s Little Game 梦之光芒的小游戏</p><p>5、XCTF_OJ竞赛平台 XCTF_OJ练习平台</p><p>6、黑客游戏 Let’s Hack 习科黑客游戏</p><p>7、Jlu.CTF首页 Jlu.CTF</p><p>8、白帽学院 白帽学院ctf挑战赛</p><p>9、在线挑战_  i春秋学院信息安全体验中心 i春秋ctf挑战</p><p>10、IDF实验室 CTF训练营 idf 实验室</p><p>11、欢迎参加比赛~ 米安网ctf</p><p>12、合天网安实验室-CTF挑战赛 合天ctf</p><p>13、ctf夺旗训练_CTF训练营 实验吧(前名西普学院）</p><p>14、黑吧安全网-红客闯关游戏 黑吧安全网-红客闯关游戏</p><h3 id="渗透测试方法"><a href="#渗透测试方法" class="headerlink" title="渗透测试方法"></a>渗透测试方法</h3><p>被动信息收集</p><p>主动信息收集</p><p>威胁建模与漏洞分析</p><p>安全测试以及测试报告</p><h2 id="知道创宇研发技能表"><a href="#知道创宇研发技能表" class="headerlink" title="知道创宇研发技能表"></a>知道创宇研发技能表</h2><p><a href="http://blog.knownsec.com/Knownsec_RD_Checklist/" target="_blank" rel="noopener">http://blog.knownsec.com/Knownsec_RD_Checklist/</a></p>]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;学习路径&quot;&gt;&lt;a href=&quot;#学习路径&quot; class=&quot;headerlink&quot; title=&quot;学习路径&quot;&gt;&lt;/a&gt;学习路径&lt;/h1&gt;&lt;h2 id=&quot;WEB安全&quot;&gt;&lt;a href=&quot;#WEB安全&quot; class=&quot;headerlink&quot; title=&quot;WEB安全&quot;&gt;&lt;/a&gt;WEB安全&lt;/h2&gt;&lt;h3 id=&quot;编程语言&quot;&gt;&lt;a href=&quot;#编程语言&quot; class=&quot;headerlink&quot; title=&quot;编程语言&quot;&gt;&lt;/a&gt;编程语言&lt;/h3&gt;&lt;p&gt;C&amp;amp;C++&lt;/p&gt;
-&lt;p&gt;Python&lt;/p&gt;
-&lt;p&gt;PHP&lt;/p&gt;
-&lt;p&gt;HTML&lt;/p&gt;
-&lt;p&gt;JavaScript&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="信息安全学习路径" scheme="https://hvnt3r.top/categories/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E8%B7%AF%E5%BE%84/"/>
-    
-    
-      <category term="CTF" scheme="https://hvnt3r.top/tags/CTF/"/>
-    
-      <category term="信息安全" scheme="https://hvnt3r.top/tags/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>信息安全-CTF学习指南及资料分享</title>
-    <link href="https://hvnt3r.top/2018/09/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8-CTF%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%8D%97%E5%8F%8A%E8%B5%84%E6%96%99%E5%88%86%E4%BA%AB/"/>
-    <id>https://hvnt3r.top/2018/09/信息安全-CTF学习指南及资料分享/</id>
-    <published>2018-09-25T12:28:40.000Z</published>
-    <updated>2018-10-08T06:25:29.206Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="信息安全-CTF学习指南及资料分享"><a href="#信息安全-CTF学习指南及资料分享" class="headerlink" title="信息安全-CTF学习指南及资料分享"></a>信息安全-CTF学习指南及资料分享</h1><p>信息安全知识面十分广，涉及的方向也很多，很多同学学起来信息安全的知识经常会找不到方向，<br>因此我们把CTF（微观而全面的信安知识竞赛）作为主要的学习方向。</p><p>在这里我把学习方向分为两个大类，一个是网络安全方向，一个是二进制安全。<br>对于信息安全知识的学习路径，知道创宇有一个十分十分十分详细的技能表：<a href="http://blog.knownsec.com/Knownsec_RD_Checklist/" target="_blank" rel="noopener">http://blog.knownsec.com/Knownsec_RD_Checklist/</a>，内容较多，建议大家都看一下。</p><p>下面分享一个安全行业从事人员的网站导航：<a href="https://www.shentoushi.top/" target="_blank" rel="noopener">https://www.shentoushi.top/</a>，<br>这个网站上面有很多常用的学习网站、在线漏洞学习和安全工具。</p><a id="more"></a><h2 id="渗透测试、WEB安全、网络攻防"><a href="#渗透测试、WEB安全、网络攻防" class="headerlink" title="渗透测试、WEB安全、网络攻防"></a>渗透测试、WEB安全、网络攻防</h2><p>入门难度⭐⭐</p><p>进阶难度⭐⭐⭐</p><p>就业前景⭐⭐⭐⭐⭐</p><p><strong>推荐网站：</strong></p><ul><li>Freebuf 帮助你建立起安全圈的“世界观”: <a href="http://www.freebuf.com" target="_blank" rel="noopener">http://www.freebuf.com</a></li><li>安全牛课堂 <a href="https://edu.aqniu.com/classroom/119/courses" target="_blank" rel="noopener">https://edu.aqniu.com/classroom/119/courses</a>（上面的课收费但是有免费开通收费课程包的活动，开学之后注意留意技协群内公告以免错过活动）</li><li>i春秋：<a href="https://www.ichunqiu.com/" target="_blank" rel="noopener">https://www.ichunqiu.com/</a></li><li>实验吧：<a href="http://www.shiyanbar.com/" target="_blank" rel="noopener">http://www.shiyanbar.com/</a></li></ul><p><strong>网盘资料：</strong></p><p>工具分享：</p><ul><li>webug虚拟机靶机：链接：<a href="https://pan.baidu.com/s/1poHqU0r58IK42F9TIdpkrA" target="_blank" rel="noopener">https://pan.baidu.com/s/1poHqU0r58IK42F9TIdpkrA</a> 密码：urw6</li></ul><h2 id="二进制安全、软件逆向、PWN"><a href="#二进制安全、软件逆向、PWN" class="headerlink" title="二进制安全、软件逆向、PWN"></a>二进制安全、软件逆向、PWN</h2><p>入门难度⭐⭐⭐⭐</p><p>进阶难度⭐⭐⭐⭐⭐</p><p>就业前景⭐⭐⭐⭐⭐</p><p><strong>推荐网站：</strong></p><ul><li>看雪论坛：<a href="https://bbs.pediy.com/" target="_blank" rel="noopener">https://bbs.pediy.com/</a></li><li>吾爱破解：<a href="https://www.52pojie.cn/" target="_blank" rel="noopener">https://www.52pojie.cn/</a></li><li>PWN题目的整理：<a href="http://bestwing.me/PWNABLE/" target="_blank" rel="noopener">http://bestwing.me/PWNABLE/</a></li></ul><p><strong>网盘资料：</strong></p><h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p><strong>综合网站推荐：</strong></p><p>漏洞练习平台汇总：<a href="https://www.cnblogs.com/hotboy/p/6396387.html" target="_blank" rel="noopener">https://www.cnblogs.com/hotboy/p/6396387.html</a></p><p>各种信息安全相关思维导图：<a href="https://github.com/phith0n/Mind-Map" target="_blank" rel="noopener">https://github.com/phith0n/Mind-Map</a></p><p>漏洞银行：<a href="https://www.bugbank.cn/live/" target="_blank" rel="noopener">https://www.bugbank.cn/live/</a> 上面有很多可以入门的课</p><p>一个简单有趣的web演练靶场：<a href="http://solveme.peng.kr/chall" target="_blank" rel="noopener">http://solveme.peng.kr/chall</a></p>]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;信息安全-CTF学习指南及资料分享&quot;&gt;&lt;a href=&quot;#信息安全-CTF学习指南及资料分享&quot; class=&quot;headerlink&quot; title=&quot;信息安全-CTF学习指南及资料分享&quot;&gt;&lt;/a&gt;信息安全-CTF学习指南及资料分享&lt;/h1&gt;&lt;p&gt;信息安全知识面十分广，涉及的方向也很多，很多同学学起来信息安全的知识经常会找不到方向，&lt;br&gt;因此我们把CTF（微观而全面的信安知识竞赛）作为主要的学习方向。&lt;/p&gt;
-&lt;p&gt;在这里我把学习方向分为两个大类，一个是网络安全方向，一个是二进制安全。&lt;br&gt;对于信息安全知识的学习路径，知道创宇有一个十分十分十分详细的技能表：&lt;a href=&quot;http://blog.knownsec.com/Knownsec_RD_Checklist/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;http://blog.knownsec.com/Knownsec_RD_Checklist/&lt;/a&gt;，内容较多，建议大家都看一下。&lt;/p&gt;
-&lt;p&gt;下面分享一个安全行业从事人员的网站导航：&lt;a href=&quot;https://www.shentoushi.top/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;https://www.shentoushi.top/&lt;/a&gt;，&lt;br&gt;这个网站上面有很多常用的学习网站、在线漏洞学习和安全工具。&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="信息安全学习路径" scheme="https://hvnt3r.top/categories/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E8%B7%AF%E5%BE%84/"/>
-    
-    
-      <category term="CTF" scheme="https://hvnt3r.top/tags/CTF/"/>
-    
-      <category term="信息安全" scheme="https://hvnt3r.top/tags/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8/"/>
     
   </entry>
   
