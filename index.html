@@ -388,7 +388,7 @@
                   <span class="post-meta-item-text">Words count in article&#58;</span>
                 
                 <span title="Words count in article">
-                  196
+                  234
                 </span>
               
 
@@ -428,6 +428,8 @@
         
           
             <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>书山有路勤为径，学海无涯苦作舟。在拜读《恶意代码分析实战》一书之后，我自己已经被这些黑客与安全人员之间斗智斗勇的高超技术所吸引，但是在学习书中内容的同时又觉得“纸上得来终觉浅，绝知此事要躬行”，书中有很多难以吃透的要点需要我多次深入学习研究，因此我开始了对此书的第二遍阅读，并以博文形式记录下此次的学习过程，此次学习主要通过实践将理论与动手能力结合起来从而加深印象，同时会记录下我在学习过程中的个人想法和新的点子。</p>
+<p>有很多工具都可以在吾爱破解的爱盘中下载，避免从第三方渠道下载到恶意软件：</p>
+<p><a href="https://down.52pojie.cn/" target="_blank" rel="noopener">https://down.52pojie.cn/</a></p>
 <p><strong>加油！💪</strong></p>
 
           
@@ -574,7 +576,7 @@
                   <span class="post-meta-item-text">Words count in article&#58;</span>
                 
                 <span title="Words count in article">
-                  1.6k
+                  2.4k
                 </span>
               
 
@@ -590,7 +592,7 @@
                   <span class="post-meta-item-text">Reading time &asymp;</span>
                 
                 <span title="Reading time">
-                  5
+                  9
                 </span>
               
             </div>
@@ -612,47 +614,17 @@
 
       
         
-          
-            <h1 id="静态分析基础技术"><a href="#静态分析基础技术" class="headerlink" title="静态分析基础技术"></a>静态分析基础技术</h1><h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>我觉得安全圈的思路都是差不多的，跟渗透测试一样，对一个恶意软件的分析也需要前期的信息收集阶段来帮助我们对目标有一个大致的了解和认识，方便确定下一步工作的方向。</p>
+          <h1 id="静态分析基础技术"><a href="#静态分析基础技术" class="headerlink" title="静态分析基础技术"></a>静态分析基础技术</h1><h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>我觉得安全圈的思路都是差不多的，跟渗透测试一样，对一个恶意软件的分析也需要前期的信息收集阶段来帮助我们对目标有一个大致的了解和认识，方便确定下一步工作的方向。</p>
 <p><strong>Virus Total：</strong>首先，拿到一个恶意软件如果不涉密的话可以直接上传到<code>VT</code>上看一下，这样差不多能确定此恶意软件的最早爆发日期和各种关键的信息。</p>
 <p><strong>哈希值：</strong><code>hash</code>值就相当于恶意软件的指纹，是一个很重要的信息。</p>
 <p><strong>关键字符串：</strong>可以使用<code>IDA Pro</code>或者<code>Strings</code>软件来查看程序中关键的字符串。</p>
-<p><strong>加壳与代码混淆：</strong>一般来说，对软件加壳可以压缩软件代码占用的磁盘空间，使软件体积更小，另一方面，有的壳可以加密程序自身信息，是得程序难以通过逆向手段来对程序进行分析，是对程序本身的一种保护，大部分形况下加壳技术用来保护程序版权，但是恶意软件使用加壳方式来隐藏恶意代码，使得代码逻辑难以分析，这时候就需要我们使用已有的脱壳软件或者自己写脱壳脚本对软件进行脱壳还原。</p>
-<p>使用<code>PEview</code>查看<code>IMAGE_SECTION_HEADER</code>的<code>.text</code>节头部信息，如果虚拟大小比原始大小大得多，意味着这个层序在内存中占用的空间比在磁盘上多得多，那么这个程序很可能是加壳的程序，<code>.data</code>节是例外。</p>
-<p><strong>PE文件格式：</strong>PE文件格式就不多说了，网上有很多资料，要熟悉PE格式，方便后面的学习。</p>
-<p><strong>静态链接|动态链接|运行时链接|链接库与函数：</strong>程序的导入表和导出表和一些用到的库对我们而言十分重要，静态链接由于重复占用内存因而不常见，运行时链接在正常的程序中一般见不到，但是在恶意软件中可能会出现，至于当需要用到函数的时候才会使用链接，增强了隐蔽性。另外一些Windows API允许调用者导入没有在程序头文件中导入的函数，最常见的两个是<code>LoadLibrary</code>和<code>GetProcAddress</code>，有时还可能会出现<code>LdrGetProcAddress</code>和<code>LdrLoadDll</code>,当程序中出现这些函数库时，安全人员无法通过静态分析的手法来分析程序链接的函数。</p>
-<p><strong>Dependency Walker：</strong> 一款可以查看可执行文件动态链接函数的程序，<a href="http://www.dependencywalker.com" target="_blank" rel="noopener">下载链接。</a></p>
-<p><strong>Resource Hacker：</strong>使用此工具来产看程序的资源节。</p>
-<p>导入函数和导出函数是为了提高代码复用性的一种手段，导出函数通常出现在<code>dll</code>文件中，而<code>exe</code>文件中一般没有导出函数，如果发现一个<code>exe</code>文件有很多导出函数的话我们就需要多多留意。</p>
-<p><strong>编译时间：</strong>使用<code>Delphi</code>语言编写的程序有着统一的编译时间：1992年6月19日，所以说，如果有一个程序的编译时间为1992年6月19日，那么这个程序很可能是用<code>Delphi</code>编写的</p>
-<h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab1-1"><a href="#Lab1-1" class="headerlink" title="Lab1-1"></a>Lab1-1</h3><p><strong>这个实验使用Lab01-01.exe和Lab01-01.dll文件，使用本章描述的工具和技术来获取关于这些文件的信息。</strong></p>
-<p><strong>1.将文件上传至VT进行分析并产看报告，文件匹配到了已有的反病毒文件特征了吗?</strong></p>
-<p>按照题目要求上传至VT查看结果即可。</p>
-<p><strong>2.这些文件是什么时候编译的？</strong></p>
-<p><strong>3.这两个文件中是否存在迹象说明他们是否被加壳或者混淆了？如果是，这些迹象在哪里。</strong></p>
-<p><strong>4.是否有导入函数显示出这个恶意代码是做什么的？如果是，是哪些导入函数。</strong></p>
-<p><strong>5.是否有任何其他文件或基于主机的迹象，让你可以在受感染系统上查找？</strong></p>
-<p><strong>6.是否有基于网络的迹象，可以用来发现受感染机器上的这个恶意代码？</strong></p>
-<p><strong>7.你猜这些文件的目的是什么？</strong></p>
-<h3 id="Lab1-2"><a href="#Lab1-2" class="headerlink" title="Lab1-2"></a>Lab1-2</h3><p><strong>分析Lab01-02.exe文件。</strong></p>
-<p><strong>1.将此文件上传到VT并查看是否有匹配到的反病毒特征。</strong></p>
-<p><strong>2.这个文件是否有加壳或混淆的情况？请指明。如果该文件被加壳，请进行脱壳。</strong></p>
-<p><strong>3.有没有任何导入函数能暗示出这个程序的功能，如果有，这些导入函数是什么，给了你什么信息？</strong></p>
-<p><strong>4.有哪些基于主机或者网络的特征可以被用来确定被这个恶意代码所感染的机器？</strong></p>
-<h3 id="Lab1-3"><a href="#Lab1-3" class="headerlink" title="Lab1-3"></a>Lab1-3</h3><p><strong>分析Lab01-03.exe文件。</strong></p>
-<p><strong>1.将此文件上传到VT并查看是否有匹配到的反病毒特征。</strong></p>
-<p><strong>2.这个文件是否有加壳或混淆的情况？请指明。如果该文件被加壳，请进行脱壳。</strong></p>
-<p><strong>3.有没有任何导入函数能暗示出这个程序的功能，如果有，这些导入函数是什么，给了你什么信息？</strong></p>
-<p><strong>4.有哪些基于主机或者网络的特征可以被用来确定被这个恶意代码所感染的机器？</strong></p>
-<h3 id="Lab1-4"><a href="#Lab1-4" class="headerlink" title="Lab1-4"></a>Lab1-4</h3><p><strong>分析Lab01-04.exe文件。</strong></p>
-<p><strong>1.将此文件上传到VT并查看是否有匹配到的反病毒特征。</strong></p>
-<p><strong>2.这个文件是否有加壳或混淆的情况？请指明。如果该文件被加壳，请进行脱壳。</strong></p>
-<p><strong>3.这个文件是什么时候被编译的？</strong></p>
-<p><strong>4.有没有任何导入函数能暗示出这个程序的功能，如果有，这些导入函数是什么，给了你什么信息？</strong></p>
-<p><strong>5.有哪些基于主机或者网络的特征可以被用来确定被这个恶意代码所感染的机器？</strong></p>
-<p><strong>6.这个文件在资源段包含一个资源。使用Resource Hacker工具来检查资源，然后抽取资源。从资源中你能发现什么吗？</strong></p>
-
-          
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/01/静态分析基础技术/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2343,7 +2315,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">38.1k</span>
+    <span title="Site words total count">39k</span>
   
 </div>
 
