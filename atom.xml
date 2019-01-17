@@ -46,15 +46,15 @@
     <link href="https://hvnt3r.top/2019/01/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80%E6%8A%80%E6%9C%AF/"/>
     <id>https://hvnt3r.top/2019/01/静态分析基础技术/</id>
     <published>2019-01-16T09:00:58.000Z</published>
-    <updated>2019-01-16T09:30:09.311Z</updated>
+    <updated>2019-01-16T10:02:06.625Z</updated>
     
-    <content type="html"><![CDATA[<h1 id="静态分析基础技术"><a href="#静态分析基础技术" class="headerlink" title="静态分析基础技术"></a>静态分析基础技术</h1>]]></content>
+    <content type="html"><![CDATA[<h1 id="静态分析基础技术"><a href="#静态分析基础技术" class="headerlink" title="静态分析基础技术"></a>静态分析基础技术</h1><p>我觉得安全圈的思路都是差不多的，跟渗透测试一样，对一个恶意软件的分析也需要前期的信息收集阶段来帮助我们对目标有一个大致的了解和认识，方便确定下一步工作的方向。</p><p><strong>Virus Total</strong>：首先，拿到一个恶意软件如果不涉密的话可以直接上传到<code>VT</code>上看一下，这样差不多能确定此恶意软件的最早爆发日期和各种关键的信息。</p><p><strong>哈希值</strong>：<code>hash</code>值就相当于恶意软件的指纹，是一个很重要的信息。</p><p><strong>关键字符串</strong>：可以使用<code>IDA Pro</code>或者<code>Strings</code>软件来查看程序中关键的字符串。</p><p><strong>加壳与代码混淆</strong>：一般来说，对软件加壳可以压缩软件代码占用的磁盘空间，使软件体积更小，另一方面，有的壳可以加密程序自身信息，是得程序难以通过逆向手段来对程序进行分析，是对程序本身的一种保护，大部分形况下</p>]]></content>
     
     <summary type="html">
     
       
       
-        &lt;h1 id=&quot;静态分析基础技术&quot;&gt;&lt;a href=&quot;#静态分析基础技术&quot; class=&quot;headerlink&quot; title=&quot;静态分析基础技术&quot;&gt;&lt;/a&gt;静态分析基础技术&lt;/h1&gt;
+        &lt;h1 id=&quot;静态分析基础技术&quot;&gt;&lt;a href=&quot;#静态分析基础技术&quot; class=&quot;headerlink&quot; title=&quot;静态分析基础技术&quot;&gt;&lt;/a&gt;静态分析基础技术&lt;/h1&gt;&lt;p&gt;我觉得安全圈的思路都是差不多的，跟渗透测试一样，对一个恶意软件的分析也需要前期的信息收集阶段
       
     
     </summary>
