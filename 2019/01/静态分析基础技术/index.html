@@ -101,7 +101,7 @@
 <meta property="og:image" content="https://i.loli.net/2019/01/18/5c41e2d17223d.png">
 <meta property="og:image" content="https://i.loli.net/2019/01/18/5c41e31d9b699.png">
 <meta property="og:image" content="https://i.loli.net/2019/01/19/5c43386273988.png">
-<meta property="og:updated_time" content="2019-01-19T14:55:26.010Z">
+<meta property="og:updated_time" content="2019-01-19T14:58:56.624Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="静态分析基础技术">
 <meta name="twitter:description" content="静态分析基础技术 知识点我觉得安全圈的思路都是差不多的，跟渗透测试一样，对一个恶意软件的分析也需要前期的信息收集阶段来帮助我们对目标有一个大致的了解和认识，方便确定下一步工作的方向。 Virus Total：首先，拿到一个恶意软件如果不涉密的话可以直接上传到VT上看一下，这样差不多能确定此恶意软件的最早爆发日期和各种关键的信息。 哈希值：hash值就相当于恶意软件的指纹，是一个很重要的信息。 关键">
@@ -543,7 +543,6 @@
 <p>根据以上信息和汇编代码猜测病毒会在<code>\system32</code>目录下创建<code>wupdmgr.exe</code>文件，并尝试执行此程序，如果执行成功，则函数<code>sub_401174</code>返回<code>0</code></p>
 <p>还有一个隐藏在资源节的PE文件，用二进制模式打开后可以看到如下文本</p>
 <p><img src="https://i.loli.net/2019/01/19/5c43386273988.png" alt=""></p>
-<p>!(<a href="https://i.loli.net/2019/01/19/5c43388d30ba7.png" target="_blank" rel="noopener">https://i.loli.net/2019/01/19/5c43388d30ba7.png</a>)</p>
 <p><strong>6.这个文件在资源段包含一个资源。使用Resource Hacker工具来检查资源，然后抽取资源。从资源中你能发现什么吗？</strong></p>
 <p>使用<code>Resource Hacker</code>可以发现该程序的资源节存在一个可执行程序，程序指向一个网址并从该网址下载文件，但下载的文件内容未知。</p>
 <hr>
