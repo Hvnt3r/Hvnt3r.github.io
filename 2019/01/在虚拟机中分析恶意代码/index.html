@@ -75,7 +75,7 @@
 
 
 
-  <meta name="keywords" content="Kali Linux," />
+  <meta name="keywords" content="恶意代码分析,虚拟化," />
 
 
 
@@ -88,18 +88,18 @@
 
 
 
-<meta name="description" content="为了提高学习效率，我舍弃了在虚拟机里运行linux系统的方法，直接在笔记本上装了Kali Linux+Windows10双系统，使用的流畅度确实有了很大的提升，甚至用惯Linux后会嫌弃在Window下各种不合理的设定，确实在linux下使用一些软件或者配置环境要方便的多，由于系统是开源的，对系统进行个性化的定制也是十分方便的，bash命令也使我的工作效率有了极大的提升，但是Linux的稳定性确实">
-<meta name="keywords" content="Kali Linux">
+<meta name="description" content="在虚拟机中分析恶意代码 知识点很多恶意代码无疑会对运行环境造成不同程度的损害，在分析恶意代码功能的时候我们最好将恶意代码放在虚拟环境下进行分析，除了有一些无法通过虚拟化环境分析的恶意代码需要用安装了Norton Ghost等还原系统的物理机里进行分析。本章主要讲了如何在虚拟环境下分析恶意代码以及我们在虚拟环境下分析恶意代码可能造成的问题。 虚拟化环境：对我们而言，最容易创造的虚拟化环境就是用Vmw">
+<meta name="keywords" content="恶意代码分析,虚拟化">
 <meta property="og:type" content="article">
-<meta property="og:title" content="将Kali Linux作为主力系统是一种怎样的体验">
-<meta property="og:url" content="https://hvnt3r.top/2018/09/将Kali-Linux作为主力系统是一种怎样的体验/index.html">
+<meta property="og:title" content="在虚拟机中分析恶意代码">
+<meta property="og:url" content="https://hvnt3r.top/2019/01/在虚拟机中分析恶意代码/index.html">
 <meta property="og:site_name" content="Hvnt3r&#39;s Blog">
-<meta property="og:description" content="为了提高学习效率，我舍弃了在虚拟机里运行linux系统的方法，直接在笔记本上装了Kali Linux+Windows10双系统，使用的流畅度确实有了很大的提升，甚至用惯Linux后会嫌弃在Window下各种不合理的设定，确实在linux下使用一些软件或者配置环境要方便的多，由于系统是开源的，对系统进行个性化的定制也是十分方便的，bash命令也使我的工作效率有了极大的提升，但是Linux的稳定性确实">
+<meta property="og:description" content="在虚拟机中分析恶意代码 知识点很多恶意代码无疑会对运行环境造成不同程度的损害，在分析恶意代码功能的时候我们最好将恶意代码放在虚拟环境下进行分析，除了有一些无法通过虚拟化环境分析的恶意代码需要用安装了Norton Ghost等还原系统的物理机里进行分析。本章主要讲了如何在虚拟环境下分析恶意代码以及我们在虚拟环境下分析恶意代码可能造成的问题。 虚拟化环境：对我们而言，最容易创造的虚拟化环境就是用Vmw">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-10-08T06:25:01.195Z">
+<meta property="og:updated_time" content="2019-01-20T08:38:04.487Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="将Kali Linux作为主力系统是一种怎样的体验">
-<meta name="twitter:description" content="为了提高学习效率，我舍弃了在虚拟机里运行linux系统的方法，直接在笔记本上装了Kali Linux+Windows10双系统，使用的流畅度确实有了很大的提升，甚至用惯Linux后会嫌弃在Window下各种不合理的设定，确实在linux下使用一些软件或者配置环境要方便的多，由于系统是开源的，对系统进行个性化的定制也是十分方便的，bash命令也使我的工作效率有了极大的提升，但是Linux的稳定性确实">
+<meta name="twitter:title" content="在虚拟机中分析恶意代码">
+<meta name="twitter:description" content="在虚拟机中分析恶意代码 知识点很多恶意代码无疑会对运行环境造成不同程度的损害，在分析恶意代码功能的时候我们最好将恶意代码放在虚拟环境下进行分析，除了有一些无法通过虚拟化环境分析的恶意代码需要用安装了Norton Ghost等还原系统的物理机里进行分析。本章主要讲了如何在虚拟环境下分析恶意代码以及我们在虚拟环境下分析恶意代码可能造成的问题。 虚拟化环境：对我们而言，最容易创造的虚拟化环境就是用Vmw">
 
 
 
@@ -129,13 +129,13 @@
 
 
 
-  <link rel="canonical" href="https://hvnt3r.top/2018/09/将Kali-Linux作为主力系统是一种怎样的体验/"/>
+  <link rel="canonical" href="https://hvnt3r.top/2019/01/在虚拟机中分析恶意代码/"/>
 
 
 
 
 
-  <title>将Kali Linux作为主力系统是一种怎样的体验 | Hvnt3r's Blog</title>
+  <title>在虚拟机中分析恶意代码 | Hvnt3r's Blog</title>
   
 
 
@@ -294,7 +294,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2018/09/将Kali-Linux作为主力系统是一种怎样的体验/">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/01/在虚拟机中分析恶意代码/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Hvnt3r">
@@ -311,7 +311,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">将Kali Linux作为主力系统是一种怎样的体验</h2>
+          <h2 class="post-title" itemprop="name headline">在虚拟机中分析恶意代码</h2>
         
 
         <div class="post-meta">
@@ -323,8 +323,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-18T10:20:53+08:00">
-                2018-09-18
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-20T15:00:00+08:00">
+                2019-01-20
               </time>
             
 
@@ -346,8 +346,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux</span>
+                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
+                    <span itemprop="name">二进制安全</span>
                   </a>
                 </span>
 
@@ -363,7 +363,7 @@
 
           
           
-             <span id="/2018/09/将Kali-Linux作为主力系统是一种怎样的体验/" class="leancloud_visitors" data-flag-title="将Kali Linux作为主力系统是一种怎样的体验">
+             <span id="/2019/01/在虚拟机中分析恶意代码/" class="leancloud_visitors" data-flag-title="在虚拟机中分析恶意代码">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -389,7 +389,7 @@
                   <span class="post-meta-item-text">Words count in article&#58;</span>
                 
                 <span title="Words count in article">
-                  1.1k
+                  1.6k
                 </span>
               
 
@@ -405,7 +405,7 @@
                   <span class="post-meta-item-text">Reading time &asymp;</span>
                 
                 <span title="Reading time">
-                  3
+                  5
                 </span>
               
             </div>
@@ -426,8 +426,45 @@
       
 
       
-        <p>为了提高学习效率，我舍弃了在虚拟机里运行linux系统的方法，直接在笔记本上装了Kali Linux+Windows10双系统，使用的流畅度确实有了很大的提升，甚至用惯Linux后会嫌弃在Window下各种不合理的设定，确实在linux下使用一些软件或者配置环境要方便的多，由于系统是开源的，对系统进行个性化的定制也是十分方便的，bash命令也使我的工作效率有了极大的提升，但是Linux的稳定性确实十分差，在我心里有一个系统稳定性的排行榜：Macos&gt;Windows&gt;Linux，看来系统稳定性确实跟系统的封装度有一定的关系，在Windows下确实会经常碰到一些令人一头雾水的错误代码，Linux更是这样，在我安装双系统的时候，已经做好了经常折腾的心理准备，比如头一次对Kali安装显卡驱动，直接进不了系统，无奈只得重新安装系统，但是安装时却把grub给搞坏了，因此在我没有搞清楚grub的使用方法以及工作原理的时候，我都是在grub里面敲一些指令来开机的，浪费了很多的时间，后来将Kali装好之后，我一度沉迷在了Linux的世界中，喜欢上额这种简简洁明快的交互方式，虽然有一些win下常用的软件不能直接在linux上使用，但是可以通过wine这样的中间件来达成使用效果或者是在linux平台下寻找更合适的替代品，因此在很长一段时间内我都没有启动windows，除非是想玩游戏的时候，通常的情景是直接进入kali开始学习工作，偶尔打开在kali中安装的虚拟机来完成一些必须在win下完成的事情，这种情况持续了很长时间。因为kali2是rolling版本，所以系统需要频繁的更新，刚开始时我喜欢经常让系统保持在一个最新的状态，因此我没事的时候比如中午去吃饭就直接在终端内输入apt-update&amp;&amp;apt-upgrade使系统更新，偶尔的更新过程中会出现一些错误，比如更新完成后中文输入法无法正常工作等意外情况，或者是一些依赖的错误等等，我在这些由于更新而产生的错误上也填了很多的坑，花了时间也不少，因此我慢慢疲于做这样的工作，系统的错误为什么需要我花费大量的时间去修补，因此后来我就很久没有进行系统更新，直到今天，由于为了修复系统中可能出现的漏洞，我进行的系统更新，结果悲催了，更新过程中一直卡到了一个部分长达一个小时，更新总时间也要花去三个小时，卡在这里肯定是因为系统又出现了一些依赖的错误或者版本不匹配的情况，当我再次打开linux的时候，只见桌面一片黑暗，图标全无，docker也是空的，一些系统界面上的关键图标也消失不见，终端也无法打开，通过快捷键打开终端或者文件管理器的时候会自动注销，重新登陆后情况依旧。幸好我有很多的资料都保存在了云端，但是我长期的学习成果，有很多配置好的环境都得重新配置，因此十分不爽，我以后是绝对不会再把Linux作为主力系统来使用了，由于硬盘空间有限，也没有做全盘的备份，kali也没有自己的系统备份方案，而且系统的稳定性本来就差，三天两头出小毛病，真的是心累，或许linux还是更适合活在虚拟机里，备份的时候直接做一个快照，这样就能省去很多维护的时间。</p>
-
+        <h1 id="在虚拟机中分析恶意代码"><a href="#在虚拟机中分析恶意代码" class="headerlink" title="在虚拟机中分析恶意代码"></a>在虚拟机中分析恶意代码</h1><hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>很多恶意代码无疑会对运行环境造成不同程度的损害，在分析恶意代码功能的时候我们最好将恶意代码放在虚拟环境下进行分析，除了有一些无法通过虚拟化环境分析的恶意代码需要用安装了<code>Norton Ghost</code>等还原系统的物理机里进行分析。本章主要讲了如何在虚拟环境下分析恶意代码以及我们在虚拟环境下分析恶意代码可能造成的问题。</p>
+<p><strong>虚拟化环境：</strong>对我们而言，最容易创造的虚拟化环境就是用<code>Vmware</code>、<code>Hyper-v</code>或者<code>Virtual Box</code>创建一个虚拟机，另外还有一些用<code>Docker</code>容器作为虚拟化环境的恶意代码分析手段，但是我感觉这种方式暂时还不成熟，有很多技术<code>Vmware</code>可以做的更好，而且安全性方面<code>Vmware</code>隔离更彻底，更安全。因此我们可以用功能十分强大的<code>Vmware</code>创建一个属于自己的恶意代码分析环境，创建虚拟机以及虚拟机的使用方法网上已经有很多教程了，此处不再赘述，而着重介绍与恶意代码分析相关的虚拟机用法。</p>
+<a id="more"></a>
+<p><strong>虚拟环境网络配置：</strong>在拿到一个恶意软件的第一时间，如果对该恶意代码功能并不清楚，首先要将虚拟机的网络连接断开，以防止运行在虚拟环境的的恶意代码对网络上的其他主机造成安全风险，比如当时<code>Wanna Cry</code>爆发时，很多安全分析员在分析恶意代码时就把同事的电脑给感染了，因此我们需要选择一个相对安全的网络模式，虚拟机网络选项通常又如下几种：</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>区别</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host-Only（仅主机模式）</td>
+<td>Host-Only模式其实就是NAT模式去除了虚拟NAT设备，然后使用VMware Network Adapter VMnet1虚拟网卡连接VMnet1虚拟交换机来与虚拟机通信的，Host-Only模式将虚拟机与外网隔开，使得虚拟机成为一个独立的系统，只与主机相互通讯。</td>
+</tr>
+<tr>
+<td>Bridged（桥接模式）</td>
+<td>桥接模式就是将主机网卡与虚拟机虚拟的网卡利用虚拟网桥进行通信。在桥接的作用下，类似于把物理主机虚拟为一个交换机，所有桥接设置的虚拟机连接到这个交换机的一个接口上，物理主机也同样插在这个交换机当中，所以所有桥接下的网卡与网卡都是交换模式的，相互可以访问而不干扰。在桥接模式下，虚拟机IP地址需要与主机在同一个网段，如果需要联网，则网关与DNS需要与主机网卡一致。</td>
+</tr>
+<tr>
+<td>NAT（网络地址转换模式）</td>
+<td>如果你的网络IP资源紧缺，但是你又希望你的虚拟机能够联网，这时候NAT模式是最好的选择。NAT模式借助虚拟NAT设备和虚拟DHCP服务器，使得虚拟机可以联网。</td>
+</tr>
+<tr>
+<td>自定义虚拟网络</td>
+<td>可以通过此模式来自定义网络连接方式，也可配置多台虚拟机组成结构相对复杂的虚拟机网络</td>
+</tr>
+</tbody>
+</table>
+<p>在分析恶意代码的时候，我们最好使用<code>Host-Only</code>模式或者直接断开网络，使用<code>Host-Only</code>模式需要注意保证宿主主机开启防火墙并保证宿主主机安装了最新的安全补丁，当然如果恶意代码拥有宿主主机的<code>0day</code>，那么还是直接断开虚拟机网络为好。</p>
+<p><strong>拍摄快照：</strong>快照是<code>Vmware</code>一个很强大的功能之一，在我刚接触虚拟机的时候我并不知道虚拟机有这个功能，于是在折腾<code>Kali</code>把环境搞坏了的时候就选择重新安装，现在看来真的是浪费了很多时间。快照可以保存虚拟机系统当前的状态，并可以在任何时间将虚拟机状态还原为这一状态的功能，因此我们可以在配置好恶意代码分析环境之前拍摄一个快照，然后再分析恶意代码，当分析完成后为了将系统还原为一个干净的状态就恢复这一快照，当前未保存的状态就会消失，镜像也可以有多个分支，每个快照会根据系统前后改变的程度而占用不同大小的磁盘空间，但是这个占用空间一般很小，大概2个G左右。</p>
+<p><strong>虚拟机与宿主主机的数据传递：</strong>在安装了<code>Vmware Tools</code>的虚拟机上，用户可以通过简单的复制粘贴和拖放操作来在虚拟机和物理机之前传输文件，但是有时这种操作可能会造成虚拟机逃逸，因此如果没有传输文件的需要的话建议先关闭文件传输功能，或者在分析过程完成后并对恶意代码进行清理之后再开启此功能来传输文件。</p>
+<p><strong>外围设备的连接和断开：</strong><code>Vmware</code>提供了为虚拟机连接各种外围设备的接口，如USB、光驱、摄像头等，在分析恶意代码的过程中，如果没有这些外围设备的使用需求，我们应该在分析恶意代码之前将这些连接断开以防止恶意代码对这些设备造成破坏。</p>
+<p><strong>使用Vmware的风险：</strong>没有绝对安全的系统，虚拟环境也是一样，<code>Vmware</code>也经常发布安全性更新，之前也有黑客或白帽发现<code>Vmware</code>的<code>0day</code>漏洞的事，比较常见的是虚拟机逃逸，利用<code>Vmware</code>模拟CPU指令的一些缺陷或者缓冲区溢出或者逻辑漏洞等漏洞攻击虚拟机软件，使恶意代码能从虚拟环境中逃逸，对真实的物理机环境造成损害。为了降低发生此事的情况，我们需要即使更新宿主主机的系统安全补丁并及时更新虚拟软件尤其是厂商发布有关安全性的更新时。</p>
+<h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><p>本章无课后练习</p>
+<hr>
+<h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>
       
     </div>
     
@@ -476,7 +513,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>Post link:</strong>
-    <a href="https://hvnt3r.top/2018/09/将Kali-Linux作为主力系统是一种怎样的体验/" title="将Kali Linux作为主力系统是一种怎样的体验">https://hvnt3r.top/2018/09/将Kali-Linux作为主力系统是一种怎样的体验/</a>
+    <a href="https://hvnt3r.top/2019/01/在虚拟机中分析恶意代码/" title="在虚拟机中分析恶意代码">https://hvnt3r.top/2019/01/在虚拟机中分析恶意代码/</a>
   </li>
   <li class="post-copyright-license">
     <strong>Copyright Notice: </strong>
@@ -491,7 +528,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Kali-Linux/" rel="tag"><i class="fa fa-tag"></i> Kali Linux</a>
+            <a href="/tags/恶意代码分析/" rel="tag"><i class="fa fa-tag"></i> 恶意代码分析</a>
+          
+            <a href="/tags/虚拟化/" rel="tag"><i class="fa fa-tag"></i> 虚拟化</a>
           
         </div>
       
@@ -504,8 +543,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/09/passcode-WriteUp-pwnable-kr-passcode-scanf函数不加/" rel="next" title="passcode_WriteUp(pwnable.kr_passcode)scanf函数不加"&"带来的危险">
-                <i class="fa fa-chevron-left"></i> passcode_WriteUp(pwnable.kr_passcode)scanf函数不加"&"带来的危险
+              <a href="/2019/01/前言/" rel="next" title="前言">
+                <i class="fa fa-chevron-left"></i> 前言
               </a>
             
           </div>
@@ -513,10 +552,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/09/PHP文件上传漏洞原理以及防御姿势/" rel="prev" title="PHP文件上传漏洞原理以及防御姿势">
-                PHP文件上传漏洞原理以及防御姿势 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -568,8 +603,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -656,6 +700,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#在虚拟机中分析恶意代码"><span class="nav-number">1.</span> <span class="nav-text">在虚拟机中分析恶意代码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#知识点"><span class="nav-number">1.1.</span> <span class="nav-text">知识点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#课后练习"><span class="nav-number">1.2.</span> <span class="nav-text">课后练习</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#本章结束🎊"><span class="nav-number">1.3.</span> <span class="nav-text">本章结束🎊</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

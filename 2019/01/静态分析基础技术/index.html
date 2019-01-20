@@ -101,7 +101,7 @@
 <meta property="og:image" content="https://i.loli.net/2019/01/18/5c41e2d17223d.png">
 <meta property="og:image" content="https://i.loli.net/2019/01/18/5c41e31d9b699.png">
 <meta property="og:image" content="https://i.loli.net/2019/01/19/5c43386273988.png">
-<meta property="og:updated_time" content="2019-01-19T14:58:56.624Z">
+<meta property="og:updated_time" content="2019-01-20T08:04:39.553Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="静态分析基础技术">
 <meta name="twitter:description" content="静态分析基础技术 知识点我觉得安全圈的思路都是差不多的，跟渗透测试一样，对一个恶意软件的分析也需要前期的信息收集阶段来帮助我们对目标有一个大致的了解和认识，方便确定下一步工作的方向。 Virus Total：首先，拿到一个恶意软件如果不涉密的话可以直接上传到VT上看一下，这样差不多能确定此恶意软件的最早爆发日期和各种关键的信息。 哈希值：hash值就相当于恶意软件的指纹，是一个很重要的信息。 关键">
@@ -439,7 +439,7 @@
 <p><strong>关键字符串：</strong>可以使用<code>IDA Pro</code>或者<code>Strings</code>软件来查看程序中关键的字符串。</p>
 <a id="more"></a>
 <p><strong>加壳与代码混淆：</strong>一般来说，对软件加壳可以压缩软件代码占用的磁盘空间，使软件体积更小，另一方面，有的壳可以加密程序自身信息，是得程序难以通过逆向手段来对程序进行分析，是对程序本身的一种保护，大部分形况下加壳技术用来保护程序版权，但是恶意软件使用加壳方式来隐藏恶意代码，使得代码逻辑难以分析，这时候就需要我们使用已有的脱壳软件或者自己写脱壳脚本对软件进行脱壳还原。</p>
-<p>使用<code>PEview</code>查看<code>IMAGE_SECTION_HEADER</code>的<code>.text</code>节头部信息，如果虚拟大小比原始大小大得多，意味着这个层序在内存中占用的空间比在磁盘上多得多，那么这个程序很可能是加壳的程序，<code>.data</code>节是例外。</p>
+<p>使用<code>PEview</code>查看<code>IMAGE_SECTION_HEADER</code>的<code>.text</code>节头部信息，如果虚拟大小比原始大小大得多，意味着这个程序在内存中占用的空间比在磁盘上多得多，那么这个程序很可能是加壳的程序，<code>.data</code>节是例外。</p>
 <p><strong>PE文件格式：</strong>PE文件格式就不多说了，网上有很多资料，要熟悉PE格式，方便后面的学习。</p>
 <p><strong>静态链接|动态链接|运行时链接|链接库与函数：</strong>程序的导入表和导出表和一些用到的库对我们而言十分重要，静态链接由于重复占用内存因而不常见，运行时链接在正常的程序中一般见不到，但是在恶意软件中可能会出现，至于当需要用到函数的时候才会使用链接，增强了隐蔽性。另外一些Windows API允许调用者导入没有在程序头文件中导入的函数，最常见的两个是<code>LoadLibrary</code>和<code>GetProcAddress</code>，有时还可能会出现<code>LdrGetProcAddress</code>和<code>LdrLoadDll</code>,当程序中出现这些函数库时，安全人员无法通过静态分析的手法来分析程序链接的函数。</p>
 <p><strong>Dependency Walker：</strong> 一款可以查看可执行文件动态链接函数的程序，<a href="http://www.dependencywalker.com" target="_blank" rel="noopener">下载链接。</a></p>
@@ -718,7 +718,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">39</span>
+                  <span class="site-state-item-count">40</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -740,7 +740,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-count">38</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -831,7 +831,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">40k</span>
+    <span title="Site words total count">41.7k</span>
   
 </div>
 
