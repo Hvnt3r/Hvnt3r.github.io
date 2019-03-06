@@ -75,7 +75,7 @@
 
 
 
-  <meta name="keywords" content="PWN,CTF," />
+  <meta name="keywords" content="恶意代码分析,汇编语言,C语言," />
 
 
 
@@ -88,20 +88,24 @@
 
 
 
-<meta name="description" content="flag_WriteUp(pwnable.kr_flag)软件脱壳反汇编题目传送门：http://pwnable.kr/bin/flag  这道题严格意义上考察的是软件查壳和脱壳">
-<meta name="keywords" content="PWN,CTF">
+<meta name="description" content="IDA Pro使用方法 识别汇编中的C代码结构本章将通过讨论超过十种的不同的C代码结构来分析不同的汇编代码，帮助我们快速的提升形成恶意代码功能的高级视图的能力 全局变量|局部变量：全局变量可以被程序中任意函数访问和使用，局部变量只能在它被定义的函数中访问，在汇编代码中，全局变量通过内存地址引用，而局部变量通过栈地址引用。 识别if语句：有if语句一定存在跳转，但是有跳转不一定是if语句，if语句前">
+<meta name="keywords" content="恶意代码分析,汇编语言,C语言">
 <meta property="og:type" content="article">
-<meta property="og:title" content="flag_WriteUp(pwnable.kr_flag)软件脱壳反汇编">
-<meta property="og:url" content="https://hvnt3r.top/2018/09/flag-WriteUp-pwnable-kr-flag-软件脱壳反汇编/index.html">
+<meta property="og:title" content="识别汇编中的C代码结构">
+<meta property="og:url" content="https://hvnt3r.top/2019/03/识别汇编中的C代码结构/index.html">
 <meta property="og:site_name" content="Hvnt3r&#39;s Blog">
-<meta property="og:description" content="flag_WriteUp(pwnable.kr_flag)软件脱壳反汇编题目传送门：http://pwnable.kr/bin/flag  这道题严格意义上考察的是软件查壳和脱壳">
+<meta property="og:description" content="IDA Pro使用方法 识别汇编中的C代码结构本章将通过讨论超过十种的不同的C代码结构来分析不同的汇编代码，帮助我们快速的提升形成恶意代码功能的高级视图的能力 全局变量|局部变量：全局变量可以被程序中任意函数访问和使用，局部变量只能在它被定义的函数中访问，在汇编代码中，全局变量通过内存地址引用，而局部变量通过栈地址引用。 识别if语句：有if语句一定存在跳转，但是有跳转不一定是if语句，if语句前">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://i.loli.net/2018/09/29/5baedeb0387ef.png">
-<meta property="og:updated_time" content="2018-10-08T06:21:02.436Z">
+<meta property="og:image" content="https://i.loli.net/2019/03/06/5c7fcd9f62ae2.png">
+<meta property="og:image" content="https://i.loli.net/2019/03/06/5c7fd47640f98.png">
+<meta property="og:image" content="https://i.loli.net/2019/03/06/5c7fe867a4b16.png">
+<meta property="og:image" content="https://i.loli.net/2019/03/06/5c7fe49b20616.png">
+<meta property="og:image" content="https://i.loli.net/2019/03/06/5c7fe545a0a81.png">
+<meta property="og:updated_time" content="2019-03-06T15:50:08.469Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="flag_WriteUp(pwnable.kr_flag)软件脱壳反汇编">
-<meta name="twitter:description" content="flag_WriteUp(pwnable.kr_flag)软件脱壳反汇编题目传送门：http://pwnable.kr/bin/flag  这道题严格意义上考察的是软件查壳和脱壳">
-<meta name="twitter:image" content="https://i.loli.net/2018/09/29/5baedeb0387ef.png">
+<meta name="twitter:title" content="识别汇编中的C代码结构">
+<meta name="twitter:description" content="IDA Pro使用方法 识别汇编中的C代码结构本章将通过讨论超过十种的不同的C代码结构来分析不同的汇编代码，帮助我们快速的提升形成恶意代码功能的高级视图的能力 全局变量|局部变量：全局变量可以被程序中任意函数访问和使用，局部变量只能在它被定义的函数中访问，在汇编代码中，全局变量通过内存地址引用，而局部变量通过栈地址引用。 识别if语句：有if语句一定存在跳转，但是有跳转不一定是if语句，if语句前">
+<meta name="twitter:image" content="https://i.loli.net/2019/03/06/5c7fcd9f62ae2.png">
 
 
 
@@ -131,13 +135,13 @@
 
 
 
-  <link rel="canonical" href="https://hvnt3r.top/2018/09/flag-WriteUp-pwnable-kr-flag-软件脱壳反汇编/"/>
+  <link rel="canonical" href="https://hvnt3r.top/2019/03/识别汇编中的C代码结构/"/>
 
 
 
 
 
-  <title>flag_WriteUp(pwnable.kr_flag)软件脱壳反汇编 | Hvnt3r's Blog</title>
+  <title>识别汇编中的C代码结构 | Hvnt3r's Blog</title>
   
 
 
@@ -296,7 +300,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2018/09/flag-WriteUp-pwnable-kr-flag-软件脱壳反汇编/">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/03/识别汇编中的C代码结构/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Hvnt3r">
@@ -313,7 +317,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">flag_WriteUp(pwnable.kr_flag)软件脱壳反汇编</h2>
+          <h2 class="post-title" itemprop="name headline">识别汇编中的C代码结构</h2>
         
 
         <div class="post-meta">
@@ -325,8 +329,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-29T10:11:14+08:00">
-                2018-09-29
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-06T14:29:06+08:00">
+                2019-03-06
               </time>
             
 
@@ -348,8 +352,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CTF/" itemprop="url" rel="index">
-                    <span itemprop="name">CTF</span>
+                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
+                    <span itemprop="name">二进制安全</span>
                   </a>
                 </span>
 
@@ -365,7 +369,7 @@
 
           
           
-             <span id="/2018/09/flag-WriteUp-pwnable-kr-flag-软件脱壳反汇编/" class="leancloud_visitors" data-flag-title="flag_WriteUp(pwnable.kr_flag)软件脱壳反汇编">
+             <span id="/2019/03/识别汇编中的C代码结构/" class="leancloud_visitors" data-flag-title="识别汇编中的C代码结构">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -391,7 +395,7 @@
                   <span class="post-meta-item-text">Words count in article&#58;</span>
                 
                 <span title="Words count in article">
-                  189
+                  2k
                 </span>
               
 
@@ -407,7 +411,7 @@
                   <span class="post-meta-item-text">Reading time &asymp;</span>
                 
                 <span title="Reading time">
-                  1
+                  7
                 </span>
               
             </div>
@@ -428,18 +432,101 @@
       
 
       
-        <h1 id="flag-WriteUp-pwnable-kr-flag-软件脱壳反汇编"><a href="#flag-WriteUp-pwnable-kr-flag-软件脱壳反汇编" class="headerlink" title="flag_WriteUp(pwnable.kr_flag)软件脱壳反汇编"></a>flag_WriteUp(pwnable.kr_flag)软件脱壳反汇编</h1><p>题目传送门：<a href="http://pwnable.kr/bin/flag" target="_blank" rel="noopener">http://pwnable.kr/bin/flag</a></p>
-<p><img src="https://i.loli.net/2018/09/29/5baedeb0387ef.png" alt=""></p>
-<p>这道题严格意义上考察的是软件查壳和脱壳</p>
+        <h1 id="IDA-Pro使用方法"><a href="#IDA-Pro使用方法" class="headerlink" title="IDA Pro使用方法"></a>IDA Pro使用方法</h1><hr>
+<h2 id="识别汇编中的C代码结构"><a href="#识别汇编中的C代码结构" class="headerlink" title="识别汇编中的C代码结构"></a>识别汇编中的C代码结构</h2><p>本章将通过讨论超过十种的不同的C代码结构来分析不同的汇编代码，帮助我们快速的提升形成恶意代码功能的高级视图的能力</p>
+<p><strong>全局变量|局部变量：</strong>全局变量可以被程序中任意函数访问和使用，局部变量只能在它被定义的函数中访问，在汇编代码中，全局变量通过内存地址引用，而局部变量通过栈地址引用。</p>
+<p><strong>识别if语句：</strong>有if语句一定存在跳转，但是有跳转不一定是if语句，if语句前有一个<code>cmp</code>指令用于对比条件，之后会有一个<code>jnz</code>指令来决定是否进行跳转。</p>
+<p><strong>for循环：</strong><code>for</code>循环是一个C变成使用的基本循环机制。<code>for</code>循环总之有四个组件：初始化、比较、执行命令、变量的递增或递减。</p>
+<p><strong>while循环：</strong><code>while</code>循环与<code>for</code>循环的汇编代码类似，但是区别在于while循环没有递增或者递减的代码。当一个<code>cmp</code>指令返回一定的值后<code>while</code>循环就会终止。</p>
 <a id="more"></a>
-<p>根据题目hint：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Papa brought me a packed present! let&apos;s open it.</span><br><span class="line"></span><br><span class="line">Download : http://pwnable.kr/bin/flag</span><br><span class="line"></span><br><span class="line">This is reversing task. all you need is binary</span><br></pre></td></tr></table></figure></p>
-<p>题目提示我们需要二进制文件，但是他给的文件的不是二进制文件吗</p>
-<p>用xdd命令查看flag的16进制数据：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">root@kali-linux:~/文档/PWN/pwnable.kr/4.flag<span class="comment"># xxd flag</span></span><br><span class="line">...</span><br><span class="line">$.....UPX!</span><br><span class="line">00051d90: 0000 0000 5550 5821 0d16 0807 19cc 204a  ....UPX!...... J</span><br><span class="line">00051da0: dbd8 21c5 3145 0100 5e70 0000 217c 0d00  ..!.1E..^p..!|..</span><br><span class="line">00051db0: 4919 0089 bc00 0000                      I.......</span><br></pre></td></tr></table></figure>
-<p>看到文件是upx的壳</p>
-<p>使用<code>upx -d flag</code>命令来去壳</p>
-<p>去壳后把文件丢到<code>IDA</code>里就可以看到flag了</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UPX...? sounds like a delivery service :)</span><br></pre></td></tr></table></figure>
+<p><strong>switch语句：</strong><code>switch</code>语句通常以两种方式被编译，使用if样式或者使用跳转表。跳转表是编译器对汇编代码做出的优化，一旦很多个<code>cmp</code>指令的数据成等差数列，则编译器会把跳转地址与数据联系起来做成跳转表。</p>
+<p><strong>函数调用约定：</strong>函数调用约定决定了函数调用发生的方式，这些约定包含了参数被放在栈上或寄存器中的次序，以及是由调用者还是被调用者负责在函数执行完成时清理栈。以下时常见的三种调用约定;</p>
+<ul>
+<li><code>cdecl</code>：这是最常用的调用约定之一，此约定下。参数从右至左被压入栈，当函数执行完成后由调用者清理栈。</li>
+<li><code>stdcall</code>：除了被调用者在函数执行完成之后清理栈之外，其他与<code>cdecl</code>约定非常类似。</li>
+<li><code>fastcall</code>：fastcall调用约定跨编译器时变化最多，但是整体上的工作情况时类似的，在此约定中，前一些参数（典型的是前两个）被传到寄存器中，备用的寄存器是EDX和ECX（微软fastcall约定），如果需要的话，剩下的参数再以从右至左的次序被加载到栈上，通常使用fastcall比其他约定更高效。</li>
+</ul>
+<p><strong>反汇编数组：</strong>在汇编代码中，数组是通过一个基地址作为起始点来进行访问的，每一个元素的大小并不总是明显的，但是可以通过看这个数组是如何被索引的来进行判断。</p>
+<p><strong>识别结构体：</strong>结构体和数组类似，在IDA中可以使用热键T来建立结构体的识别。</p>
+<h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab6-1"><a href="#Lab6-1" class="headerlink" title="Lab6-1"></a>Lab6-1</h3><p><strong>在这个实验中，你将分析在文件Lab06-01.exe中发现的恶意代码。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.由main函数调用的唯一子过程中发现的主要代码结构是什么？</strong></p>
+<p>可以由IDA的图形模式很简单的看出这是一个if语句的结构</p>
+<p><img src="https://i.loli.net/2019/03/06/5c7fcd9f62ae2.png" alt=""></p>
+<p><strong>2.位于0x40105F的子过程是什么？</strong></p>
+<p><code>printf</code></p>
+<p><strong>3.这个程序的目的是什么？</strong></p>
+<p>跟着程序的顺序走，先找到<code>main</code>函数：</p>
+<p><img src="https://i.loli.net/2019/03/06/5c7fd47640f98.png" alt=""></p>
+<p><code>main</code>函数中只有一处函数调用<code>sub_401000</code>，查看该函数的逻辑：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">.text:00401000 sub_401000      proc near               ; CODE XREF: _main+4↓p</span><br><span class="line">.text:00401000</span><br><span class="line">.text:00401000 var_4           = dword ptr -4</span><br><span class="line">.text:00401000</span><br><span class="line">.text:00401000                 push    ebp</span><br><span class="line">.text:00401001                 mov     ebp, esp</span><br><span class="line">.text:00401003                 push    ecx</span><br><span class="line">.text:00401004                 push    0               ; dwReserved</span><br><span class="line">.text:00401006                 push    0               ; lpdwFlags</span><br><span class="line">.text:00401008                 call    ds:InternetGetConnectedState</span><br><span class="line">.text:0040100E                 mov     [ebp+var_4], eax</span><br><span class="line">.text:00401011                 cmp     [ebp+var_4], 0</span><br><span class="line">.text:00401015                 jz      short loc_40102B</span><br><span class="line">.text:00401017                 push    offset aSuccessInterne ; &quot;Success: Internet Connection\n&quot;</span><br><span class="line">.text:0040101C                 call    sub_40105F</span><br><span class="line">.text:00401021                 add     esp, 4</span><br><span class="line">.text:00401024                 mov     eax, 1</span><br><span class="line">.text:00401029                 jmp     short loc_40103A</span><br><span class="line">.text:0040102B</span><br><span class="line">.text:0040102B loc_40102B:                             ; CODE XREF: sub_401000+15↑j</span><br><span class="line">.text:0040102B                 push    offset aError11NoInter ; &quot;Error 1.1: No Internet\n&quot;</span><br><span class="line">.text:00401030                 call    sub_40105F</span><br><span class="line">.text:00401035                 add     esp, 4</span><br><span class="line">.text:00401038                 xor     eax, eax</span><br><span class="line">.text:0040103A</span><br><span class="line">.text:0040103A loc_40103A:                             ; CODE XREF: sub_401000+29↑j</span><br><span class="line">.text:0040103A                 mov     esp, ebp</span><br><span class="line">.text:0040103C                 pop     ebp</span><br><span class="line">.text:0040103D                 retn</span><br><span class="line">.text:0040103D sub_401000      endp</span><br></pre></td></tr></table></figure>
+<p>可以从以上内容看到决定<code>jz</code>跳转的是函数<code>InternetGetConnectedState</code>，查阅MSDN发现此函数当存在一个可用的网络连接时返回值为1，ZF标志位为0，<code>jz</code>指令不执行，因此程序调用<code>printf</code>输出<code>&quot;Success: Internet Connection\n&quot;</code>否则输出<code>&quot;Error 1.1: No Internet\n&quot;</code>。因此可以得出判断这是一个用于测试网络连接状态的函数。</p>
+<h3 id="Lab6-2"><a href="#Lab6-2" class="headerlink" title="Lab6-2"></a>Lab6-2</h3><p><strong>分析在Lab06-02.exe中发现的恶意代码。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.main函数调用的第一个子过程执行了什么操作？</strong></p>
+<p>发现这道题的程序跟上一题是一模一样的，就是判断当前是否有网络连接。</p>
+<p><strong>2.位于0x40117F的子过程是什么？</strong></p>
+<p>还是跟上题一样，<code>printf()</code></p>
+<p><strong>3.被main函数调用的第二个子过程做了什么？</strong></p>
+<p>尝试下载<code>http://www.practicalmalwareanalysis.com/cc.htm</code>并解析此网页的注释部分。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.data:004070C4	0000002F	C	http://www.practicalmalwareanalysis.com/cc.htm</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ( Buffer != <span class="string">'&lt;'</span> || v2 != <span class="string">'!'</span> || v3 != <span class="string">'-'</span> || v4 != <span class="string">'-'</span> )</span><br><span class="line">      &#123;</span><br><span class="line">        sub_401271(aError23FailToG);</span><br><span class="line">        result = <span class="number">0</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">      &#123;</span><br><span class="line">        result = v5;</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>4.在这个子过程中使用了什么类型的代码结构？</strong></p>
+<p><code>if</code>语句的结构和数组，以下明显是一个数组的比较过程：</p>
+<p><img src="https://i.loli.net/2019/03/06/5c7fe867a4b16.png" alt=""></p>
+<p><strong>5.在这个程序中有任何基于网络的指示吗？</strong></p>
+<p>程序会尝试下载网页<code>http://www.practicalmalwareanalysis.com/cc.htm</code></p>
+<p><strong>6.这个恶意代码的目的是什么？</strong></p>
+<p>连接<code>http://www.practicalmalwareanalysis.com/cc.htm</code>用于远程命令和控制服务器。</p>
+<h3 id="Lab6-3"><a href="#Lab6-3" class="headerlink" title="Lab6-3"></a>Lab6-3</h3><p><strong>在这个实验中，我们会分析在文件Lab06-03.exe中发现恶意代码。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.在比较main函数与实验6-2的main函数调用。从main中调用的新函数是什么？</strong></p>
+<p><code>sub_401130</code></p>
+<p><strong>2.这个新的函数的参数是什么？</strong></p>
+<table>
+<thead>
+<tr>
+<th><code>char a1</code></th>
+<th><code>LPCSTR lpExistingFileName</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>从网页中解析出来的命令</td>
+<td>程序名</td>
+</tr>
+</tbody>
+</table>
+<p><strong>3.这个函数包含的主要代码结构是什么？</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.text:00401150                 mov     edx, [ebp+var_8]</span><br><span class="line">.text:00401153                 jmp     ds:off_4011F2[edx*4] ; switch jump</span><br></pre></td></tr></table></figure>
+<p>由这个跳转命令可以得知这里主要的代码结构是<code>switch</code>结构，采用跳转表。</p>
+<p><strong>4.这个函数能够做什么？</strong></p>
+<p>根据获取到的指令来执行不同的操作，比如创建目录<code>C:\\Temp</code>、拷贝文件<code>cc.exe</code>至目录<code>C:\\Temp</code>、删除文件、休眠100s、打印错误信息、删除文件。</p>
+<p><strong>5.在这个恶意代码中有什么本地特征吗？</strong></p>
+<p>创建目录<code>C:\\Temp</code>，创建文件<code>cc.exe</code>、注册表键<code>Software\Microsoft\Windows\CurrentVersion\Run</code></p>
+<p><strong>6.这个恶意代码的目的是什么？</strong></p>
+<p>根据网页注释中的命令来选择在目标主机上选择执行不同的功能。</p>
+<h3 id="Lab6-4"><a href="#Lab6-4" class="headerlink" title="Lab6-4"></a>Lab6-4</h3><p><strong>在这个实验中，我们会分析在文件Lab06-04.exe中发现的恶意代码。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.在实验6-3和实验6-4的main函数的调用之间的区别是什么？</strong></p>
+<p>函数地址发生了变化。</p>
+<p><strong>2.新的代码结构已经被添加到main中？</strong></p>
+<p>实验6-4的main函数中有一个for循环，而实验6-3是一个if判断语句：</p>
+<p><img src="https://i.loli.net/2019/03/06/5c7fe49b20616.png" alt=""></p>
+<p><strong>3.这个实验的解析HTML的函数和前面实验中的那些有什么区别？</strong></p>
+<p>这个实验中，此函数新增了一个参数作为函数<code>sprintf()</code>的参数</p>
+<p><code>sprintf(&amp;szAgent, aInternetExplor, a1);</code></p>
+<p><strong>4.这个程序会运行多久？（假设它以经连接到互联网）</strong></p>
+<p>Sleep函数的参数为</p>
+<p><img src="https://i.loli.net/2019/03/06/5c7fe545a0a81.png" alt=""></p>
+<p>此循环会执行1440次，因此程序会运行<code>1440*60s=1440m=24h=1d</code></p>
+<p>所以此程序会运行整整一天。</p>
+<p><strong>5.在这个恶意代码中有什么新的基于网络的迹象吗？</strong></p>
+<p>这道题需要细心，之前的<code>HTTP</code>头中的<code>User-Agent</code>使用的是<code>Internet Explorer 7.5/pma</code>，而现在是<code>Internet Explorer 7.5/pma%d</code></p>
+<p><strong>6.这个恶意代码的目的是什么？</strong></p>
+<p>在24小时内每一分钟连续尝试从网页上获取命令并执行。</p>
+<hr>
+<h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>
       
     </div>
     
@@ -488,7 +575,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>Post link:</strong>
-    <a href="https://hvnt3r.top/2018/09/flag-WriteUp-pwnable-kr-flag-软件脱壳反汇编/" title="flag_WriteUp(pwnable.kr_flag)软件脱壳反汇编">https://hvnt3r.top/2018/09/flag-WriteUp-pwnable-kr-flag-软件脱壳反汇编/</a>
+    <a href="https://hvnt3r.top/2019/03/识别汇编中的C代码结构/" title="识别汇编中的C代码结构">https://hvnt3r.top/2019/03/识别汇编中的C代码结构/</a>
   </li>
   <li class="post-copyright-license">
     <strong>Copyright Notice: </strong>
@@ -503,9 +590,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/PWN/" rel="tag"><i class="fa fa-tag"></i> PWN</a>
+            <a href="/tags/恶意代码分析/" rel="tag"><i class="fa fa-tag"></i> 恶意代码分析</a>
           
-            <a href="/tags/CTF/" rel="tag"><i class="fa fa-tag"></i> CTF</a>
+            <a href="/tags/汇编语言/" rel="tag"><i class="fa fa-tag"></i> 汇编语言</a>
+          
+            <a href="/tags/C语言/" rel="tag"><i class="fa fa-tag"></i> C语言</a>
           
         </div>
       
@@ -518,8 +607,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/09/2017中国高级持续性威胁（APT）研究报告读后感/" rel="next" title="2017中国高级持续性威胁（APT）研究报告读后感">
-                <i class="fa fa-chevron-left"></i> 2017中国高级持续性威胁（APT）研究报告读后感
+              <a href="/2019/03/IDA-Pro使用方法/" rel="next" title="IDA Pro使用方法">
+                <i class="fa fa-chevron-left"></i> IDA Pro使用方法
               </a>
             
           </div>
@@ -527,10 +616,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/10/CSAW-CTF-2016-PWN-warmup/" rel="prev" title="CSAW CTF 2016 PWN warmup">
-                CSAW CTF 2016 PWN warmup <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -689,7 +774,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#flag-WriteUp-pwnable-kr-flag-软件脱壳反汇编"><span class="nav-number">1.</span> <span class="nav-text">flag_WriteUp(pwnable.kr_flag)软件脱壳反汇编</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#IDA-Pro使用方法"><span class="nav-number">1.</span> <span class="nav-text">IDA Pro使用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#识别汇编中的C代码结构"><span class="nav-number">1.1.</span> <span class="nav-text">识别汇编中的C代码结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#课后练习"><span class="nav-number">1.2.</span> <span class="nav-text">课后练习</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab6-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">Lab6-1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab6-2"><span class="nav-number">1.2.2.</span> <span class="nav-text">Lab6-2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab6-3"><span class="nav-number">1.2.3.</span> <span class="nav-text">Lab6-3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab6-4"><span class="nav-number">1.2.4.</span> <span class="nav-text">Lab6-4</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#本章结束🎊"><span class="nav-number">1.3.</span> <span class="nav-text">本章结束🎊</span></a></li></ol></li></ol></div>
             
 
           </div>

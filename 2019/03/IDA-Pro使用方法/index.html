@@ -108,7 +108,7 @@
 <meta property="og:image" content="https://i.loli.net/2019/03/06/5c7f518b60a12.png">
 <meta property="og:image" content="https://i.loli.net/2019/03/06/5c7f51d7746b5.png">
 <meta property="og:image" content="https://i.loli.net/2019/03/05/5c7e6d5578066.png">
-<meta property="og:updated_time" content="2019-03-06T04:51:52.642Z">
+<meta property="og:updated_time" content="2019-03-06T11:42:28.509Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="IDA Pro使用方法">
 <meta name="twitter:description" content="IDA Pro使用方法 知识点IDA Pro（交互式反汇编器专业版）是一款极其强大的反汇编器，是许多恶意代码分析师、逆向工程师和漏洞分析师的首选。 IDA Pro接口： 图形接口：  文本模式：文本模式左侧部分被称为箭头窗口，显示了程序的非线性流程，实线标记的是无条件跳转，虚线标记了条件跳转，向上的箭头表示一个循环。 图形模式：图形模式中，箭头的颜色和方向显示程序的流程，红色表示一个条件跳转没有被">
@@ -524,7 +524,7 @@
 <p><strong>11.PSLIST导出函数做了什么？</strong></p>
 <p>函数伪C代码如下：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> __userpurge PSLIST@&lt;eax&gt;(<span class="keyword">char</span> a1@&lt;sil&gt;, <span class="keyword">int</span> a2, <span class="keyword">int</span> a3, <span class="keyword">char</span> *Str, <span class="keyword">int</span> a5)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">int</span> result; <span class="comment">// eax</span></span><br><span class="line"></span><br><span class="line">  dword_1008E5BC = <span class="number">1</span>;</span><br><span class="line">  result = sub_100036C3();</span><br><span class="line">  <span class="keyword">if</span> ( result )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">if</span> ( <span class="built_in">strlen</span>(Str) )</span><br><span class="line">      result = sub_1000664C(a1, <span class="number">0</span>, Str);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">      result = sub_10006518();</span><br><span class="line">  &#125;</span><br><span class="line">  dword_1008E5BC = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>其中，函数<code>sub_100036C3()`</code>用于判断操作系统和操作系统版本`，当操作系统版本符合要求时，程序通过CreatToolhelp32Snapshot函数来获取当前正在运行的进程的列表，结合导出函数的名字我们可以得知这是一个获取计算机运行进程列表的函数。</p>
+<p>其中，函数<code>sub_100036C3()</code>用于判断操作系统和操作系统版本，当操作系统版本符合要求时，程序通过CreatToolhelp32Snapshot函数来获取当前正在运行的进程的列表，结合导出函数的名字我们可以得知这是一个获取计算机运行进程列表的函数。</p>
 <p><strong>12.使用图模式来绘制出对sub_10004E79的交叉引用图。当进入这个函数时，哪个API函数可能被调用？仅仅基于这些API函数，你会如何重命名这个函数？</strong></p>
 <p><img src="https://i.loli.net/2019/03/05/5c7dea0d9beb1.png" alt=""></p>
 <p>API函数如图粉色方块内容。</p>
@@ -657,6 +657,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2019/03/识别汇编中的C代码结构/" rel="prev" title="识别汇编中的C代码结构">
+                识别汇编中的C代码结构 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -736,7 +740,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-count">43</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -758,7 +762,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-count">42</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -849,7 +853,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">52k</span>
+    <span title="Site words total count">54k</span>
   
 </div>
 

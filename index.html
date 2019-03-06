@@ -291,6 +291,200 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/03/识别汇编中的C代码结构/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/识别汇编中的C代码结构/" itemprop="url">识别汇编中的C代码结构</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-06T14:29:06+08:00">
+                2019-03-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
+                    <span itemprop="name">二进制安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/03/识别汇编中的C代码结构/" class="leancloud_visitors" data-flag-title="识别汇编中的C代码结构">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  2k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="IDA-Pro使用方法"><a href="#IDA-Pro使用方法" class="headerlink" title="IDA Pro使用方法"></a>IDA Pro使用方法</h1><hr>
+<h2 id="识别汇编中的C代码结构"><a href="#识别汇编中的C代码结构" class="headerlink" title="识别汇编中的C代码结构"></a>识别汇编中的C代码结构</h2><p>本章将通过讨论超过十种的不同的C代码结构来分析不同的汇编代码，帮助我们快速的提升形成恶意代码功能的高级视图的能力</p>
+<p><strong>全局变量|局部变量：</strong>全局变量可以被程序中任意函数访问和使用，局部变量只能在它被定义的函数中访问，在汇编代码中，全局变量通过内存地址引用，而局部变量通过栈地址引用。</p>
+<p><strong>识别if语句：</strong>有if语句一定存在跳转，但是有跳转不一定是if语句，if语句前有一个<code>cmp</code>指令用于对比条件，之后会有一个<code>jnz</code>指令来决定是否进行跳转。</p>
+<p><strong>for循环：</strong><code>for</code>循环是一个C变成使用的基本循环机制。<code>for</code>循环总之有四个组件：初始化、比较、执行命令、变量的递增或递减。</p>
+<p><strong>while循环：</strong><code>while</code>循环与<code>for</code>循环的汇编代码类似，但是区别在于while循环没有递增或者递减的代码。当一个<code>cmp</code>指令返回一定的值后<code>while</code>循环就会终止。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/识别汇编中的C代码结构/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/03/IDA-Pro使用方法/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2010,197 +2204,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2018/10/二进制安全之格式化字符串漏洞/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hvnt3r">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hvnt3r's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/10/二进制安全之格式化字符串漏洞/" itemprop="url">二进制安全之格式化字符串漏洞</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-30T17:06:23+08:00">
-                2018-10-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
-                    <span itemprop="name">二进制安全</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2018/10/二进制安全之格式化字符串漏洞/" class="leancloud_visitors" data-flag-title="二进制安全之格式化字符串漏洞">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-				 <span>°C</span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  1.5k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  6
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="二进制安全之格式化字符串漏洞"><a href="#二进制安全之格式化字符串漏洞" class="headerlink" title="二进制安全之格式化字符串漏洞"></a>二进制安全之格式化字符串漏洞</h1><p>相信每位程序员都写过如下代码：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello world!"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>是的，这应该是每个程序员写的第一个程序，其中<code>printf()</code>，也是一个在C语言中的较为脆弱的函数，我们今天就来探讨一下格式化字符串漏洞。有一点要说的是由于现在的很多编译器都变得更加智能且更加注重安全性，格式化字符串等容易出现问题的函数都会由编译器自动为其添加相应的check函数从而保证函数的安全性，因此格式化字符串漏洞是由很小的可能性会出现在真实的生产环境中的，可能出现这个漏洞最多的情形就是大大小小形式各异的CTF赛题中了，但是由于此漏洞历史悠久并且较为有趣，如果产生此漏洞的话危害也不小，还是有必要学习一下的。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/10/二进制安全之格式化字符串漏洞/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2255,7 +2258,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-count">43</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -2277,7 +2280,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-count">42</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -2352,7 +2355,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">52k</span>
+    <span title="Site words total count">54k</span>
   
 </div>
 
