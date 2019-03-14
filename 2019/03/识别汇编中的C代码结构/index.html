@@ -88,23 +88,23 @@
 
 
 
-<meta name="description" content="IDA Pro使用方法 识别汇编中的C代码结构本章将通过讨论超过十种的不同的C代码结构来分析不同的汇编代码，帮助我们快速的提升形成恶意代码功能的高级视图的能力 全局变量|局部变量：全局变量可以被程序中任意函数访问和使用，局部变量只能在它被定义的函数中访问，在汇编代码中，全局变量通过内存地址引用，而局部变量通过栈地址引用。 识别if语句：有if语句一定存在跳转，但是有跳转不一定是if语句，if语句前">
+<meta name="description" content="识别汇编中的C代码结构 知识点本章将通过讨论超过十种的不同的C代码结构来分析不同的汇编代码，帮助我们快速的提升形成恶意代码功能的高级视图的能力 全局变量|局部变量：全局变量可以被程序中任意函数访问和使用，局部变量只能在它被定义的函数中访问，在汇编代码中，全局变量通过内存地址引用，而局部变量通过栈地址引用。 识别if语句：有if语句一定存在跳转，但是有跳转不一定是if语句，if语句前有一个cmp指令">
 <meta name="keywords" content="恶意代码分析,汇编语言,C语言">
 <meta property="og:type" content="article">
 <meta property="og:title" content="识别汇编中的C代码结构">
 <meta property="og:url" content="https://hvnt3r.top/2019/03/识别汇编中的C代码结构/index.html">
 <meta property="og:site_name" content="Hvnt3r&#39;s Blog">
-<meta property="og:description" content="IDA Pro使用方法 识别汇编中的C代码结构本章将通过讨论超过十种的不同的C代码结构来分析不同的汇编代码，帮助我们快速的提升形成恶意代码功能的高级视图的能力 全局变量|局部变量：全局变量可以被程序中任意函数访问和使用，局部变量只能在它被定义的函数中访问，在汇编代码中，全局变量通过内存地址引用，而局部变量通过栈地址引用。 识别if语句：有if语句一定存在跳转，但是有跳转不一定是if语句，if语句前">
+<meta property="og:description" content="识别汇编中的C代码结构 知识点本章将通过讨论超过十种的不同的C代码结构来分析不同的汇编代码，帮助我们快速的提升形成恶意代码功能的高级视图的能力 全局变量|局部变量：全局变量可以被程序中任意函数访问和使用，局部变量只能在它被定义的函数中访问，在汇编代码中，全局变量通过内存地址引用，而局部变量通过栈地址引用。 识别if语句：有if语句一定存在跳转，但是有跳转不一定是if语句，if语句前有一个cmp指令">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://i.loli.net/2019/03/06/5c7fcd9f62ae2.png">
 <meta property="og:image" content="https://i.loli.net/2019/03/06/5c7fd47640f98.png">
 <meta property="og:image" content="https://i.loli.net/2019/03/06/5c7fe867a4b16.png">
 <meta property="og:image" content="https://i.loli.net/2019/03/06/5c7fe49b20616.png">
 <meta property="og:image" content="https://i.loli.net/2019/03/06/5c7fe545a0a81.png">
-<meta property="og:updated_time" content="2019-03-06T15:50:08.469Z">
+<meta property="og:updated_time" content="2019-03-10T06:54:50.500Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="识别汇编中的C代码结构">
-<meta name="twitter:description" content="IDA Pro使用方法 识别汇编中的C代码结构本章将通过讨论超过十种的不同的C代码结构来分析不同的汇编代码，帮助我们快速的提升形成恶意代码功能的高级视图的能力 全局变量|局部变量：全局变量可以被程序中任意函数访问和使用，局部变量只能在它被定义的函数中访问，在汇编代码中，全局变量通过内存地址引用，而局部变量通过栈地址引用。 识别if语句：有if语句一定存在跳转，但是有跳转不一定是if语句，if语句前">
+<meta name="twitter:description" content="识别汇编中的C代码结构 知识点本章将通过讨论超过十种的不同的C代码结构来分析不同的汇编代码，帮助我们快速的提升形成恶意代码功能的高级视图的能力 全局变量|局部变量：全局变量可以被程序中任意函数访问和使用，局部变量只能在它被定义的函数中访问，在汇编代码中，全局变量通过内存地址引用，而局部变量通过栈地址引用。 识别if语句：有if语句一定存在跳转，但是有跳转不一定是if语句，if语句前有一个cmp指令">
 <meta name="twitter:image" content="https://i.loli.net/2019/03/06/5c7fcd9f62ae2.png">
 
 
@@ -432,8 +432,8 @@
       
 
       
-        <h1 id="IDA-Pro使用方法"><a href="#IDA-Pro使用方法" class="headerlink" title="IDA Pro使用方法"></a>IDA Pro使用方法</h1><hr>
-<h2 id="识别汇编中的C代码结构"><a href="#识别汇编中的C代码结构" class="headerlink" title="识别汇编中的C代码结构"></a>识别汇编中的C代码结构</h2><p>本章将通过讨论超过十种的不同的C代码结构来分析不同的汇编代码，帮助我们快速的提升形成恶意代码功能的高级视图的能力</p>
+        <h1 id="识别汇编中的C代码结构"><a href="#识别汇编中的C代码结构" class="headerlink" title="识别汇编中的C代码结构"></a>识别汇编中的C代码结构</h1><hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>本章将通过讨论超过十种的不同的C代码结构来分析不同的汇编代码，帮助我们快速的提升形成恶意代码功能的高级视图的能力</p>
 <p><strong>全局变量|局部变量：</strong>全局变量可以被程序中任意函数访问和使用，局部变量只能在它被定义的函数中访问，在汇编代码中，全局变量通过内存地址引用，而局部变量通过栈地址引用。</p>
 <p><strong>识别if语句：</strong>有if语句一定存在跳转，但是有跳转不一定是if语句，if语句前有一个<code>cmp</code>指令用于对比条件，之后会有一个<code>jnz</code>指令来决定是否进行跳转。</p>
 <p><strong>for循环：</strong><code>for</code>循环是一个C变成使用的基本循环机制。<code>for</code>循环总之有四个组件：初始化、比较、执行命令、变量的递增或递减。</p>
@@ -617,6 +617,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2019/03/分析恶意Windows程序/" rel="prev" title="分析恶意Windows程序">
+                分析恶意Windows程序 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -696,7 +700,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-count">45</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -718,7 +722,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-count">46</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -774,7 +778,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#IDA-Pro使用方法"><span class="nav-number">1.</span> <span class="nav-text">IDA Pro使用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#识别汇编中的C代码结构"><span class="nav-number">1.1.</span> <span class="nav-text">识别汇编中的C代码结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#课后练习"><span class="nav-number">1.2.</span> <span class="nav-text">课后练习</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab6-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">Lab6-1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab6-2"><span class="nav-number">1.2.2.</span> <span class="nav-text">Lab6-2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab6-3"><span class="nav-number">1.2.3.</span> <span class="nav-text">Lab6-3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab6-4"><span class="nav-number">1.2.4.</span> <span class="nav-text">Lab6-4</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#本章结束🎊"><span class="nav-number">1.3.</span> <span class="nav-text">本章结束🎊</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#识别汇编中的C代码结构"><span class="nav-number">1.</span> <span class="nav-text">识别汇编中的C代码结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#知识点"><span class="nav-number">1.1.</span> <span class="nav-text">知识点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#课后练习"><span class="nav-number">1.2.</span> <span class="nav-text">课后练习</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab6-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">Lab6-1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab6-2"><span class="nav-number">1.2.2.</span> <span class="nav-text">Lab6-2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab6-3"><span class="nav-number">1.2.3.</span> <span class="nav-text">Lab6-3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab6-4"><span class="nav-number">1.2.4.</span> <span class="nav-text">Lab6-4</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#本章结束🎊"><span class="nav-number">1.3.</span> <span class="nav-text">本章结束🎊</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -809,7 +813,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">54k</span>
+    <span title="Site words total count">59.2k</span>
   
 </div>
 

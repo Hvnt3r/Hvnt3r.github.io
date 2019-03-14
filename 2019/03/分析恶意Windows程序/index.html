@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="恶意代码分析,Windows恶意代码," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="分析恶意Windows程序 知识点多数恶意代码运行在Windows上，因此对Windows变成概念的深刻理解会帮助我们识别出恶意代码在主机上感染的迹象，本章会介绍一些恶意代码使用Windows功能的独特方式，并且会讨论恶意代码是如何使用内核模式来实现额外功能与自身隐藏的。 Windows API：Windows API是一个广泛的功能集合，管理着恶意代码与微软程序库之间的交互方式，Windows">
+<meta name="keywords" content="恶意代码分析,Windows恶意代码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分析恶意Windows程序">
+<meta property="og:url" content="https://hvnt3r.top/2019/03/分析恶意Windows程序/index.html">
+<meta property="og:site_name" content="Hvnt3r&#39;s Blog">
+<meta property="og:description" content="分析恶意Windows程序 知识点多数恶意代码运行在Windows上，因此对Windows变成概念的深刻理解会帮助我们识别出恶意代码在主机上感染的迹象，本章会介绍一些恶意代码使用Windows功能的独特方式，并且会讨论恶意代码是如何使用内核模式来实现额外功能与自身隐藏的。 Windows API：Windows API是一个广泛的功能集合，管理着恶意代码与微软程序库之间的交互方式，Windows">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://i.loli.net/2019/03/14/5c89b1669cc17.png">
+<meta property="og:image" content="https://i.loli.net/2019/03/14/5c89b42d2d812.png">
+<meta property="og:updated_time" content="2019-03-14T12:30:52.140Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="分析恶意Windows程序">
+<meta name="twitter:description" content="分析恶意Windows程序 知识点多数恶意代码运行在Windows上，因此对Windows变成概念的深刻理解会帮助我们识别出恶意代码在主机上感染的迹象，本章会介绍一些恶意代码使用Windows功能的独特方式，并且会讨论恶意代码是如何使用内核模式来实现额外功能与自身隐藏的。 Windows API：Windows API是一个广泛的功能集合，管理着恶意代码与微软程序库之间的交互方式，Windows">
+<meta name="twitter:image" content="https://i.loli.net/2019/03/14/5c89b1669cc17.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://hvnt3r.top/2019/03/分析恶意Windows程序/"/>
+
+
+
+
+
+  <title>分析恶意Windows程序 | Hvnt3r's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband">
+	<a href="https://github.com/Hvnt3r"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+	</div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta custom-logo">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hvnt3r's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">让我们来猎杀那些陷入黑暗中的人吧-Shauna Vayne</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-主🐷页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            主🐷页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-系列文章💎">
+          <a href="/series/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            系列文章💎
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于我😎">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于我😎
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签👀">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签👀
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-分类👅">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类👅
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-所有文章📖">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            所有文章📖
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-友情链接👥">
+          <a href="/friends/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-link"></i> <br />
+            
+            友情链接👥
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/03/分析恶意Windows程序/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">分析恶意Windows程序</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-10T14:53:48+08:00">
+                2019-03-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
+                    <span itemprop="name">二进制安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/03/分析恶意Windows程序/" class="leancloud_visitors" data-flag-title="分析恶意Windows程序">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  3.8k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  13
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="分析恶意Windows程序"><a href="#分析恶意Windows程序" class="headerlink" title="分析恶意Windows程序"></a>分析恶意Windows程序</h1><hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>多数恶意代码运行在Windows上，因此对Windows变成概念的深刻理解会帮助我们识别出恶意代码在主机上感染的迹象，本章会介绍一些恶意代码使用Windows功能的独特方式，并且会讨论恶意代码是如何使用内核模式来实现额外功能与自身隐藏的。</p>
+<p><strong>Windows API：</strong>Windows API是一个广泛的功能集合，管理着恶意代码与微软程序库之间的交互方式，Windows  API使用他自己的名字。例如DWORD和WORD类型分别标识32位与16位无符号整数。标准C类型如int、short等通常并不使用。Windows总体上使用匈牙利表达法，作为API函数的标识符，这个表达式使用一个前缀命名，如32位无符号整数变量会以dw开头。</p>
+<a id="more"></a>
+<table>
+<thead>
+<tr>
+<th>类型和前缀</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WORD (w)</td>
+<td>一个16位的无符号数值</td>
+</tr>
+<tr>
+<td>DWORD (dw)</td>
+<td>一个双字节、32位的无符号数值</td>
+</tr>
+<tr>
+<td>Handles (H)</td>
+<td>一个对象索引，句柄中存储的信息并没有文档化，而这一句句柄应该只被Windows API来操作。</td>
+</tr>
+<tr>
+<td>Long Pointer (L)</td>
+<td>一个指向零一类型的指针，例如LPByte是指向字节的指针，LPCSTR是一个执行字符串的指针，字符串通常是由LP作为前缀的，因为他们实际上是指针。偶尔也会看到Pointer（P）而不是LP作为另一类型的前缀，在32位系统里，他们和LP是一样的。</td>
+</tr>
+<tr>
+<td>Callback</td>
+<td>表示一个会被Windows API调用的函数。</td>
+</tr>
+</tbody>
+</table>
+<p><strong>句柄：</strong>句柄是在此操作系统中被打开或者被创建的项，句柄应用对象或者地址的情况很像指针你，但是与指针不同，不能用于数学操作。</p>
+<p><strong>文件系统函数：</strong>微软提供了多个函数来访问文件系统</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CreateFile</td>
+<td>这个函数被用来创建或者打开文件。它可以打开已经存在的文件，管道，流以及IO设备，还能创建新的文件。</td>
+</tr>
+<tr>
+<td>ReadFile\</td>
+<td>WriteFile</td>
+<td>这些函数被用来对文件进行读和写。</td>
+</tr>
+<tr>
+<td>CreateFileMapping\</td>
+<td>MapViewOfFile</td>
+<td>文件映射经常被恶意代码作者使用，因为他们允许将一个文件加载到内存中，以便操作简单，CreateFileMapping函数负责从磁盘上加载一个文件到内存中，MapViewOfFile函数则返回一个指向映射的基地址指针，在文件中的任意位置进行读取和写入。</td>
+</tr>
+</tbody>
+</table>
+<p><strong>特殊文件：</strong>Windows中有一些特殊的文件无法通过盘符和文件夹访问，但是这些文件可能提供对系统硬件和内部数据更强的访问能力，特殊文件可以作为字符串参数传递给热河文件操作函数，并像普通文件一样进行操作，有如下特殊文件类型：</p>
+<table>
+<thead>
+<tr>
+<th>特殊文件类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>共享文件</td>
+<td>共享文件是以<code>\\serverName\share</code>或<code>\\?\servername\share</code>开头命名的特殊文件他们用来访问保存在共享目录中的目录或文件。<code>\\?\</code>前缀告诉操作系统禁用所有的字符串解析并允许访问长文件名。</td>
+</tr>
+<tr>
+<td>通过名字空间访问</td>
+<td>名字空间可以被认为是固定数目的文件夹，每一个文件夹中八平村不同类型的对象。底层的名字空间是NT名字空间，以前缀<code>\</code>开始。以前缀<code>\\.\</code>开始的Win32设备名字空间，可以被恶意代码用来访问物理设备，并且像一个文件进行读写操作。例如恶意代码使用<code>\Device\PhysicalMemory</code>来直接访问物理内存，这允许用户空间程序写到内核空间中。这个技术已经被恶意代码用来修改内核，并隐藏用户空间的程序。</td>
+</tr>
+<tr>
+<td>备用数据流</td>
+<td>备用数据流（ADS）特性允许附加数据到一个已存在的NTFS文件中，相当于添加一个文件到另一个文件中，这些额外数据在列一个目录时不会被显示出来，在显示文件内容时也不显示，只有在你访问流时才能显示。ADS数据流根据约定<code>normalFile.txt:Stream:$DATA</code>来命名，这允许一个程序去读写一个流。</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Windows注册表：</strong>注册表用来保存操作系统与程序的配置信息，是揭示恶意代码感染迹象的很好来源，注册表有以下几个关键术语：</p>
+<ul>
+<li>根键：注册表被划分为成为根键的五个顶层节</li>
+<li>子键：一个子键就像是一个文件夹中的子文件夹</li>
+<li>键：一个键是一个注册表中的文件夹</li>
+<li>值项：一个值项是一个配对的名字或值</li>
+<li>值或数据：值或数据是存储在注册表项中的数据</li>
+</ul>
+<p><strong>注册表根键：</strong>注册表被划分为如下5个根键：</p>
+<table>
+<thead>
+<tr>
+<th>根键名称</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HKEY_LOCAL_MACHINE (HKLM)</td>
+<td>保存对本地机器的全局设置</td>
+</tr>
+<tr>
+<td>HKEY_CURRENT_USER (HKCU)</td>
+<td>保存对当前用户的特定设置</td>
+</tr>
+<tr>
+<td>HKEY_CLASS_ROOT</td>
+<td>保存定义的类型信息</td>
+</tr>
+<tr>
+<td>HKEY_CURRENT_CONFIG</td>
+<td>保存关于当前硬件的设置</td>
+</tr>
+<tr>
+<td>HKEY_USERS</td>
+<td>定义默认用户、新用户以及以前用户的配置</td>
+</tr>
+</tbody>
+</table>
+<p>一个常用的子键：<code>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run</code>这个子键包含了当一个用户登陆时被自动启动的可执行程序，恶意代码可能会向次子键中添加键值来实现恶意代码的持久化驻留。</p>
+<p><strong>常用的注册表函数：</strong>以下是一些常见的注册表函数：</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RegOpenKeyEx</td>
+<td>打开一个注册表进行编辑和查询。有些函数允许你查询和编辑一个注册表键而不用先打开它，但是大多数程序还是会先使用这个函数</td>
+</tr>
+<tr>
+<td>RegSetValueEx</td>
+<td>添加一个新值到注册表，并设置它的数值</td>
+</tr>
+<tr>
+<td>RegSetValue</td>
+<td>返回注册表中一个值项的数值</td>
+</tr>
+</tbody>
+</table>
+<p><strong>注册表脚本：</strong>注册表脚本以<code>.reg</code>为文件后缀，当用户双击此文件时，他会自动恩据自身的内容来修改注册表，此类文件内容类似如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Windows Registry Editer Version 5.00</span><br><span class="line"></span><br><span class="line">[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run]</span><br><span class="line">&quot;MaliciousValue&quot;=&quot;C:\Windows\evil.exe</span><br></pre></td></tr></table></figure>
+<p><strong>伯克利兼容套接字：</strong>伯克利兼容套接字的网络功能是由Windows中的Winsock库实现的，主要在<code>ws2_32.dll</code>中。在所有的库函数中，<code>socket</code>、<code>connect</code>、<code>bind</code>、<code>listen</code>、<code>accept</code>、<code>send</code>和<code>recv</code>是最常用的，如下是这些函数的描述：</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>socket</td>
+<td>创建一个套接字</td>
+</tr>
+<tr>
+<td>bind</td>
+<td>将一个套接字绑定到一个特定端口</td>
+</tr>
+<tr>
+<td>listen</td>
+<td>一个套接字即将进入监听，等待入站连接</td>
+</tr>
+<tr>
+<td>accept</td>
+<td>向一个远程套接字打开一个连接，并接收连接</td>
+</tr>
+<tr>
+<td>connect</td>
+<td>向一个远程套接字打开一个连接，远程套接字必须在等待连接</td>
+</tr>
+<tr>
+<td>recv</td>
+<td>从远程套接字接收数据</td>
+</tr>
+<tr>
+<td>send</td>
+<td>发送数据至远程套接字</td>
+</tr>
+</tbody>
+</table>
+<p><strong>WinINET API：</strong>这是一个保存在<code>Wininet.dll</code>中的比伯克利套接字更高一层的API，实现了应用层的协议，函数如下：</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>InternetOpen</td>
+<td>初始化一个到互联网的连接</td>
+</tr>
+<tr>
+<td>InternetOpenURL</td>
+<td>访问一个URL</td>
+</tr>
+<tr>
+<td>InternetReadFile</td>
+<td>从互联网中下载数据</td>
+</tr>
+</tbody>
+</table>
+<p><strong>进程：</strong>一个进程是Windows正在执行的程序，Windows使用进程作为管理资源的容器。</p>
+<p><strong>创建进程：</strong>恶意代码最常使用<code>CreatPrcess</code>来创建一个进程，这个函数有很多参数，并且调用者有很多控制它如何被创建的方法。</p>
+<p><strong>线程：</strong>线程是执行代码的容器，线程才是Windows操作系统真正要执行的内容。线程是被CPU执行的独立的指令序列，而不需要等待其他的线程。</p>
+<p><strong>创建线程：</strong><code>CreateThread</code>函数被用来创建一个新线程。函数的调用者指定一个调用地址。</p>
+<p><strong>互斥量：</strong>互斥量是全局对象，用于协调多个进程和线程，其主要控制共享资源段额访问，并且经常被恶意代码所使用，同一时刻，只有一个线程拥有一个互斥量。线程通过一个对<code>WaitForSingleObject</code>的调用来获取对互斥量的访问，当一个线程完成对互斥量的使用后，使用<code>ReleaseMutex</code>函数来释放互斥量。一个互斥量由<code>CreateMutex</code>函数进行创建，进程可以通过<code>OpenMutex</code>来调用获取另一个进程中互斥量的句柄。</p>
+<p><strong>服务：</strong>恶意代码执行附加代码的另一种方式是将他们以服务形式安装，Windows允许通过使用服务，来使任务作为后台应用程序运行，而不需要他们自己的进程或线程，代码被Windows服务管理器调度和运行，但是没有用户的输入。下列是一些关于服务的Windows API 函数：</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OpenSCManager</td>
+<td>返回一个服务控制管理器的句柄，它被用来进行所有后续与服务相关的函数的调用。所有要和服务交互的代码都会调用这个函数。</td>
+</tr>
+<tr>
+<td>CreateServices</td>
+<td>添加一个新服务到服务控制管理器，并允许调用者指定服务是否在引导使自动启动或者必须手动启动。</td>
+</tr>
+<tr>
+<td>StartService</td>
+<td>启动一个服务，并且仅在服务被设置成手动启动时使用。</td>
+</tr>
+</tbody>
+</table>
+<p><strong>组件对象模型：</strong>微软组件对象模型（COM）是一个接口标准，它使得不同软件组件在不知道其他代码的接口规范时相互之间可以调用。每一个使用COM的线程，必须在调用任何其他COM库函数之前，至少调用一次<code>OleInitialize</code>或<code>ConInitializeEx</code>函数。所以，我们可以通过搜索程序的这两个调用来判断程序是否使用了COM功能。</p>
+<p><strong>COM服务器恶意代码：</strong>有些恶意代码通过实现一个恶意COM服务器来实现监控互联网流量，跟踪浏览器使用并不使用恶意代码自身的进程，这个服务器很容易被检测，因为它包含如下的函数：</p>
+<p><code>DlCanUnloadNow</code>、<code>DllGetClassObject</code>、<code>DllInstall</code>、<code>DllRegisterServer</code>、<code>DllUnregisterServer</code>。</p>
+<p><strong>内核与用户模式：</strong>几乎所有代码都运行在用户模式，除了操作系统和硬件驱动运行在内核模式，通常，用户模式不能直接访问硬件，并且智能访问CPU上多有寄存器和可用指令的一个子集，为了在用户模式下改变内核中的状态，你必须依赖Windows API。所有运行在内核的进程共享资源和内存地址。内核模式的代码有更少的安全检查。</p>
+<p><strong>原生API：</strong>原声API使用来和Windows进行交互的底层API，多用于恶意代码，调用原生API可以绕过普通的Windows API。</p>
+<h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab7-1"><a href="#Lab7-1" class="headerlink" title="Lab7-1"></a>Lab7-1</h3><p><strong>分析在文件Lab07-01.exe中发现的恶意代码。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.当计算机重启后，这个程序如何确保他的继续运行（达到持久化驻留）？</strong></p>
+<p>通过分析恶意代码<code>main</code>函数看到如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lea     eax, [esp+10h+ServiceStartTable]</span><br><span class="line">mov     [esp+10h+ServiceStartTable.lpServiceName], offset aMalservice ; &quot;MalService&quot;</span><br><span class="line">push    eax             ; lpServiceStartTable</span><br></pre></td></tr></table></figure>
+<p>可见这个程序通过创建一个名为<code>MalService</code>的服务来实现持久化驻留。</p>
+<p><strong>2.为什么这个程序会使用一个互斥量？</strong></p>
+<p>程序通过使用<code>HGL345</code>作为互斥量来防止程序对服务的重复创建。</p>
+<p><strong>3.可以用来检测这个程序的基于主机的特征是什么？</strong></p>
+<p>互斥量<code>HGL345</code></p>
+<p>创建服务<code>MalService</code></p>
+<p><strong>4.检测这个恶意代码的基于网络的特征是什么？</strong></p>
+<p>程序使用<code>Internet Explorer 8.0</code>对<code>http://www.malwareanalysisbook.com</code>发起连接。</p>
+<p><strong>5.这个程序的目的是什么？</strong></p>
+<p>程序创建20个线程对<code>http://www.malwareanalysisbook.com</code>建立远程连接。可能使为了发动DDOS攻击。</p>
+<p><strong>6.这个程序什么时候完成执行？</strong></p>
+<p>从2100年开始就不会停止。</p>
+<h3 id="Lab7-2"><a href="#Lab7-2" class="headerlink" title="Lab7-2"></a>Lab7-2</h3><p><strong>分析在文件Lab07-02.exe中发现的恶意代码。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.这个程序如何完成持久化驻留？</strong></p>
+<p>本程序无持久化驻留措施。</p>
+<p><strong>2.这个程序的目的是什么？</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.data:00403010 psz:                                    ; DATA XREF: _main+3C↑o</span><br><span class="line">.data:00403010                 text &quot;UTF-16LE&quot;, &apos;http://www.malwareanalysisbook.com/ad.html&apos;,0</span><br></pre></td></tr></table></figure>
+<p>通过查看函数参数 <code>CoCreateInstance(&amp;rclsid, 0, 4u, &amp;riid, &amp;ppv);</code>，<code>rclsid</code>为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">?? ?? ?? ?? 00 00 00 00  01 DF 02 00 00 00 00 00  ????............</span><br><span class="line">C0 00 00 00 00 00 00 46  61 16 0C D3 AF CD D0 11  .......Fa..盈 托 .</span><br></pre></td></tr></table></figure>
+<p>按照大端序的顺序可得<code>rclsid</code>为<code>0002DF01-0000-0000-C000-000000000046</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">C0 00 00 00 00 00 00 46  61 16 0C D3 AF CD D0 11  .......Fa..盈 托 .</span><br><span class="line">8A 3E 00 C0 4F C9 E2 6E  FF FF FF FF 80 11 40 00  ...繭 赦 n....€.@.</span><br></pre></td></tr></table></figure>
+<p>同理<code>riid</code>为<code>D30C1661-CDAF-11D0-8A3E-00C04FC9E26E</code></p>
+<p>在注册表中查询这两个值：</p>
+<p><img src="https://i.loli.net/2019/03/14/5c89b1669cc17.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/14/5c89b42d2d812.png" alt=""></p>
+<p>因此这个此程序使用IE打开一个ad.html的页面。</p>
+<p><strong>3.这个程序什么时候完成执行？</strong></p>
+<p>显示广告之后便执行完成。</p>
+<h3 id="Lab7-3"><a href="#Lab7-3" class="headerlink" title="Lab7-3"></a>Lab7-3</h3><p><strong>对于这个实验，我们在执行前获取到恶意的可执行程序，Lab07-03.exe，以及DLL，Lab07-03.dll。声明这一点很重要，这是因为恶意代码一旦运行可能会发生改变。两个文件在受害者机器上的同一个目录下被发现，如果你运行这个程序，你应该确保两个此文件在分析机器上的同一个目录中。一个以127开始的IP字符串连接到了本地机器。（在这个恶意代码的实际版本中，这个地址会连接到一个远程机器，但是我们已经将他设置成连接本地主机来保护你。）</strong></p>
+<p><strong>这个实验可能比前面的那些有更大的挑战。你将需要使用静态额动态的方法的组合，并聚焦在全局视图上，避免陷入细节。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.这个程序如何完成持久化驻留，来确保在计算机重启后它能继续运行？</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.data:00403010 dword_403010    dd &apos;nrek&apos;               ; DATA XREF: sub_4010A0+EC↑o</span><br><span class="line">.data:00403010                                         ; _main+1A8↑r</span><br><span class="line">.data:00403014 dword_403014    dd &apos;231e&apos;               ; DATA XREF: _main+1B9↑r</span><br><span class="line">.data:00403018 dword_403018    dd &apos;lld.&apos;               ; DATA XREF: _main+1C2↑r</span><br><span class="line">.data:0040301C dword_40301C    dd 0</span><br></pre></td></tr></table></figure>
+<p>通过函数的调用，可以看到以上字符串拼接起来就是<code>kerne123.dll</code>，程序使用<code>CopyFile</code>函数创建<code>C:\\windows\\system32\\kerne132.dll</code></p>
+<p><strong>2.这个恶意代码的两个明显的基于主机的特征是什么？</strong></p>
+<ul>
+<li>创建了一个文件<code>C:\\windows\\system32\\kerne132.dll</code></li>
+<li>创建了一个互斥量<code>SADFHUHF</code></li>
+</ul>
+<p><strong>3.这个程序的目的是什么？</strong></p>
+<p>程序将所有用到此<code>DLL</code>的程序进行修改，并向<code>Lab07-03.dll</code>文件中新增导入表，使得原本<code>kernel32.dll</code>的导出函数在此DLL文件中同样适用。通过这个<code>DLL</code>文件作为后门来执行命令或者进行休眠。</p>
+<p><strong>4.一旦这个恶意代码被安装，你如何移除它？</strong></p>
+<p>通过PE系统修改正常的<code>kernel32.dll</code>文件为<code>kerne123.dll</code>并替换掉恶意文件，或者通过脚本将恶意代码修改的数据改成正常数据。</p>
+<hr>
+<h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>您的支持是我最大的动力🍉</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="Hvnt3r WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Hvnt3r Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:</strong>
+    Hvnt3r
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link:</strong>
+    <a href="https://hvnt3r.top/2019/03/分析恶意Windows程序/" title="分析恶意Windows程序">https://hvnt3r.top/2019/03/分析恶意Windows程序/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice: </strong>
+    All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally.
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/恶意代码分析/" rel="tag"><i class="fa fa-tag"></i> 恶意代码分析</a>
+          
+            <a href="/tags/Windows恶意代码/" rel="tag"><i class="fa fa-tag"></i> Windows恶意代码</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/识别汇编中的C代码结构/" rel="next" title="识别汇编中的C代码结构">
+                <i class="fa fa-chevron-left"></i> 识别汇编中的C代码结构
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.png"
+                alt="Hvnt3r" />
+            
+              <p class="site-author-name" itemprop="name">Hvnt3r</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">46</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Hvnt3r" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:hvnt3r@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#分析恶意Windows程序"><span class="nav-number">1.</span> <span class="nav-text">分析恶意Windows程序</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#知识点"><span class="nav-number">1.1.</span> <span class="nav-text">知识点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#课后练习"><span class="nav-number">1.2.</span> <span class="nav-text">课后练习</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab7-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">Lab7-1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab7-2"><span class="nav-number">1.2.2.</span> <span class="nav-text">Lab7-2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab7-3"><span class="nav-number">1.2.3.</span> <span class="nav-text">Lab7-3</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#本章结束🎊"><span class="nav-number">1.3.</span> <span class="nav-text">本章结束🎊</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Hvnt3r</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">59.2k</span>
+  
+</div>
+
+
+
+
+<!-- 
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+-->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Mlz03BBADnvOzP0kDTeS9A4a-gzGzoHsz", "gbVyqV9usci1PKnM7hcg3uCv");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/exturl.js?v=5.1.4"></script>
+
+
+  
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+<script type="text/javascript" src="/js/src/love.js"></script>
