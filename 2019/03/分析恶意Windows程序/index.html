@@ -98,7 +98,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://i.loli.net/2019/03/14/5c89b1669cc17.png">
 <meta property="og:image" content="https://i.loli.net/2019/03/14/5c89b42d2d812.png">
-<meta property="og:updated_time" content="2019-03-14T12:30:52.140Z">
+<meta property="og:updated_time" content="2019-03-14T13:14:09.869Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分析恶意Windows程序">
 <meta name="twitter:description" content="分析恶意Windows程序 知识点多数恶意代码运行在Windows上，因此对Windows变成概念的深刻理解会帮助我们识别出恶意代码在主机上感染的迹象，本章会介绍一些恶意代码使用Windows功能的独特方式，并且会讨论恶意代码是如何使用内核模式来实现额外功能与自身隐藏的。 Windows API：Windows API是一个广泛的功能集合，管理着恶意代码与微软程序库之间的交互方式，Windows">
@@ -478,13 +478,11 @@
 <td>这个函数被用来创建或者打开文件。它可以打开已经存在的文件，管道，流以及IO设备，还能创建新的文件。</td>
 </tr>
 <tr>
-<td>ReadFile\</td>
-<td>WriteFile</td>
+<td>ReadFile WriteFile</td>
 <td>这些函数被用来对文件进行读和写。</td>
 </tr>
 <tr>
-<td>CreateFileMapping\</td>
-<td>MapViewOfFile</td>
+<td>CreateFileMapping MapViewOfFile</td>
 <td>文件映射经常被恶意代码作者使用，因为他们允许将一个文件加载到内存中，以便操作简单，CreateFileMapping函数负责从磁盘上加载一个文件到内存中，MapViewOfFile函数则返回一个指向映射的基地址指针，在文件中的任意位置进行读取和写入。</td>
 </tr>
 </tbody>
