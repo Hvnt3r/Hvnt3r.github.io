@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="CrackMe,逆向,破解," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="0x01 Acid burn 在x64dbg里查找字符串找到相关的错误提示，找到相关调用地址，在附近找到疑似关键跳转的部分下断：  在此处函数调用之后出现了序列号的关键部分：  序列号拼接之后得出name为1234，serial为CW-4018-CRACKED 跟踪一波算法：   总结一下就是：CW-itoa((用户的name的第一个字符的ascii码)*0x29*2)-CRACKED 第二部分直">
+<meta name="keywords" content="CrackMe,逆向,破解">
+<meta property="og:type" content="article">
+<meta property="og:title" content="160个CrackMe练习">
+<meta property="og:url" content="https://hvnt3r.top/2019/04/160个CreakMe练习/index.html">
+<meta property="og:site_name" content="Hvnt3r&#39;s Blog">
+<meta property="og:description" content="0x01 Acid burn 在x64dbg里查找字符串找到相关的错误提示，找到相关调用地址，在附近找到疑似关键跳转的部分下断：  在此处函数调用之后出现了序列号的关键部分：  序列号拼接之后得出name为1234，serial为CW-4018-CRACKED 跟踪一波算法：   总结一下就是：CW-itoa((用户的name的第一个字符的ascii码)*0x29*2)-CRACKED 第二部分直">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://i.loli.net/2019/04/16/5cb51ad1cb4b9.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/16/5cb52e684f522.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/16/5cb52f19b9e22.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/16/5cb53c6ab502c.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/16/5cb53c48587d2.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/16/5cb53df1cab97.png">
+<meta property="og:image" content="c:/Users/26032/AppData/Roaming/Typora/typora-user-images/1555381833946.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/16/5cb54799706af.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/16/5cb5464b61d95.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/16/5cb54613bf1dd.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/17/5cb690c17ea11.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/17/5cb6e3595adf0.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/17/5cb6e7b91962f.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/17/5cb73e873372b.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/17/5cb7408d5ab85.png">
+<meta property="og:updated_time" content="2019-04-17T15:55:05.071Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="160个CrackMe练习">
+<meta name="twitter:description" content="0x01 Acid burn 在x64dbg里查找字符串找到相关的错误提示，找到相关调用地址，在附近找到疑似关键跳转的部分下断：  在此处函数调用之后出现了序列号的关键部分：  序列号拼接之后得出name为1234，serial为CW-4018-CRACKED 跟踪一波算法：   总结一下就是：CW-itoa((用户的name的第一个字符的ascii码)*0x29*2)-CRACKED 第二部分直">
+<meta name="twitter:image" content="https://i.loli.net/2019/04/16/5cb51ad1cb4b9.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://hvnt3r.top/2019/04/160个CreakMe练习/"/>
+
+
+
+
+
+  <title>160个CrackMe练习 | Hvnt3r's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband">
+	<a href="https://github.com/Hvnt3r"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+	</div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta custom-logo">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hvnt3r's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">让我们来猎杀那些陷入黑暗中的人吧-Shauna Vayne</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-主🐷页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            主🐷页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-系列文章💎">
+          <a href="/series/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            系列文章💎
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于我😎">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于我😎
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签👀">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签👀
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-分类👅">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类👅
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-所有文章📖">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            所有文章📖
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-友情链接👥">
+          <a href="/friends/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-link"></i> <br />
+            
+            友情链接👥
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-计划清单📜">
+          <a href="/Plan/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-clock"></i> <br />
+            
+            计划清单📜
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/04/160个CreakMe练习/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">160个CrackMe练习</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-16T00:04:59+08:00">
+                2019-04-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/04/160个CreakMe练习/" class="leancloud_visitors" data-flag-title="160个CrackMe练习">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  1.1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="0x01-Acid-burn"><a href="#0x01-Acid-burn" class="headerlink" title="0x01 Acid burn"></a>0x01 Acid burn</h1><p><img src="https://i.loli.net/2019/04/16/5cb51ad1cb4b9.png" alt=""></p>
+<p>在x64dbg里查找字符串找到相关的错误提示，找到相关调用地址，在附近找到疑似关键跳转的部分下断：</p>
+<p><img src="https://i.loli.net/2019/04/16/5cb52e684f522.png" alt=""></p>
+<p>在此处函数调用之后出现了序列号的关键部分：</p>
+<p><img src="https://i.loli.net/2019/04/16/5cb52f19b9e22.png" alt=""></p>
+<p>序列号拼接之后得出name为<code>1234</code>，serial为<code>CW-4018-CRACKED</code></p>
+<p>跟踪一波算法：</p>
+<p><img src="https://i.loli.net/2019/04/16/5cb53c6ab502c.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/04/16/5cb53c48587d2.png" alt=""></p>
+<p>总结一下就是：<code>CW-itoa((用户的name的第一个字符的ascii码)*0x29*2)-CRACKED</code></p>
+<p>第二部分直接检验serial的不必多说，找到判断函数，可以直接看到目标serial：</p>
+<p><img src="https://i.loli.net/2019/04/16/5cb53df1cab97.png" alt=""></p>
+<p><img src="C:\Users\26032\AppData\Roaming\Typora\typora-user-images\1555381833946.png" alt="1555381833946"></p>
+<h1 id="0x02-Afkayas-1"><a href="#0x02-Afkayas-1" class="headerlink" title="0x02 Afkayas_1"></a>0x02 Afkayas_1</h1><p>本来是写好了的但是这部分忘记保存导致丢失因此就简要写一下吧：</p>
+<p>首先根据字符串找到判断位置：</p>
+<p><img src="https://i.loli.net/2019/04/16/5cb54799706af.png" alt=""></p>
+<p>单步运行可以找到对应<code>abcd</code>的serial:<code>AKA-390221</code></p>
+<p><img src="https://i.loli.net/2019/04/16/5cb5464b61d95.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/04/16/5cb54613bf1dd.png" alt=""></p>
+<p>下面分析一下算法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">004023F7   | 68 A0000000       | push A0                                      |</span><br><span class="line">004023FC   | 68 5C1B4000       | push afkayas.1.401B5C                        |</span><br><span class="line">00402401   | 53                | push ebx                                     |</span><br><span class="line">00402402   | 50                | push eax                                     |</span><br><span class="line">00402403   | FF15 04414000     | call dword ptr ds:[&lt;&amp;__vbaHresultCheckObj&gt;]  |</span><br><span class="line">00402409   | 8B95 50FFFFFF     | mov edx,dword ptr ss:[ebp-B0]                |</span><br><span class="line">0040240F   | 8B45 E4           | mov eax,dword ptr ss:[ebp-1C]                | [ebp-1C]:L&quot;abcd&quot;</span><br><span class="line">00402412   | 50                | push eax                                     |</span><br><span class="line">00402413   | 8B1A              | mov ebx,dword ptr ds:[edx]                   |</span><br><span class="line">00402415   | FF15 E4404000     | call dword ptr ds:[&lt;&amp;__vbaLenBstr&gt;]          |</span><br><span class="line">0040241B   | 8BF8              | mov edi,eax                                  |</span><br><span class="line">0040241D   | 8B4D E8           | mov ecx,dword ptr ss:[ebp-18]                | [ebp-18]:L&quot;abcd&quot;</span><br><span class="line">00402420   | 69FF FB7C0100     | imul edi,edi,17CFB                           |</span><br><span class="line">00402426   | 51                | push ecx                                     |</span><br><span class="line">00402427   | 0F80 91020000     | jo afkayas.1.4026BE                          |</span><br><span class="line">0040242D   | FF15 F8404000     | call dword ptr ds:[&lt;&amp;rtcRightVar&gt;]           |</span><br><span class="line">00402433   | 0FBFD0            | movsx edx,ax                                 |</span><br><span class="line">00402436   | 03FA              | add edi,edx                                  |</span><br><span class="line">00402438   | 0F80 80020000     | jo afkayas.1.4026BE                          |</span><br><span class="line">0040243E   | 57                | push edi                                     |</span><br><span class="line">0040243F   | FF15 E0404000     | call dword ptr ds:[&lt;&amp;__vbaStrI4&gt;]            |</span><br></pre></td></tr></table></figure>
+<p>总结一下就是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">serial = hex2dec(strlen(name)*0x17CFB + name[0])</span><br></pre></td></tr></table></figure>
+<h1 id="0x03-Afkayas-2"><a href="#0x03-Afkayas-2" class="headerlink" title="0x03 Afkayas_2"></a>0x03 Afkayas_2</h1><p>单步走找到对应name：<code>name</code>的serial：<code>1066990</code></p>
+<p><img src="https://i.loli.net/2019/04/17/5cb690c17ea11.png" alt=""></p>
+<p>接下来写注册机，先看算法：</p>
+<p>第一步跟上一题一样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">004081F2   | 50                | push eax                                     | eax:L&quot;355662&quot;</span><br><span class="line">004081F3   | 8B1A              | mov ebx,dword ptr ds:[edx]                   | edx:L&quot;355662&quot;</span><br><span class="line">004081F5   | FF15 F8B04000     | call dword ptr ds:[&lt;&amp;__vbaLenBstr&gt;]          | 获取name字段长度</span><br><span class="line">004081FB   | 8BF8              | mov edi,eax                                  | edi:L&quot;-1-0&quot;, eax:L&quot;355662&quot;</span><br><span class="line">004081FD   | 8B4D E8           | mov ecx,dword ptr ss:[ebp-18]                | [ebp-18]:L&quot;name&quot;</span><br><span class="line">00408200   | 69FF 385B0100     | imul edi,edi,15B38                           | strlen(name)*0x15b38=0x56ce0</span><br><span class="line">00408206   | 51                | push ecx                                     |</span><br><span class="line">00408207   | 0F80 B7050000     | jo afkayas.2.4087C4                          |</span><br><span class="line">0040820D   | FF15 0CB14000     | call dword ptr ds:[&lt;&amp;rtcRightVar&gt;]           |</span><br><span class="line">00408213   | 0FBFD0            | movsx edx,ax                                 | edx:L&quot;355662&quot;</span><br><span class="line">00408216   | 03FA              | add edi,edx                                  | (strlen(name)*0x15b38)+name[0]=0x56d4e</span><br><span class="line">00408218   | 0F80 A6050000     | jo afkayas.2.4087C4                          |</span><br><span class="line">0040821E   | 57                | push edi                                     | edi:L&quot;-1-0&quot;</span><br><span class="line">0040821F   | FF15 F4B04000     | call dword ptr ds:[&lt;&amp;__vbaStrI4&gt;]            | hex2dec 355662</span><br><span class="line">00408225   | 8BD0              | mov edx,eax                                  | edx:L&quot;355662&quot;, eax:L&quot;355662&quot;</span><br><span class="line">00408227   | 8D4D E0           | lea ecx,dword ptr ss:[ebp-20]                |</span><br></pre></td></tr></table></figure>
+<p>第二部分：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">0040832A   | DD1C24            | fstp qword ptr ss:[esp],st(0)                |</span><br><span class="line">0040832D   | FF15 48B14000     | call dword ptr ds:[&lt;&amp;__vbaStrR8&gt;]            | serial+=(10.0/5.0) = 355664</span><br><span class="line">00408333   | 8BD0              | mov edx,eax                                  | eax:L&quot;355664&quot;</span><br><span class="line">00408335   | 8D4D E4           | lea ecx,dword ptr ss:[ebp-1C]                |</span><br><span class="line">00408338   | FF15 94B14000     | call dword ptr ds:[&lt;&amp;__vbaStrMove&gt;]          |</span><br><span class="line">0040833E   | 899D 34FFFFFF     | mov dword ptr ss:[ebp-CC],ebx                |</span><br><span class="line">00408344   | 8B9D 58FFFFFF     | mov ebx,dword ptr ss:[ebp-A8]                |</span><br></pre></td></tr></table></figure>
+<p>第三部分：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">004083F2   | 52                 | push edx                                     |</span><br><span class="line">004083F3   | 8B19               | mov ebx,dword ptr ds:[ecx]                   |</span><br><span class="line">004083F5   | FF15 74B14000      | call dword ptr ds:[&lt;&amp;__vbaR8Str&gt;]            |</span><br><span class="line">004083FB   | DC0D 10104000      | fmul st(0),qword ptr ds:[401010]             |</span><br><span class="line">00408401   | 83EC 08            | sub esp,8                                    |</span><br><span class="line">00408404   | DC25 18104000      | fsub st(0),qword ptr ds:[401018]             |</span><br><span class="line">0040840A   | DFE0               | fnstsw ax                                    |</span><br><span class="line">0040840C   | A8 0D              | test al,D                                    |</span><br><span class="line">0040840E   | 0F85 AB030000      | jne afkayas.2.4087BF                         |</span><br><span class="line">00408414   | DD1C24             | fstp qword ptr ss:[esp],st(0)                |</span><br><span class="line">00408417   | FF15 48B14000      | call dword ptr ds:[&lt;&amp;__vbaStrR8&gt;]            |</span><br><span class="line">0040841D   | 8BD0               | mov edx,eax                                  | eax:L&quot;1066990&quot;</span><br><span class="line">0040841F   | 8D4D E4            | lea ecx,dword ptr ss:[ebp-1C]                |</span><br><span class="line">00408422   | FF15 94B14000      | call dword ptr ds:[&lt;&amp;__vbaStrMove&gt;]          |</span><br><span class="line">00408428   | 899D 2CFFFFFF      | mov dword ptr ss:[ebp-D4],ebx                |</span><br><span class="line">0040842E   | 8B9D 58FFFFFF      | mov ebx,dword ptr ss:[ebp-A8]                |</span><br><span class="line">00408434   | 50                 | push eax                                     | eax:L&quot;1066990&quot;</span><br></pre></td></tr></table></figure>
+<p>总结算法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">serial = hex2dec((strlen(name)*0x15b38 + name[0]+2)*3-2-(-15))</span><br></pre></td></tr></table></figure>
+<h1 id="0x04-ajj-1"><a href="#0x04-ajj-1" class="headerlink" title="0x04 ajj_1"></a>0x04 ajj_1</h1><p>OD可以搜索到中文字符串，但是x64dbg搜不到，可能是x64dbg对中文字符串的搜索支持不是太好吧：</p>
+<p><img src="https://i.loli.net/2019/04/17/5cb6e3595adf0.png" alt=""></p>
+<p>向上找到关键跳转：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">0045802F   | 75 AB              | jne ckme.457FDC                              |</span><br><span class="line">00458031   | 81BE 0C030000 8500 | cmp dword ptr ds:[esi+30C],85                |</span><br><span class="line">0045803B   | 75 76              | jne ckme.4580B3                              |</span><br></pre></td></tr></table></figure>
+<p>直接修改ZF寄存器强制不跳转：</p>
+<p><img src="https://i.loli.net/2019/04/17/5cb6e7b91962f.png" alt=""></p>
+<h1 id="0x05-ajj-2"><a href="#0x05-ajj-2" class="headerlink" title="0x05 ajj_2"></a>0x05 ajj_2</h1><p>发现加了UPX壳，先脱壳，脱壳后继续分析。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">D:\Tools\Security_Tools\010\upx-3.95-win64\upx-3.95-win64&gt;upx.exe -d CKme002.exe</span><br><span class="line">                       Ultimate Packer <span class="keyword">for</span> eXecutables</span><br><span class="line">                          Copyright (C) 1996 - 2018</span><br><span class="line">UPX 3.95w       Markus Oberhumer, Laszlo Molnar &amp; John Reiser   Aug 26th 2018</span><br><span class="line"></span><br><span class="line">        File size         Ratio      Format      Name</span><br><span class="line">   --------------------   ------   -----------   -----------</span><br><span class="line">    458752 &lt;-    146432   31.92%    win32/pe     CKme002.exe</span><br><span class="line"></span><br><span class="line">Unpacked 1 file.</span><br></pre></td></tr></table></figure>
+<p>这道题好像看起来有点复杂，从看雪工具包中下载Delphi的反汇编工具：<a href="https://tools.pediy.com/win/decompilers.htm" target="_blank" rel="noopener">DeDe</a></p>
+<p>分析文件看到如下事件：</p>
+<p><img src="https://i.loli.net/2019/04/17/5cb73e873372b.png" alt=""></p>
+<p>分别查看这些事件的代码，在Timer2Timer中看到如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">004473E4   53                     push    ebx</span><br><span class="line">004473E5   8BD8                   mov     ebx, eax</span><br><span class="line">004473E7   81BB04030000340C0000   cmp     dword ptr [ebx+$0304], $00000C34</span><br><span class="line">004473F1   0F8488000000           jz      0044747F</span><br><span class="line">004473F7   81BB080300000D230000   cmp     dword ptr [ebx+$0308], $0000230D</span><br><span class="line">00447401   747C                   jz      0044747F</span><br><span class="line">00447403   81BB10030000940F0000   cmp     dword ptr [ebx+$0310], $00000F94</span><br><span class="line">0044740D   7570                   jnz     0044747F</span><br><span class="line">0044740F   8B8318030000           mov     eax, [ebx+$0318]</span><br><span class="line">00447415   3B8314030000           cmp     eax, [ebx+$0314]</span><br><span class="line">0044741B   7562                   jnz     0044747F</span><br><span class="line">0044741D   81BB1C030000E7030000   cmp     dword ptr [ebx+$031C], $000003E7</span><br><span class="line">00447427   7456                   jz      0044747F</span><br><span class="line">00447429   33D2                   xor     edx, edx</span><br></pre></td></tr></table></figure>
+<p>修改跳转逻辑之后可以看到注册成功的界面：</p>
+<p><img src="https://i.loli.net/2019/04/17/5cb7408d5ab85.png" alt=""></p>
+<h1 id="0x06-aLoNg3x-1"><a href="#0x06-aLoNg3x-1" class="headerlink" title="0x06 aLoNg3x_1"></a>0x06 aLoNg3x_1</h1>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>您的支持是我最大的动力🍉</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="Hvnt3r WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Hvnt3r Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:</strong>
+    Hvnt3r
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link:</strong>
+    <a href="https://hvnt3r.top/2019/04/160个CreakMe练习/" title="160个CrackMe练习">https://hvnt3r.top/2019/04/160个CreakMe练习/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice: </strong>
+    All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally.
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/CrackMe/" rel="tag"><i class="fa fa-tag"></i> CrackMe</a>
+          
+            <a href="/tags/逆向/" rel="tag"><i class="fa fa-tag"></i> 逆向</a>
+          
+            <a href="/tags/破解/" rel="tag"><i class="fa fa-tag"></i> 破解</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/Cheat-Engine练习/" rel="next" title="Cheat Engine练习">
+                <i class="fa fa-chevron-left"></i> Cheat Engine练习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.png"
+                alt="Hvnt3r" />
+            
+              <p class="site-author-name" itemprop="name">Hvnt3r</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">54</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Hvnt3r" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:hvnt3r@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-Acid-burn"><span class="nav-number">1.</span> <span class="nav-text">0x01 Acid burn</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-Afkayas-1"><span class="nav-number">2.</span> <span class="nav-text">0x02 Afkayas_1</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-Afkayas-2"><span class="nav-number">3.</span> <span class="nav-text">0x03 Afkayas_2</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x04-ajj-1"><span class="nav-number">4.</span> <span class="nav-text">0x04 ajj_1</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x05-ajj-2"><span class="nav-number">5.</span> <span class="nav-text">0x05 ajj_2</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x06-aLoNg3x-1"><span class="nav-number">6.</span> <span class="nav-text">0x06 aLoNg3x_1</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Hvnt3r</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">84.4k</span>
+  
+</div>
+
+
+
+
+<!-- 
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+-->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Mlz03BBADnvOzP0kDTeS9A4a-gzGzoHsz", "gbVyqV9usci1PKnM7hcg3uCv");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/exturl.js?v=5.1.4"></script>
+
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+<script type="text/javascript" src="/js/src/love.js"></script>

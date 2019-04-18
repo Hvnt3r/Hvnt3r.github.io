@@ -301,6 +301,217 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/04/160个CreakMe练习/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/160个CreakMe练习/" itemprop="url">160个CrackMe练习</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-16T00:04:59+08:00">
+                2019-04-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/04/160个CreakMe练习/" class="leancloud_visitors" data-flag-title="160个CrackMe练习">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  1.1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="0x01-Acid-burn"><a href="#0x01-Acid-burn" class="headerlink" title="0x01 Acid burn"></a>0x01 Acid burn</h1><p><img src="https://i.loli.net/2019/04/16/5cb51ad1cb4b9.png" alt=""></p>
+<p>在x64dbg里查找字符串找到相关的错误提示，找到相关调用地址，在附近找到疑似关键跳转的部分下断：</p>
+<p><img src="https://i.loli.net/2019/04/16/5cb52e684f522.png" alt=""></p>
+<p>在此处函数调用之后出现了序列号的关键部分：</p>
+<p><img src="https://i.loli.net/2019/04/16/5cb52f19b9e22.png" alt=""></p>
+<p>序列号拼接之后得出name为<code>1234</code>，serial为<code>CW-4018-CRACKED</code></p>
+<p>跟踪一波算法：</p>
+<p><img src="https://i.loli.net/2019/04/16/5cb53c6ab502c.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/04/16/5cb53c48587d2.png" alt=""></p>
+<p>总结一下就是：<code>CW-itoa((用户的name的第一个字符的ascii码)*0x29*2)-CRACKED</code></p>
+<p>第二部分直接检验serial的不必多说，找到判断函数，可以直接看到目标serial：</p>
+<p><img src="https://i.loli.net/2019/04/16/5cb53df1cab97.png" alt=""></p>
+<p><img src="C:\Users\26032\AppData\Roaming\Typora\typora-user-images\1555381833946.png" alt="1555381833946"></p>
+<h1 id="0x02-Afkayas-1"><a href="#0x02-Afkayas-1" class="headerlink" title="0x02 Afkayas_1"></a>0x02 Afkayas_1</h1><p>本来是写好了的但是这部分忘记保存导致丢失因此就简要写一下吧：</p>
+<p>首先根据字符串找到判断位置：</p>
+<p><img src="https://i.loli.net/2019/04/16/5cb54799706af.png" alt=""></p>
+<p>单步运行可以找到对应<code>abcd</code>的serial:<code>AKA-390221</code></p>
+<p><img src="https://i.loli.net/2019/04/16/5cb5464b61d95.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/04/16/5cb54613bf1dd.png" alt=""></p>
+<p>下面分析一下算法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">004023F7   | 68 A0000000       | push A0                                      |</span><br><span class="line">004023FC   | 68 5C1B4000       | push afkayas.1.401B5C                        |</span><br><span class="line">00402401   | 53                | push ebx                                     |</span><br><span class="line">00402402   | 50                | push eax                                     |</span><br><span class="line">00402403   | FF15 04414000     | call dword ptr ds:[&lt;&amp;__vbaHresultCheckObj&gt;]  |</span><br><span class="line">00402409   | 8B95 50FFFFFF     | mov edx,dword ptr ss:[ebp-B0]                |</span><br><span class="line">0040240F   | 8B45 E4           | mov eax,dword ptr ss:[ebp-1C]                | [ebp-1C]:L&quot;abcd&quot;</span><br><span class="line">00402412   | 50                | push eax                                     |</span><br><span class="line">00402413   | 8B1A              | mov ebx,dword ptr ds:[edx]                   |</span><br><span class="line">00402415   | FF15 E4404000     | call dword ptr ds:[&lt;&amp;__vbaLenBstr&gt;]          |</span><br><span class="line">0040241B   | 8BF8              | mov edi,eax                                  |</span><br><span class="line">0040241D   | 8B4D E8           | mov ecx,dword ptr ss:[ebp-18]                | [ebp-18]:L&quot;abcd&quot;</span><br><span class="line">00402420   | 69FF FB7C0100     | imul edi,edi,17CFB                           |</span><br><span class="line">00402426   | 51                | push ecx                                     |</span><br><span class="line">00402427   | 0F80 91020000     | jo afkayas.1.4026BE                          |</span><br><span class="line">0040242D   | FF15 F8404000     | call dword ptr ds:[&lt;&amp;rtcRightVar&gt;]           |</span><br><span class="line">00402433   | 0FBFD0            | movsx edx,ax                                 |</span><br><span class="line">00402436   | 03FA              | add edi,edx                                  |</span><br><span class="line">00402438   | 0F80 80020000     | jo afkayas.1.4026BE                          |</span><br><span class="line">0040243E   | 57                | push edi                                     |</span><br><span class="line">0040243F   | FF15 E0404000     | call dword ptr ds:[&lt;&amp;__vbaStrI4&gt;]            |</span><br></pre></td></tr></table></figure>
+<p>总结一下就是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">serial = hex2dec(strlen(name)*0x17CFB + name[0])</span><br></pre></td></tr></table></figure>
+<h1 id="0x03-Afkayas-2"><a href="#0x03-Afkayas-2" class="headerlink" title="0x03 Afkayas_2"></a>0x03 Afkayas_2</h1><p>单步走找到对应name：<code>name</code>的serial：<code>1066990</code></p>
+<p><img src="https://i.loli.net/2019/04/17/5cb690c17ea11.png" alt=""></p>
+<p>接下来写注册机，先看算法：</p>
+<p>第一步跟上一题一样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">004081F2   | 50                | push eax                                     | eax:L&quot;355662&quot;</span><br><span class="line">004081F3   | 8B1A              | mov ebx,dword ptr ds:[edx]                   | edx:L&quot;355662&quot;</span><br><span class="line">004081F5   | FF15 F8B04000     | call dword ptr ds:[&lt;&amp;__vbaLenBstr&gt;]          | 获取name字段长度</span><br><span class="line">004081FB   | 8BF8              | mov edi,eax                                  | edi:L&quot;-1-0&quot;, eax:L&quot;355662&quot;</span><br><span class="line">004081FD   | 8B4D E8           | mov ecx,dword ptr ss:[ebp-18]                | [ebp-18]:L&quot;name&quot;</span><br><span class="line">00408200   | 69FF 385B0100     | imul edi,edi,15B38                           | strlen(name)*0x15b38=0x56ce0</span><br><span class="line">00408206   | 51                | push ecx                                     |</span><br><span class="line">00408207   | 0F80 B7050000     | jo afkayas.2.4087C4                          |</span><br><span class="line">0040820D   | FF15 0CB14000     | call dword ptr ds:[&lt;&amp;rtcRightVar&gt;]           |</span><br><span class="line">00408213   | 0FBFD0            | movsx edx,ax                                 | edx:L&quot;355662&quot;</span><br><span class="line">00408216   | 03FA              | add edi,edx                                  | (strlen(name)*0x15b38)+name[0]=0x56d4e</span><br><span class="line">00408218   | 0F80 A6050000     | jo afkayas.2.4087C4                          |</span><br><span class="line">0040821E   | 57                | push edi                                     | edi:L&quot;-1-0&quot;</span><br><span class="line">0040821F   | FF15 F4B04000     | call dword ptr ds:[&lt;&amp;__vbaStrI4&gt;]            | hex2dec 355662</span><br><span class="line">00408225   | 8BD0              | mov edx,eax                                  | edx:L&quot;355662&quot;, eax:L&quot;355662&quot;</span><br><span class="line">00408227   | 8D4D E0           | lea ecx,dword ptr ss:[ebp-20]                |</span><br></pre></td></tr></table></figure>
+<p>第二部分：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">0040832A   | DD1C24            | fstp qword ptr ss:[esp],st(0)                |</span><br><span class="line">0040832D   | FF15 48B14000     | call dword ptr ds:[&lt;&amp;__vbaStrR8&gt;]            | serial+=(10.0/5.0) = 355664</span><br><span class="line">00408333   | 8BD0              | mov edx,eax                                  | eax:L&quot;355664&quot;</span><br><span class="line">00408335   | 8D4D E4           | lea ecx,dword ptr ss:[ebp-1C]                |</span><br><span class="line">00408338   | FF15 94B14000     | call dword ptr ds:[&lt;&amp;__vbaStrMove&gt;]          |</span><br><span class="line">0040833E   | 899D 34FFFFFF     | mov dword ptr ss:[ebp-CC],ebx                |</span><br><span class="line">00408344   | 8B9D 58FFFFFF     | mov ebx,dword ptr ss:[ebp-A8]                |</span><br></pre></td></tr></table></figure>
+<p>第三部分：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">004083F2   | 52                 | push edx                                     |</span><br><span class="line">004083F3   | 8B19               | mov ebx,dword ptr ds:[ecx]                   |</span><br><span class="line">004083F5   | FF15 74B14000      | call dword ptr ds:[&lt;&amp;__vbaR8Str&gt;]            |</span><br><span class="line">004083FB   | DC0D 10104000      | fmul st(0),qword ptr ds:[401010]             |</span><br><span class="line">00408401   | 83EC 08            | sub esp,8                                    |</span><br><span class="line">00408404   | DC25 18104000      | fsub st(0),qword ptr ds:[401018]             |</span><br><span class="line">0040840A   | DFE0               | fnstsw ax                                    |</span><br><span class="line">0040840C   | A8 0D              | test al,D                                    |</span><br><span class="line">0040840E   | 0F85 AB030000      | jne afkayas.2.4087BF                         |</span><br><span class="line">00408414   | DD1C24             | fstp qword ptr ss:[esp],st(0)                |</span><br><span class="line">00408417   | FF15 48B14000      | call dword ptr ds:[&lt;&amp;__vbaStrR8&gt;]            |</span><br><span class="line">0040841D   | 8BD0               | mov edx,eax                                  | eax:L&quot;1066990&quot;</span><br><span class="line">0040841F   | 8D4D E4            | lea ecx,dword ptr ss:[ebp-1C]                |</span><br><span class="line">00408422   | FF15 94B14000      | call dword ptr ds:[&lt;&amp;__vbaStrMove&gt;]          |</span><br><span class="line">00408428   | 899D 2CFFFFFF      | mov dword ptr ss:[ebp-D4],ebx                |</span><br><span class="line">0040842E   | 8B9D 58FFFFFF      | mov ebx,dword ptr ss:[ebp-A8]                |</span><br><span class="line">00408434   | 50                 | push eax                                     | eax:L&quot;1066990&quot;</span><br></pre></td></tr></table></figure>
+<p>总结算法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">serial = hex2dec((strlen(name)*0x15b38 + name[0]+2)*3-2-(-15))</span><br></pre></td></tr></table></figure>
+<h1 id="0x04-ajj-1"><a href="#0x04-ajj-1" class="headerlink" title="0x04 ajj_1"></a>0x04 ajj_1</h1><p>OD可以搜索到中文字符串，但是x64dbg搜不到，可能是x64dbg对中文字符串的搜索支持不是太好吧：</p>
+<p><img src="https://i.loli.net/2019/04/17/5cb6e3595adf0.png" alt=""></p>
+<p>向上找到关键跳转：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">0045802F   | 75 AB              | jne ckme.457FDC                              |</span><br><span class="line">00458031   | 81BE 0C030000 8500 | cmp dword ptr ds:[esi+30C],85                |</span><br><span class="line">0045803B   | 75 76              | jne ckme.4580B3                              |</span><br></pre></td></tr></table></figure>
+<p>直接修改ZF寄存器强制不跳转：</p>
+<p><img src="https://i.loli.net/2019/04/17/5cb6e7b91962f.png" alt=""></p>
+<h1 id="0x05-ajj-2"><a href="#0x05-ajj-2" class="headerlink" title="0x05 ajj_2"></a>0x05 ajj_2</h1><p>发现加了UPX壳，先脱壳，脱壳后继续分析。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">D:\Tools\Security_Tools\010\upx-3.95-win64\upx-3.95-win64&gt;upx.exe -d CKme002.exe</span><br><span class="line">                       Ultimate Packer <span class="keyword">for</span> eXecutables</span><br><span class="line">                          Copyright (C) 1996 - 2018</span><br><span class="line">UPX 3.95w       Markus Oberhumer, Laszlo Molnar &amp; John Reiser   Aug 26th 2018</span><br><span class="line"></span><br><span class="line">        File size         Ratio      Format      Name</span><br><span class="line">   --------------------   ------   -----------   -----------</span><br><span class="line">    458752 &lt;-    146432   31.92%    win32/pe     CKme002.exe</span><br><span class="line"></span><br><span class="line">Unpacked 1 file.</span><br></pre></td></tr></table></figure>
+<p>这道题好像看起来有点复杂，从看雪工具包中下载Delphi的反汇编工具：<a href="https://tools.pediy.com/win/decompilers.htm" target="_blank" rel="noopener">DeDe</a></p>
+<p>分析文件看到如下事件：</p>
+<p><img src="https://i.loli.net/2019/04/17/5cb73e873372b.png" alt=""></p>
+<p>分别查看这些事件的代码，在Timer2Timer中看到如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">004473E4   53                     push    ebx</span><br><span class="line">004473E5   8BD8                   mov     ebx, eax</span><br><span class="line">004473E7   81BB04030000340C0000   cmp     dword ptr [ebx+$0304], $00000C34</span><br><span class="line">004473F1   0F8488000000           jz      0044747F</span><br><span class="line">004473F7   81BB080300000D230000   cmp     dword ptr [ebx+$0308], $0000230D</span><br><span class="line">00447401   747C                   jz      0044747F</span><br><span class="line">00447403   81BB10030000940F0000   cmp     dword ptr [ebx+$0310], $00000F94</span><br><span class="line">0044740D   7570                   jnz     0044747F</span><br><span class="line">0044740F   8B8318030000           mov     eax, [ebx+$0318]</span><br><span class="line">00447415   3B8314030000           cmp     eax, [ebx+$0314]</span><br><span class="line">0044741B   7562                   jnz     0044747F</span><br><span class="line">0044741D   81BB1C030000E7030000   cmp     dword ptr [ebx+$031C], $000003E7</span><br><span class="line">00447427   7456                   jz      0044747F</span><br><span class="line">00447429   33D2                   xor     edx, edx</span><br></pre></td></tr></table></figure>
+<p>修改跳转逻辑之后可以看到注册成功的界面：</p>
+<p><img src="https://i.loli.net/2019/04/17/5cb7408d5ab85.png" alt=""></p>
+<h1 id="0x06-aLoNg3x-1"><a href="#0x06-aLoNg3x-1" class="headerlink" title="0x06 aLoNg3x_1"></a>0x06 aLoNg3x_1</h1>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/03/Cheat-Engine练习/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2014,200 +2225,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/03/识别汇编中的C代码结构/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hvnt3r">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hvnt3r's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/识别汇编中的C代码结构/" itemprop="url">识别汇编中的C代码结构</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-06T14:29:06+08:00">
-                2019-03-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
-                    <span itemprop="name">二进制安全</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2019/03/识别汇编中的C代码结构/" class="leancloud_visitors" data-flag-title="识别汇编中的C代码结构">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-				 <span>°C</span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  2k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  7
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="识别汇编中的C代码结构"><a href="#识别汇编中的C代码结构" class="headerlink" title="识别汇编中的C代码结构"></a>识别汇编中的C代码结构</h1><hr>
-<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>本章将通过讨论超过十种的不同的C代码结构来分析不同的汇编代码，帮助我们快速的提升形成恶意代码功能的高级视图的能力</p>
-<p><strong>全局变量|局部变量：</strong>全局变量可以被程序中任意函数访问和使用，局部变量只能在它被定义的函数中访问，在汇编代码中，全局变量通过内存地址引用，而局部变量通过栈地址引用。</p>
-<p><strong>识别if语句：</strong>有if语句一定存在跳转，但是有跳转不一定是if语句，if语句前有一个<code>cmp</code>指令用于对比条件，之后会有一个<code>jnz</code>指令来决定是否进行跳转。</p>
-<p><strong>for循环：</strong><code>for</code>循环是一个C变成使用的基本循环机制。<code>for</code>循环总之有四个组件：初始化、比较、执行命令、变量的递增或递减。</p>
-<p><strong>while循环：</strong><code>while</code>循环与<code>for</code>循环的汇编代码类似，但是区别在于while循环没有递增或者递减的代码。当一个<code>cmp</code>指令返回一定的值后<code>while</code>循环就会终止。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/识别汇编中的C代码结构/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2262,7 +2279,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">54</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -2284,7 +2301,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -2359,7 +2376,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">83.3k</span>
+    <span title="Site words total count">84.4k</span>
   
 </div>
 
