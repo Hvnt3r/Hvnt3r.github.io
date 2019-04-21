@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://hvnt3r.top/"/>
-  <updated>2019-04-19T14:11:40.498Z</updated>
+  <updated>2019-04-19T16:23:47.990Z</updated>
   <id>https://hvnt3r.top/</id>
   
   <author>
@@ -21,19 +21,14 @@
     <link href="https://hvnt3r.top/2019/04/Windows10%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F/"/>
     <id>https://hvnt3r.top/2019/04/Windows10安装Linux子系统/</id>
     <published>2019-04-19T13:47:36.000Z</published>
-    <updated>2019-04-19T14:11:40.498Z</updated>
+    <updated>2019-04-19T16:23:47.990Z</updated>
     
-    <content type="html"><![CDATA[<p>1，开启开发者模式：</p><p><img src="https://i.loli.net/2019/04/19/5cb9d1caac36b.png" alt=""></p><p>控制面板</p><p><img src="https://i.loli.net/2019/04/19/5cb9d25e414b5.png" alt=""></p><p>安装完成之后需要重启，重启之后在Windows应用商店中选择自己喜欢的Linux发行版本，我选择<del>Kali</del>，算了算了，看了评论都说Kali的更新源不可用甚至可能导致蓝屏，之前使用物理机Kali因为不稳定而系统损坏的我只想说：告辞！！！，还是用Ubuntu吧，可能会稳定一些：</p><p><img src="https://i.loli.net/2019/04/19/5cb9d2e9b88c7.png" alt=""></p><p>安装中：</p><p><img src="https://i.loli.net/2019/04/19/5cb9d4cf5676e.png" alt=""></p><p>。。。。。。</p><p><img src="https://i.loli.net/2019/04/19/5cb9d50b3d2d2.png" alt=""></p><p>🍃</p><p>百度了一下：</p><p>PowerShell管理员权限执行如下命令：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux</span><br></pre></td></tr></table></figure><p><img src="https://i.loli.net/2019/04/19/5cb9d59cc3b81.png" alt=""></p><p>安装成功且不需要重启，很好</p><p>启动成功，注意这里输入的账户名和密码要记好，输入密码时屏幕不显示，但实际上已经输入了，给没用过Linux的小白提个醒：</p><p><img src="https://i.loli.net/2019/04/19/5cb9d6bda02fd.png" alt=""></p><p>大功告成！</p>]]></content>
+    <content type="html"><![CDATA[<p>开启开发者模式：</p><p><img src="https://i.loli.net/2019/04/19/5cb9d1caac36b.png" alt=""></p><a id="more"></a><p>控制面板</p><p><img src="https://i.loli.net/2019/04/19/5cb9d25e414b5.png" alt=""></p><p>安装完成之后需要重启，重启之后在Windows应用商店中选择自己喜欢的Linux发行版本，我选择<del>Kali</del>，算了算了，看了评论都说Kali的更新源不可用甚至可能导致蓝屏，之前使用物理机Kali因为不稳定而系统损坏的我只想说：告辞！！！，还是用Ubuntu吧，可能会稳定一些：</p><p><img src="https://i.loli.net/2019/04/19/5cb9d2e9b88c7.png" alt=""></p><p>安装中：</p><p><img src="https://i.loli.net/2019/04/19/5cb9d4cf5676e.png" alt=""></p><p>。。。。。。</p><p><img src="https://i.loli.net/2019/04/19/5cb9d50b3d2d2.png" alt=""></p><p>🍃</p><p>百度了一下：</p><p>PowerShell管理员权限执行如下命令：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux</span><br></pre></td></tr></table></figure><p><img src="https://i.loli.net/2019/04/19/5cb9d59cc3b81.png" alt=""></p><p>安装成功且不需要重启，很好</p><p>启动成功，注意这里输入的账户名和密码要记好，输入密码时屏幕不显示，但实际上已经输入了，给没用过Linux的小白提个醒：</p><p><img src="https://i.loli.net/2019/04/19/5cb9d6bda02fd.png" alt=""></p><p>大功告成！</p>]]></content>
     
     <summary type="html">
     
-      
-      
-        &lt;p&gt;1，开启开发者模式：&lt;/p&gt;
+      &lt;p&gt;开启开发者模式：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;https://i.loli.net/2019/04/19/5cb9d1caac36b.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;p&gt;控制面板&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;https://i.loli.net/2019
-      
     
     </summary>
     
