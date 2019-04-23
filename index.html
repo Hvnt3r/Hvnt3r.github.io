@@ -1124,7 +1124,7 @@
                   <span class="post-meta-item-text">Words count in article&#58;</span>
                 
                 <span title="Words count in article">
-                  581
+                  4k
                 </span>
               
 
@@ -1140,7 +1140,7 @@
                   <span class="post-meta-item-text">Reading time &asymp;</span>
                 
                 <span title="Reading time">
-                  1
+                  17
                 </span>
               
             </div>
@@ -1167,9 +1167,6 @@
 <p><strong>线性反汇编：</strong>线性反汇编策略是遍历一个代码段，一次一条指令地线性反汇编，线性反汇编用已经反汇编地指令大小来决定下一个要反汇编的字节，而不考虑代码流的控制指令。</p>
 <p><strong>面向代码流的反汇编：</strong>面向代码流的反汇编算法是一种更先进的反汇编宣发，这种算法会根据后续代码的逻辑来选择汇编的字节流，因此结果一般情况下会更加准确。</p>
 <p><strong>相同目标的跳转指令：</strong>恶意代码中最常见的防反汇编技术是使用指向同一目标地址的两个连续条件跳转指令。例如<code>jz loc_512</code>之后是 <code>jnz loc_512</code>则这个指令就相当于无条件跳转指令<code>jmp</code>，另外程序可能会在代码中插入与指令相同额数据如用E8来冒充call指令，实际上使用的是E8后面的字节，E8并没有发挥作用。遇到这种情况可以使用快捷键D使代码变成数据。</p>
-<p><strong>使用固定的跳转指令：</strong>程序会使用<code>xor eax, eax</code>开头，再跟上条件跳转指令，使反汇编器一位这是一个条件跳转指令实际上是一个固定的跳转指令。</p>
-<p><strong>无效的反汇编指令：</strong>程序通过插入单字节的流氓无效指令来干扰反汇编器的正常分析进程。</p>
-<p>函数指针问题：再程序中刻意使用函数指针可以大大降低反汇编器自动推导出的程序的信息量</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2019/03/防反汇编技术/#more" rel="contents">
@@ -2328,7 +2325,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">86.7k</span>
+    <span title="Site words total count">90.2k</span>
   
 </div>
 
