@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="PWN,逆向,CTF,WriteUp,Reverse," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="Reverse0x01 easyGo 123456hvnt3r@LAPTOP-POUA9UHC:/mnt/e/linux$ file easygoeasygo: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, strippedhvnt3r@LAPTOP-POUA9UHC:/mnt/e/linux$ ./">
+<meta name="keywords" content="PWN,逆向,CTF,WriteUp,Reverse">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp">
+<meta property="og:url" content="https://hvnt3r.top/2019/04/2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp/index.html">
+<meta property="og:site_name" content="Hvnt3r&#39;s Blog">
+<meta property="og:description" content="Reverse0x01 easyGo 123456hvnt3r@LAPTOP-POUA9UHC:/mnt/e/linux$ file easygoeasygo: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, strippedhvnt3r@LAPTOP-POUA9UHC:/mnt/e/linux$ ./">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://i.loli.net/2019/04/29/5cc64745afb8d.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/29/5cc647867d4e3.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/29/5cc647ad8df45.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/29/5cc647deb4d25.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/29/5cc6480bf38ce.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/29/5cc6485e4323d.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/29/5cc648783ae12.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/29/5cc648980a41b.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/29/5cc648b6da857.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/29/5cc648d2564fc.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/29/5cc648e6070a3.png">
+<meta property="og:updated_time" content="2019-04-29T07:02:28.368Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp">
+<meta name="twitter:description" content="Reverse0x01 easyGo 123456hvnt3r@LAPTOP-POUA9UHC:/mnt/e/linux$ file easygoeasygo: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, strippedhvnt3r@LAPTOP-POUA9UHC:/mnt/e/linux$ ./">
+<meta name="twitter:image" content="https://i.loli.net/2019/04/29/5cc64745afb8d.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://hvnt3r.top/2019/04/2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp/"/>
+
+
+
+
+
+  <title>2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp | Hvnt3r's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband">
+	<a href="https://github.com/Hvnt3r"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+	</div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta custom-logo">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hvnt3r's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">让我们来猎杀那些陷入黑暗中的人吧-Shauna Vayne</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-主🐷页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            主🐷页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-系列文章💎">
+          <a href="/series/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            系列文章💎
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于我😎">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于我😎
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签👀">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签👀
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-分类👅">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类👅
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-所有文章📖">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            所有文章📖
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-友情链接👥">
+          <a href="/friends/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-link"></i> <br />
+            
+            友情链接👥
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-计划清单📜">
+          <a href="/Plan/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />
+            
+            计划清单📜
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/04/2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-29T08:34:44+08:00">
+                2019-04-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/04/2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp/" class="leancloud_visitors" data-flag-title="2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  234
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Reverse"><a href="#Reverse" class="headerlink" title="Reverse"></a>Reverse</h1><h2 id="0x01-easyGo"><a href="#0x01-easyGo" class="headerlink" title="0x01 easyGo"></a>0x01 easyGo</h2><p><img src="https://i.loli.net/2019/04/29/5cc64745afb8d.png" alt=""></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">hvnt3r@LAPTOP-POUA9UHC:/mnt/e/linux$ file easygo</span><br><span class="line">easygo: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, stripped</span><br><span class="line">hvnt3r@LAPTOP-POUA9UHC:/mnt/e/linux$ ./easyGo</span><br><span class="line">Please input you flag like flag&#123;123&#125; to judge:</span><br><span class="line">flag&#123;1212121&#125;</span><br><span class="line">Try again! Come on!</span><br></pre></td></tr></table></figure>
+<p>Go的逆向，先用<code>IDAGolangHelper</code>恢复函数名，在<code>main_main</code>函数中找到<code>base64</code>加密，在函数位置下断点，<code>gdb</code>中单步运行，执行完<code>encoding_base64__ptr_Encoding_DecodeString</code>之后可以在<code>RSI</code>中看到<code>flag</code>:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[----------------------------------registers-----------------------------------]</span><br><span class="line">RAX: 0x2a (<span class="string">'*'</span>)</span><br><span class="line">RBX: 0x2a (<span class="string">'*'</span>)</span><br><span class="line">RCX: 0x0 </span><br><span class="line">RDX: 0x0 </span><br><span class="line">RSI: 0xc000098060 (<span class="string">"flag&#123;92094daf-33c9-431e-a85a-8bfbd5df98ad&#125;"</span>)</span><br><span class="line">RDI: 0x38 (<span class="string">'8'</span>)</span><br><span class="line">RBP: 0xc000092f88 --&gt; 0xc000092f90 --&gt; 0x429b1c (mov    eax,DWORD PTR [rip+0x16478e]        <span class="comment"># 0x58e2b0)</span></span><br><span class="line">RSP: 0xc000092e90 --&gt; 0xc000096580 (<span class="string">"6789_-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345"</span>, <span class="string">'\377'</span> &lt;repeats 45 <span class="built_in">times</span>&gt;, <span class="string">"\005\377\377:;&lt;=&gt;?"</span>)</span><br><span class="line">RIP: 0x4952f0 (mov    rax,QWORD PTR [rsp+0x38])</span><br><span class="line">R8 : 0x0 </span><br><span class="line">R9 : 0x0 </span><br><span class="line">R10: 0x2a (<span class="string">'*'</span>)</span><br><span class="line">R11: 0x2a (<span class="string">'*'</span>)</span><br><span class="line">R12: 0xc000098060 (<span class="string">"flag&#123;92094daf-33c9-431e-a85a-8bfbd5df98ad&#125;"</span>)</span><br><span class="line">R13: 0xc000096580 (<span class="string">"6789_-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345"</span>, <span class="string">'\377'</span> &lt;repeats 45 <span class="built_in">times</span>&gt;, <span class="string">"\005\377\377:;&lt;=&gt;?"</span>)</span><br><span class="line">R14: 0x2a (<span class="string">'*'</span>)</span><br><span class="line">R15: 0x40 (<span class="string">'@'</span>)</span><br><span class="line">EFLAGS: 0x206 (carry PARITY adjust zero sign <span class="built_in">trap</span> INTERRUPT direction overflow)</span><br></pre></td></tr></table></figure>
+<p><strong>flag：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flag&#123;92094daf-33c9-431e-a85a-8bfbd5df98ad&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="0x02-bbvvmm"><a href="#0x02-bbvvmm" class="headerlink" title="0x02 bbvvmm"></a>0x02 bbvvmm</h2><p><img src="https://i.loli.net/2019/04/29/5cc647867d4e3.png" alt=""></p>
+<h2 id="0x03-strange-int"><a href="#0x03-strange-int" class="headerlink" title="0x03 strange_int"></a>0x03 strange_int</h2><p><img src="https://i.loli.net/2019/04/29/5cc647ad8df45.png" alt=""></p>
+<h2 id="0x04-计时挑战"><a href="#0x04-计时挑战" class="headerlink" title="0x04 计时挑战"></a>0x04 计时挑战</h2><p><img src="https://i.loli.net/2019/04/29/5cc647deb4d25.png" alt=""></p>
+<h2 id="0x05-where-u-are"><a href="#0x05-where-u-are" class="headerlink" title="0x05 where_u_are"></a>0x05 where_u_are</h2><p><img src="https://i.loli.net/2019/04/29/5cc6480bf38ce.png" alt=""></p>
+<h1 id="RWN"><a href="#RWN" class="headerlink" title="RWN"></a>RWN</h1><h2 id="0x01"><a href="#0x01" class="headerlink" title="0x01"></a>0x01</h2><p><img src="https://i.loli.net/2019/04/29/5cc6485e4323d.png" alt=""></p>
+<h2 id="0x02-baby-pwn"><a href="#0x02-baby-pwn" class="headerlink" title="0x02 baby_pwn"></a>0x02 baby_pwn</h2><p><img src="https://i.loli.net/2019/04/29/5cc648783ae12.png" alt=""></p>
+<h2 id="0x03-daily"><a href="#0x03-daily" class="headerlink" title="0x03 daily"></a>0x03 daily</h2><p><img src="https://i.loli.net/2019/04/29/5cc648980a41b.png" alt=""></p>
+<h2 id="0x04-Double"><a href="#0x04-Double" class="headerlink" title="0x04 Double"></a>0x04 Double</h2><p><img src="https://i.loli.net/2019/04/29/5cc648b6da857.png" alt=""></p>
+<h2 id="0x05-bms"><a href="#0x05-bms" class="headerlink" title="0x05 bms"></a>0x05 bms</h2><p><img src="https://i.loli.net/2019/04/29/5cc648d2564fc.png" alt=""></p>
+<h2 id="0x06-Virtual"><a href="#0x06-Virtual" class="headerlink" title="0x06 Virtual"></a>0x06 Virtual</h2><p><img src="https://i.loli.net/2019/04/29/5cc648e6070a3.png" alt=""></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>您的支持是我最大的动力🍉</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="Hvnt3r WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Hvnt3r Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:</strong>
+    Hvnt3r
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link:</strong>
+    <a href="https://hvnt3r.top/2019/04/2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp/" title="2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp">https://hvnt3r.top/2019/04/2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice: </strong>
+    All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally.
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PWN/" rel="tag"><i class="fa fa-tag"></i> PWN</a>
+          
+            <a href="/tags/逆向/" rel="tag"><i class="fa fa-tag"></i> 逆向</a>
+          
+            <a href="/tags/CTF/" rel="tag"><i class="fa fa-tag"></i> CTF</a>
+          
+            <a href="/tags/WriteUp/" rel="tag"><i class="fa fa-tag"></i> WriteUp</a>
+          
+            <a href="/tags/Reverse/" rel="tag"><i class="fa fa-tag"></i> Reverse</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/64位恶意代码/" rel="next" title="64位恶意代码">
+                <i class="fa fa-chevron-left"></i> 64位恶意代码
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.png"
+                alt="Hvnt3r" />
+            
+              <p class="site-author-name" itemprop="name">Hvnt3r</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">70</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Hvnt3r" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:hvnt3r@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Reverse"><span class="nav-number">1.</span> <span class="nav-text">Reverse</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-easyGo"><span class="nav-number">1.1.</span> <span class="nav-text">0x01 easyGo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-bbvvmm"><span class="nav-number">1.2.</span> <span class="nav-text">0x02 bbvvmm</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-strange-int"><span class="nav-number">1.3.</span> <span class="nav-text">0x03 strange_int</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-计时挑战"><span class="nav-number">1.4.</span> <span class="nav-text">0x04 计时挑战</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-where-u-are"><span class="nav-number">1.5.</span> <span class="nav-text">0x05 where_u_are</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RWN"><span class="nav-number">2.</span> <span class="nav-text">RWN</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01"><span class="nav-number">2.1.</span> <span class="nav-text">0x01</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-baby-pwn"><span class="nav-number">2.2.</span> <span class="nav-text">0x02 baby_pwn</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-daily"><span class="nav-number">2.3.</span> <span class="nav-text">0x03 daily</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-Double"><span class="nav-number">2.4.</span> <span class="nav-text">0x04 Double</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-bms"><span class="nav-number">2.5.</span> <span class="nav-text">0x05 bms</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x06-Virtual"><span class="nav-number">2.6.</span> <span class="nav-text">0x06 Virtual</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Hvnt3r</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">100.8k</span>
+  
+</div>
+
+
+
+
+<!-- 
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+-->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Mlz03BBADnvOzP0kDTeS9A4a-gzGzoHsz", "gbVyqV9usci1PKnM7hcg3uCv");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/exturl.js?v=5.1.4"></script>
+
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+<script type="text/javascript" src="/js/src/love.js"></script>

@@ -301,6 +301,1348 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/04/2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp/" itemprop="url">2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-29T08:34:44+08:00">
+                2019-04-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/04/2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp/" class="leancloud_visitors" data-flag-title="2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  234
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Reverse"><a href="#Reverse" class="headerlink" title="Reverse"></a>Reverse</h1><h2 id="0x01-easyGo"><a href="#0x01-easyGo" class="headerlink" title="0x01 easyGo"></a>0x01 easyGo</h2><p><img src="https://i.loli.net/2019/04/29/5cc64745afb8d.png" alt=""></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">hvnt3r@LAPTOP-POUA9UHC:/mnt/e/linux$ file easygo</span><br><span class="line">easygo: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, stripped</span><br><span class="line">hvnt3r@LAPTOP-POUA9UHC:/mnt/e/linux$ ./easyGo</span><br><span class="line">Please input you flag like flag&#123;123&#125; to judge:</span><br><span class="line">flag&#123;1212121&#125;</span><br><span class="line">Try again! Come on!</span><br></pre></td></tr></table></figure>
+<p>Go的逆向，先用<code>IDAGolangHelper</code>恢复函数名，在<code>main_main</code>函数中找到<code>base64</code>加密，在函数位置下断点，<code>gdb</code>中单步运行，执行完<code>encoding_base64__ptr_Encoding_DecodeString</code>之后可以在<code>RSI</code>中看到<code>flag</code>:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[----------------------------------registers-----------------------------------]</span><br><span class="line">RAX: 0x2a (<span class="string">'*'</span>)</span><br><span class="line">RBX: 0x2a (<span class="string">'*'</span>)</span><br><span class="line">RCX: 0x0 </span><br><span class="line">RDX: 0x0 </span><br><span class="line">RSI: 0xc000098060 (<span class="string">"flag&#123;92094daf-33c9-431e-a85a-8bfbd5df98ad&#125;"</span>)</span><br><span class="line">RDI: 0x38 (<span class="string">'8'</span>)</span><br><span class="line">RBP: 0xc000092f88 --&gt; 0xc000092f90 --&gt; 0x429b1c (mov    eax,DWORD PTR [rip+0x16478e]        <span class="comment"># 0x58e2b0)</span></span><br><span class="line">RSP: 0xc000092e90 --&gt; 0xc000096580 (<span class="string">"6789_-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345"</span>, <span class="string">'\377'</span> &lt;repeats 45 <span class="built_in">times</span>&gt;, <span class="string">"\005\377\377:;&lt;=&gt;?"</span>)</span><br><span class="line">RIP: 0x4952f0 (mov    rax,QWORD PTR [rsp+0x38])</span><br><span class="line">R8 : 0x0 </span><br><span class="line">R9 : 0x0 </span><br><span class="line">R10: 0x2a (<span class="string">'*'</span>)</span><br><span class="line">R11: 0x2a (<span class="string">'*'</span>)</span><br><span class="line">R12: 0xc000098060 (<span class="string">"flag&#123;92094daf-33c9-431e-a85a-8bfbd5df98ad&#125;"</span>)</span><br><span class="line">R13: 0xc000096580 (<span class="string">"6789_-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345"</span>, <span class="string">'\377'</span> &lt;repeats 45 <span class="built_in">times</span>&gt;, <span class="string">"\005\377\377:;&lt;=&gt;?"</span>)</span><br><span class="line">R14: 0x2a (<span class="string">'*'</span>)</span><br><span class="line">R15: 0x40 (<span class="string">'@'</span>)</span><br><span class="line">EFLAGS: 0x206 (carry PARITY adjust zero sign <span class="built_in">trap</span> INTERRUPT direction overflow)</span><br></pre></td></tr></table></figure>
+<p><strong>flag：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flag&#123;92094daf-33c9-431e-a85a-8bfbd5df98ad&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="0x02-bbvvmm"><a href="#0x02-bbvvmm" class="headerlink" title="0x02 bbvvmm"></a>0x02 bbvvmm</h2><p><img src="https://i.loli.net/2019/04/29/5cc647867d4e3.png" alt=""></p>
+<h2 id="0x03-strange-int"><a href="#0x03-strange-int" class="headerlink" title="0x03 strange_int"></a>0x03 strange_int</h2><p><img src="https://i.loli.net/2019/04/29/5cc647ad8df45.png" alt=""></p>
+<h2 id="0x04-计时挑战"><a href="#0x04-计时挑战" class="headerlink" title="0x04 计时挑战"></a>0x04 计时挑战</h2><p><img src="https://i.loli.net/2019/04/29/5cc647deb4d25.png" alt=""></p>
+<h2 id="0x05-where-u-are"><a href="#0x05-where-u-are" class="headerlink" title="0x05 where_u_are"></a>0x05 where_u_are</h2><p><img src="https://i.loli.net/2019/04/29/5cc6480bf38ce.png" alt=""></p>
+<h1 id="RWN"><a href="#RWN" class="headerlink" title="RWN"></a>RWN</h1><h2 id="0x01"><a href="#0x01" class="headerlink" title="0x01"></a>0x01</h2><p><img src="https://i.loli.net/2019/04/29/5cc6485e4323d.png" alt=""></p>
+<h2 id="0x02-baby-pwn"><a href="#0x02-baby-pwn" class="headerlink" title="0x02 baby_pwn"></a>0x02 baby_pwn</h2><p><img src="https://i.loli.net/2019/04/29/5cc648783ae12.png" alt=""></p>
+<h2 id="0x03-daily"><a href="#0x03-daily" class="headerlink" title="0x03 daily"></a>0x03 daily</h2><p><img src="https://i.loli.net/2019/04/29/5cc648980a41b.png" alt=""></p>
+<h2 id="0x04-Double"><a href="#0x04-Double" class="headerlink" title="0x04 Double"></a>0x04 Double</h2><p><img src="https://i.loli.net/2019/04/29/5cc648b6da857.png" alt=""></p>
+<h2 id="0x05-bms"><a href="#0x05-bms" class="headerlink" title="0x05 bms"></a>0x05 bms</h2><p><img src="https://i.loli.net/2019/04/29/5cc648d2564fc.png" alt=""></p>
+<h2 id="0x06-Virtual"><a href="#0x06-Virtual" class="headerlink" title="0x06 Virtual"></a>0x06 Virtual</h2><p><img src="https://i.loli.net/2019/04/29/5cc648e6070a3.png" alt=""></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/04/64位恶意代码/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/64位恶意代码/" itemprop="url">64位恶意代码</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-27T10:58:55+08:00">
+                2019-04-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
+                    <span itemprop="name">二进制安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/04/64位恶意代码/" class="leancloud_visitors" data-flag-title="64位恶意代码">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  3
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="64位恶意代码"><a href="#64位恶意代码" class="headerlink" title="64位恶意代码"></a>64位恶意代码</h1><hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>x64架构被设计成x86的升级，而指令集没有什么显著的区别，这本书年代久远，当时64位系统并没有普及，因此可能本章的内容并不是特别有价值。</p>
+<p><strong>x64架构与x86的区别：</strong></p>
+<ul>
+<li>所有的地址和指针都是64位的</li>
+<li>所有通用寄存器大小变大</li>
+<li>通用寄存器的数目增长，新的寄存器位R8-R15</li>
+<li>x64支持相对指令指针的数据寻址</li>
+<li>。。。</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/04/64位恶意代码/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/04/C-代码分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/C-代码分析/" itemprop="url">C++代码分析</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-27T10:58:22+08:00">
+                2019-04-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
+                    <span itemprop="name">二进制安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/04/C-代码分析/" class="leancloud_visitors" data-flag-title="C++代码分析">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  1.6k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="C-代码分析"><a href="#C-代码分析" class="headerlink" title="C++代码分析"></a>C++代码分析</h1><hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p><strong>面向对象的编程语言：</strong>和C语言不同C++是一种面向对象的编程语言，采用使用对象的编程模型，将数据与操作数据的函数都封装到对象中，在面向对象中，代码以叫做类Class的用户自定义的数据类型进行组织，类与结构体比较类似，差别在于他们另外保存函数信息而不仅仅是数据，类是创建一个对象的模板，它指定内存中的一个对象的函数与数据布局。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/04/C-代码分析/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/04/ShellCode分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/ShellCode分析/" itemprop="url">ShellCode分析</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-27T10:58:09+08:00">
+                2019-04-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
+                    <span itemprop="name">二进制安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/04/ShellCode分析/" class="leancloud_visitors" data-flag-title="ShellCode分析">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  1.4k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="ShellCode分析"><a href="#ShellCode分析" class="headerlink" title="ShellCode分析"></a>ShellCode分析</h1><hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p><strong>位置无关代码：</strong>PIC指不用硬编码地址来寻址指令或数据得代码，shellcode编写者应该使用位置无关代码来提高代码的兼容性。</p>
+<p><strong>识别执行位置：</strong>Shellcode再以位置无关方式访问数据时需要引用一个基质指针，用这个基址指针加上或减去偏移值，将使它安全访问shellcode中包含的数据，因此一个通用寄存器应该首先载入当前EIP值，作为基址指针来使用，但是指令指针不能之别被软件访问，无法汇编<code>mov eax, eip</code>指令，但是可以使用<code>call/pop</code>指令和<code>fnstenv</code>指令。</p>
+<p><strong>使用call/pop指令：</strong>当一个call指令被执行使，处理器将call后面的指令地址压倒栈上，然后请求转到被请求的位置执行，这个函数执行完成后会执行一个ret指令，将返回地址弹出到栈的顶部，并将它载入EIP寄存器中，这样的结果使执行刚好返回到call后面的指令。因此shellcode可以通过call后面紧跟一个pop的方法来得到call后指令指针的方法。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/04/ShellCode分析/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/04/加壳与脱壳/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/加壳与脱壳/" itemprop="url">加壳与脱壳</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-26T09:55:30+08:00">
+                2019-04-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
+                    <span itemprop="name">二进制安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/04/加壳与脱壳/" class="leancloud_visitors" data-flag-title="加壳与脱壳">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  2.2k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="加壳与脱壳"><a href="#加壳与脱壳" class="headerlink" title="加壳与脱壳"></a>加壳与脱壳</h1><hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p><strong>加壳原理：</strong>加壳器是将一个可执行文件作为输入，输出一个全新的可执行文件，被加壳的可执行文件经过压缩，加密或者其他转换。多数假客气采用压缩算法压缩原始文件，加壳器通过加密原始可执行文件并且实施一些反逆向技术的实现如防反汇编，反调试以及虚拟化等，加壳器既可以打包整个可执行文件，包括所有的数据与资源节，也可以仅打包代码和资源节。</p>
+<p><strong>脱壳存根：</strong>可执行程序的入口点直线脱壳存根而不是原始代码，原始程序通常存储在杰克程序的一个或者多个附加的节中，脱壳存根负责脱壳源程序：</p>
+<ul>
+<li>将原始程序脱壳到内存中</li>
+<li>解析原始可执行文件的所有导入函数</li>
+<li>将可执行程序转移到原始的程序入口点</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/04/加壳与脱壳/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/04/反虚拟机技术/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/反虚拟机技术/" itemprop="url">反虚拟机技术</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-25T10:33:01+08:00">
+                2019-04-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
+                    <span itemprop="name">二进制安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/04/反虚拟机技术/" class="leancloud_visitors" data-flag-title="反虚拟机技术">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  1.7k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  6
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="反虚拟机技术"><a href="#反虚拟机技术" class="headerlink" title="反虚拟机技术"></a>反虚拟机技术</h1><hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>恶意代码编写者经常使用反虚拟机技术逃避分析，恶意代码可以使用这种技术探测自己是否运行在虚拟机中。</p>
+<p><strong>VMware痕迹：</strong>VM虚拟环境在系统中遗留了很对痕迹，特别是在安装Vmtools之后，恶意代码可以通过存在于操作系统文件系统、注册表和进程列表中标记痕迹，探测VM虚拟环境的存在。</p>
+<p>安装<code>VMtools</code>的主机上通常会运行三个相关进程：<code>VMwareService.exe</code>、<code>VMwareTray.exe</code>、<code>VmwareUser.exe</code>。恶意代码在进程列表中中搜索带有<code>VMware</code>字符串的进程，就能找到这些进程。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/04/反虚拟机技术/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/04/恶意代码的网络特征/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/恶意代码的网络特征/" itemprop="url">恶意代码的网络特征</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-24T22:41:15+08:00">
+                2019-04-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
+                    <span itemprop="name">二进制安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/04/恶意代码的网络特征/" class="leancloud_visitors" data-flag-title="恶意代码的网络特征">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  519
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="恶意代码的网络特征"><a href="#恶意代码的网络特征" class="headerlink" title="恶意代码的网络特征"></a>恶意代码的网络特征</h1><hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>OPSEC-操作安全性：攻击者可以通过多种方法来探测到是否有研究人员对恶意代码进行的测试：</p>
+<ul>
+<li>发送带有某个特定连接的针对性访问的网络钓鱼邮件，观察是否有从期望区域之外的IP地址的访问请求</li>
+<li>设计一种利用方式，在博客篇评论中创建一个经过编码的链接，从而创建一个私人但是可以公开的感染审计记录</li>
+<li>在恶意代码中嵌入一个未使用的域名，观察这个域名的解析记录</li>
+</ul>
+<p><strong>Snort检测：</strong><a href="https://www.snort.org/" target="_blank" rel="noopener">https://www.snort.org/</a></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/04/恶意代码的网络特征/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/04/数据加密/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -844,1345 +2186,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/03/Cheat-Engine练习/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hvnt3r">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hvnt3r's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/Cheat-Engine练习/" itemprop="url">Cheat Engine练习</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-29T11:01:21+08:00">
-                2019-03-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2019/03/Cheat-Engine练习/" class="leancloud_visitors" data-flag-title="Cheat Engine练习">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-				 <span>°C</span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  1.5k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  6
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="Cheat-Engine练习"><a href="#Cheat-Engine练习" class="headerlink" title="Cheat Engine练习"></a>Cheat Engine练习</h1><p>打开Cheat Engine Tutorial，有如下帮助提示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Welcome to the Cheat Engine Tutorial (v3.3)</span><br><span class="line"></span><br><span class="line">This tutorial will teach you the basics of cheating in video games. It will also show you foundational aspects of using Cheat Engine (or CE for short). Follow the steps below to get started.</span><br><span class="line">1: Open Cheat Engine if it currently isn&apos;t running.</span><br><span class="line">2: Click on the &quot;Open Process&quot; icon (it&apos;s the top-left icon with the computer on it, below &quot;File&quot;.).</span><br><span class="line">3: With the Process List window now open, look for this tutorial&apos;s process in the list. It will look something like &quot;00001F98-Tutorial-x86_64.exe&quot; or &quot;0000047C-Tutorial-i386.exe&quot;. (The first 8 numbers/letters will probably be different.)</span><br><span class="line">4: Once you&apos;ve found the process, click on it to select it, then click the &quot;Open&quot; button. (Don&apos;t worry about all the other buttons right now. You can learn about them later if you&apos;re interested.)</span><br><span class="line">Congratulations! If you did everything correctly, the process window should be gone with Cheat Engine now attached to the tutorial (you will see the process name towards the top-center of CE).</span><br><span class="line">Click the &quot;Next&quot; button below to continue, or fill in the password and click the &quot;OK&quot; button to proceed to that step.)</span><br><span class="line">If you&apos;re having problems, simply head over to forum.cheatengine.org, then click on &quot;Tutorials&quot; to view beginner-friendly guides!</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/Cheat-Engine练习/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/03/反调试技术/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hvnt3r">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hvnt3r's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/反调试技术/" itemprop="url">反调试技术</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-26T23:14:45+08:00">
-                2019-03-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
-                    <span itemprop="name">二进制安全</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2019/03/反调试技术/" class="leancloud_visitors" data-flag-title="反调试技术">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-				 <span>°C</span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  5.5k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  22
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="反调试技术"><a href="#反调试技术" class="headerlink" title="反调试技术"></a>反调试技术</h1><hr>
-<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>反调试技术，恶意代码用它来识别自身是否被调试，或者让调试器失效，或者通过反调试技术盐城分析人员对代码的分析时间，为了组织调试器的分析，当恶意代码意识到自己被调试时，他们可能改变正常的执行路径或者修改自身程序让自己崩溃，从而增加调试时间和复杂度。</p>
-<p><strong>探测Windows调试器：</strong>恶意代码会使用多种技术探测调试器调试它的痕迹，其中包括使用Windows API、手动检测调试器人工痕迹的内存结构，查询调试器遗留在系统中的痕迹等。调试器探测时恶意代码常用的反调试技术。</p>
-<p><strong>使用Windows API函数：</strong>使用Windows API函数探测调试器是否存在时最简单的反调试技术，Windows提供了一些函数可以让应用程序调用这些API来探测自己是否被调试。这些API中有些时专门来探测调试器存在的，而另一些API时处于其他目的而设计的。通常方式恶意代码使用API函数进行反调试的最简单方法是在恶意代码运行期间修改恶意代码，使其不能调用探测调试器的API函数，或者修改这些函数的返回值，也可以通过挂钩这些函数，如使用rootkit技术，下列时恶意代码常用来探测调试器的API函数：</p>
-<ul>
-<li><code>IsDebuggerPresent</code>：这是探测调试器最简单的API函数。它查询进程环境块（PEB）中的<code>IsDebugged</code>标志。如果进程没有运行在调试环境中，则函数返回0，否侧返回一个非0值。</li>
-<li><code>CheckRemoteDebuggerPresent</code>：这个函数跟<code>IsDebuggerPresent</code>很类似，它也查询进程环境块（PEB）中的<code>IsDebugged</code>标志。它可以探测自身进程或者系统其它进程是被调试，这个函数将一个句柄作为参数，检查这个句柄对应的进程是否被其他调试器附加。</li>
-<li><code>NtQueryInformationProcess</code>：这个函数时<code>Ntdll.dll</code>中的一个原生态API，它用来提取一个进程的信息，他的第一个参数是进程句柄，第二个参数告诉我们它需要提取进程信息的类型，例如将该参数设置为哦<code>ProcessDebugPort</code>，将会告诉你这个句柄标识的进程是否被调试。如果进程正在被调试，则返回被调试的端口，否则返回0.</li>
-<li><code>OutputDebugString</code>：这个函数的作用是在调试器中显示一个字符串，先通过<code>SetLastError</code>函数为当前的错误码设置一个随机的值，然后调用<code>OutputDebugString</code>，如果当前进程没有被调试则<code>OutputDebugString</code>的调用不会影响错误码的值。</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/反调试技术/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/03/防反汇编技术/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hvnt3r">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hvnt3r's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/防反汇编技术/" itemprop="url">防反汇编技术</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-26T23:08:46+08:00">
-                2019-03-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
-                    <span itemprop="name">二进制安全</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2019/03/防反汇编技术/" class="leancloud_visitors" data-flag-title="防反汇编技术">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-				 <span>°C</span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  4k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  17
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="防反汇编技术"><a href="#防反汇编技术" class="headerlink" title="防反汇编技术"></a>防反汇编技术</h1><hr>
-<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>所谓对抗反汇编技术，就是在程序中使用一些特殊构造的代码或数据，让反汇编分析工具产生不正确的程序代码列表。这种技术由恶意代码编写者手工构造，在恶意代码编译和部署阶段使用一个单独的混淆工具，或是直接在源码中插入混淆代码。除了延缓或者防止人工分析以外，防反汇编技术也能在一定程度上阻碍特定的自动化分析技术。</p>
-<p><strong>线性反汇编：</strong>线性反汇编策略是遍历一个代码段，一次一条指令地线性反汇编，线性反汇编用已经反汇编地指令大小来决定下一个要反汇编的字节，而不考虑代码流的控制指令。</p>
-<p><strong>面向代码流的反汇编：</strong>面向代码流的反汇编算法是一种更先进的反汇编宣发，这种算法会根据后续代码的逻辑来选择汇编的字节流，因此结果一般情况下会更加准确。</p>
-<p><strong>相同目标的跳转指令：</strong>恶意代码中最常见的防反汇编技术是使用指向同一目标地址的两个连续条件跳转指令。例如<code>jz loc_512</code>之后是 <code>jnz loc_512</code>则这个指令就相当于无条件跳转指令<code>jmp</code>，另外程序可能会在代码中插入与指令相同额数据如用E8来冒充call指令，实际上使用的是E8后面的字节，E8并没有发挥作用。遇到这种情况可以使用快捷键D使代码变成数据。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/防反汇编技术/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/03/隐蔽的恶意代码启动/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hvnt3r">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hvnt3r's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/隐蔽的恶意代码启动/" itemprop="url">隐蔽的恶意代码启动</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-25T23:46:53+08:00">
-                2019-03-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
-                    <span itemprop="name">二进制安全</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2019/03/隐蔽的恶意代码启动/" class="leancloud_visitors" data-flag-title="隐蔽的恶意代码启动">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-				 <span>°C</span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  2.8k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  10
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="隐蔽的恶意代码启动"><a href="#隐蔽的恶意代码启动" class="headerlink" title="隐蔽的恶意代码启动"></a>隐蔽的恶意代码启动</h1><hr>
-<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p><strong>启动器：</strong>启动器，也称为加载器，是一种设置自身或者其他恶意代码片段以到达即时或将来秘密运行的恶意代码。启动器经常回在资源节包含要加载的恶意代码。如果资源节被压缩或者加密，则恶意代码必须在加载前对资源节进行提取操作，因此可以在代码中看到<code>FindResource</code>、<code>LoadResource</code>、以及<code>SizeofResource</code>等API函数。恶意代码通常需要管理员权限才能进行下面介绍的操作。</p>
-<p><strong>进程注入：</strong>隐藏启动行为的最流行的技术是进程注入，这是一种将代码注入到另外一个正在运行的进程中，而被注入的进程会不知不觉地运行注入地代码。执行进程注入通常用到如下API：<code>VirtualAllocEx</code>用来分配一块内存空间、<code>WriteProcessMemory</code>用来想之前分配地地址空间内写入数据。</p>
-<p><strong>DLL注入：</strong>DLL注入是进程注入地一种形式，它强迫一个远程进程加载DLL程序，同时它也是最常使用地的隐秘加载技术。DLL注入将代码注入到一个远程进程并让远程进程调用<code>LoadLibrary</code>，从而强制远程进程加载一个DLL程序到它的进程上下文，一旦被感染的进程加载了恶意DLL，系统会自动调用<code>DLLMain</code>函数。注入的DLL与被注入DLL的进程拥有相同的权限。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/隐蔽的恶意代码启动/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/03/恶意代码行为/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hvnt3r">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hvnt3r's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/恶意代码行为/" itemprop="url">恶意代码行为</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-20T11:08:22+08:00">
-                2019-03-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
-                    <span itemprop="name">二进制安全</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2019/03/恶意代码行为/" class="leancloud_visitors" data-flag-title="恶意代码行为">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-				 <span>°C</span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  5.1k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  22
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="恶意代码行为"><a href="#恶意代码行为" class="headerlink" title="恶意代码行为"></a>恶意代码行为</h1><hr>
-<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>本章中会介绍恶意代码常见的恶意行为，方便我们识别各种各样的恶意程序。</p>
-<p><strong>下载器和启动器：</strong>常见的两种恶意代码是下载器和启动器。下载器从互联网上下载其他的恶意代码，然后在本地系统中运行，通常使用<code>WindowsAPI</code>函数<code>URLDownloadtoFileA</code>和<code>WinExec</code>，来下载并运行新的恶意代码。启动器也成为加载器，是一类可执行文件，用来安装立即运行或者将来运行的恶意代码。</p>
-<p><strong>后门：</strong>后门可以让攻击者远程访问一个受害的机器。通常使用80端口的HTTP协议与控制机器进行通信。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/恶意代码行为/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/03/使用WinDbg调试内核/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hvnt3r">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hvnt3r's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/使用WinDbg调试内核/" itemprop="url">使用WinDbg调试内核</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-18T09:16:47+08:00">
-                2019-03-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
-                    <span itemprop="name">二进制安全</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2019/03/使用WinDbg调试内核/" class="leancloud_visitors" data-flag-title="使用WinDbg调试内核">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-				 <span>°C</span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  3.4k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  12
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="使用WinDbg调试内核"><a href="#使用WinDbg调试内核" class="headerlink" title="使用WinDbg调试内核"></a>使用WinDbg调试内核</h1><hr>
-<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p><code>WinDbg</code>是微软提供的一个免费调试器，支持内核调试，也具有监控Windows系统交互的功能。</p>
-<p><strong>驱动与内核代码：</strong>Windows设备驱动简称为驱动，他让第三方开发商在Windows内核模式下运行代码。驱动程序常驻与内存，并且负责响应用户态程序的请求，而且应用程序不直接与驱动程序通信，而是直接访问设备对象，向具体的物理设备发送请求。设备对象由驱动程序创建和销毁，可以被用户态的程序直接访问，但他们并不一定是真实的物理设备。为了系统能正常工作，驱动程序必须加载到内核空间，这与DLL需要加载到进程空间道理相同，当驱动被首次加载时，<code>DriverEntry</code>函数将被调用。</p>
-<p>与DLL通过导出函数表来提供其功能不同，驱动程序通过注册回调函数来提供功能。当用户态的应用程序请求一个服务时，这些回调函数将被调用。回调函数在<code>DriverEntry</code>程序中被注册。Window会为每个条创建一个驱动对象，并以参数形式将其传递给<code>DriverEntry</code>函数，<code>DriverEntry</code>函数用回调函数填充这个驱动对象。然后<code>DriverEntry</code>会创建一个可以被用户态应用程序访问的设备对象，应用程序与去当的交互请求都通过这个设备对象进行。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/使用WinDbg调试内核/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/03/OllyDbg使用方法/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hvnt3r">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hvnt3r's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/OllyDbg使用方法/" itemprop="url">OllyDbg使用方法</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-15T09:48:43+08:00">
-                2019-03-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
-                    <span itemprop="name">二进制安全</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2019/03/OllyDbg使用方法/" class="leancloud_visitors" data-flag-title="OllyDbg使用方法">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-				 <span>°C</span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  4.1k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  18
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="OllyDbg使用方法"><a href="#OllyDbg使用方法" class="headerlink" title="OllyDbg使用方法"></a>OllyDbg使用方法</h1><hr>
-<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p><strong>加载恶意代码：</strong>OD可以直接加载可执行文件，也可以加载DLL文件，也可以将调试器附加在进程中，我们甚至可以用命令行运行恶意代码或者执行DLL中的某个函数。</p>
-<p><strong>加载可执行文件：</strong>在加载可执行文件的时候OD会使用它的加载器来加载这个程序，并可在此过程选择运行的命令行参数。如果OD能确定程序的main函数就在main处中断，否则在程序PE头提供的程序入口点中断。</p>
-<p><strong>附加调试器到一个程序：</strong>OD在附加到一个进程时会立即暂停这个程序以及它所有的线程。</p>
-<p><strong>OD窗口：</strong>OD有如下几个常用窗口：</p>
-<ul>
-<li>反汇编窗口：这个窗口显示了被调试程序的代码，下一条要执行的指令回在窗口中高亮显示，如果项修改指令或者数据，可以在此窗口中敲击空格键。</li>
-<li>寄存器窗口：这个窗口会显示程序寄存器的当前状态，代码在调试过程中，如果莫格寄存器的值发生了改变，则此寄存器就会从黑色变成红色。右键某个寄存器选择Modify就可以修改某个寄存器中的值。</li>
-<li>栈窗口：这个窗口会显示被调试宪曾在内存中的当前状态。这个窗口总会显示给定线程得到栈顶。OD会在一些栈单元上显示一些有用的注释，这些注释描述了调用一个API之前栈中存放的参数。</li>
-<li>内存转储窗口：这个窗口显示被调试进程的实时内存转储。</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/OllyDbg使用方法/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2232,7 +2240,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">56</span>
+                  <span class="site-state-item-count">63</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -2254,7 +2262,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -2329,7 +2337,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">92.1k</span>
+    <span title="Site words total count">100.8k</span>
   
 </div>
 

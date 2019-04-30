@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="恶意代码分析,逆向,ShellCode," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="ShellCode分析 知识点位置无关代码：PIC指不用硬编码地址来寻址指令或数据得代码，shellcode编写者应该使用位置无关代码来提高代码的兼容性。 识别执行位置：Shellcode再以位置无关方式访问数据时需要引用一个基质指针，用这个基址指针加上或减去偏移值，将使它安全访问shellcode中包含的数据，因此一个通用寄存器应该首先载入当前EIP值，作为基址指针来使用，但是指令指针不能之别被">
+<meta name="keywords" content="恶意代码分析,逆向,ShellCode">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ShellCode分析">
+<meta property="og:url" content="https://hvnt3r.top/2019/04/ShellCode分析/index.html">
+<meta property="og:site_name" content="Hvnt3r&#39;s Blog">
+<meta property="og:description" content="ShellCode分析 知识点位置无关代码：PIC指不用硬编码地址来寻址指令或数据得代码，shellcode编写者应该使用位置无关代码来提高代码的兼容性。 识别执行位置：Shellcode再以位置无关方式访问数据时需要引用一个基质指针，用这个基址指针加上或减去偏移值，将使它安全访问shellcode中包含的数据，因此一个通用寄存器应该首先载入当前EIP值，作为基址指针来使用，但是指令指针不能之别被">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://i.loli.net/2019/04/29/5cc6a4711e07b.png">
+<meta property="og:image" content="https://i.loli.net/2019/04/29/5cc6e2d794f96.png">
+<meta property="og:updated_time" content="2019-04-29T13:27:31.259Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ShellCode分析">
+<meta name="twitter:description" content="ShellCode分析 知识点位置无关代码：PIC指不用硬编码地址来寻址指令或数据得代码，shellcode编写者应该使用位置无关代码来提高代码的兼容性。 识别执行位置：Shellcode再以位置无关方式访问数据时需要引用一个基质指针，用这个基址指针加上或减去偏移值，将使它安全访问shellcode中包含的数据，因此一个通用寄存器应该首先载入当前EIP值，作为基址指针来使用，但是指令指针不能之别被">
+<meta name="twitter:image" content="https://i.loli.net/2019/04/29/5cc6a4711e07b.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://hvnt3r.top/2019/04/ShellCode分析/"/>
+
+
+
+
+
+  <title>ShellCode分析 | Hvnt3r's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband">
+	<a href="https://github.com/Hvnt3r"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+	</div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta custom-logo">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hvnt3r's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">让我们来猎杀那些陷入黑暗中的人吧-Shauna Vayne</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-主🐷页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            主🐷页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-系列文章💎">
+          <a href="/series/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            系列文章💎
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于我😎">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于我😎
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签👀">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签👀
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-分类👅">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类👅
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-所有文章📖">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            所有文章📖
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-友情链接👥">
+          <a href="/friends/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-link"></i> <br />
+            
+            友情链接👥
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-计划清单📜">
+          <a href="/Plan/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />
+            
+            计划清单📜
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/04/ShellCode分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">ShellCode分析</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-27T10:58:09+08:00">
+                2019-04-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
+                    <span itemprop="name">二进制安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/04/ShellCode分析/" class="leancloud_visitors" data-flag-title="ShellCode分析">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  1.4k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="ShellCode分析"><a href="#ShellCode分析" class="headerlink" title="ShellCode分析"></a>ShellCode分析</h1><hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p><strong>位置无关代码：</strong>PIC指不用硬编码地址来寻址指令或数据得代码，shellcode编写者应该使用位置无关代码来提高代码的兼容性。</p>
+<p><strong>识别执行位置：</strong>Shellcode再以位置无关方式访问数据时需要引用一个基质指针，用这个基址指针加上或减去偏移值，将使它安全访问shellcode中包含的数据，因此一个通用寄存器应该首先载入当前EIP值，作为基址指针来使用，但是指令指针不能之别被软件访问，无法汇编<code>mov eax, eip</code>指令，但是可以使用<code>call/pop</code>指令和<code>fnstenv</code>指令。</p>
+<p><strong>使用call/pop指令：</strong>当一个call指令被执行使，处理器将call后面的指令地址压倒栈上，然后请求转到被请求的位置执行，这个函数执行完成后会执行一个ret指令，将返回地址弹出到栈的顶部，并将它载入EIP寄存器中，这样的结果使执行刚好返回到call后面的指令。因此shellcode可以通过call后面紧跟一个pop的方法来得到call后指令指针的方法。</p>
+<a id="more"></a>
+<p><strong>使用fnstenv指令：</strong>x87浮点单元（FPU）再普通的x86架构中提供给了一个隔离的执行环境，它包含一个单独的专用寄存器集合，当一个进程正在使用FPU指令浮点运算时，这些寄存器需要由操作系统再上下文切换时保存，<code>fnstenv</code>使用一个28字节的结构体存储FPU状态到内存中，有一处字符偏移量为<code>12</code>的<code>fpu_instruction_pointer</code>会保存FPU使用的最后一条的CPU指令的地址，并为一场处理器标识哪条FPU指令可能导致错误上下文信息，需要这个域是因为FPU是与CPU并行运行的，如果FPU产生了一个异常，一场处理器不能简单地通过参照中断返回地址来标识这个错误的指令。</p>
+<p><strong>手动符号解析：</strong>shellcode 不能使用Windows加载器来确保所有的库加载并可用，它必须自己解决外部符号依赖，因此它经常使用LoadLibrarayA和GetProcAddress函数。因此shellcode需要完成</p>
+<ul>
+<li>在内存中找到kernel32.dll</li>
+<li>解析kernel32.dll文件，并搜索以上两个导出函数。</li>
+</ul>
+<p><strong>在内存中找到kernel32.dll：</strong></p>
+<p><img src="https://i.loli.net/2019/04/29/5cc6a4711e07b.png" alt=""></p>
+<p>一旦找到了上图中kernel32.dll的基地址DllBase，通过跟踪内存中的几个结构体来解析kernel32.dll的符号。当定义一个文件内的位置时,PE文件使用RVA，导出数据被保存在IMAGE_EXPORT_DIRECTORY中，一个相对于IMAGE_EXPORT_DIRECTORY的RVA被保存在IMAGE_OPTIONAL_HEADER末尾部分的IMAGE_DATA_DIRECTORY结构体数组中。IMAGE_DATA_DIRECTORY数组的具体位置取决于这个PE文件是32位还是64位的。假设shellcode运行在32位平台上，所以在编译时从PE特征值域到IMAGE_DATA_DIRECTORY正确偏移的计算方式如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">sizeof</span>(PE_Signature)+<span class="keyword">sizeof</span>(IMAGE_FILE_HEADER)+<span class="keyword">sizeof</span>(IMAGE_OPTIONAL_HEADER)=<span class="number">120</span>字节</span><br></pre></td></tr></table></figure>
+<p>下图是IMAGE_EXPORT_DIRCTORY结构体中的相对域，AddressOfFunctions是一个RVA的数组，指向实际导出的函数。</p>
+<p><img src="https://i.loli.net/2019/04/29/5cc6e2d794f96.png" alt=""></p>
+<p>按照如下步骤可以找到一个符号的导出地址：</p>
+<ul>
+<li>迭代<code>AddressOfNames</code>数组查看每一个char *项，然后和需要的符执行一个字符串比较，直到找到一个匹配的项，我们将这个<code>AddressOfNames</code>的索引称为<code>AddressOfName iName</code>。</li>
+<li>在<code>AddressOfNameOrdinals</code>数组中使用<code>iName</code>的索引，获取的值就是<code>iOrdinal</code>值。</li>
+<li>使用<code>iOrdinal</code>索引到<code>Address OfFunctions</code>数组，获取到的值是被导出符号的RVA，最后将这个值返回给请求者。</li>
+</ul>
+<p><strong>使用散列过的导出符号名：</strong>当使用对每一个导出函数进行<code>strcmp</code>对比直到找出正确的函数名不适用<code>shellcode</code>大小受限的情况，shellcode大小受限时可以使用散列过的导出函数名来缩小<code>shellcode</code>大小。</p>
+<p><strong>空指令雪橇：</strong>即<code>nop</code>指令<code>0x90</code>，但是有的编写者为了避免检测也会使用<code>0x40~0x4f</code>之间的值作为空指令。</p>
+<p><strong>shellcode编码：</strong>有的程序可能会对<code>shellcode</code>的编码有一定的需求，不能出现坏字符如在字符串中出现<code>0x00</code>，或者要求所有字符都是可打印的（小于<code>0x80</code>）等，要绕过这些限制首先需要对<code>shellcode</code>进行编码，然后再<code>shellcode</code>中插入一个解码器，要保证解码器本身也能通过限制。下面时常用的编码技术：</p>
+<ul>
+<li>用常量字节掩码来<code>XOR</code>所有的载荷字节。</li>
+<li>使用字母变换将一个字节分割成4个比特然后域一个可打印的ASCII字符相加等。</li>
+</ul>
+<h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab19-1"><a href="#Lab19-1" class="headerlink" title="Lab19-1"></a>Lab19-1</h3><p><strong>使用shellcode_launcher.exe，分析文件。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.这段shellcode时如何编码的？</strong></p>
+<p><strong>2.这段shellcode手动导入了哪个函数？</strong></p>
+<p><strong>3.这段shellcode和哪个网络主机通信？</strong></p>
+<p><strong>4.这段shellcode再文件系统上留下了什么迹象？</strong></p>
+<p><strong>5.这段shellcode做了什么？</strong></p>
+<h3 id="Lab19-2"><a href="#Lab19-2" class="headerlink" title="Lab19-2"></a>Lab19-2</h3><p><strong>文件Lab19-02.exe中包含一段shellcode，这个shellcode会被注入到另外一个进程并运行，请分析这个文件</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.这段shellcode被注入到什么进程中？</strong></p>
+<p><strong>2.这段shellcode位于哪里？</strong></p>
+<p><strong>3.这段shellcode时如何被编码的？</strong></p>
+<p><strong>4.这段shellcode手动导入了哪个函数？</strong></p>
+<p><strong>5.这段shellcode和什么网络主机进行通信？</strong></p>
+<p><strong>6.这段shellcode做了什么？</strong></p>
+<h3 id="Lab19-3"><a href="#Lab19-3" class="headerlink" title="Lab19-3"></a>Lab19-3</h3><p><strong>问题</strong></p>
+<p><strong>1.这个PDF中使用了什么漏洞？</strong></p>
+<p><strong>2.这段shellcode是如何编码的？</strong></p>
+<p><strong>3.这段shellcode手动导入了哪个函数？</strong></p>
+<p><strong>4.这段shellcode再文件系统上留下了什么迹象？</strong></p>
+<p><strong>5.这段shellcode做了什么？</strong></p>
+<hr>
+<h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>您的支持是我最大的动力🍉</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="Hvnt3r WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Hvnt3r Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:</strong>
+    Hvnt3r
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link:</strong>
+    <a href="https://hvnt3r.top/2019/04/ShellCode分析/" title="ShellCode分析">https://hvnt3r.top/2019/04/ShellCode分析/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice: </strong>
+    All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally.
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/恶意代码分析/" rel="tag"><i class="fa fa-tag"></i> 恶意代码分析</a>
+          
+            <a href="/tags/逆向/" rel="tag"><i class="fa fa-tag"></i> 逆向</a>
+          
+            <a href="/tags/ShellCode/" rel="tag"><i class="fa fa-tag"></i> ShellCode</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/加壳与脱壳/" rel="next" title="加壳与脱壳">
+                <i class="fa fa-chevron-left"></i> 加壳与脱壳
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/C-代码分析/" rel="prev" title="C++代码分析">
+                C++代码分析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.png"
+                alt="Hvnt3r" />
+            
+              <p class="site-author-name" itemprop="name">Hvnt3r</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">70</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Hvnt3r" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:hvnt3r@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ShellCode分析"><span class="nav-number">1.</span> <span class="nav-text">ShellCode分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#知识点"><span class="nav-number">1.1.</span> <span class="nav-text">知识点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#课后练习"><span class="nav-number">1.2.</span> <span class="nav-text">课后练习</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab19-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">Lab19-1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab19-2"><span class="nav-number">1.2.2.</span> <span class="nav-text">Lab19-2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lab19-3"><span class="nav-number">1.2.3.</span> <span class="nav-text">Lab19-3</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#本章结束🎊"><span class="nav-number">1.3.</span> <span class="nav-text">本章结束🎊</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Hvnt3r</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">100.8k</span>
+  
+</div>
+
+
+
+
+<!-- 
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+-->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Mlz03BBADnvOzP0kDTeS9A4a-gzGzoHsz", "gbVyqV9usci1PKnM7hcg3uCv");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/exturl.js?v=5.1.4"></script>
+
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+<script type="text/javascript" src="/js/src/love.js"></script>
