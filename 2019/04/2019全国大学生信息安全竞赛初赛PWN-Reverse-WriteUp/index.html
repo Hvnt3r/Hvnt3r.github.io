@@ -75,7 +75,7 @@
 
 
 
-  <meta name="keywords" content="PWN,逆向,CTF,WriteUp,Reverse," />
+  <meta name="keywords" content="PWN,CTF,WriteUp,Reverse,逆向," />
 
 
 
@@ -88,13 +88,13 @@
 
 
 
-<meta name="description" content="Reverse0x01 easyGo 123456hvnt3r@LAPTOP-POUA9UHC:/mnt/e/linux$ file easygoeasygo: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, strippedhvnt3r@LAPTOP-POUA9UHC:/mnt/e/linux$ ./">
-<meta name="keywords" content="PWN,逆向,CTF,WriteUp,Reverse">
+<meta name="description" content="Reverse0x01 easyGo">
+<meta name="keywords" content="PWN,CTF,WriteUp,Reverse,逆向">
 <meta property="og:type" content="article">
 <meta property="og:title" content="2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp">
 <meta property="og:url" content="https://hvnt3r.top/2019/04/2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp/index.html">
 <meta property="og:site_name" content="Hvnt3r&#39;s Blog">
-<meta property="og:description" content="Reverse0x01 easyGo 123456hvnt3r@LAPTOP-POUA9UHC:/mnt/e/linux$ file easygoeasygo: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, strippedhvnt3r@LAPTOP-POUA9UHC:/mnt/e/linux$ ./">
+<meta property="og:description" content="Reverse0x01 easyGo">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://i.loli.net/2019/04/29/5cc64745afb8d.png">
 <meta property="og:image" content="https://i.loli.net/2019/04/29/5cc647867d4e3.png">
@@ -107,10 +107,10 @@
 <meta property="og:image" content="https://i.loli.net/2019/04/29/5cc648b6da857.png">
 <meta property="og:image" content="https://i.loli.net/2019/04/29/5cc648d2564fc.png">
 <meta property="og:image" content="https://i.loli.net/2019/04/29/5cc648e6070a3.png">
-<meta property="og:updated_time" content="2019-04-29T07:02:28.368Z">
+<meta property="og:updated_time" content="2019-04-30T06:13:27.728Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp">
-<meta name="twitter:description" content="Reverse0x01 easyGo 123456hvnt3r@LAPTOP-POUA9UHC:/mnt/e/linux$ file easygoeasygo: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, strippedhvnt3r@LAPTOP-POUA9UHC:/mnt/e/linux$ ./">
+<meta name="twitter:description" content="Reverse0x01 easyGo">
 <meta name="twitter:image" content="https://i.loli.net/2019/04/29/5cc64745afb8d.png">
 
 
@@ -427,6 +427,7 @@
 
       
         <h1 id="Reverse"><a href="#Reverse" class="headerlink" title="Reverse"></a>Reverse</h1><h2 id="0x01-easyGo"><a href="#0x01-easyGo" class="headerlink" title="0x01 easyGo"></a>0x01 easyGo</h2><p><img src="https://i.loli.net/2019/04/29/5cc64745afb8d.png" alt=""></p>
+<a id="more"></a>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">hvnt3r@LAPTOP-POUA9UHC:/mnt/e/linux$ file easygo</span><br><span class="line">easygo: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, stripped</span><br><span class="line">hvnt3r@LAPTOP-POUA9UHC:/mnt/e/linux$ ./easyGo</span><br><span class="line">Please input you flag like flag&#123;123&#125; to judge:</span><br><span class="line">flag&#123;1212121&#125;</span><br><span class="line">Try again! Come on!</span><br></pre></td></tr></table></figure>
 <p>Go的逆向，先用<code>IDAGolangHelper</code>恢复函数名，在<code>main_main</code>函数中找到<code>base64</code>加密，在函数位置下断点，<code>gdb</code>中单步运行，执行完<code>encoding_base64__ptr_Encoding_DecodeString</code>之后可以在<code>RSI</code>中看到<code>flag</code>:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[----------------------------------registers-----------------------------------]</span><br><span class="line">RAX: 0x2a (<span class="string">'*'</span>)</span><br><span class="line">RBX: 0x2a (<span class="string">'*'</span>)</span><br><span class="line">RCX: 0x0 </span><br><span class="line">RDX: 0x0 </span><br><span class="line">RSI: 0xc000098060 (<span class="string">"flag&#123;92094daf-33c9-431e-a85a-8bfbd5df98ad&#125;"</span>)</span><br><span class="line">RDI: 0x38 (<span class="string">'8'</span>)</span><br><span class="line">RBP: 0xc000092f88 --&gt; 0xc000092f90 --&gt; 0x429b1c (mov    eax,DWORD PTR [rip+0x16478e]        <span class="comment"># 0x58e2b0)</span></span><br><span class="line">RSP: 0xc000092e90 --&gt; 0xc000096580 (<span class="string">"6789_-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345"</span>, <span class="string">'\377'</span> &lt;repeats 45 <span class="built_in">times</span>&gt;, <span class="string">"\005\377\377:;&lt;=&gt;?"</span>)</span><br><span class="line">RIP: 0x4952f0 (mov    rax,QWORD PTR [rsp+0x38])</span><br><span class="line">R8 : 0x0 </span><br><span class="line">R9 : 0x0 </span><br><span class="line">R10: 0x2a (<span class="string">'*'</span>)</span><br><span class="line">R11: 0x2a (<span class="string">'*'</span>)</span><br><span class="line">R12: 0xc000098060 (<span class="string">"flag&#123;92094daf-33c9-431e-a85a-8bfbd5df98ad&#125;"</span>)</span><br><span class="line">R13: 0xc000096580 (<span class="string">"6789_-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345"</span>, <span class="string">'\377'</span> &lt;repeats 45 <span class="built_in">times</span>&gt;, <span class="string">"\005\377\377:;&lt;=&gt;?"</span>)</span><br><span class="line">R14: 0x2a (<span class="string">'*'</span>)</span><br><span class="line">R15: 0x40 (<span class="string">'@'</span>)</span><br><span class="line">EFLAGS: 0x206 (carry PARITY adjust zero sign <span class="built_in">trap</span> INTERRUPT direction overflow)</span><br></pre></td></tr></table></figure>
@@ -508,13 +509,13 @@
           
             <a href="/tags/PWN/" rel="tag"><i class="fa fa-tag"></i> PWN</a>
           
-            <a href="/tags/逆向/" rel="tag"><i class="fa fa-tag"></i> 逆向</a>
-          
             <a href="/tags/CTF/" rel="tag"><i class="fa fa-tag"></i> CTF</a>
           
             <a href="/tags/WriteUp/" rel="tag"><i class="fa fa-tag"></i> WriteUp</a>
           
             <a href="/tags/Reverse/" rel="tag"><i class="fa fa-tag"></i> Reverse</a>
+          
+            <a href="/tags/逆向/" rel="tag"><i class="fa fa-tag"></i> 逆向</a>
           
         </div>
       
