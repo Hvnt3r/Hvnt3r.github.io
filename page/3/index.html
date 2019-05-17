@@ -301,6 +301,583 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/03/动态调试技术/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/动态调试技术/" itemprop="url">动态调试技术</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-14T20:35:05+08:00">
+                2019-03-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
+                    <span itemprop="name">二进制安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/03/动态调试技术/" class="leancloud_visitors" data-flag-title="动态调试技术">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  3
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="动态调试技术"><a href="#动态调试技术" class="headerlink" title="动态调试技术"></a>动态调试技术</h1><hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>本章会重点介绍两个调试器：<code>OllyDbg</code>和<code>WinDbg</code>，调试器监控程序执行的能力在恶意代码分析的过程中十分重要，调试器允许我们查看任意内存地址的内容，寄存器的内容以及每个函数参数的值。调试器也允许我们在任意时刻改变运行中的程序中的值。</p>
+<p><strong>源代码级调试器与汇编级调试器：</strong>源代码级调试器指在代码编写期间运行的调试器，汇编级调试器也成为底层调试器，他的操作对象使源代码而不是汇编代码。</p>
+<p><strong>内核模式与用户模式调试：</strong>在用户模式中调试器调试的程序是单个可执行程序，操作系统会将它与其他可执行程序隔离。内核模式调试一般需要两个系统，一个系统运行被调试的代码，另一个系统运行调试器，我们需要开启操作系统的内核调试功能并将两个系统连接。<code>WinDbg</code>是一个常用的内核调试器，<code>OD</code>是一个常用的用户模式调试器。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/动态调试技术/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/03/分析恶意Windows程序/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/分析恶意Windows程序/" itemprop="url">分析恶意Windows程序</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-10T14:53:48+08:00">
+                2019-03-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
+                    <span itemprop="name">二进制安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/03/分析恶意Windows程序/" class="leancloud_visitors" data-flag-title="分析恶意Windows程序">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  3.8k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  13
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="分析恶意Windows程序"><a href="#分析恶意Windows程序" class="headerlink" title="分析恶意Windows程序"></a>分析恶意Windows程序</h1><hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>多数恶意代码运行在Windows上，因此对Windows变成概念的深刻理解会帮助我们识别出恶意代码在主机上感染的迹象，本章会介绍一些恶意代码使用Windows功能的独特方式，并且会讨论恶意代码是如何使用内核模式来实现额外功能与自身隐藏的。</p>
+<p><strong>Windows API：</strong>Windows API是一个广泛的功能集合，管理着恶意代码与微软程序库之间的交互方式，Windows  API使用他自己的名字。例如DWORD和WORD类型分别标识32位与16位无符号整数。标准C类型如int、short等通常并不使用。Windows总体上使用匈牙利表达法，作为API函数的标识符，这个表达式使用一个前缀命名，如32位无符号整数变量会以dw开头。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/分析恶意Windows程序/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/03/识别汇编中的C代码结构/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/识别汇编中的C代码结构/" itemprop="url">识别汇编中的C代码结构</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-06T14:29:06+08:00">
+                2019-03-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
+                    <span itemprop="name">二进制安全</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/03/识别汇编中的C代码结构/" class="leancloud_visitors" data-flag-title="识别汇编中的C代码结构">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  2k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="识别汇编中的C代码结构"><a href="#识别汇编中的C代码结构" class="headerlink" title="识别汇编中的C代码结构"></a>识别汇编中的C代码结构</h1><hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>本章将通过讨论超过十种的不同的C代码结构来分析不同的汇编代码，帮助我们快速的提升形成恶意代码功能的高级视图的能力</p>
+<p><strong>全局变量|局部变量：</strong>全局变量可以被程序中任意函数访问和使用，局部变量只能在它被定义的函数中访问，在汇编代码中，全局变量通过内存地址引用，而局部变量通过栈地址引用。</p>
+<p><strong>识别if语句：</strong>有if语句一定存在跳转，但是有跳转不一定是if语句，if语句前有一个<code>cmp</code>指令用于对比条件，之后会有一个<code>jnz</code>指令来决定是否进行跳转。</p>
+<p><strong>for循环：</strong><code>for</code>循环是一个C变成使用的基本循环机制。<code>for</code>循环总之有四个组件：初始化、比较、执行命令、变量的递增或递减。</p>
+<p><strong>while循环：</strong><code>while</code>循环与<code>for</code>循环的汇编代码类似，但是区别在于while循环没有递增或者递减的代码。当一个<code>cmp</code>指令返回一定的值后<code>while</code>循环就会终止。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/识别汇编中的C代码结构/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/03/IDA-Pro使用方法/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1637,595 +2214,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2018/12/恶意代码分析实战学习笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hvnt3r">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hvnt3r's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/12/恶意代码分析实战学习笔记/" itemprop="url">恶意代码分析实战学习笔记</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-02T15:23:09+08:00">
-                2018-12-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
-                    <span itemprop="name">二进制安全</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2018/12/恶意代码分析实战学习笔记/" class="leancloud_visitors" data-flag-title="恶意代码分析实战学习笔记">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-				 <span>°C</span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  224
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  1
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h1><ul>
-<li><a href="https://hvnt3r.top/2019/01/%E5%89%8D%E8%A8%80/">前言</a></li>
-<li><a href="https://hvnt3r.top/2019/01/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80%E6%8A%80%E6%9C%AF/">第一章 - 静态分析基础技术</a></li>
-<li><a href="https://hvnt3r.top/2019/01/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%88%86%E6%9E%90%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/">第二章 - 在虚拟机中分析恶意代码</a></li>
-<li><a href="https://hvnt3r.top/2019/01/%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80%E6%8A%80%E6%9C%AF/">第三章 - 动态分析基础技术</a></li>
-<li><a href="https://hvnt3r.top/2019/03/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90%E9%AB%98%E7%BA%A7%E6%8A%80%E6%9C%AF/">第四章 - 静态分析高级技术</a></li>
-<li><a href="https://hvnt3r.top/2019/03/IDA-Pro%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95/">第五章 - IDA Pro使用方法</a></li>
-<li><a href="https://hvnt3r.top/2019/03/%E8%AF%86%E5%88%AB%E6%B1%87%E7%BC%96%E4%B8%AD%E7%9A%84C%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84/">第六章 - 识别汇编中的C代码结构</a></li>
-<li><a href="https://hvnt3r.top/2019/03/%E5%88%86%E6%9E%90%E6%81%B6%E6%84%8FWindows%E7%A8%8B%E5%BA%8F/">第七章 - 分析恶意Windows程序</a></li>
-<li><a href="https://hvnt3r.top/2019/03/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95%E6%8A%80%E6%9C%AF/">第八章 - 动态分析高级技术</a></li>
-<li><a href="https://hvnt3r.top/2019/03/OllyDbg%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95/">第九章 - OllyDbg使用方法</a></li>
-<li><a href="https://hvnt3r.top/2019/03/%E4%BD%BF%E7%94%A8WinDbg%E8%B0%83%E8%AF%95%E5%86%85%E6%A0%B8/">第十章 - 使用WinDbg调试内核</a></li>
-<li><a href="https://hvnt3r.top/2019/03/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E8%A1%8C%E4%B8%BA/">第十一章 - 恶意代码行为识别</a></li>
-<li><a href="https://hvnt3r.top/2019/03/%E9%9A%90%E8%94%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%90%AF%E5%8A%A8/">第十二章 -隐蔽的恶意代码启动 </a></li>
-<li><a href="https://hvnt3r.top/2019/04/%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86/">第十三章 - 数据加密</a></li>
-<li><a href="https://hvnt3r.top/2019/04/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E7%9A%84%E7%BD%91%E7%BB%9C%E7%89%B9%E5%BE%81/">第十四章 - 恶意代码的网络特征</a></li>
-<li><a href="https://hvnt3r.top/2019/03/%E9%98%B2%E5%8F%8D%E6%B1%87%E7%BC%96%E6%8A%80%E6%9C%AF/">第十五章 - 防反汇编技术</a></li>
-<li><a href="https://hvnt3r.top/2019/03/%E5%8F%8D%E8%B0%83%E8%AF%95%E6%8A%80%E6%9C%AF/">第十六章 -反调试技术 </a></li>
-<li><a href="https://hvnt3r.top/2019/04/%E5%8F%8D%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%8A%80%E6%9C%AF/">第十七章 - 反虚拟机技术</a></li>
-<li><a href="https://hvnt3r.top/2019/04/%E5%8A%A0%E5%A3%B3%E4%B8%8E%E8%84%B1%E5%A3%B3/">第十八章 - 加壳与脱壳</a></li>
-<li><a href="https://hvnt3r.top/2019/04/ShellCode%E5%88%86%E6%9E%90/">第十九章 - ShellCode分析</a></li>
-<li><a href="https://hvnt3r.top/2019/04/C-%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">第二十章 - C++代码分析</a></li>
-<li><a href="https://hvnt3r.top/2019/04/64%E4%BD%8D%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/">第二十一章 - 64位恶意代码</a></li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2018/11/浅谈中国安全局势/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hvnt3r">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hvnt3r's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/11/浅谈中国安全局势/" itemprop="url">浅谈中国安全局势</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-11-22T18:23:03+08:00">
-                2018-11-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/思考/" itemprop="url" rel="index">
-                    <span itemprop="name">思考</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2018/11/浅谈中国安全局势/" class="leancloud_visitors" data-flag-title="浅谈中国安全局势">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-				 <span>°C</span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  1.8k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  5
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>之所谓是浅谈，是因为中国网络安全局势是一个很大的话题，所以很难在这短短的篇幅当中做深入的探讨，因此我将尽力浓缩我这几年在学习和生活过程中对国内网络安全局势的想法。</p>
-<p>首先，网络空间内的攻与防永远是一个伴生关系，并且二者在人类实现信息化社会过程的博弈中绽放了耀眼的火花，纵观全球的安全局势，每年都会发生轰动全球的信息安全事件，如勒索病毒的爆发，伊朗震网事件的发生，以及每年都会发生的账号或者个人信息泄露的事件，种种事件表明：网络并不安全，这也就是为什么我国如此重视网络安全人才培养的原因，随着我国对信息化推进的过程中，网络安全的范畴不断扩大，网络安全的形式也十分严峻，在各个国家大大小小的摩擦中，网络已经成为了一个悄然的战场，网络攻击发生在大众看不到的地方，各种国际上的<code>APT</code>事件往往伴随着明显的政治因素和地缘因素，而就我经验而言，<code>APT</code>攻击的切入点往往是<code>0Day</code>漏洞或者是社会工程学，对于<code>0Day</code>漏洞往往我们没办法找到一个有效的反制措施，但是针对社会工程学，一句老话：安全各个安全环节中最大的漏洞在于人本身，各大企业或者政府机关重要机构都要加强对从业人员安全意识的培养，如不要轻易打开不明来源的邮件，不要在社交媒体上过多的暴露自己的个人信息等，这些措施都能帮助我们减少来自<code>APT</code>攻击的威胁。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/11/浅谈中国安全局势/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2018/10/二进制安全之格式化字符串漏洞/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hvnt3r">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hvnt3r's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/10/二进制安全之格式化字符串漏洞/" itemprop="url">二进制安全之格式化字符串漏洞</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-30T17:06:23+08:00">
-                2018-10-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/二进制安全/" itemprop="url" rel="index">
-                    <span itemprop="name">二进制安全</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2018/10/二进制安全之格式化字符串漏洞/" class="leancloud_visitors" data-flag-title="二进制安全之格式化字符串漏洞">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">Visitors&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-				 <span>°C</span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  1.5k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  6
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="二进制安全之格式化字符串漏洞"><a href="#二进制安全之格式化字符串漏洞" class="headerlink" title="二进制安全之格式化字符串漏洞"></a>二进制安全之格式化字符串漏洞</h1><p>相信每位程序员都写过如下代码：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello world!"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>是的，这应该是每个程序员写的第一个程序，其中<code>printf()</code>，也是一个在C语言中的较为脆弱的函数，我们今天就来探讨一下格式化字符串漏洞。有一点要说的是由于现在的很多编译器都变得更加智能且更加注重安全性，格式化字符串等容易出现问题的函数都会由编译器自动为其添加相应的check函数从而保证函数的安全性，因此格式化字符串漏洞是由很小的可能性会出现在真实的生产环境中的，可能出现这个漏洞最多的情形就是大大小小形式各异的CTF赛题中了，但是由于此漏洞历史悠久并且较为有趣，如果产生此漏洞的话危害也不小，还是有必要学习一下的。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/10/二进制安全之格式化字符串漏洞/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2280,7 +2268,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">66</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -2291,7 +2279,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
@@ -2302,7 +2290,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">70</span>
+                  <span class="site-state-item-count">74</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -2377,7 +2365,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">100.8k</span>
+    <span title="Site words total count">105k</span>
   
 </div>
 

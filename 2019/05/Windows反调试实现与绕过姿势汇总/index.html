@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Blog, Hvnt3r" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="Windows反调试实现与绕过姿势汇总调试器检测PEB相关BeingDebuggedBeingDebugged是位于PEB（Process Environment Block，进程环境块）偏移0x2处的标志。 IsDebuggerPresent( )IsDebuggerPresent()是Windows的API，这个函数通过查询PEB中的BeingDebugged标志来判断当前进程是否处于被调试状">
+<meta name="keywords" content="CTF, WEB安全, 二进制安全">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows反调试实现与绕过姿势汇总">
+<meta property="og:url" content="https://hvnt3r.top/2019/05/Windows反调试实现与绕过姿势汇总/index.html">
+<meta property="og:site_name" content="Hvnt3r&#39;s Blog">
+<meta property="og:description" content="Windows反调试实现与绕过姿势汇总调试器检测PEB相关BeingDebuggedBeingDebugged是位于PEB（Process Environment Block，进程环境块）偏移0x2处的标志。 IsDebuggerPresent( )IsDebuggerPresent()是Windows的API，这个函数通过查询PEB中的BeingDebugged标志来判断当前进程是否处于被调试状">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-05-17T08:54:54.436Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Windows反调试实现与绕过姿势汇总">
+<meta name="twitter:description" content="Windows反调试实现与绕过姿势汇总调试器检测PEB相关BeingDebuggedBeingDebugged是位于PEB（Process Environment Block，进程环境块）偏移0x2处的标志。 IsDebuggerPresent( )IsDebuggerPresent()是Windows的API，这个函数通过查询PEB中的BeingDebugged标志来判断当前进程是否处于被调试状">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://hvnt3r.top/2019/05/Windows反调试实现与绕过姿势汇总/"/>
+
+
+
+
+
+  <title>Windows反调试实现与绕过姿势汇总 | Hvnt3r's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband">
+	<a href="https://github.com/Hvnt3r"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+	</div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta custom-logo">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hvnt3r's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">让我们来猎杀那些陷入黑暗中的人吧-Shauna Vayne</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-主🐷页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            主🐷页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-系列文章💎">
+          <a href="/series/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            系列文章💎
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于我😎">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于我😎
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签👀">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签👀
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-分类👅">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类👅
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-所有文章📖">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            所有文章📖
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-友情链接👥">
+          <a href="/friends/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-link"></i> <br />
+            
+            友情链接👥
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-计划清单📜">
+          <a href="/Plan/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />
+            
+            计划清单📜
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2019/05/Windows反调试实现与绕过姿势汇总/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hvnt3r">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hvnt3r's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Windows反调试实现与绕过姿势汇总</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-07T19:05:15+08:00">
+                2019-05-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/05/Windows反调试实现与绕过姿势汇总/" class="leancloud_visitors" data-flag-title="Windows反调试实现与绕过姿势汇总">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">Visitors&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>°C</span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  2.1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Windows反调试实现与绕过姿势汇总"><a href="#Windows反调试实现与绕过姿势汇总" class="headerlink" title="Windows反调试实现与绕过姿势汇总"></a>Windows反调试实现与绕过姿势汇总</h1><h2 id="调试器检测"><a href="#调试器检测" class="headerlink" title="调试器检测"></a>调试器检测</h2><h3 id="PEB相关"><a href="#PEB相关" class="headerlink" title="PEB相关"></a>PEB相关</h3><h4 id="BeingDebugged"><a href="#BeingDebugged" class="headerlink" title="BeingDebugged"></a>BeingDebugged</h4><p>BeingDebugged是位于PEB（Process Environment Block，进程环境块）偏移0x2处的标志。</p>
+<h4 id="IsDebuggerPresent"><a href="#IsDebuggerPresent" class="headerlink" title="IsDebuggerPresent( )"></a>IsDebuggerPresent( )</h4><p><code>IsDebuggerPresent()</code>是Windows的API，这个函数通过查询PEB中的BeingDebugged标志来判断当前进程是否处于被调试状态。</p>
+<h4 id="NtGlobalFlag"><a href="#NtGlobalFlag" class="headerlink" title="NtGlobalFlag"></a>NtGlobalFlag</h4><p>NtGlobalFlag位于PEB的0x068h处，如果BeingDebugged被设置为TRUE，则NtGlobalFlag的值为70h。</p>
+<h4 id="CheckRemoteDebuggerPresent-）"><a href="#CheckRemoteDebuggerPresent-）" class="headerlink" title="CheckRemoteDebuggerPresent( ）"></a>CheckRemoteDebuggerPresent( ）</h4><p>CheckRemoteDebuggerPresent( )与IsDebuggerPresent( )类似，同为Windows API，可以直接调用，<code>CheckRemoteDebuggerPresent()</code>实际调用了NtQueryInformationProcess()，查询某个进程的ProcessDebugPort即系统与调试器通信的端口句柄，CheckRemoteDebuggerPresent()通过查询这个值来确定程序是否处于调试状态。</p>
+<a id="more"></a>
+<h4 id="ProcessHeap"><a href="#ProcessHeap" class="headerlink" title="ProcessHeap"></a>ProcessHeap</h4><p>ProcessHeap位于PEB的0x018，处正常情况下，系统为进程创建一个堆，会将进程堆位于+0x00c处的Flags设置为2，将位于+0x010处的ForceFlags设置为0，但在调试状态下这两个位置的值会发生改变。</p>
+<h3 id="基于系统痕迹"><a href="#基于系统痕迹" class="headerlink" title="基于系统痕迹"></a>基于系统痕迹</h3><h4 id="父进程检测"><a href="#父进程检测" class="headerlink" title="父进程检测"></a>父进程检测</h4><p>一个进程被正常启动时，其父进程一般是Explore.exe文件资源管理器、cmd.exe、或者Services.exe系统服务。如果一个进程的父进程不是这些进程，可以怀疑其被调试了。</p>
+<h4 id="堆数据检测"><a href="#堆数据检测" class="headerlink" title="堆数据检测"></a>堆数据检测</h4><p>由于BeingDebugged被设置为TRUE，NtGlobalFlag设置了FLG_HEAP_VALIDATE_PARAMETERS，RtlCreateHeap函数用RtlDebugCteateHeap函数创建堆，与此同时在堆中填充数据：<code>BA AD F0 0D</code>、<code>FE EE FE EE</code>、<code>AB AB AB AB</code>，如果这些数据出现的次数较多（大于10次）则说明被调试了。</p>
+<h4 id="注册表检测"><a href="#注册表检测" class="headerlink" title="注册表检测"></a>注册表检测</h4><p>下面是调试器在注册表中的一个常用位置。</p>
+<p>SOFTWARE\Microsoft\Windows NT\CurrentVersion\AeDebug(32位系统)</p>
+<p>SOFTWARE\Wow6432Node\Microsoft\WindowsNT\CurrentVersion\AeDebug(64位系统)</p>
+<p>该注册表项指定当应用程序发生错误时，触发哪一个调试器。默认情况下，它被设置为Dr.Watson。如果该这册表的键值被修改为OllyDbg，则恶意代码就可能确定它正在被调试。</p>
+<h4 id="进程遍历"><a href="#进程遍历" class="headerlink" title="进程遍历"></a>进程遍历</h4><p>枚举进程中是否有调试器进程。</p>
+<h4 id="窗口遍历"><a href="#窗口遍历" class="headerlink" title="窗口遍历"></a>窗口遍历</h4><p>枚举主窗口的标题，判断是否有调试器窗口，与上面的进程检测方法一样，这样的反调试很容易绕过。</p>
+<h3 id="基于调试器行为的检测"><a href="#基于调试器行为的检测" class="headerlink" title="基于调试器行为的检测"></a>基于调试器行为的检测</h3><h4 id="硬件断点检测"><a href="#硬件断点检测" class="headerlink" title="硬件断点检测"></a>硬件断点检测</h4><p>调试器使用DR0~Dr3作为硬件断点，通过检查这几个寄存器的值是否为空来确定当前程序是否被调试。</p>
+<h4 id="软件断点检测"><a href="#软件断点检测" class="headerlink" title="软件断点检测"></a>软件断点检测</h4><p>调试器软件断点是将断点处的指令替换为INT 3，当程序运行到这一条指令时会调用异常处理例程，从而检查内存中INT 3指令的机器码0xCC可以检查软件断点。除了INT 3还有INT 2D、CD03。</p>
+<h4 id="检测DBGHELP模块"><a href="#检测DBGHELP模块" class="headerlink" title="检测DBGHELP模块"></a>检测DBGHELP模块</h4><p>调试器一般使用微软提供的DBGHELP库来装载调试符号，如果一个进程装载了DBGHELP.DLL那么这个进程很可能是一个调试器。</p>
+<h4 id="代码CRC值校验"><a href="#代码CRC值校验" class="headerlink" title="代码CRC值校验"></a>代码CRC值校验</h4><p>通过对需要保护的代码进行CRC校验或者MD5值校验可以保证这部分代码不被篡改且无法下软断点。</p>
+<h4 id="SetUnhandledExceptionFilter"><a href="#SetUnhandledExceptionFilter" class="headerlink" title="SetUnhandledExceptionFilter"></a>SetUnhandledExceptionFilter</h4><p>在进程发生异常的时候若SEH未处理或者注册的SEH不存在，则会调用UnhandledExceptionFilter，它会运行系统最后的异常处理器，UnhandledExceptionFilter会判断当前进程是否被调试，如果处于被调试状态则将异常传递给调试器，若进程没有被调试则将异常传递给系统最后的异常处理器。使用SetUnhandledExceptionFilter可以修改系统最后的处理器，我们可以修改系统最后的异常处理器为正常逻辑中的一个过程，经由这个正常逻辑过程运行的程序才能正常运行，达到反调试效果。</p>
+<h3 id="其他检测方法"><a href="#其他检测方法" class="headerlink" title="其他检测方法"></a>其他检测方法</h3><h4 id="TrapFlag检测"><a href="#TrapFlag检测" class="headerlink" title="TrapFlag检测"></a>TrapFlag检测</h4><p>CPU中有一个eflags标志位叫做Trap Flag，如果TF为1，CPU执行指令后会产生一个单步异常，因此可以提前在程序中设置可以跳转到正确程序逻辑的SEH，在触发异常之后，如果进入SEH中则程序可以正常运行，如果没有进入SEH则说明程序处于调试状态。</p>
+<h4 id="ZwQuerySystemInformation"><a href="#ZwQuerySystemInformation" class="headerlink" title="ZwQuerySystemInformation( )"></a>ZwQuerySystemInformation( )</h4><p>在函数ZwQuerySystemInformation( )中，当SystemInformation=SystemKernelDebuggerInformation，判断DebuggerEnabled和DebuggerNotPresent()的值可以探测系统调试器是否存在。</p>
+<h4 id="SeDebugPrivilege权限检测"><a href="#SeDebugPrivilege权限检测" class="headerlink" title="SeDebugPrivilege权限检测"></a>SeDebugPrivilege权限检测</h4><p>正常进程不具有SeDebugPrivilege权限，但是调试器具有此权限，当进程从调试器加载时，进程会继承调试器的SeDebugPrivilege权限。可以通过打开CSRSS.EXE进程间接地检查进程是否有SeDebugPrivilege权限，因为默认权限无法对CSRSS.EXE进行OPENPROCESS。</p>
+<h4 id="TLS回调函数"><a href="#TLS回调函数" class="headerlink" title="TLS回调函数"></a>TLS回调函数</h4><p>实际上并不是程序在加载到调试器后，会让第一条指令执行之前而暂停程序的运行，而是调试器从程序PE头部指定的入口点开始。TLS回调被用来在程序入口点执行之前运行代码，因为这些代码可以在调试器中秘密地执行。</p>
+<p>TLS是Windows的一个存储类，其中数据对象不是一个自动的堆栈变量，而是代码中运行的每个线程的一个本地变量，TLS允许每个线程维护一个用TLS声明的专有变量，在应用程序实现TLS的情况下，可执行程序的PE头部会包含一个<code>.tls</code>段。TLS提供了初始化和终止TLS对象的回调函数。使用<code>PEView</code>可以看到<code>.tls</code>段，正常程序不会使用这个段。可以使用调试器在TLS回调函数运行之前下断点来分析这些函数。</p>
+<h4 id="DebugObject"><a href="#DebugObject" class="headerlink" title="DebugObject"></a>DebugObject</h4><p>在调试器附加到一个进程的过程中会调用ZwCreateDebugObject创建DebugObject，正常的进程中DebugObject为NULL，如果不是NULL则说明有一个用户态调试器的进程。使用ZwQueryObject查询所有对象的类型，如果DebugObject的数目不为零则说明系统中存在调试器。</p>
+<h4 id="运行时间差检测"><a href="#运行时间差检测" class="headerlink" title="运行时间差检测"></a>运行时间差检测</h4><p>当一个程序运行过程中出现异常时，会将异常传递给调试器由调试器决定处理异常的过程，但是在这个过程中程序运行所需的事件比程序自身直接执行的时间要长很多，因此可以计算一个操作运行的时间来判断当前程序是否正在被调试，常用的方法是RDTSC指令和GetTickCount()函数。</p>
+<h3 id="已失效的方法"><a href="#已失效的方法" class="headerlink" title="已失效的方法"></a>已失效的方法</h3><h4 id="GetLastError"><a href="#GetLastError" class="headerlink" title="GetLastError( )"></a>GetLastError( )</h4><p>虽然这个方法在较新版本的Windows中不再使用，但是我们还是可以了解一下原理。</p>
+<p>使用GetLastError( )可以得到程序运行过程中的出现的错误的原因，在程序出现错误时会改变此函数的返回值，而可以利用此原理首先使用SetLastError()设置LastError为某值，然后通过故意的与调试器相关的错误调用如OutputDebugString()使得程序中出现错误，如果当前程序被调试则OutputDebugString()成功调用因此LastError的值不会改变，但是如果没有被调试则LastError的值会因为OutputDebugString()没有成功调用而发生改变，通过前后LastError的值的对比来判断程序被调试。</p>
+<h2 id="干扰调试器"><a href="#干扰调试器" class="headerlink" title="干扰调试器"></a>干扰调试器</h2><h4 id="Drx寄存器清理"><a href="#Drx寄存器清理" class="headerlink" title="Drx寄存器清理"></a>Drx寄存器清理</h4><p>OllyDbg在捕获到一个异常时，会将Dr0~Dr7清零，但是如果设置SEH使用这些寄存器中的数据参与运算，通过对比运算结果是否正确可以判断这些寄存器是否被清空即可判断程序是否被OllyDbg调试。</p>
+<h4 id="OutputDebugStringA"><a href="#OutputDebugStringA" class="headerlink" title="OutputDebugStringA"></a>OutputDebugStringA</h4><p>此函数被用来向调试器发送一个格式化的串，但是OllyDbg1.1版本之前存在一个格式化字符串漏洞，使用类似如下的调用形式会触发此漏洞使OllyDbg崩溃：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OutputDebugStringA(&quot;%s%s%s%s%s%s%s%s%s&quot;);</span><br></pre></td></tr></table></figure>
+<h4 id="ThreadHideFromDebugger"><a href="#ThreadHideFromDebugger" class="headerlink" title="ThreadHideFromDebugger"></a>ThreadHideFromDebugger</h4><p>设置ThreadHideFromDebugger可以禁止为某个线程产生调试事件。</p>
+<h4 id="EnableWindow"><a href="#EnableWindow" class="headerlink" title="EnableWindow"></a>EnableWindow</h4><p>调用这个API可以暂时锁定前台的窗口：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">EnableWindow(GetForegrounfWindow(),FALSE);</span><br></pre></td></tr></table></figure>
+<h4 id="BlockInput"><a href="#BlockInput" class="headerlink" title="BlockInput"></a>BlockInput</h4><p>调用<code>BlockInput(TRUE)</code>锁住窗口，完成工作之后使用<code>BlockWindow(FALSE)</code>恢复。锁住期间可以通过<code>Ctrl+Alt+Del</code>组合键强制解除输入锁。</p>
+<h4 id="防止被调试器附加"><a href="#防止被调试器附加" class="headerlink" title="防止被调试器附加"></a>防止被调试器附加</h4><p>Ring3调试器的附加使用的是DebugActiveProcess函数，在附加相关进程时，会首先执行到ntdll.dll下的ZwContinue函数，最后停留在ntdll.dll的DbgBreakPoint处。因此Hook一下ZwContinue函数可以实现防止进程被调试器附加的效果。</p>
+<p>参考资料：</p>
+<p>《恶意代码分析实战》</p>
+<p>《加密与解密》第四版</p>
+<p><a href="https://www.cnblogs.com/xiao-zhang/p/5245068.html" target="_blank" rel="noopener">https://www.cnblogs.com/xiao-zhang/p/5245068.html</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>您的支持是我最大的动力🍉</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="Hvnt3r WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Hvnt3r Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:</strong>
+    Hvnt3r
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link:</strong>
+    <a href="https://hvnt3r.top/2019/05/Windows反调试实现与绕过姿势汇总/" title="Windows反调试实现与绕过姿势汇总">https://hvnt3r.top/2019/05/Windows反调试实现与绕过姿势汇总/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice: </strong>
+    All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally.
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp/" rel="next" title="2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp">
+                <i class="fa fa-chevron-left"></i> 2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/WallpaperEngine资源提取/" rel="prev" title="WallpaperEngine资源提取">
+                WallpaperEngine资源提取 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.png"
+                alt="Hvnt3r" />
+            
+              <p class="site-author-name" itemprop="name">Hvnt3r</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">66</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">74</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Hvnt3r" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:hvnt3r@foxmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Windows反调试实现与绕过姿势汇总"><span class="nav-number">1.</span> <span class="nav-text">Windows反调试实现与绕过姿势汇总</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#调试器检测"><span class="nav-number">1.1.</span> <span class="nav-text">调试器检测</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PEB相关"><span class="nav-number">1.1.1.</span> <span class="nav-text">PEB相关</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#BeingDebugged"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">BeingDebugged</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#IsDebuggerPresent"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">IsDebuggerPresent( )</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#NtGlobalFlag"><span class="nav-number">1.1.1.3.</span> <span class="nav-text">NtGlobalFlag</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CheckRemoteDebuggerPresent-）"><span class="nav-number">1.1.1.4.</span> <span class="nav-text">CheckRemoteDebuggerPresent( ）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ProcessHeap"><span class="nav-number">1.1.1.5.</span> <span class="nav-text">ProcessHeap</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于系统痕迹"><span class="nav-number">1.1.2.</span> <span class="nav-text">基于系统痕迹</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#父进程检测"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">父进程检测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#堆数据检测"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">堆数据检测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#注册表检测"><span class="nav-number">1.1.2.3.</span> <span class="nav-text">注册表检测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#进程遍历"><span class="nav-number">1.1.2.4.</span> <span class="nav-text">进程遍历</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#窗口遍历"><span class="nav-number">1.1.2.5.</span> <span class="nav-text">窗口遍历</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于调试器行为的检测"><span class="nav-number">1.1.3.</span> <span class="nav-text">基于调试器行为的检测</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#硬件断点检测"><span class="nav-number">1.1.3.1.</span> <span class="nav-text">硬件断点检测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#软件断点检测"><span class="nav-number">1.1.3.2.</span> <span class="nav-text">软件断点检测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#检测DBGHELP模块"><span class="nav-number">1.1.3.3.</span> <span class="nav-text">检测DBGHELP模块</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#代码CRC值校验"><span class="nav-number">1.1.3.4.</span> <span class="nav-text">代码CRC值校验</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SetUnhandledExceptionFilter"><span class="nav-number">1.1.3.5.</span> <span class="nav-text">SetUnhandledExceptionFilter</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他检测方法"><span class="nav-number">1.1.4.</span> <span class="nav-text">其他检测方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#TrapFlag检测"><span class="nav-number">1.1.4.1.</span> <span class="nav-text">TrapFlag检测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ZwQuerySystemInformation"><span class="nav-number">1.1.4.2.</span> <span class="nav-text">ZwQuerySystemInformation( )</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SeDebugPrivilege权限检测"><span class="nav-number">1.1.4.3.</span> <span class="nav-text">SeDebugPrivilege权限检测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TLS回调函数"><span class="nav-number">1.1.4.4.</span> <span class="nav-text">TLS回调函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DebugObject"><span class="nav-number">1.1.4.5.</span> <span class="nav-text">DebugObject</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#运行时间差检测"><span class="nav-number">1.1.4.6.</span> <span class="nav-text">运行时间差检测</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#已失效的方法"><span class="nav-number">1.1.5.</span> <span class="nav-text">已失效的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#GetLastError"><span class="nav-number">1.1.5.1.</span> <span class="nav-text">GetLastError( )</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#干扰调试器"><span class="nav-number">1.2.</span> <span class="nav-text">干扰调试器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Drx寄存器清理"><span class="nav-number">1.2.0.1.</span> <span class="nav-text">Drx寄存器清理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#OutputDebugStringA"><span class="nav-number">1.2.0.2.</span> <span class="nav-text">OutputDebugStringA</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ThreadHideFromDebugger"><span class="nav-number">1.2.0.3.</span> <span class="nav-text">ThreadHideFromDebugger</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#EnableWindow"><span class="nav-number">1.2.0.4.</span> <span class="nav-text">EnableWindow</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#BlockInput"><span class="nav-number">1.2.0.5.</span> <span class="nav-text">BlockInput</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#防止被调试器附加"><span class="nav-number">1.2.0.6.</span> <span class="nav-text">防止被调试器附加</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Hvnt3r</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">105k</span>
+  
+</div>
+
+
+
+
+<!-- 
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+-->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Mlz03BBADnvOzP0kDTeS9A4a-gzGzoHsz", "gbVyqV9usci1PKnM7hcg3uCv");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/exturl.js?v=5.1.4"></script>
+
+
+  
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+<script type="text/javascript" src="/js/src/love.js"></script>
