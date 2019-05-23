@@ -1,94 +1,13 @@
 <!DOCTYPE html>
-
-
-
-  
-
-
-<html class="theme-next gemini use-motion" lang="">
+<html >
 <head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-<meta name="theme-color" content="#222">
+    <meta charset="utf-8">
+<title>工业控制电力系统协议分析 - Hvnt3r&#39;s Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
 
 
-  
-  
-    
-    
-  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
-  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
-
-
-
-
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
-
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
-
-<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.ico?v=5.1.4">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico?v=5.1.4">
-
-
-  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
-
-
-
-
-
-  <meta name="keywords" content="CTF,工业控制安全,数据包分析,2018年工业信息安全技能大赛," />
-
-
-
-
-
-  <link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml" />
-
-
-
-
-
-
-<meta name="description" content="当前，随着中国制造2025战略深入推进，工业控制系统从单机走向互联、从封闭走向开放、从自动化走向智能化，安全漏洞和隐患不断涌现、安全事件频繁发生。我国面临的工业信息安全形势日益严峻。 暑假期间去参加工业信息安全技能大赛时遇到的一个工控协议分析题目，当时没接触过此类题目所以一脸懵逼没解出来，现在有时间拿出来回顾一下，记录下解题过程。">
+    <meta name="description" content="当前，随着中国制造2025战略深入推进，工业控制系统从单机走向互联、从封闭走向开放、从自动化走向智能化，安全漏洞和隐患不断涌现、安全事件频繁发生。我国面临的工业信息安全形势日益严峻。 暑假期间去参加工业信息安全技能大赛时遇到的一个工控协议分析题目，当时没接触过此类题目所以一脸懵逼没解出来，现在有时间拿出来回顾一下，记录下解题过程。">
 <meta name="keywords" content="CTF,工业控制安全,数据包分析,2018年工业信息安全技能大赛">
 <meta property="og:type" content="article">
 <meta property="og:title" content="工业控制电力系统协议分析">
@@ -96,52 +15,12 @@
 <meta property="og:site_name" content="Hvnt3r&#39;s Blog">
 <meta property="og:description" content="当前，随着中国制造2025战略深入推进，工业控制系统从单机走向互联、从封闭走向开放、从自动化走向智能化，安全漏洞和隐患不断涌现、安全事件频繁发生。我国面临的工业信息安全形势日益严峻。 暑假期间去参加工业信息安全技能大赛时遇到的一个工控协议分析题目，当时没接触过此类题目所以一脸懵逼没解出来，现在有时间拿出来回顾一下，记录下解题过程。">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://i.loli.net/2018/10/08/5bbb4cc736b15.png">
-<meta property="og:image" content="https://i.loli.net/2018/10/08/5bbb5098404fa.png">
-<meta property="og:image" content="https://i.loli.net/2018/10/09/5bbc16fd9b86f.png">
-<meta property="og:image" content="https://i.loli.net/2018/10/15/5bc451c3330e0.png">
-<meta property="og:updated_time" content="2018-10-15T08:42:27.994Z">
+<meta property="og:image" content="https://hvnt3r.top/images/og_image.png">
+<meta property="og:updated_time" content="2019-05-23T03:04:10.707Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="工业控制电力系统协议分析">
 <meta name="twitter:description" content="当前，随着中国制造2025战略深入推进，工业控制系统从单机走向互联、从封闭走向开放、从自动化走向智能化，安全漏洞和隐患不断涌现、安全事件频繁发生。我国面临的工业信息安全形势日益严峻。 暑假期间去参加工业信息安全技能大赛时遇到的一个工控协议分析题目，当时没接触过此类题目所以一脸懵逼没解出来，现在有时间拿出来回顾一下，记录下解题过程。">
-<meta name="twitter:image" content="https://i.loli.net/2018/10/08/5bbb4cc736b15.png">
-
-
-
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Gemini',
-    version: '5.1.4',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: true,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    duoshuo: {
-      userId: '0',
-      author: 'Author'
-    },
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-
-  <link rel="canonical" href="https://hvnt3r.top/2018/10/工业控制电力系统协议分析/"/>
-
-
-
-
-
-  <title>工业控制电力系统协议分析 | Hvnt3r's Blog</title>
-  
+<meta name="twitter:image" content="https://hvnt3r.top/images/og_image.png">
 
 
 
@@ -149,291 +28,160 @@
 
 
 
+<link rel="icon" href="/images/favicon-32x32.ico">
 
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+
+    
+    
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
 </head>
-
-<body itemscope itemtype="http://schema.org/WebPage" lang="default">
-
-  
-  
-    
-  
-
-  <div class="container sidebar-position-left page-post-detail">
-    <div class="headband">
-	<a href="https://github.com/Hvnt3r"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
-	</div>
-
-    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta custom-logo">
-    
-
-    <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Hvnt3r's Blog</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
-    </div>
-      
-        <h1 class="site-subtitle" itemprop="description">让我们来猎杀那些陷入黑暗中的人吧-Shauna Vayne</h1>
-      
-  </div>
-
-  <div class="site-nav-toggle">
-    <button>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
-  </div>
-</div>
-
-<nav class="site-nav">
-  
-
-  
-    <ul id="menu" class="menu">
-      
-        
-        <li class="menu-item menu-item-主🐷页">
-          <a href="/" rel="section">
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
             
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+                <img src="/images/og_image.png" alt="工业控制电力系统协议分析" height="28">
             
-            主🐷页
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-系列文章💎">
-          <a href="/series/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
-            
-            系列文章💎
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-关于我😎">
-          <a href="/about/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
-            
-            关于我😎
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-标签👀">
-          <a href="/tags/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
-            
-            标签👀
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-分类👅">
-          <a href="/categories/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
-            
-            分类👅
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-所有文章📖">
-          <a href="/archives/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
-            
-            所有文章📖
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-友情链接👥">
-          <a href="/friends/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-link"></i> <br />
-            
-            友情链接👥
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-计划清单📜">
-          <a href="/Plan/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />
-            
-            计划清单📜
-          </a>
-        </li>
-      
-
-      
-    </ul>
-  
-
-  
-</nav>
-
-
-
- </div>
-    </header>
-
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
-    
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2018/10/工业控制电力系统协议分析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hvnt3r">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hvnt3r's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">工业控制电力系统协议分析</h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-08T19:57:26+08:00">
-                2018-10-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/工业控制安全/" itemprop="url" rel="index">
-                    <span itemprop="name">工业控制安全</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  1.4k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  5
-                </span>
-              
-            </div>
-          
-
-          
-
+            </a>
         </div>
-      </header>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">主页</a>
+                
+                <a class="navbar-item"
+                href="/archives/">归档</a>
+                
+                <a class="navbar-item"
+                href="/categories/">分类</a>
+                
+                <a class="navbar-item"
+                href="/tags/">标签</a>
+                
+                <a class="navbar-item"
+                href="/about/">关于我</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="Search" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
     
-
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main"><div class="card">
     
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <p>当前，随着中国制造2025战略深入推进，工业控制系统从单机走向互联、从封闭走向开放、从自动化走向智能化，安全漏洞和隐患不断涌现、安全事件频繁发生。我国面临的工业信息安全形势日益严峻。</p>
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2018-10-08T11:57:26.000Z">2018-10-08</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/工业控制安全/">工业控制安全</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    11 minutes read (About 1593 words)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                工业控制电力系统协议分析
+            
+        </h1>
+        <div class="content">
+            <p>当前，随着中国制造2025战略深入推进，工业控制系统从单机走向互联、从封闭走向开放、从自动化走向智能化，安全漏洞和隐患不断涌现、安全事件频繁发生。我国面临的工业信息安全形势日益严峻。</p>
 <p>暑假期间去参加工业信息安全技能大赛时遇到的一个工控协议分析题目，当时没接触过此类题目所以一脸懵逼没解出来，现在有时间拿出来回顾一下，记录下解题过程。</p>
 <a id="more"></a>
 <p>题面：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">智能变电站通过61850规约进行监控层到间隔层的数据采集，请分析网络数据包，了解mms规约，进一步发现数据中隐藏的flag</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">智能变电站通过61850规约进行监控层到间隔层的数据采集，请分析网络数据包，了解mms规约，进一步发现数据中隐藏的flag</span><br></pre></td></tr></table></figure>
 <p><a href="https://github.com/Hvnt3r/challenges/raw/master/CTF/2018/Industrial%20information%20security%20skills%20competition/%E7%94%B5%E5%8A%9B%E7%B3%BB%E7%BB%9F%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90.pcap" target="_blank" rel="noopener">点我下载题目</a></p>
 <p><strong>解题思路</strong></p>
 <p>打开数据包，根据题目中所说的“了解MMS规约”可知此题考查的重点是mms协议，因此先排除其他协议的干扰，从数据包中筛选出mms协议的数据包</p>
@@ -471,15 +219,15 @@
 <p>当时看到这个文件名就像看到了希望的曙光疯狂在这个字符串附近寻找<code>flag</code>，但是当时的比赛环境并没有提供网络，也并没有机会查阅<code>mms</code>协议相关的资料，于是就像没头苍蝇乱撞，结果一无所获。</p>
 <p>另外说一句，其实对于这种数据包的分析题，有个很好的软件叫做<code>NetworkMiner</code>这个软件可以自动分析出数据包中存在的文件或者消息，<code>session维持</code>的信息等，可以说功能十分强大，关键是方便，不过可能这个软件不支持<code>mms</code>协议的分析，所以用这个软件找不到<code>flag.txt</code>的内容。</p>
 <p>对于这种大数据量的数据包，可以使用<code>pyshark</code>进行分析，我在这个网站上找到了很好的<code>pyshark</code>的教程，<a href="http://zodiacg.net/2016/07/intro2pyshark-ep1/" target="_blank" rel="noopener">我是链接</a> ，文章中对<code>pyshark</code>有详细的介绍，很多用法可以在里面查到，另外在这个<a href="http://zodiacg.net/2016/07/intro2pyshark-ep4/" target="_blank" rel="noopener">链接</a>里有数据包摘要的介绍，在对数据包进行过滤的时候可以用到，我们可以使用类似如下的方法来获取对象的一些关键信息：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pyshark</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_service</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        captures = pyshark.FileCapture(<span class="string">"test.pcap"</span>)</span><br><span class="line">        print(dir(captures[<span class="number">0</span>]))</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        print(e)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    get_service()</span><br></pre></td></tr></table></figure>
+<figure class="highlight python hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> pyshark</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_service</span><span class="hljs-params">()</span>:</span></span><br><span class="line">    <span class="hljs-keyword">try</span>:</span><br><span class="line">        captures = pyshark.FileCapture(<span class="hljs-string">"test.pcap"</span>)</span><br><span class="line">        print(dir(captures[<span class="hljs-number">0</span>]))</span><br><span class="line">    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:</span><br><span class="line">        print(e)</span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:</span><br><span class="line">    get_service()</span><br></pre></td></tr></table></figure>
 <p>运行结果如下：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">'__class__'</span>, <span class="string">'__contains__'</span>, <span class="string">'__delattr__'</span>, <span class="string">'__dict__'</span>, <span class="string">'__dir__'</span>, <span class="string">'__doc__'</span>, <span class="string">'__eq__'</span>, <span class="string">'__format__'</span>, <span class="string">'__ge__'</span>, <span class="string">'__getattr__'</span>, <span class="string">'__getattribute__'</span>, <span class="string">'__getitem__'</span>, <span class="string">'__getstate__'</span>, <span class="string">'__gt__'</span>, <span class="string">'__hash__'</span>, <span class="string">'__init__'</span>, <span class="string">'__init_subclass__'</span>, <span class="string">'__le__'</span>, <span class="string">'__lt__'</span>, <span class="string">'__module__'</span>, <span class="string">'__ne__'</span>, <span class="string">'__new__'</span>, <span class="string">'__reduce__'</span>, <span class="string">'__reduce_ex__'</span>, <span class="string">'__repr__'</span>, <span class="string">'__setattr__'</span>, <span class="string">'__setstate__'</span>, <span class="string">'__sizeof__'</span>, <span class="string">'__str__'</span>, <span class="string">'__subclasshook__'</span>, <span class="string">'__weakref__'</span>, <span class="string">'_packet_string'</span>, <span class="string">'captured_length'</span>, <span class="string">'cotp'</span>, <span class="string">'eth'</span>, <span class="string">'frame_info'</span>, <span class="string">'get_multiple_layers'</span>, <span class="string">'get_raw_packet'</span>, <span class="string">'highest_layer'</span>, <span class="string">'interface_captured'</span>, <span class="string">'ip'</span>, <span class="string">'layers'</span>, <span class="string">'length'</span>, <span class="string">'number'</span>, <span class="string">'pres'</span>, <span class="string">'pretty_print'</span>, <span class="string">'ses'</span>, <span class="string">'ses'</span>, <span class="string">'show'</span>, <span class="string">'sniff_time'</span>, <span class="string">'sniff_timestamp'</span>, <span class="string">'tcp'</span>, <span class="string">'tpkt'</span>, <span class="string">'transport_layer'</span>]</span><br></pre></td></tr></table></figure>
+<figure class="highlight python hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="hljs-string">'__class__'</span>, <span class="hljs-string">'__contains__'</span>, <span class="hljs-string">'__delattr__'</span>, <span class="hljs-string">'__dict__'</span>, <span class="hljs-string">'__dir__'</span>, <span class="hljs-string">'__doc__'</span>, <span class="hljs-string">'__eq__'</span>, <span class="hljs-string">'__format__'</span>, <span class="hljs-string">'__ge__'</span>, <span class="hljs-string">'__getattr__'</span>, <span class="hljs-string">'__getattribute__'</span>, <span class="hljs-string">'__getitem__'</span>, <span class="hljs-string">'__getstate__'</span>, <span class="hljs-string">'__gt__'</span>, <span class="hljs-string">'__hash__'</span>, <span class="hljs-string">'__init__'</span>, <span class="hljs-string">'__init_subclass__'</span>, <span class="hljs-string">'__le__'</span>, <span class="hljs-string">'__lt__'</span>, <span class="hljs-string">'__module__'</span>, <span class="hljs-string">'__ne__'</span>, <span class="hljs-string">'__new__'</span>, <span class="hljs-string">'__reduce__'</span>, <span class="hljs-string">'__reduce_ex__'</span>, <span class="hljs-string">'__repr__'</span>, <span class="hljs-string">'__setattr__'</span>, <span class="hljs-string">'__setstate__'</span>, <span class="hljs-string">'__sizeof__'</span>, <span class="hljs-string">'__str__'</span>, <span class="hljs-string">'__subclasshook__'</span>, <span class="hljs-string">'__weakref__'</span>, <span class="hljs-string">'_packet_string'</span>, <span class="hljs-string">'captured_length'</span>, <span class="hljs-string">'cotp'</span>, <span class="hljs-string">'eth'</span>, <span class="hljs-string">'frame_info'</span>, <span class="hljs-string">'get_multiple_layers'</span>, <span class="hljs-string">'get_raw_packet'</span>, <span class="hljs-string">'highest_layer'</span>, <span class="hljs-string">'interface_captured'</span>, <span class="hljs-string">'ip'</span>, <span class="hljs-string">'layers'</span>, <span class="hljs-string">'length'</span>, <span class="hljs-string">'number'</span>, <span class="hljs-string">'pres'</span>, <span class="hljs-string">'pretty_print'</span>, <span class="hljs-string">'ses'</span>, <span class="hljs-string">'ses'</span>, <span class="hljs-string">'show'</span>, <span class="hljs-string">'sniff_time'</span>, <span class="hljs-string">'sniff_timestamp'</span>, <span class="hljs-string">'tcp'</span>, <span class="hljs-string">'tpkt'</span>, <span class="hljs-string">'transport_layer'</span>]</span><br></pre></td></tr></table></figure>
 <p>也可以直接在<code>Pycharm</code>里按<code>tab</code>键查看</p>
 <p><img src="https://i.loli.net/2018/10/09/5bbc16fd9b86f.png" alt=""></p>
 <p>通过此方法来确定我们要找的信息，写出脚本来统计数据包中MMS的服务个数</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pyshark</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_service</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        captures = pyshark.FileCapture(<span class="string">"test.pcap"</span>)</span><br><span class="line">        confirmed_services_request = &#123;&#125;</span><br><span class="line">        confirmed_services_response = &#123;&#125;</span><br><span class="line">        <span class="keyword">for</span> capture <span class="keyword">in</span> captures:</span><br><span class="line">            <span class="keyword">for</span> pkt <span class="keyword">in</span> capture:</span><br><span class="line">                <span class="keyword">if</span> pkt.layer_name == <span class="string">"mms"</span>:</span><br><span class="line">                    <span class="keyword">if</span> hasattr(pkt, <span class="string">"confirmedservicerequest"</span>):</span><br><span class="line">                        service = pkt.confirmedservicerequest</span><br><span class="line">                        <span class="keyword">if</span> service <span class="keyword">in</span> confirmed_services_request:</span><br><span class="line">                            confirmed_services_request[service] += <span class="number">1</span></span><br><span class="line">                        <span class="keyword">else</span>:</span><br><span class="line">                            confirmed_services_request[service] = <span class="number">1</span></span><br><span class="line">                    <span class="keyword">if</span> hasattr(pkt, <span class="string">"confirmedserviceresponse"</span>):</span><br><span class="line">                        service = pkt.confirmedserviceresponse</span><br><span class="line">                        <span class="keyword">if</span> service <span class="keyword">in</span> confirmed_services_response:</span><br><span class="line">                            confirmed_services_response[service] += <span class="number">1</span></span><br><span class="line">                        <span class="keyword">else</span>:</span><br><span class="line">                            confirmed_services_response[service] = <span class="number">1</span></span><br><span class="line">        <span class="comment"># print</span></span><br><span class="line">        print(confirmed_services_request)</span><br><span class="line">        print(confirmed_services_response)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        print(e)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    get_service()</span><br></pre></td></tr></table></figure>
+<figure class="highlight python hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> pyshark</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_service</span><span class="hljs-params">()</span>:</span></span><br><span class="line">    <span class="hljs-keyword">try</span>:</span><br><span class="line">        captures = pyshark.FileCapture(<span class="hljs-string">"test.pcap"</span>)</span><br><span class="line">        confirmed_services_request = &#123;&#125;</span><br><span class="line">        confirmed_services_response = &#123;&#125;</span><br><span class="line">        <span class="hljs-keyword">for</span> capture <span class="hljs-keyword">in</span> captures:</span><br><span class="line">            <span class="hljs-keyword">for</span> pkt <span class="hljs-keyword">in</span> capture:</span><br><span class="line">                <span class="hljs-keyword">if</span> pkt.layer_name == <span class="hljs-string">"mms"</span>:</span><br><span class="line">                    <span class="hljs-keyword">if</span> hasattr(pkt, <span class="hljs-string">"confirmedservicerequest"</span>):</span><br><span class="line">                        service = pkt.confirmedservicerequest</span><br><span class="line">                        <span class="hljs-keyword">if</span> service <span class="hljs-keyword">in</span> confirmed_services_request:</span><br><span class="line">                            confirmed_services_request[service] += <span class="hljs-number">1</span></span><br><span class="line">                        <span class="hljs-keyword">else</span>:</span><br><span class="line">                            confirmed_services_request[service] = <span class="hljs-number">1</span></span><br><span class="line">                    <span class="hljs-keyword">if</span> hasattr(pkt, <span class="hljs-string">"confirmedserviceresponse"</span>):</span><br><span class="line">                        service = pkt.confirmedserviceresponse</span><br><span class="line">                        <span class="hljs-keyword">if</span> service <span class="hljs-keyword">in</span> confirmed_services_response:</span><br><span class="line">                            confirmed_services_response[service] += <span class="hljs-number">1</span></span><br><span class="line">                        <span class="hljs-keyword">else</span>:</span><br><span class="line">                            confirmed_services_response[service] = <span class="hljs-number">1</span></span><br><span class="line">        <span class="hljs-comment"># print</span></span><br><span class="line">        print(confirmed_services_request)</span><br><span class="line">        print(confirmed_services_response)</span><br><span class="line">    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:</span><br><span class="line">        print(e)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:</span><br><span class="line">    get_service()</span><br></pre></td></tr></table></figure>
 <p>得到如下结果：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;'77': 4, '4': 17, '12': 26, '6': 211, '72': 72, '1': 351, '73': 44, '74': 9, '5': 32&#125;</span><br><span class="line">&#123;'77': 4, '4': 17, '12': 26, '6': 211, '72': 72, '1': 351, '73': 44, '74': 9, '5': 32&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;'77': 4, '4': 17, '12': 26, '6': 211, '72': 72, '1': 351, '73': 44, '74': 9, '5': 32&#125;</span><br><span class="line">&#123;'77': 4, '4': 17, '12': 26, '6': 211, '72': 72, '1': 351, '73': 44, '74': 9, '5': 32&#125;</span><br></pre></td></tr></table></figure>
 <p>发现数据包中使用到了9个服务，分别是<code>1 (getNameList)</code>、<code>4 (read)</code>、<code>5 (write)</code>、<code>6 (getVariableAccessAttributes)</code>、<code>12 (getNamedVariableListAttributes)</code>、<code>72 (fileOpen)</code>、<code>73 (fileRead)</code>、<code>74 (fileClose)</code>、<code>77 (fileDirectory)</code></p>
 <blockquote>
 <p>关于协议类型，可以参考文件<a href="https://github.com/Hvnt3r/My_Images/raw/master/GBT16720.2-2005_%E5%B7%A5%E4%B8%9A%E8%87%AA%E5%8A%A8%E5%8C%96%E7%B3%BB%E7%BB%9F_%E5%88%B6%E9%80%A0%E6%8A%A5%E6%96%87%E8%A7%84%E8%8C%83_%E7%AC%AC2%E9%83%A8%E5%88%86_%E5%8D%8F%E8%AE%AE%E8%A7%84%E8%8C%83.pdf" target="_blank" rel="noopener">GBT16720.2-2005_工业自动化系统<em>制造报文规范</em>第2部分_协议规范.pdf</a></p>
@@ -487,508 +235,2154 @@
 <p>结合之前找到的<code>flag.txt</code>，过滤一下：</p>
 <p><img src="https://i.loli.net/2018/10/15/5bc451c3330e0.png" alt=""></p>
 <p>找到了读取flag.txt的数据包，因而编写如下脚本找出读取的数据</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pyshark</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">flag</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        captures = pyshark.FileCapture(<span class="string">"test.pcap"</span>)</span><br><span class="line">        flag_frsm = <span class="keyword">False</span></span><br><span class="line">        flag_frsm_id = <span class="keyword">None</span></span><br><span class="line">        flag_read = <span class="keyword">False</span></span><br><span class="line">        <span class="keyword">for</span> capture <span class="keyword">in</span> captures:</span><br><span class="line">            <span class="keyword">for</span> pkt <span class="keyword">in</span> capture:</span><br><span class="line">                <span class="keyword">if</span> pkt.layer_name == <span class="string">"mms"</span>:</span><br><span class="line">                    <span class="comment"># file open</span></span><br><span class="line">                    <span class="keyword">if</span> hasattr(pkt, <span class="string">"confirmedservicerequest"</span>) <span class="keyword">and</span> int(pkt.confirmedservicerequest) == <span class="number">72</span>:</span><br><span class="line">                        <span class="keyword">if</span> hasattr(pkt, <span class="string">"filename_item"</span>):</span><br><span class="line">                            filename_items = pkt.filename_item.fields</span><br><span class="line">                            <span class="keyword">for</span> f <span class="keyword">in</span> filename_items:</span><br><span class="line">                                file_name = str(f.get_default_value())</span><br><span class="line">                                <span class="keyword">if</span> file_name == <span class="string">"flag.txt"</span>:</span><br><span class="line">                                    flag_frsm = <span class="keyword">True</span></span><br><span class="line">                    <span class="keyword">if</span> hasattr(pkt, <span class="string">"confirmedserviceresponse"</span>) <span class="keyword">and</span> int(pkt.confirmedserviceresponse) == <span class="number">72</span> <span class="keyword">and</span> flag_frsm:</span><br><span class="line">                        <span class="comment"># print(pkt.field_names)</span></span><br><span class="line">                        <span class="keyword">if</span> hasattr(pkt, <span class="string">"frsmid"</span>):</span><br><span class="line">                            flag_frsm_id = pkt.frsmid</span><br><span class="line">                        flag_frsm = <span class="keyword">False</span></span><br><span class="line">                    <span class="comment"># file read</span></span><br><span class="line">                    <span class="keyword">if</span> hasattr(pkt, <span class="string">"confirmedservicerequest"</span>) <span class="keyword">and</span> int(pkt.confirmedservicerequest) == <span class="number">73</span> <span class="keyword">and</span> flag_frsm_id:</span><br><span class="line">                        <span class="keyword">if</span> hasattr(pkt, <span class="string">"fileread"</span>):</span><br><span class="line">                            <span class="keyword">if</span> str(pkt.fileread) == str(flag_frsm_id):</span><br><span class="line">                                flag_read = <span class="keyword">True</span></span><br><span class="line">                        flag_frsm_id = <span class="keyword">None</span></span><br><span class="line">                    <span class="keyword">if</span> hasattr(pkt, <span class="string">"confirmedserviceresponse"</span>) <span class="keyword">and</span> int(pkt.confirmedserviceresponse) == <span class="number">73</span> <span class="keyword">and</span> flag_read:</span><br><span class="line">                        <span class="keyword">if</span> hasattr(pkt, <span class="string">"filedata"</span>):</span><br><span class="line">                            data = str(pkt.filedata).replace(<span class="string">":"</span>, <span class="string">""</span>)</span><br><span class="line">                            print(hex_to_ascii(data))</span><br><span class="line">                        flag_read = <span class="keyword">False</span></span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        print(e)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hex_to_ascii</span><span class="params">(data)</span>:</span></span><br><span class="line">    data = data.decode(<span class="string">"hex"</span>)</span><br><span class="line">    flags = []</span><br><span class="line">    <span class="keyword">for</span> d <span class="keyword">in</span> data:</span><br><span class="line">        _ord = ord(d)</span><br><span class="line">        <span class="keyword">if</span> (_ord &gt; <span class="number">0</span>) <span class="keyword">and</span> (_ord &lt; <span class="number">128</span>):</span><br><span class="line">            flags.append(chr(_ord))</span><br><span class="line">    <span class="keyword">return</span> <span class="string">''</span>.join(flags)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    flag()</span><br></pre></td></tr></table></figure>
+<figure class="highlight python hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">import</span> pyshark</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">flag</span><span class="hljs-params">()</span>:</span></span><br><span class="line">    <span class="hljs-keyword">try</span>:</span><br><span class="line">        captures = pyshark.FileCapture(<span class="hljs-string">"test.pcap"</span>)</span><br><span class="line">        flag_frsm = <span class="hljs-keyword">False</span></span><br><span class="line">        flag_frsm_id = <span class="hljs-keyword">None</span></span><br><span class="line">        flag_read = <span class="hljs-keyword">False</span></span><br><span class="line">        <span class="hljs-keyword">for</span> capture <span class="hljs-keyword">in</span> captures:</span><br><span class="line">            <span class="hljs-keyword">for</span> pkt <span class="hljs-keyword">in</span> capture:</span><br><span class="line">                <span class="hljs-keyword">if</span> pkt.layer_name == <span class="hljs-string">"mms"</span>:</span><br><span class="line">                    <span class="hljs-comment"># file open</span></span><br><span class="line">                    <span class="hljs-keyword">if</span> hasattr(pkt, <span class="hljs-string">"confirmedservicerequest"</span>) <span class="hljs-keyword">and</span> int(pkt.confirmedservicerequest) == <span class="hljs-number">72</span>:</span><br><span class="line">                        <span class="hljs-keyword">if</span> hasattr(pkt, <span class="hljs-string">"filename_item"</span>):</span><br><span class="line">                            filename_items = pkt.filename_item.fields</span><br><span class="line">                            <span class="hljs-keyword">for</span> f <span class="hljs-keyword">in</span> filename_items:</span><br><span class="line">                                file_name = str(f.get_default_value())</span><br><span class="line">                                <span class="hljs-keyword">if</span> file_name == <span class="hljs-string">"flag.txt"</span>:</span><br><span class="line">                                    flag_frsm = <span class="hljs-keyword">True</span></span><br><span class="line">                    <span class="hljs-keyword">if</span> hasattr(pkt, <span class="hljs-string">"confirmedserviceresponse"</span>) <span class="hljs-keyword">and</span> int(pkt.confirmedserviceresponse) == <span class="hljs-number">72</span> <span class="hljs-keyword">and</span> flag_frsm:</span><br><span class="line">                        <span class="hljs-comment"># print(pkt.field_names)</span></span><br><span class="line">                        <span class="hljs-keyword">if</span> hasattr(pkt, <span class="hljs-string">"frsmid"</span>):</span><br><span class="line">                            flag_frsm_id = pkt.frsmid</span><br><span class="line">                        flag_frsm = <span class="hljs-keyword">False</span></span><br><span class="line">                    <span class="hljs-comment"># file read</span></span><br><span class="line">                    <span class="hljs-keyword">if</span> hasattr(pkt, <span class="hljs-string">"confirmedservicerequest"</span>) <span class="hljs-keyword">and</span> int(pkt.confirmedservicerequest) == <span class="hljs-number">73</span> <span class="hljs-keyword">and</span> flag_frsm_id:</span><br><span class="line">                        <span class="hljs-keyword">if</span> hasattr(pkt, <span class="hljs-string">"fileread"</span>):</span><br><span class="line">                            <span class="hljs-keyword">if</span> str(pkt.fileread) == str(flag_frsm_id):</span><br><span class="line">                                flag_read = <span class="hljs-keyword">True</span></span><br><span class="line">                        flag_frsm_id = <span class="hljs-keyword">None</span></span><br><span class="line">                    <span class="hljs-keyword">if</span> hasattr(pkt, <span class="hljs-string">"confirmedserviceresponse"</span>) <span class="hljs-keyword">and</span> int(pkt.confirmedserviceresponse) == <span class="hljs-number">73</span> <span class="hljs-keyword">and</span> flag_read:</span><br><span class="line">                        <span class="hljs-keyword">if</span> hasattr(pkt, <span class="hljs-string">"filedata"</span>):</span><br><span class="line">                            data = str(pkt.filedata).replace(<span class="hljs-string">":"</span>, <span class="hljs-string">""</span>)</span><br><span class="line">                            print(hex_to_ascii(data))</span><br><span class="line">                        flag_read = <span class="hljs-keyword">False</span></span><br><span class="line">    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:</span><br><span class="line">        print(e)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">hex_to_ascii</span><span class="hljs-params">(data)</span>:</span></span><br><span class="line">    data = data.decode(<span class="hljs-string">"hex"</span>)</span><br><span class="line">    flags = []</span><br><span class="line">    <span class="hljs-keyword">for</span> d <span class="hljs-keyword">in</span> data:</span><br><span class="line">        _ord = ord(d)</span><br><span class="line">        <span class="hljs-keyword">if</span> (_ord &gt; <span class="hljs-number">0</span>) <span class="hljs-keyword">and</span> (_ord &lt; <span class="hljs-number">128</span>):</span><br><span class="line">            flags.append(chr(_ord))</span><br><span class="line">    <span class="hljs-keyword">return</span> <span class="hljs-string">''</span>.join(flags)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:</span><br><span class="line">    flag()</span><br></pre></td></tr></table></figure>
 <p>得到<code>flag.txt</code>文件的内容：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">61850@102</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">61850@102</span><br></pre></td></tr></table></figure>
 <p><strong>总结：</strong></p>
 <p>本题的难点在于学会用<code>pyshark</code>对数据包进行分析，并需要了解协议的组成成分以及指令含义</p>
 
-      
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link" href="/tags/2018年工业信息安全技能大赛/">2018年工业信息安全技能大赛</a>, <a class="has-link-grey -link" href="/tags/CTF/">CTF</a>, <a class="has-link-grey -link" href="/tags/工业控制安全/">工业控制安全</a>, <a class="has-link-grey -link" href="/tags/数据包分析/">数据包分析</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
     </div>
-    
-    
-    
-
-    
-
-    
-      <div>
-        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
-  <div>您的支持是我最大的动力🍉</div>
-  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
-    <span>Donate</span>
-  </button>
-  <div id="QR" style="display: none;">
-
-    
-      <div id="wechat" style="display: inline-block">
-        <img id="wechat_qr" src="/images/wechat.jpg" alt="Hvnt3r WeChat Pay"/>
-        <p>WeChat Pay</p>
-      </div>
-    
-
-    
-      <div id="alipay" style="display: inline-block">
-        <img id="alipay_qr" src="/images/alipay.jpg" alt="Hvnt3r Alipay"/>
-        <p>Alipay</p>
-      </div>
-    
-
-    
-
-  </div>
 </div>
 
-      </div>
-    
 
-    
-      <div>
-        <ul class="post-copyright">
-  <li class="post-copyright-author">
-    <strong>Post author:</strong>
-    Hvnt3r
-  </li>
-  <li class="post-copyright-link">
-    <strong>Post link:</strong>
-    <a href="https://hvnt3r.top/2018/10/工业控制电力系统协议分析/" title="工业控制电力系统协议分析">https://hvnt3r.top/2018/10/工业控制电力系统协议分析/</a>
-  </li>
-  <li class="post-copyright-license">
-    <strong>Copyright Notice: </strong>
-    All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally.
-  </li>
-</ul>
 
-      </div>
-    
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/CTF/" rel="tag"><i class="fa fa-tag"></i> CTF</a>
-          
-            <a href="/tags/工业控制安全/" rel="tag"><i class="fa fa-tag"></i> 工业控制安全</a>
-          
-            <a href="/tags/数据包分析/" rel="tag"><i class="fa fa-tag"></i> 数据包分析</a>
-          
-            <a href="/tags/2018年工业信息安全技能大赛/" rel="tag"><i class="fa fa-tag"></i> 2018年工业信息安全技能大赛</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">Like this article? Support the author with</h3>
+        <div class="buttons is-centered">
             
-              <a href="/2018/10/EasyCTF-2017-doubly-dangerous-writeup/" rel="next" title="EasyCTF 2017-doubly_dangerous writeup">
-                <i class="fa fa-chevron-left"></i> EasyCTF 2017-doubly_dangerous writeup
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/10/2018护网杯PWN题解/" rel="prev" title="2018护网杯PWN题解">
-                2018护网杯PWN题解 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-
-    <div class="post-spread">
-      
-    </div>
-  </div>
-
-
-          </div>
-          
-
-
-          
-
-  
-
-
-
-        </div>
-        
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    
-    <div class="sidebar-inner">
-
-      
-
-      
-
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-            
-              <img class="site-author-image" itemprop="image"
-                src="/images/avatar.png"
-                alt="Hvnt3r" />
-            
-              <p class="site-author-name" itemprop="name">Hvnt3r</p>
-              <p class="site-description motion-element" itemprop="description"></p>
-          </div>
-
-          <nav class="site-state motion-element">
-
-            
-              <div class="site-state-item site-state-posts">
-              
-                <a href="/archives">
-              
-                  <span class="site-state-item-count">67</span>
-                  <span class="site-state-item-name">posts</span>
-                </a>
-              </div>
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-categories">
-                <a href="/categories/index.html">
-                  <span class="site-state-item-count">18</span>
-                  <span class="site-state-item-name">categories</span>
-                </a>
-              </div>
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-tags">
-                <a href="/tags/index.html">
-                  <span class="site-state-item-count">76</span>
-                  <span class="site-state-item-name">tags</span>
-                </a>
-              </div>
-            
-
-          </nav>
-
-          
-            <div class="feed-link motion-element">
-              <a href="/atom.xml" rel="alternate">
-                <i class="fa fa-rss"></i>
-                RSS
-              </a>
-            </div>
-          
-
-          
-            <div class="links-of-author motion-element">
                 
-                  <span class="links-of-author-item">
-                    <a href="https://github.com/Hvnt3r" target="_blank" title="GitHub">
-                      
-                        <i class="fa fa-fw fa-github"></i>GitHub</a>
-                  </span>
-                
-                  <span class="links-of-author-item">
-                    <a href="mailto:hvnt3r@foxmail.com" target="_blank" title="E-Mail">
-                      
-                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
-                  </span>
-                
-            </div>
-          
-
-          
-          
-
-          
-          
-
-          
-
-        </div>
-      </section>
-
-      
-
-      
-
-    </div>
-  </aside>
-
-
-        
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        
-<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
-  <span class="with-love">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">Hvnt3r</span>
-
-  
-    <span class="post-meta-divider">|</span>
-    <span class="post-meta-item-icon">
-      <i class="fa fa-area-chart"></i>
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
     </span>
-    
-      <span class="post-meta-item-text">Site words total count&#58;</span>
-    
-    <span title="Site words total count">106.1k</span>
-  
+    <span>Alipay</span>
+    <div class="qrcode"><img src="https://i.loli.net/2019/05/23/5ce5fdeb000d038958.jpg" alt="Alipay"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>Wechat</span>
+    <div class="qrcode"><img src="https://i.loli.net/2019/05/23/5ce5fe0b02b4697663.jpg" alt="Wechat"></div>
+</a>
+
+                
+        </div>
+    </div>
 </div>
 
 
 
-
-<!-- 
-  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
-
-
-
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
-
--->
-
-
-
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
         
-
-
-
-
-
-
-
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2018/10/2018护网杯PWN题解/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">2018护网杯PWN题解</span>
+            </a>
+        </div>
         
-      </div>
-    </footer>
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2018/10/EasyCTF-2017-doubly-dangerous-writeup/">
+                <span class="level-item">EasyCTF 2017-doubly_dangerous writeup</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">Comments</h3>
+        
+<div id="comment-container"></div>
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+	var gitment = new Gitment({
+		id: '2018/10/工业控制电力系统协议分析/',
+		owner: 'Hvnt3r',
+		repo: 'hvnt3r.github.io',
+		oauth: {
+			client_id: 'e1edad34df70b78823cc',
+			client_secret: 'fe3bc3166e65ec3a38c6f77ada693deb62c3e8a4',
+		},
+	})
+	gitment.render('comment-container')
+</script>
+
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered">
+                <div>
+                    
+                        <img class="image is-128x128 has-mb-6" src="/images/Hvnt3r.jpg" alt="Hvnt3r">
+                    
+                    
+                    <p class="is-size-4 is-block">
+                        Hvnt3r
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        让我们来猎杀那些陷入黑暗中的人吧
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>地球，银河系</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Posts
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        67
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Categories
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        18
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        Tags
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        75
+                    </p>
+                </div>
+            </div>
+        </nav>
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/ppoffice" target="_blank">
+                Follow</a>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Github" href="https://github.com/ppoffice">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Facebook" href="https://facebook.com">
+                
+                <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Twitter" href="https://twitter.com">
+                
+                <i class="fab fa-twitter"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Dribbble" href="https://dribbble.com">
+                
+                <i class="fab fa-dribbble"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="RSS" href="/">
+                
+                <i class="fas fa-rss"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Catalogue
+            </h3>
+            
+        </div>
+    </div>
+</div>
 
     
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
         
-      </div>
+
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Links
+        </h3>
+        <ul class="menu-list">
+        
+            <li>
+                <a class="level is-mobile" href="https://hexo.io" target="_blank">
+                    <span class="level-left">
+                        <span class="level-item">Hexo</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">hexo.io</span>
+                    </span>
+                </a>
+            </li>
+        
+            <li>
+                <a class="level is-mobile" href="https://github.com/ppoffice" target="_blank">
+                    <span class="level-left">
+                        <span class="level-item">PPOffice</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">github.com</span>
+                    </span>
+                </a>
+            </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Categories
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/APT/">
+            <span class="level-start">
+                <span class="level-item">APT</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/CTF/">
+            <span class="level-start">
+                <span class="level-item">CTF</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">10</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/CVE/">
+            <span class="level-start">
+                <span class="level-item">CVE</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Docker/">
+            <span class="level-start">
+                <span class="level-item">Docker</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Linux/">
+            <span class="level-start">
+                <span class="level-item">Linux</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Python/">
+            <span class="level-start">
+                <span class="level-item">Python</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/VPN/">
+            <span class="level-start">
+                <span class="level-item">VPN</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/WEB安全/">
+            <span class="level-start">
+                <span class="level-item">WEB安全</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Windows恶意代码/">
+            <span class="level-start">
+                <span class="level-item">Windows恶意代码</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/二进制安全/">
+            <span class="level-start">
+                <span class="level-item">二进制安全</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">32</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/信息安全学习路径/">
+            <span class="level-start">
+                <span class="level-item">信息安全学习路径</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/入侵检测/">
+            <span class="level-start">
+                <span class="level-item">入侵检测</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/工业控制安全/">
+            <span class="level-start">
+                <span class="level-item">工业控制安全</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/思考/">
+            <span class="level-start">
+                <span class="level-item">思考</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/操作系统/">
+            <span class="level-start">
+                <span class="level-item">操作系统</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/日常挖坑/">
+            <span class="level-start">
+                <span class="level-item">日常挖坑</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/渗透测试/">
+            <span class="level-start">
+                <span class="level-item">渗透测试</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/生活/">
+            <span class="level-start">
+                <span class="level-item">生活</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">3</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Tag Cloud
+        </h3>
+        <a href="/tags/2018年工业信息安全技能大赛/" style="font-size: 10px;">2018年工业信息安全技能大赛</a> <a href="/tags/2018护网杯/" style="font-size: 10px;">2018护网杯</a> <a href="/tags/APT/" style="font-size: 12px;">APT</a> <a href="/tags/C/" style="font-size: 10px;">C++</a> <a href="/tags/CTF/" style="font-size: 18px;">CTF</a> <a href="/tags/CVE/" style="font-size: 12px;">CVE</a> <a href="/tags/CrackMe/" style="font-size: 12px;">CrackMe</a> <a href="/tags/C语言/" style="font-size: 10px;">C语言</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/IDA/" style="font-size: 10px;">IDA</a> <a href="/tags/IDA-Pro/" style="font-size: 10px;">IDA Pro</a> <a href="/tags/IDS/" style="font-size: 10px;">IDS</a> <a href="/tags/Kali-Linux/" style="font-size: 10px;">Kali Linux</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Linux子系统/" style="font-size: 10px;">Linux子系统</a> <a href="/tags/OllyDbg/" style="font-size: 10px;">OllyDbg</a> <a href="/tags/PHP/" style="font-size: 14px;">PHP</a> <a href="/tags/PWN/" style="font-size: 18px;">PWN</a> <a href="/tags/PwnTools/" style="font-size: 10px;">PwnTools</a> <a href="/tags/Python/" style="font-size: 10px;">Python</a> <a href="/tags/ROP/" style="font-size: 10px;">ROP</a> <a href="/tags/Reverse/" style="font-size: 10px;">Reverse</a> <a href="/tags/ShellCode/" style="font-size: 12px;">ShellCode</a> <a href="/tags/Shellcode/" style="font-size: 10px;">Shellcode</a> <a href="/tags/Slmail/" style="font-size: 10px;">Slmail</a> <a href="/tags/Snort/" style="font-size: 10px;">Snort</a> <a href="/tags/VPN/" style="font-size: 10px;">VPN</a> <a href="/tags/WinDbg/" style="font-size: 10px;">WinDbg</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/Windows恶意代码/" style="font-size: 12px;">Windows恶意代码</a> <a href="/tags/Windows系统安全/" style="font-size: 10px;">Windows系统安全</a> <a href="/tags/Wordpress/" style="font-size: 12px;">Wordpress</a> <a href="/tags/WriteUp/" style="font-size: 10px;">WriteUp</a> <a href="/tags/二进制安全/" style="font-size: 12px;">二进制安全</a> <a href="/tags/信息安全/" style="font-size: 12px;">信息安全</a> <a href="/tags/内核调试/" style="font-size: 10px;">内核调试</a> <a href="/tags/分析报告/" style="font-size: 10px;">分析报告</a> <a href="/tags/加壳与脱壳/" style="font-size: 10px;">加壳与脱壳</a> <a href="/tags/加密/" style="font-size: 10px;">加密</a> <a href="/tags/动态分析/" style="font-size: 14px;">动态分析</a> <a href="/tags/动态分析技术/" style="font-size: 10px;">动态分析技术</a> <a href="/tags/动态调试/" style="font-size: 10px;">动态调试</a> <a href="/tags/反汇编/" style="font-size: 10px;">反汇编</a> <a href="/tags/反虚拟机技术/" style="font-size: 10px;">反虚拟机技术</a> <a href="/tags/反调试/" style="font-size: 12px;">反调试</a> <a href="/tags/安全局势/" style="font-size: 10px;">安全局势</a> <a href="/tags/安全竞赛/" style="font-size: 10px;">安全竞赛</a> <a href="/tags/小窍门/" style="font-size: 10px;">小窍门</a> <a href="/tags/工业控制安全/" style="font-size: 10px;">工业控制安全</a> <a href="/tags/心得/" style="font-size: 12px;">心得</a> <a href="/tags/恶意代码分析/" style="font-size: 20px;">恶意代码分析</a> <a href="/tags/恶意代码分析实战/" style="font-size: 12px;">恶意代码分析实战</a> <a href="/tags/恶意代码启动方式/" style="font-size: 10px;">恶意代码启动方式</a> <a href="/tags/恶意行为分析/" style="font-size: 10px;">恶意行为分析</a> <a href="/tags/数据包分析/" style="font-size: 10px;">数据包分析</a> <a href="/tags/木马/" style="font-size: 10px;">木马</a> <a href="/tags/栈溢出/" style="font-size: 10px;">栈溢出</a> <a href="/tags/格式化字符串漏洞/" style="font-size: 10px;">格式化字符串漏洞</a> <a href="/tags/桌面/" style="font-size: 10px;">桌面</a> <a href="/tags/汇编语言/" style="font-size: 10px;">汇编语言</a> <a href="/tags/游戏安全/" style="font-size: 10px;">游戏安全</a> <a href="/tags/特洛伊木马化技术/" style="font-size: 10px;">特洛伊木马化技术</a> <a href="/tags/生活/" style="font-size: 10px;">生活</a> <a href="/tags/破解/" style="font-size: 10px;">破解</a> <a href="/tags/离线翻译/" style="font-size: 10px;">离线翻译</a> <a href="/tags/缓冲区溢出/" style="font-size: 10px;">缓冲区溢出</a> <a href="/tags/编程/" style="font-size: 10px;">编程</a> <a href="/tags/网络流量识别/" style="font-size: 10px;">网络流量识别</a> <a href="/tags/自动化/" style="font-size: 10px;">自动化</a> <a href="/tags/虚拟化/" style="font-size: 10px;">虚拟化</a> <a href="/tags/调试/" style="font-size: 10px;">调试</a> <a href="/tags/远程控制/" style="font-size: 10px;">远程控制</a> <a href="/tags/逆向/" style="font-size: 16px;">逆向</a> <a href="/tags/防反汇编技术/" style="font-size: 10px;">防反汇编技术</a> <a href="/tags/静态分析/" style="font-size: 12px;">静态分析</a>
+    </div>
+</div>
+
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+            
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2019/05/开源网络入侵检测系统-Snort实战/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/source/gallery/thumbnails/1.jpg" alt="开源网络入侵检测系统-Snort实战">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-19T01:08:10.000Z">2019-05-19</time></div>
+                    <a href="/2019/05/开源网络入侵检测系统-Snort实战/" class="has-link-black-ter is-size-6">开源网络入侵检测系统-Snort实战</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/入侵检测/">入侵检测</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/05/某远控木马分析报告/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="远程控制木马分析报告">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-17T08:51:26.000Z">2019-05-17</time></div>
+                    <a href="/2019/05/某远控木马分析报告/" class="has-link-black-ter is-size-6">远程控制木马分析报告</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Windows恶意代码/">Windows恶意代码</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/05/WallpaperEngine资源提取/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="WallpaperEngine资源提取">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-17T05:09:44.000Z">2019-05-17</time></div>
+                    <a href="/2019/05/WallpaperEngine资源提取/" class="has-link-black-ter is-size-6">WallpaperEngine资源提取</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/生活/">生活</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/05/Windows反调试实现与绕过姿势汇总/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Windows反调试实现与绕过姿势汇总">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-07T11:05:15.000Z">2019-05-07</time></div>
+                    <a href="/2019/05/Windows反调试实现与绕过姿势汇总/" class="has-link-black-ter is-size-6">Windows反调试实现与绕过姿势汇总</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/二进制安全/">二进制安全</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/04/2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-04-29T00:34:44.000Z">2019-04-29</time></div>
+                    <a href="/2019/04/2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp/" class="has-link-black-ter is-size-6">2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp</a>
+                    <p class="is-size-7 is-uppercase">
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">10</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/03/">
+                <span class="level-start">
+                    <span class="level-item">March 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">12</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/10/">
+                <span class="level-start">
+                    <span class="level-item">October 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">11</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/09/">
+                <span class="level-start">
+                    <span class="level-item">September 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">22</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/03/">
+                <span class="level-start">
+                    <span class="level-item">March 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Tags
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/2018年工业信息安全技能大赛/">
+                        <span class="tag">2018年工业信息安全技能大赛</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/2018护网杯/">
+                        <span class="tag">2018护网杯</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/APT/">
+                        <span class="tag">APT</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/C/">
+                        <span class="tag">C++</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/CTF/">
+                        <span class="tag">CTF</span>
+                        <span class="tag is-grey">17</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/CVE/">
+                        <span class="tag">CVE</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/CrackMe/">
+                        <span class="tag">CrackMe</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/C语言/">
+                        <span class="tag">C语言</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Docker/">
+                        <span class="tag">Docker</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/IDA/">
+                        <span class="tag">IDA</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/IDA-Pro/">
+                        <span class="tag">IDA Pro</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/IDS/">
+                        <span class="tag">IDS</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Kali-Linux/">
+                        <span class="tag">Kali Linux</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Linux/">
+                        <span class="tag">Linux</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Linux子系统/">
+                        <span class="tag">Linux子系统</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/OllyDbg/">
+                        <span class="tag">OllyDbg</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/PHP/">
+                        <span class="tag">PHP</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/PWN/">
+                        <span class="tag">PWN</span>
+                        <span class="tag is-grey">17</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/PwnTools/">
+                        <span class="tag">PwnTools</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Python/">
+                        <span class="tag">Python</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/ROP/">
+                        <span class="tag">ROP</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Reverse/">
+                        <span class="tag">Reverse</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/ShellCode/">
+                        <span class="tag">ShellCode</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Shellcode/">
+                        <span class="tag">Shellcode</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Slmail/">
+                        <span class="tag">Slmail</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Snort/">
+                        <span class="tag">Snort</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/VPN/">
+                        <span class="tag">VPN</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/WinDbg/">
+                        <span class="tag">WinDbg</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Windows/">
+                        <span class="tag">Windows</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Windows恶意代码/">
+                        <span class="tag">Windows恶意代码</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Windows系统安全/">
+                        <span class="tag">Windows系统安全</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Wordpress/">
+                        <span class="tag">Wordpress</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/WriteUp/">
+                        <span class="tag">WriteUp</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/二进制安全/">
+                        <span class="tag">二进制安全</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/信息安全/">
+                        <span class="tag">信息安全</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/内核调试/">
+                        <span class="tag">内核调试</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/分析报告/">
+                        <span class="tag">分析报告</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/加壳与脱壳/">
+                        <span class="tag">加壳与脱壳</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/加密/">
+                        <span class="tag">加密</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/动态分析/">
+                        <span class="tag">动态分析</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/动态分析技术/">
+                        <span class="tag">动态分析技术</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/动态调试/">
+                        <span class="tag">动态调试</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/反汇编/">
+                        <span class="tag">反汇编</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/反虚拟机技术/">
+                        <span class="tag">反虚拟机技术</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/反调试/">
+                        <span class="tag">反调试</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/安全局势/">
+                        <span class="tag">安全局势</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/安全竞赛/">
+                        <span class="tag">安全竞赛</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/小窍门/">
+                        <span class="tag">小窍门</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/工业控制安全/">
+                        <span class="tag">工业控制安全</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/心得/">
+                        <span class="tag">心得</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/恶意代码分析/">
+                        <span class="tag">恶意代码分析</span>
+                        <span class="tag is-grey">21</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/恶意代码分析实战/">
+                        <span class="tag">恶意代码分析实战</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/恶意代码启动方式/">
+                        <span class="tag">恶意代码启动方式</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/恶意行为分析/">
+                        <span class="tag">恶意行为分析</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/数据包分析/">
+                        <span class="tag">数据包分析</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/木马/">
+                        <span class="tag">木马</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/栈溢出/">
+                        <span class="tag">栈溢出</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/格式化字符串漏洞/">
+                        <span class="tag">格式化字符串漏洞</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/桌面/">
+                        <span class="tag">桌面</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/汇编语言/">
+                        <span class="tag">汇编语言</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/游戏安全/">
+                        <span class="tag">游戏安全</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/特洛伊木马化技术/">
+                        <span class="tag">特洛伊木马化技术</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/生活/">
+                        <span class="tag">生活</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/破解/">
+                        <span class="tag">破解</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/离线翻译/">
+                        <span class="tag">离线翻译</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/缓冲区溢出/">
+                        <span class="tag">缓冲区溢出</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/编程/">
+                        <span class="tag">编程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/网络流量识别/">
+                        <span class="tag">网络流量识别</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/自动化/">
+                        <span class="tag">自动化</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/虚拟化/">
+                        <span class="tag">虚拟化</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/调试/">
+                        <span class="tag">调试</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/远程控制/">
+                        <span class="tag">远程控制</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/逆向/">
+                        <span class="tag">逆向</span>
+                        <span class="tag is-grey">9</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/防反汇编技术/">
+                        <span class="tag">防反汇编技术</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/静态分析/">
+                        <span class="tag">静态分析</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+        
+        </div>
+    
+</div>
+
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only has-order-3 column-right ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            Recent
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2019/05/开源网络入侵检测系统-Snort实战/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/source/gallery/thumbnails/1.jpg" alt="开源网络入侵检测系统-Snort实战">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-19T01:08:10.000Z">2019-05-19</time></div>
+                    <a href="/2019/05/开源网络入侵检测系统-Snort实战/" class="has-link-black-ter is-size-6">开源网络入侵检测系统-Snort实战</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/入侵检测/">入侵检测</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/05/某远控木马分析报告/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="远程控制木马分析报告">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-17T08:51:26.000Z">2019-05-17</time></div>
+                    <a href="/2019/05/某远控木马分析报告/" class="has-link-black-ter is-size-6">远程控制木马分析报告</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Windows恶意代码/">Windows恶意代码</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/05/WallpaperEngine资源提取/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="WallpaperEngine资源提取">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-17T05:09:44.000Z">2019-05-17</time></div>
+                    <a href="/2019/05/WallpaperEngine资源提取/" class="has-link-black-ter is-size-6">WallpaperEngine资源提取</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/生活/">生活</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/05/Windows反调试实现与绕过姿势汇总/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="Windows反调试实现与绕过姿势汇总">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-07T11:05:15.000Z">2019-05-07</time></div>
+                    <a href="/2019/05/Windows反调试实现与绕过姿势汇总/" class="has-link-black-ter is-size-6">Windows反调试实现与绕过姿势汇总</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/二进制安全/">二进制安全</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/04/2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/images/thumbnail.svg" alt="2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-04-29T00:34:44.000Z">2019-04-29</time></div>
+                    <a href="/2019/04/2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp/" class="has-link-black-ter is-size-6">2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp</a>
+                    <p class="is-size-7 is-uppercase">
+                        
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            Archives
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/05/">
+                <span class="level-start">
+                    <span class="level-item">May 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">4</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/04/">
+                <span class="level-start">
+                    <span class="level-item">April 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">10</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/03/">
+                <span class="level-start">
+                    <span class="level-item">March 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">12</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/01/">
+                <span class="level-start">
+                    <span class="level-item">January 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/12/">
+                <span class="level-start">
+                    <span class="level-item">December 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/11/">
+                <span class="level-start">
+                    <span class="level-item">November 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/10/">
+                <span class="level-start">
+                    <span class="level-item">October 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">11</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/09/">
+                <span class="level-start">
+                    <span class="level-item">September 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">22</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/03/">
+                <span class="level-start">
+                    <span class="level-item">March 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                Tags
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/2018年工业信息安全技能大赛/">
+                        <span class="tag">2018年工业信息安全技能大赛</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/2018护网杯/">
+                        <span class="tag">2018护网杯</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/APT/">
+                        <span class="tag">APT</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/C/">
+                        <span class="tag">C++</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/CTF/">
+                        <span class="tag">CTF</span>
+                        <span class="tag is-grey">17</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/CVE/">
+                        <span class="tag">CVE</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/CrackMe/">
+                        <span class="tag">CrackMe</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/C语言/">
+                        <span class="tag">C语言</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Docker/">
+                        <span class="tag">Docker</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/IDA/">
+                        <span class="tag">IDA</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/IDA-Pro/">
+                        <span class="tag">IDA Pro</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/IDS/">
+                        <span class="tag">IDS</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Kali-Linux/">
+                        <span class="tag">Kali Linux</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Linux/">
+                        <span class="tag">Linux</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Linux子系统/">
+                        <span class="tag">Linux子系统</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/OllyDbg/">
+                        <span class="tag">OllyDbg</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/PHP/">
+                        <span class="tag">PHP</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/PWN/">
+                        <span class="tag">PWN</span>
+                        <span class="tag is-grey">17</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/PwnTools/">
+                        <span class="tag">PwnTools</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Python/">
+                        <span class="tag">Python</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/ROP/">
+                        <span class="tag">ROP</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Reverse/">
+                        <span class="tag">Reverse</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/ShellCode/">
+                        <span class="tag">ShellCode</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Shellcode/">
+                        <span class="tag">Shellcode</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Slmail/">
+                        <span class="tag">Slmail</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Snort/">
+                        <span class="tag">Snort</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/VPN/">
+                        <span class="tag">VPN</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/WinDbg/">
+                        <span class="tag">WinDbg</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Windows/">
+                        <span class="tag">Windows</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Windows恶意代码/">
+                        <span class="tag">Windows恶意代码</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Windows系统安全/">
+                        <span class="tag">Windows系统安全</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Wordpress/">
+                        <span class="tag">Wordpress</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/WriteUp/">
+                        <span class="tag">WriteUp</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/二进制安全/">
+                        <span class="tag">二进制安全</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/信息安全/">
+                        <span class="tag">信息安全</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/内核调试/">
+                        <span class="tag">内核调试</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/分析报告/">
+                        <span class="tag">分析报告</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/加壳与脱壳/">
+                        <span class="tag">加壳与脱壳</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/加密/">
+                        <span class="tag">加密</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/动态分析/">
+                        <span class="tag">动态分析</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/动态分析技术/">
+                        <span class="tag">动态分析技术</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/动态调试/">
+                        <span class="tag">动态调试</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/反汇编/">
+                        <span class="tag">反汇编</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/反虚拟机技术/">
+                        <span class="tag">反虚拟机技术</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/反调试/">
+                        <span class="tag">反调试</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/安全局势/">
+                        <span class="tag">安全局势</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/安全竞赛/">
+                        <span class="tag">安全竞赛</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/小窍门/">
+                        <span class="tag">小窍门</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/工业控制安全/">
+                        <span class="tag">工业控制安全</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/心得/">
+                        <span class="tag">心得</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/恶意代码分析/">
+                        <span class="tag">恶意代码分析</span>
+                        <span class="tag is-grey">21</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/恶意代码分析实战/">
+                        <span class="tag">恶意代码分析实战</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/恶意代码启动方式/">
+                        <span class="tag">恶意代码启动方式</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/恶意行为分析/">
+                        <span class="tag">恶意行为分析</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/数据包分析/">
+                        <span class="tag">数据包分析</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/木马/">
+                        <span class="tag">木马</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/栈溢出/">
+                        <span class="tag">栈溢出</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/格式化字符串漏洞/">
+                        <span class="tag">格式化字符串漏洞</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/桌面/">
+                        <span class="tag">桌面</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/汇编语言/">
+                        <span class="tag">汇编语言</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/游戏安全/">
+                        <span class="tag">游戏安全</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/特洛伊木马化技术/">
+                        <span class="tag">特洛伊木马化技术</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/生活/">
+                        <span class="tag">生活</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/破解/">
+                        <span class="tag">破解</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/离线翻译/">
+                        <span class="tag">离线翻译</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/缓冲区溢出/">
+                        <span class="tag">缓冲区溢出</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/编程/">
+                        <span class="tag">编程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/网络流量识别/">
+                        <span class="tag">网络流量识别</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/自动化/">
+                        <span class="tag">自动化</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/虚拟化/">
+                        <span class="tag">虚拟化</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/调试/">
+                        <span class="tag">调试</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/远程控制/">
+                        <span class="tag">远程控制</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/逆向/">
+                        <span class="tag">逆向</span>
+                        <span class="tag is-grey">9</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/防反汇编技术/">
+                        <span class="tag">防反汇编技术</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/静态分析/">
+                        <span class="tag">静态分析</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/og_image.png" alt="工业控制电力系统协议分析" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2019 Hvnt3r&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("en");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
     
 
     
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
 
-  </div>
+    
+    
 
-  
-
-<script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
 </script>
 
 
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-  
-  
-
-
-
-
-
-
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/three/three.min.js"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
-  
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
-  
-
-
-  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
-
-
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
-
-
-
-  
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-  
-
-  
-
-  
-  
-
-  
-  
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
         tex2jax: {
-          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
-          processEscapes: true,
-          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
         }
-      });
-    </script>
+    });
+});
+</script>
 
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for (i=0; i < all.length; i += 1) {
-          all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-      });
-    </script>
-    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-  
+    
+    
+
+<a id="back-to-top" title="Back to Top" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
 
 
-  
+    
+    
 
-  
-  <script type="text/javascript" src="/js/src/exturl.js?v=5.1.4"></script>
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script>
+    <script src="/js/clipboard.js" defer></script>
+    
+
+    
+    
+    
 
 
-  
-   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
-   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
-   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+<script src="/js/main.js" defer></script>
 
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
 <script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 </html>
-<script type="text/javascript" src="/js/src/love.js"></script>
