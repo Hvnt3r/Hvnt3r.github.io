@@ -172,7 +172,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    9 分钟 读完 (大约 1420 个字)
+                    9 分钟 读完 (大约 1421 个字)
                 </span>
                 
                 
@@ -192,48 +192,16 @@
 </blockquote>
 <p><strong>准备环境|Poc下载/编译</strong></p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install dh-autoreconf</span><br><span class="line">sudo apt install libssl-dev</span><br><span class="line">sudo apt install libx11-dev</span><br><span class="line">git clone https://github.com/zerosum0x0/CVE-2019-0708.git</span><br><span class="line">cd CVE-2019-0708/rdesktop-fork-bd6aa6acddf0ba640a49834807872f4cc0d0a773/</span><br><span class="line">./bootstrap</span><br><span class="line">./configure --disable-credssp --disable-smartcard</span><br><span class="line">make</span><br><span class="line">./rdesktop 192.168.1.7:3389</span><br></pre></td></tr></table></figure>
-<p>不知这个Poc在其他环境下编译结果如何，在我的Kali和Ubuntu的虚拟机和子系统中均未运行成功，我运行的是此作者的Metasploit版本Poc，Ruby文件在<a href="https://github.com/zerosum0x0/CVE-2019-0708中，将文件放到Metasploit-FrameWork下auxiliary/scanner/rdp/路径中，验证结果如下：" target="_blank" rel="noopener">https://github.com/zerosum0x0/CVE-2019-0708中，将文件放到Metasploit-FrameWork下auxiliary/scanner/rdp/路径中，验证结果如下：</a></p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"> ⚡ root@kali  ~  msfconsole</span><br><span class="line">                                                  </span><br><span class="line">     ,           ,</span><br><span class="line">    /             \</span><br><span class="line">   ((__---,,,---__))</span><br><span class="line">      (_) O O (_)_________</span><br><span class="line">         \ _ /            |\</span><br><span class="line">          o_o \   M S F   | \</span><br><span class="line">               \   _____  |  *</span><br><span class="line">                |||   WW|||</span><br><span class="line">                |||     |||</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       =[ metasploit v4.17.21-dev                         ]</span><br><span class="line">+ -- --=[ 1822 exploits - 1035 auxiliary - 316 post       ]</span><br><span class="line">+ -- --=[ 539 payloads - 42 encoders - 10 nops            ]</span><br><span class="line">+ -- --=[ Free Metasploit Pro trial: http://r-7.co/trymsp ]</span><br><span class="line"></span><br><span class="line">msf &gt; use auxiliary/scanner/rdp/bluekeep</span><br><span class="line">msf auxiliary(scanner/rdp/bluekeep) &gt; show options</span><br><span class="line"></span><br><span class="line">Module options (auxiliary/scanner/rdp/bluekeep):</span><br><span class="line"></span><br><span class="line">   Name     Current Setting  Required  Description</span><br><span class="line">   ----     ---------------  --------  -----------</span><br><span class="line">   RHOSTS                    yes       The target address range or CIDR identifier</span><br><span class="line">   RPORT    3389             yes       The target port (TCP)</span><br><span class="line">   THREADS  1                yes       The number of concurrent threads</span><br><span class="line"></span><br><span class="line">msf auxiliary(scanner/rdp/bluekeep) &gt; set RHOSTS 192.168.80.129</span><br><span class="line">RHOSTS =&gt; 192.168.80.129</span><br><span class="line">msf auxiliary(scanner/rdp/bluekeep) &gt; run</span><br><span class="line"></span><br><span class="line">[+] 192.168.80.129:3389   - The target is vulnerable.</span><br><span class="line">[*] Scanned 1 of 1 hosts (100% complete)</span><br><span class="line">[*] Auxiliary module execution completed</span><br></pre></td></tr></table></figure>
-<h2 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h2><blockquote>
-<p>The Remote Desktop Protocol (RDP) enables connection between a client and endpoint, defining the data communicated between them in virtual channels. Virtual channels are bidirectional data pipes which enable the extension of RDP. Windows Server 2000 defined 32 Static Virtual Channels (SVCs) with RDP 5.1, but due to limitations on the number of channels further defined Dynamic Virtual Channels (DVCs), which are contained within a dedicated SVC. SVCs are created at the start of a session and remain until session termination, unlike DVCs which are created and torn down on demand.</p>
-<p>It’s this 32 SVC binding which CVE-2019-0708 patch fixes within the <em>_IcaBindVirtualChannels</em> and <em>_IcaRebindVirtualChannels</em> functions in the RDP driver termdd.sys. As can been seen in figure 1, the RDP Connection Sequence connections are initiated and channels setup prior to Security Commencement, which enables CVE-2019-0708 to be wormable since it can self-propagate over the network once it discovers open port 3389.</p>
-</blockquote>
-<p>远程桌面协议（RDP）支持客户端和端点之间的连接，定义虚拟通道中它们之间通信的数据。虚拟通道是双向数据管道，可以扩展RDP。 Windows Server 2000使用RDP 5.1定义了32个静态虚拟通道（SVC），但由于进一步定义了动态虚拟通道（DVC）的通道数量限制，这些通道包含在专用SVC中。 SVC在会话开始时创建并保持到会话终止，这与根据需要创建和拆除的DVC不同。</p>
-<p>这是32个SVC绑定，CVE-2019-0708补丁修复了RDP驱动程序termdd.sys中的<em> _IcaBindVirtualChannels 和</em> _IcaRebindVirtualChannels 函数。如图1所示，RDP连接序列连接在安全开始之前启动并进行通道设置，这使得CVE-2019-0708可以设置，因为它可以在发现开放端口3389后通过网络自我传播。</p>
-<p><img src="https://i.loli.net/2019/05/29/5cee2fc371cee59122.png" alt=""></p>
-<p>图：RDP协议序列</p>
-<blockquote>
-<p>The vulnerability is due to the “MS_T120” SVC name being bound as a reference channel to the number 31 during the GCC Conference Initialization sequence of the RDP protocol. This channel name is used internally by Microsoft and there are no apparent legitimate use cases for a client to request connection over an SVC named “MS_T120.”</p>
-<p>Figure 2 shows legitimate channel requests during the GCC Conference Initialization sequence with no MS_T120 channel.</p>
-</blockquote>
-<p>该漏洞是由于“MS_T120”SVC名称在RDP协议的GCC会议初始化序列期间被绑定为数字31的参考信道。 此通道名称由Microsoft在内部使用，并且客户端没有明显的合法用例来请求通过名为“MS_T120”的SVC进行连接。</p>
-<p>下图显示了没有MS_T120信道的GCC会议初始化序列期间的合法信道请求。</p>
-<p><img src="https://i.loli.net/2019/05/29/5cee30198697475600.png" alt=""></p>
-<p>图：标准GCC会议初始化序列</p>
-<blockquote>
-<p>However, during GCC Conference Initialization, the Client supplies the channel name which is not whitelisted by the server, meaning an attacker can setup another SVC named “MS_T120” on a channel other than 31. It’s the use of MS_T120 in a channel other than 31 that leads to heap memory corruption and remote code execution (RCE).</p>
-</blockquote>
-<p>但是，在GCC会议初始化期间，客户端提供服务器未列入白名单的频道名称，这意味着攻击者可以在31以外的频道上设置另一个名为“MS_T120”的SVC。这是在31以外的频道中使用MS_T120 这会导致堆内存损坏和远程代码执行（RCE）。</p>
-<p><img src="https://i.loli.net/2019/05/29/5cee3064994e040472.png" alt=""></p>
-<p>图:异常/可疑GCC会议初始化序列 - 非标准信道上的MS_T120</p>
-<blockquote>
-<p>The components involved in the MS_T120 channel management are highlighted in figure 4. The MS_T120 reference channel is created in the rdpwsx.dll and the heap pool allocated in rdpwp.sys. The heap corruption happens in termdd.sys when the MS_T120 reference channel is processed within the context of a channel index other than 31.</p>
-</blockquote>
-<p>图中突出显示了MS_T120通道管理中涉及的组件.MS_D120引用通道在rdpwsx.dll和rdpwp.sys中分配的堆池中创建。 当在31以外的通道索引的上下文中处理MS_T120引用通道时，堆损坏发生在termdd.sys中。</p>
-<p><img src="https://i.loli.net/2019/05/29/5cee3089252b376521.png" alt=""></p>
-<p>图：Windows内核和用户组件</p>
-<blockquote>
-<p>The Microsoft patch as shown in figure 5 now adds a check for a client connection request using channel name “MS_T120” and ensures it binds to channel 31 <strong>only</strong>(1Fh) in the <em>_IcaBindVirtualChannels</em> and <em>_IcaRebindVirtualChannels</em> functions within termdd.sys.</p>
-</blockquote>
-<p>如图所示的Microsoft补丁现在使用通道名称“MS_T120”添加对客户端连接请求的检查，并确保它仅绑定到termdd.sys中的<em> _IcaBindVirtualChannels 和</em> _IcaRebindVirtualChannels 函数中的通道31（1Fh）。</p>
-<p><img src="https://i.loli.net/2019/05/29/5cee31b917b3b10229.png" alt=""></p>
-<p>图：Microsoft补丁添加通道绑定检查</p>
-<h2 id="防火墙规则"><a href="#防火墙规则" class="headerlink" title="防火墙规则"></a>防火墙规则</h2><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alert tcp any any -&gt; any 3389 (msg:&quot;NCC GROUP RDP connection setup with MS_T120 channel, potential CVE-2019-0708&quot;; flow:to_server,established; content:&quot;|03 00|&quot;; offset:0; depth:2; content:&quot;|02 f0|&quot;; distance:2; within:2; content:&quot;|00 05 00 14 7c 00 01|&quot;; within:512; content:&quot;|03 c0|&quot;; distance:3; within:384; content:&quot;MS_T120|00|&quot;; distance:6; within:372; threshold: type limit, track by_src, count 2, seconds 600; classtype:bad-unknown; reference:url,portal.msrc.microsoft.com/en-US/security-guidance/advisory/CVE-2019-0708; sid:190708; rev:1;)</span><br></pre></td></tr></table></figure>
-<p><strong>参考资料：</strong></p>
-<p>Mcafee官博：<a href="https://securingtomorrow.mcafee.com/other-blogs/mcafee-labs/rdp-stands-for-really-do-patch-understanding-the-wormable-rdp-vulnerability-cve-2019-0708/" target="_blank" rel="noopener">https://securingtomorrow.mcafee.com/other-blogs/mcafee-labs/rdp-stands-for-really-do-patch-understanding-the-wormable-rdp-vulnerability-cve-2019-0708/</a></p>
-
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/05/CVE-2019-0708/#more">阅读更多</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>
