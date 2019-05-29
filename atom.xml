@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://hvnt3r.top/"/>
-  <updated>2019-05-24T06:13:21.786Z</updated>
+  <updated>2019-05-29T07:21:30.080Z</updated>
   <id>https://hvnt3r.top/</id>
   
   <author>
@@ -15,6 +15,35 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>CVE-2019-0708</title>
+    <link href="https://hvnt3r.top/2019/05/CVE-2019-0708/"/>
+    <id>https://hvnt3r.top/2019/05/CVE-2019-0708/</id>
+    <published>2019-05-24T14:32:13.000Z</published>
+    <updated>2019-05-29T07:21:30.080Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="漏洞验证"><a href="#漏洞验证" class="headerlink" title="漏洞验证"></a>漏洞验证</h2><p><strong>复现环境：</strong></p><blockquote><p>攻击机：Kali Linux（Windows子系统）</p><p>目标主机：Windows 7 SP1 64位</p></blockquote><p><strong>准备环境|Poc下载/编译</strong></p><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install dh-autoreconf</span><br><span class="line">sudo apt install libssl-dev</span><br><span class="line">sudo apt install libx11-dev</span><br><span class="line">git clone https://github.com/zerosum0x0/CVE-2019-0708.git</span><br><span class="line">cd CVE-2019-0708/rdesktop-fork-bd6aa6acddf0ba640a49834807872f4cc0d0a773/</span><br><span class="line">./bootstrap</span><br><span class="line">./configure --disable-credssp --disable-smartcard</span><br><span class="line">make</span><br><span class="line">./rdesktop 192.168.1.7:3389</span><br></pre></td></tr></table></figure><p>不知这个Poc在其他环境下编译结果如何，在我的Kali和Ubuntu的虚拟机和子系统中均未运行成功，我运行的是此作者的Metasploit版本Poc，Ruby文件在<a href="https://github.com/zerosum0x0/CVE-2019-0708中，将文件放到Metasploit-FrameWork下auxiliary/scanner/rdp/路径中，验证结果如下：" target="_blank" rel="noopener">https://github.com/zerosum0x0/CVE-2019-0708中，将文件放到Metasploit-FrameWork下auxiliary/scanner/rdp/路径中，验证结果如下：</a></p><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"> ⚡ root@kali  ~  msfconsole</span><br><span class="line">                                                  </span><br><span class="line">     ,           ,</span><br><span class="line">    /             \</span><br><span class="line">   ((__---,,,---__))</span><br><span class="line">      (_) O O (_)_________</span><br><span class="line">         \ _ /            |\</span><br><span class="line">          o_o \   M S F   | \</span><br><span class="line">               \   _____  |  *</span><br><span class="line">                |||   WW|||</span><br><span class="line">                |||     |||</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       =[ metasploit v4.17.21-dev                         ]</span><br><span class="line">+ -- --=[ 1822 exploits - 1035 auxiliary - 316 post       ]</span><br><span class="line">+ -- --=[ 539 payloads - 42 encoders - 10 nops            ]</span><br><span class="line">+ -- --=[ Free Metasploit Pro trial: http://r-7.co/trymsp ]</span><br><span class="line"></span><br><span class="line">msf &gt; use auxiliary/scanner/rdp/bluekeep</span><br><span class="line">msf auxiliary(scanner/rdp/bluekeep) &gt; show options</span><br><span class="line"></span><br><span class="line">Module options (auxiliary/scanner/rdp/bluekeep):</span><br><span class="line"></span><br><span class="line">   Name     Current Setting  Required  Description</span><br><span class="line">   ----     ---------------  --------  -----------</span><br><span class="line">   RHOSTS                    yes       The target address range or CIDR identifier</span><br><span class="line">   RPORT    3389             yes       The target port (TCP)</span><br><span class="line">   THREADS  1                yes       The number of concurrent threads</span><br><span class="line"></span><br><span class="line">msf auxiliary(scanner/rdp/bluekeep) &gt; set RHOSTS 192.168.80.129</span><br><span class="line">RHOSTS =&gt; 192.168.80.129</span><br><span class="line">msf auxiliary(scanner/rdp/bluekeep) &gt; run</span><br><span class="line"></span><br><span class="line">[+] 192.168.80.129:3389   - The target is vulnerable.</span><br><span class="line">[*] Scanned 1 of 1 hosts (100% complete)</span><br><span class="line">[*] Auxiliary module execution completed</span><br></pre></td></tr></table></figure><h2 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h2><blockquote><p>The Remote Desktop Protocol (RDP) enables connection between a client and endpoint, defining the data communicated between them in virtual channels. Virtual channels are bidirectional data pipes which enable the extension of RDP. Windows Server 2000 defined 32 Static Virtual Channels (SVCs) with RDP 5.1, but due to limitations on the number of channels further defined Dynamic Virtual Channels (DVCs), which are contained within a dedicated SVC. SVCs are created at the start of a session and remain until session termination, unlike DVCs which are created and torn down on demand.</p><p>It’s this 32 SVC binding which CVE-2019-0708 patch fixes within the <em>_IcaBindVirtualChannels</em> and <em>_IcaRebindVirtualChannels</em> functions in the RDP driver termdd.sys. As can been seen in figure 1, the RDP Connection Sequence connections are initiated and channels setup prior to Security Commencement, which enables CVE-2019-0708 to be wormable since it can self-propagate over the network once it discovers open port 3389.</p></blockquote><p>远程桌面协议（RDP）支持客户端和端点之间的连接，定义虚拟通道中它们之间通信的数据。虚拟通道是双向数据管道，可以扩展RDP。 Windows Server 2000使用RDP 5.1定义了32个静态虚拟通道（SVC），但由于进一步定义了动态虚拟通道（DVC）的通道数量限制，这些通道包含在专用SVC中。 SVC在会话开始时创建并保持到会话终止，这与根据需要创建和拆除的DVC不同。</p><p>这是32个SVC绑定，CVE-2019-0708补丁修复了RDP驱动程序termdd.sys中的<em> _IcaBindVirtualChannels 和</em> _IcaRebindVirtualChannels 函数。如图1所示，RDP连接序列连接在安全开始之前启动并进行通道设置，这使得CVE-2019-0708可以设置，因为它可以在发现开放端口3389后通过网络自我传播。</p><p><img src="https://i.loli.net/2019/05/29/5cee2fc371cee59122.png" alt=""></p><p>图：RDP协议序列</p><blockquote><p>The vulnerability is due to the “MS_T120” SVC name being bound as a reference channel to the number 31 during the GCC Conference Initialization sequence of the RDP protocol. This channel name is used internally by Microsoft and there are no apparent legitimate use cases for a client to request connection over an SVC named “MS_T120.”</p><p>Figure 2 shows legitimate channel requests during the GCC Conference Initialization sequence with no MS_T120 channel.</p></blockquote><p>该漏洞是由于“MS_T120”SVC名称在RDP协议的GCC会议初始化序列期间被绑定为数字31的参考信道。 此通道名称由Microsoft在内部使用，并且客户端没有明显的合法用例来请求通过名为“MS_T120”的SVC进行连接。</p><p>下图显示了没有MS_T120信道的GCC会议初始化序列期间的合法信道请求。</p><p><img src="https://i.loli.net/2019/05/29/5cee30198697475600.png" alt=""></p><p>图：标准GCC会议初始化序列</p><blockquote><p>However, during GCC Conference Initialization, the Client supplies the channel name which is not whitelisted by the server, meaning an attacker can setup another SVC named “MS_T120” on a channel other than 31. It’s the use of MS_T120 in a channel other than 31 that leads to heap memory corruption and remote code execution (RCE).</p></blockquote><p>但是，在GCC会议初始化期间，客户端提供服务器未列入白名单的频道名称，这意味着攻击者可以在31以外的频道上设置另一个名为“MS_T120”的SVC。这是在31以外的频道中使用MS_T120 这会导致堆内存损坏和远程代码执行（RCE）。</p><p><img src="https://i.loli.net/2019/05/29/5cee3064994e040472.png" alt=""></p><p>图:异常/可疑GCC会议初始化序列 - 非标准信道上的MS_T120</p><blockquote><p>The components involved in the MS_T120 channel management are highlighted in figure 4. The MS_T120 reference channel is created in the rdpwsx.dll and the heap pool allocated in rdpwp.sys. The heap corruption happens in termdd.sys when the MS_T120 reference channel is processed within the context of a channel index other than 31.</p></blockquote><p>图中突出显示了MS_T120通道管理中涉及的组件.MS_D120引用通道在rdpwsx.dll和rdpwp.sys中分配的堆池中创建。 当在31以外的通道索引的上下文中处理MS_T120引用通道时，堆损坏发生在termdd.sys中。</p><p><img src="https://i.loli.net/2019/05/29/5cee3089252b376521.png" alt=""></p><p>图：Windows内核和用户组件</p><blockquote><p>The Microsoft patch as shown in figure 5 now adds a check for a client connection request using channel name “MS_T120” and ensures it binds to channel 31 <strong>only</strong>(1Fh) in the <em>_IcaBindVirtualChannels</em> and <em>_IcaRebindVirtualChannels</em> functions within termdd.sys.</p></blockquote><p>如图所示的Microsoft补丁现在使用通道名称“MS_T120”添加对客户端连接请求的检查，并确保它仅绑定到termdd.sys中的<em> _IcaBindVirtualChannels 和</em> _IcaRebindVirtualChannels 函数中的通道31（1Fh）。</p><p><img src="https://i.loli.net/2019/05/29/5cee31b917b3b10229.png" alt=""></p><p>图：Microsoft补丁添加通道绑定检查</p><h2 id="防火墙规则"><a href="#防火墙规则" class="headerlink" title="防火墙规则"></a>防火墙规则</h2><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alert tcp any any -&gt; any 3389 (msg:&quot;NCC GROUP RDP connection setup with MS_T120 channel, potential CVE-2019-0708&quot;; flow:to_server,established; content:&quot;|03 00|&quot;; offset:0; depth:2; content:&quot;|02 f0|&quot;; distance:2; within:2; content:&quot;|00 05 00 14 7c 00 01|&quot;; within:512; content:&quot;|03 c0|&quot;; distance:3; within:384; content:&quot;MS_T120|00|&quot;; distance:6; within:372; threshold: type limit, track by_src, count 2, seconds 600; classtype:bad-unknown; reference:url,portal.msrc.microsoft.com/en-US/security-guidance/advisory/CVE-2019-0708; sid:190708; rev:1;)</span><br></pre></td></tr></table></figure><p><strong>参考资料：</strong></p><p>Mcafee官博：<a href="https://securingtomorrow.mcafee.com/other-blogs/mcafee-labs/rdp-stands-for-really-do-patch-understanding-the-wormable-rdp-vulnerability-cve-2019-0708/" target="_blank" rel="noopener">https://securingtomorrow.mcafee.com/other-blogs/mcafee-labs/rdp-stands-for-really-do-patch-understanding-the-wormable-rdp-vulnerability-cve-2019-0708/</a></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;漏洞验证&quot;&gt;&lt;a href=&quot;#漏洞验证&quot; class=&quot;headerlink&quot; title=&quot;漏洞验证&quot;&gt;&lt;/a&gt;漏洞验证&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;复现环境：&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;攻击机：Kali Linux（Wind
+      
+    
+    </summary>
+    
+      <category term="CVE" scheme="https://hvnt3r.top/categories/CVE/"/>
+    
+    
+      <category term="Windows系统安全" scheme="https://hvnt3r.top/tags/Windows%E7%B3%BB%E7%BB%9F%E5%AE%89%E5%85%A8/"/>
+    
+      <category term="CVE" scheme="https://hvnt3r.top/tags/CVE/"/>
+    
+  </entry>
   
   <entry>
     <title>开源网络入侵检测系统-Snort实战</title>
@@ -178,15 +207,15 @@
     </summary>
     
     
-      <category term="PWN" scheme="https://hvnt3r.top/tags/PWN/"/>
+      <category term="逆向" scheme="https://hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
     
       <category term="CTF" scheme="https://hvnt3r.top/tags/CTF/"/>
     
       <category term="WriteUp" scheme="https://hvnt3r.top/tags/WriteUp/"/>
     
-      <category term="Reverse" scheme="https://hvnt3r.top/tags/Reverse/"/>
+      <category term="PWN" scheme="https://hvnt3r.top/tags/PWN/"/>
     
-      <category term="逆向" scheme="https://hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
+      <category term="Reverse" scheme="https://hvnt3r.top/tags/Reverse/"/>
     
   </entry>
   
@@ -217,9 +246,9 @@
       <category term="二进制安全" scheme="https://hvnt3r.top/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/"/>
     
     
-      <category term="逆向" scheme="https://hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
-    
       <category term="恶意代码分析" scheme="https://hvnt3r.top/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    
+      <category term="逆向" scheme="https://hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
     
   </entry>
   
@@ -242,9 +271,9 @@
       <category term="二进制安全" scheme="https://hvnt3r.top/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/"/>
     
     
-      <category term="逆向" scheme="https://hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
-    
       <category term="恶意代码分析" scheme="https://hvnt3r.top/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    
+      <category term="逆向" scheme="https://hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
     
       <category term="C++" scheme="https://hvnt3r.top/tags/C/"/>
     
@@ -271,9 +300,9 @@
       <category term="二进制安全" scheme="https://hvnt3r.top/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/"/>
     
     
-      <category term="逆向" scheme="https://hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
-    
       <category term="恶意代码分析" scheme="https://hvnt3r.top/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    
+      <category term="逆向" scheme="https://hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
     
       <category term="ShellCode" scheme="https://hvnt3r.top/tags/ShellCode/"/>
     
@@ -304,9 +333,9 @@
       <category term="二进制安全" scheme="https://hvnt3r.top/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/"/>
     
     
-      <category term="逆向" scheme="https://hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
-    
       <category term="恶意代码分析" scheme="https://hvnt3r.top/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    
+      <category term="逆向" scheme="https://hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
     
       <category term="加壳与脱壳" scheme="https://hvnt3r.top/tags/%E5%8A%A0%E5%A3%B3%E4%B8%8E%E8%84%B1%E5%A3%B3/"/>
     
@@ -333,9 +362,9 @@
       <category term="二进制安全" scheme="https://hvnt3r.top/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/"/>
     
     
-      <category term="逆向" scheme="https://hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
-    
       <category term="恶意代码分析" scheme="https://hvnt3r.top/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    
+      <category term="逆向" scheme="https://hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
     
       <category term="反虚拟机技术" scheme="https://hvnt3r.top/tags/%E5%8F%8D%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%8A%80%E6%9C%AF/"/>
     
@@ -366,9 +395,9 @@
       <category term="二进制安全" scheme="https://hvnt3r.top/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/"/>
     
     
-      <category term="逆向" scheme="https://hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
-    
       <category term="恶意代码分析" scheme="https://hvnt3r.top/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    
+      <category term="逆向" scheme="https://hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
     
       <category term="网络流量识别" scheme="https://hvnt3r.top/tags/%E7%BD%91%E7%BB%9C%E6%B5%81%E9%87%8F%E8%AF%86%E5%88%AB/"/>
     
@@ -399,9 +428,9 @@
       <category term="二进制安全" scheme="https://hvnt3r.top/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/"/>
     
     
-      <category term="逆向" scheme="https://hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
-    
       <category term="恶意代码分析" scheme="https://hvnt3r.top/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    
+      <category term="逆向" scheme="https://hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
     
       <category term="加密" scheme="https://hvnt3r.top/tags/%E5%8A%A0%E5%AF%86/"/>
     
@@ -596,37 +625,6 @@
       <category term="恶意行为分析" scheme="https://hvnt3r.top/tags/%E6%81%B6%E6%84%8F%E8%A1%8C%E4%B8%BA%E5%88%86%E6%9E%90/"/>
     
       <category term="特洛伊木马化技术" scheme="https://hvnt3r.top/tags/%E7%89%B9%E6%B4%9B%E4%BC%8A%E6%9C%A8%E9%A9%AC%E5%8C%96%E6%8A%80%E6%9C%AF/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>使用WinDbg调试内核</title>
-    <link href="https://hvnt3r.top/2019/03/%E4%BD%BF%E7%94%A8WinDbg%E8%B0%83%E8%AF%95%E5%86%85%E6%A0%B8/"/>
-    <id>https://hvnt3r.top/2019/03/使用WinDbg调试内核/</id>
-    <published>2019-03-18T01:16:47.000Z</published>
-    <updated>2019-05-23T03:01:38.474Z</updated>
-    
-    <content type="html"><![CDATA[<hr><h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p><code>WinDbg</code>是微软提供的一个免费调试器，支持内核调试，也具有监控Windows系统交互的功能。</p><p><strong>驱动与内核代码：</strong>Windows设备驱动简称为驱动，他让第三方开发商在Windows内核模式下运行代码。驱动程序常驻与内存，并且负责响应用户态程序的请求，而且应用程序不直接与驱动程序通信，而是直接访问设备对象，向具体的物理设备发送请求。设备对象由驱动程序创建和销毁，可以被用户态的程序直接访问，但他们并不一定是真实的物理设备。为了系统能正常工作，驱动程序必须加载到内核空间，这与DLL需要加载到进程空间道理相同，当驱动被首次加载时，<code>DriverEntry</code>函数将被调用。</p><p>与DLL通过导出函数表来提供其功能不同，驱动程序通过注册回调函数来提供功能。当用户态的应用程序请求一个服务时，这些回调函数将被调用。回调函数在<code>DriverEntry</code>程序中被注册。Window会为每个条创建一个驱动对象，并以参数形式将其传递给<code>DriverEntry</code>函数，<code>DriverEntry</code>函数用回调函数填充这个驱动对象。然后<code>DriverEntry</code>会创建一个可以被用户态应用程序访问的设备对象，应用程序与去当的交互请求都通过这个设备对象进行。</p><a id="more"></a><p>考虑到来自用户态应用程序的一个读取数据的请求。最终这个请求发送到负责管理硬件并存储读入数据的驱动程序。首先，用户态的应用程序应该获得该硬件设备的一个文件句柄，然后再该具柄上调用函数<code>ReadFile</code>，接着内核会处理<code>ReadFile</code>函数的请求，最终由驱动程序的回调函数来响应对IO设备的读请求。七个球内核态的而已组建最常见函数时<code>DeviceIoControl</code>，它是从用户态模块到内核折别的一种通用请求方法，使用该函数时，用户态应用程序传递一个任意长度的缓冲区数据作为输入，并且接收一个任意长度的缓冲区作为输出。</p><p><strong>安装内核调试：</strong>由于运行内核调试时操作系统会被冻结，因此我们需要<code>Vmware</code>来进行这一操作，与用户态调试不同，内核调试需要一些初始化设置。首先要在虚拟机系统中开启内核调试，然后配置<code>Vmware</code>使虚拟机与宿主系统之间有一条虚拟化的串口，同时还应该配置宿主系统中的<code>WinDbg</code>。详细的配置方法在网上能搜索到，在这里就不赘述了 。</p><p><code>boot.ini</code></p><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[boot loader]</span><br><span class="line">timeout=30</span><br><span class="line">default=multi(0)disk(0)rdisk(0)partition(1)\WINDOWS</span><br><span class="line">[operating systems]</span><br><span class="line">multi(0)disk(0)rdisk(0)partition(1)\WINDOWS=&quot;Microsoft Windows XP Professional&quot; /noexecute=optin /fastdetect</span><br><span class="line">multi(0)disk(0)rdisk(0)partition(1)\WINDOWS=&quot;Microsoft Windows XP Professional with Kernel Debugging&quot; /noexecute=optin /fastdetect /debug /debugport=COM1 /baudrate=115200</span><br></pre></td></tr></table></figure><p><img src="https://i.loli.net/2019/03/18/5c8f828a56e16.png" alt=""></p><p><strong>WinDbg读取内存中的数据：</strong>通过再WinDbg的内存窗口输入如下指令来读取程序数据或堆栈等内存位置：</p><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dx addressToLoad</span><br></pre></td></tr></table></figure><table><thead><tr><th>选项</th><th>描述</th></tr></thead><tbody><tr><td>da</td><td>读取内存数据并以ASCII文本显示</td></tr><tr><td>du</td><td>读取内存数据并以Unicode文本显示</td></tr><tr><td>dd</td><td>读取内存数据并以32位双字显示</td></tr></tbody></table><p>e命令与d类似，可以用来改变内存中的值：</p><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ex addressToWrite data</span><br></pre></td></tr></table></figure><p><strong>使用算术运算符：</strong><code>Windbg</code>支持再命令行中使用简单的算术操作符，对内存和寄存器进行直接操作，如加减乘除。命令<code>dwo</code>用来解引用一个32位的指针并查看该指针代表的地址的值。例如设置一个函数断点，该函数的第一个参数是一个宽字符串指针，通过下面命令可以查看字符串的内容：</p><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">du dwo (esp+4)</span><br></pre></td></tr></table></figure><p><strong>设置断点：</strong>使用bp命令来设置基本断点，使用g（go）命令可以再断点处执行一个动作后继续执行而不用等待用户，例如，下面这个命令可以再每次调用GetProcAddress函数时，在不中断程序执行的前提下，打印出第二个参数：</p><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bp GetProcAddress &quot;da dwo(esp+8);g&quot;</span><br></pre></td></tr></table></figure><p><strong>列举模块：</strong>WinDgb无法向OD一样通过内存映射列举出所有内存段与加载模块，但是Windbg没有类似的功能。但是可以使用<code>lm</code>命令来列举加载到进程空间的所有模块，包括用户模式下的可执行模块，DLL以及内核模式下的内核驱动，同时也会列举出每个模块的起始与结束地址。</p><p><strong>微软符号表：</strong>调试符号提供了游戏安的源代码信息，用来帮助我们理解汇编代码，微软的调试符号表中包含默写函数和变量的名字。</p><p><strong>搜索符号：</strong>WinDbg的符号格式如下：</p><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">moduleName!symbolName</span><br></pre></td></tr></table></figure><p>这种语法可以在任何一个拥有正常地址的地方使用，其中<code>moduleName</code>表示<code>exe</code>、<code>dll</code>或者<code>sys</code>文件的文件名（不包含文件扩展名），<code>SymbolName</code>是与这个地址关联的一个名字。其中<code>ntoskrnl.exe</code>文件是一个特例，他的<code>moduleName</code>是<code>nt</code>。</p><p><code>bu</code>命令允许我们用符号在没有加载的代码中设置一个延迟断点。延迟断点是一个断点，当加载的额名字匹配模块时延迟断点才会被设置。命令<code>bu $iment(driverName)</code>回在任何驱动程序代码运行之前在其入口点设置一个断点。</p><p><code>z</code>命令可以用来使用通配符来搜索函数或者符号。如使用<code>x nt!*CreateProcess*</code>可以搜索<code>ntoskrnl.exe</code>中包含字符串<code>CreateProcess</code>的所有函数。</p><p><code>ln</code>命令用来例如出最接近给定内存地址的符号，他可以用来确认指针指向的函数。</p><p><strong>查看结构信息：</strong>微软符号也包含多个数据结构的类型信息，包括没有被公开的内部类型。这对恶意代码分析人员非常有用，因为恶意代码经常操作未公开的数据结构。</p><p><strong>内核代码：</strong>恶意代码的编写者坑会从内核空间写文件，因为这样可能会绕过一些安全产品的审查，同时也可以误导哪些尝试查找用户空间中<code>CreateFile</code>、<code>WriteFile</code>函数作为调用证据的恶意代码分析师。在内核模式下，普通的Win32函数不能直接被调用，所以内核模式下会有新的函数来取代这些函数。</p><p><strong>内核模式的代码：</strong>在使用VMware调试内核时，如果看到系统频繁的加载和卸载KMixer.sys这是正常现象，与恶意活动无关。我们需要找到驱动对象来确定调用了哪些恶意驱动的代码。我们能知道驱动的名字，所以我们可以使用<code>!drvobj</code>命令来找到驱动对象。</p><p><strong>Rootkit:</strong><code>Rootkit</code>通过修改操作系统内部函数来隐藏自己存在的痕迹。通过这种修改，<code>Rootkit</code>可以隐藏一个长在运行的程序的文件、进程、网络连接等其他资源，这种恶意活动难以被反病毒产品及安全分析员发现。大部分<code>Rootkit</code>时通过某种方式来修改操作系统内核来工作的，但是在实际应用中，系统服务描述表挂钩技术的使用成都远远超过其他技术，但是缺点是容易被探测，但是由于这种方法实现简单且便于使用，因此到现在这种方法还是很常见。</p><p><strong>系统服务描述表（SSDT）：</strong>也成为系统服务分发表，微软使用它来查找进入内核的系统调用，它通常不被第三方应用程序或者驱动程序访问，内核态代码只能被用户态的<code>SYSCALL</code>、<code>SYSENTER</code>、<code>INT 0x2E</code>指令来访问。</p><p><strong>Rootkit挂钩SSDT:</strong>假设一个系统已经感染了恶意驱动，我们需要先检查<code>SSDT</code>是否被挂钩，在<code>WinDbg</code>中通过存放在<code>nt!KeServiceDescripterTable</code>表中的偏移量查看<code>SSDT</code>表。<code>SSDT</code>表中的所有函数偏移量都因该指向位于NT模块的地址范围内的函数，通过查看<code>ntoskrnl.exe</code>模块的起始地址和结束地址来确定地址边界，若表中的地址在这个地址边界之外，那么就能确定<code>SSDT</code>被挂钩了。一旦确定了被挂钩的驱动程序（<code>lm指令</code>），下一步就是查找安装挂钩的代码段和执行挂钩的函数，在IDA中查找挂钩函数引用的数据。</p><p><strong>中断：</strong>有时Rootkit使用中断来干扰系统时间，现代的处理器实现了用硬件方式触发软件事件的中断，系统发送一条指令到硬件，硬件处理完请求事件后会中断处理器。有时驱动或Rootkit会使用中断来执行代码，驱动程序调用<code>IoConnectInterrup</code>函数位特定中断注册一个处理程序，然后为这个中断指定一个中断服务例程（ISR），每当触发该中断时，系统都会调用注册的中断服务例程。中断描述表（IDT）中存储着ISR的信息，在WinDbg中可以通过<code>!idt</code>命令查看。如果发现中断位于一个没有名字、没有签名或可疑的驱动中，则表明存在Rootkit或者恶意代码。</p><p><strong>加载驱动：</strong>我们可以通过<code>OSR Driver Loader</code>加载工具来加载驱动程序。</p><p><strong>Windows系统更新带来的差异：</strong>新的Windows做了很大的改变，这些改变会涌向内核调试的过程每一集恶意代码的有效性。从<code>Windows Vista</code>开始，最大的一个改变就是<code>boot.ini</code>文件不再用来负责引导系统，我们需要BCDEdit工具来修改引导配置。在安全方面，新的系统引入了内核保护补丁机制，通常被称为<code>PatchGuard</code>，内核保护能组织第三方程序修改内核。在64位版本的<code>Vista</code>系统中，Windows强制执行驱动签名机制，没有数字签名的内核驱动无法被加载到系统中，所以这是一个对抗恶意内核驱动的有效措施。</p><h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab10-1"><a href="#Lab10-1" class="headerlink" title="Lab10-1"></a>Lab10-1</h3><p><strong>本实验包括一个驱动程序和一个可执行文件。你可以从任意位置运行可执行文件，但为了使程序能正常运行，，必须将程序放到C:\Windows\System32目录下，这个目录在受害者的计算机中已存在。可执行文件使Lab10-1.exe，驱动程序使Lab10-01.sys。</strong></p><p><strong>问题</strong></p><p><strong>1.这个程序是否直接修改了注册表（使用Procmon来检查）？</strong></p><p>在<code>ProcMon</code>中发现程序只对如下键进行了修改：</p><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HKLM\SOFTWARE\Microsoft\Cryptography\RNG\Seed</span><br><span class="line">Type: REG_BINARY, Length: 80, Data: 5D 5E 85 61 23 D1 3F 6F 65 AE D8 01 B5 2E 98 EA</span><br></pre></td></tr></table></figure><p><strong>2.用户态的程序调用了ControlService函数，你是否能够使用WinDbg设置一个断点，从此来观察由于ControlService的调用导致内核执行了怎样的操作。</strong></p><p>在IDA中看到Lab10-01.exe调用了ControlService来进行驱动的写在操作，为了方便分析，在WindowsXP中安装WinDbg来打开Lab10-01.exe并在ControlService调用处下一个断点：</p><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">.text:0040107C                 push    eax             ; lpServiceStatus</span><br><span class="line">.text:0040107D                 push    1               ; dwControl</span><br><span class="line">.text:0040107F                 push    esi             ; hService</span><br><span class="line">.text:00401080                 call    ds:ControlService</span><br></pre></td></tr></table></figure><p>Windbg中信息：</p><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Executable search path is: </span><br><span class="line">ModLoad: 00400000 00407000   image00400000</span><br><span class="line">ModLoad: 7c920000 7c9b3000   ntdll.dll</span><br><span class="line">ModLoad: 7c800000 7c91e000   C:\WINDOWS\system32\kernel32.dll</span><br><span class="line">ModLoad: 77da0000 77e49000   C:\WINDOWS\system32\ADVAPI32.dll</span><br><span class="line">ModLoad: 77e50000 77ee2000   C:\WINDOWS\system32\RPCRT4.dll</span><br><span class="line">ModLoad: 77fc0000 77fd1000   C:\WINDOWS\system32\Secur32.dll</span><br><span class="line">(c0.f8): Break instruction exception - code 80000003 (first chance)</span><br><span class="line">eax=00241eb4 ebx=7ffd6000 ecx=00000007 edx=00000080 esi=00241f48 edi=00241eb4</span><br><span class="line">eip=7c92120e esp=0012fb20 ebp=0012fc94 iopl=0         nv up ei pl nz na po nc</span><br><span class="line">cs=001b  ss=0023  ds=0023  es=0023  fs=003b  gs=0000             efl=00000202</span><br><span class="line">*** ERROR: Symbol file could not be found.  Defaulted to export symbols for ntdll.dll - </span><br><span class="line">ntdll!DbgBreakPoint:</span><br><span class="line">7c92120e cc              int     3</span><br><span class="line">0:000&gt; bp 00401080</span><br><span class="line">breakpoint 0 redefined</span><br></pre></td></tr></table></figure><p>点击运行，运行至断点处WinDbg输出如下信息：</p><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Breakpoint 0 hit</span><br><span class="line">eax=0012ff1c ebx=7ffd6000 ecx=77dbfb6d edx=00000000 esi=00144050 edi=00144f60</span><br><span class="line">eip=00401080 esp=0012ff08 ebp=0012ffc0 iopl=0         nv up ei pl nz na pe nc</span><br><span class="line">cs=001b  ss=0023  ds=0023  es=0023  fs=003b  gs=0000             efl=00000206</span><br><span class="line">image00400000+0x1080:</span><br><span class="line">*** ERROR: Symbol file could not be found.  Defaulted to export symbols for C:\WINDOWS\system32\ADVAPI32.dll - </span><br><span class="line">00401080 ff1510404000    call    dword ptr [image00400000+0x4010 (00404010)] ds:0023:00404010=&#123;ADVAPI32!ControlService (77dc49dd)&#125;</span><br></pre></td></tr></table></figure><p><strong>3.这个程序做了些什么？</strong></p><p>这个程序通过创建服务来加载驱动，修改注册表<code>\\Registry\\Machine\\SOFTWARE\\Policies\\Microsoft\\WindowsFirewall\\StandardProfile</code>和<code>\\Registry\\Machine\\SOFTWARE\\Policies\\Microsoft\\WindowsFirewall\\DomainProfile</code>来禁用WindowsXP的防火墙</p><h3 id="Lab10-2"><a href="#Lab10-2" class="headerlink" title="Lab10-2"></a>Lab10-2</h3><p><strong>该实验的文件为Lab10-02.exe。</strong></p><p><strong>问题</strong></p><p><strong>1.这个程序创建文件了吗，它创建了什么文件？</strong></p><p><strong>2.这个程序有内核组件吗？</strong></p><p><strong>3.这个程序做了些什么？</strong></p><h3 id="Lab10-3"><a href="#Lab10-3" class="headerlink" title="Lab10-3"></a>Lab10-3</h3><p><strong>本实验包括一个驱动程序和一个可执行文件。你可以从任意位置运行可执行文件，但为了使程序能正常运行，，必须将程序放到C:\Windows\System32目录下，这个目录在受害者的计算机中已存在。可执行文件使Lab10-3.exe，驱动程序是Lab10-03.sys。</strong></p><p><strong>问题</strong></p><p><strong>1.这个程序做了些什么？</strong></p><p><strong>2.一旦运行，你怎样停止它？</strong></p><p><strong>3.它的内核组件做了什么操作？</strong></p><h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>]]></content>
-    
-    <summary type="html">
-    
-      &lt;hr&gt;
-&lt;h2 id=&quot;知识点&quot;&gt;&lt;a href=&quot;#知识点&quot; class=&quot;headerlink&quot; title=&quot;知识点&quot;&gt;&lt;/a&gt;知识点&lt;/h2&gt;&lt;p&gt;&lt;code&gt;WinDbg&lt;/code&gt;是微软提供的一个免费调试器，支持内核调试，也具有监控Windows系统交互的功能。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;驱动与内核代码：&lt;/strong&gt;Windows设备驱动简称为驱动，他让第三方开发商在Windows内核模式下运行代码。驱动程序常驻与内存，并且负责响应用户态程序的请求，而且应用程序不直接与驱动程序通信，而是直接访问设备对象，向具体的物理设备发送请求。设备对象由驱动程序创建和销毁，可以被用户态的程序直接访问，但他们并不一定是真实的物理设备。为了系统能正常工作，驱动程序必须加载到内核空间，这与DLL需要加载到进程空间道理相同，当驱动被首次加载时，&lt;code&gt;DriverEntry&lt;/code&gt;函数将被调用。&lt;/p&gt;
-&lt;p&gt;与DLL通过导出函数表来提供其功能不同，驱动程序通过注册回调函数来提供功能。当用户态的应用程序请求一个服务时，这些回调函数将被调用。回调函数在&lt;code&gt;DriverEntry&lt;/code&gt;程序中被注册。Window会为每个条创建一个驱动对象，并以参数形式将其传递给&lt;code&gt;DriverEntry&lt;/code&gt;函数，&lt;code&gt;DriverEntry&lt;/code&gt;函数用回调函数填充这个驱动对象。然后&lt;code&gt;DriverEntry&lt;/code&gt;会创建一个可以被用户态应用程序访问的设备对象，应用程序与去当的交互请求都通过这个设备对象进行。&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="二进制安全" scheme="https://hvnt3r.top/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/"/>
-    
-    
-      <category term="恶意代码分析" scheme="https://hvnt3r.top/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"/>
-    
-      <category term="动态分析" scheme="https://hvnt3r.top/tags/%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90/"/>
-    
-      <category term="内核调试" scheme="https://hvnt3r.top/tags/%E5%86%85%E6%A0%B8%E8%B0%83%E8%AF%95/"/>
-    
-      <category term="WinDbg" scheme="https://hvnt3r.top/tags/WinDbg/"/>
     
   </entry>
   
