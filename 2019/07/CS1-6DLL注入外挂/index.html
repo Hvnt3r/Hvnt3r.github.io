@@ -7,19 +7,19 @@
 
 
 
-    <meta name="description" content="CS1.6DLL注入外挂实践研究外挂只是想学一下r0,r3攻防对抗，不干坏事，乖巧.jpg 这一次做一下锁血 首先常规操作获取血量地址： 进程注入相关代码 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656">
+    <meta name="description" content="研究外挂只是想学一下r0,r3攻防对抗，不干坏事，乖巧.jpg 这一次做一下锁血 首先常规操作获取血量地址：">
 <meta name="keywords" content="进程注入,DLL注入,游戏安全">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CS1.6DLL注入外挂">
 <meta property="og:url" content="https://hvnt3r.top/2019/07/CS1-6DLL注入外挂/index.html">
 <meta property="og:site_name" content="Hvnt3r&#39;s Blog">
-<meta property="og:description" content="CS1.6DLL注入外挂实践研究外挂只是想学一下r0,r3攻防对抗，不干坏事，乖巧.jpg 这一次做一下锁血 首先常规操作获取血量地址： 进程注入相关代码 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656">
+<meta property="og:description" content="研究外挂只是想学一下r0,r3攻防对抗，不干坏事，乖巧.jpg 这一次做一下锁血 首先常规操作获取血量地址：">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://hvnt3r.top/gallery/thumbnails/cs.jpg">
-<meta property="og:updated_time" content="2019-08-04T13:33:57.753Z">
+<meta property="og:updated_time" content="2019-08-04T13:45:34.070Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CS1.6DLL注入外挂">
-<meta name="twitter:description" content="CS1.6DLL注入外挂实践研究外挂只是想学一下r0,r3攻防对抗，不干坏事，乖巧.jpg 这一次做一下锁血 首先常规操作获取血量地址： 进程注入相关代码 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656">
+<meta name="twitter:description" content="研究外挂只是想学一下r0,r3攻防对抗，不干坏事，乖巧.jpg 这一次做一下锁血 首先常规操作获取血量地址：">
 <meta name="twitter:image" content="https://hvnt3r.top/gallery/thumbnails/cs.jpg">
 
 
@@ -158,7 +158,7 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-07-22T15:01:47.000Z">2019-07-22</time>
+                <time class="level-item has-text-grey" datetime="2019-07-11T15:01:47.000Z">2019-07-11</time>
                 
                 <div class="level-item">
                 <a class="has-link-grey -link" href="/categories/反外挂/">反外挂</a>
@@ -168,7 +168,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    4 分钟 读完 (大约 604 个字)
+                    5 分钟 读完 (大约 730 个字)
                 </span>
                 
                 
@@ -181,9 +181,10 @@
             
         </h1>
         <div class="content">
-            <h1 id="CS1-6DLL注入外挂实践"><a href="#CS1-6DLL注入外挂实践" class="headerlink" title="CS1.6DLL注入外挂实践"></a>CS1.6DLL注入外挂实践</h1><p>研究外挂只是想学一下r0,r3攻防对抗，不干坏事，乖巧.jpg</p>
+            <p>研究外挂只是想学一下r0,r3攻防对抗，不干坏事，乖巧.jpg</p>
 <p>这一次做一下锁血</p>
 <p>首先常规操作获取血量地址：<br><img src="https://i.loli.net/2019/07/22/5d35d4989bfc534573.png" alt=""></p>
+<a id="more"></a>
 <p>进程注入相关代码</p>
 <figure class="highlight c++ hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">// dllinjecter.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。</span></span><br><span class="line"><span class="hljs-comment">//</span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;atlstr.h&gt;</span></span></span><br><span class="line"><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> <span class="hljs-built_in">std</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	CString strMsg;</span><br><span class="line">	HANDLE hToken;</span><br><span class="line">	<span class="hljs-keyword">if</span> (FALSE == OpenProcessToken(GetCurrentProcess(), TOKEN_ALL_ACCESS, &amp;hToken)) &#123;</span><br><span class="line">		strMsg.Format(TEXT(<span class="hljs-string">"Open process token failed, error code: %d"</span>), GetLastError());</span><br><span class="line">		MessageBox(<span class="hljs-literal">NULL</span>, strMsg, TEXT(<span class="hljs-string">"Warning"</span>), MB_OK);</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	LUID luid;</span><br><span class="line">	<span class="hljs-keyword">if</span> (FALSE == LookupPrivilegeValue(<span class="hljs-literal">NULL</span>, SE_DEBUG_NAME, &amp;luid)) &#123;</span><br><span class="line">		strMsg.Format(TEXT(<span class="hljs-string">"Query privilegevalue failed, error code: %d"</span>), GetLastError());</span><br><span class="line">		MessageBox(<span class="hljs-literal">NULL</span>, strMsg, TEXT(<span class="hljs-string">"Warning"</span>), MB_OK);</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	TOKEN_PRIVILEGES tkp;</span><br><span class="line">	tkp.PrivilegeCount = <span class="hljs-number">1</span>;</span><br><span class="line">	tkp.Privileges[<span class="hljs-number">0</span>].Luid = luid;</span><br><span class="line">	tkp.Privileges[<span class="hljs-number">0</span>].Attributes = SE_PRIVILEGE_ENABLED;</span><br><span class="line">	<span class="hljs-keyword">if</span> (FALSE == AdjustTokenPrivileges(hToken, FALSE, &amp;tkp, <span class="hljs-keyword">sizeof</span>(tkp), <span class="hljs-literal">NULL</span>, <span class="hljs-literal">NULL</span>)) &#123;</span><br><span class="line">		strMsg.Format(TEXT(<span class="hljs-string">"Adjust process privilege token failed, error code: %d"</span>), GetLastError());</span><br><span class="line">		MessageBox(<span class="hljs-literal">NULL</span>, strMsg, TEXT(<span class="hljs-string">"Warning"</span>), MB_OK);</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	HWND hWindow = ::FindWindow(<span class="hljs-literal">NULL</span>, TEXT(<span class="hljs-string">"Counter-Strike"</span>));</span><br><span class="line">	<span class="hljs-keyword">if</span> (hWindow == <span class="hljs-literal">NULL</span>) &#123;</span><br><span class="line">		strMsg.Format(TEXT(<span class="hljs-string">"FindWindow failed, error code: %d"</span>), GetLastError());</span><br><span class="line">		MessageBox(<span class="hljs-literal">NULL</span>, strMsg, TEXT(<span class="hljs-string">"Warning"</span>), MB_OK);</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	DWORD dwPid = <span class="hljs-number">0</span>;</span><br><span class="line">	GetWindowThreadProcessId(hWindow, &amp;dwPid);</span><br><span class="line">	<span class="hljs-keyword">if</span> (dwPid == <span class="hljs-number">0</span>) &#123;</span><br><span class="line">		strMsg.Format(TEXT(<span class="hljs-string">"GetWindowThreadProcessId() failed, error code: %d"</span>), GetLastError());</span><br><span class="line">		MessageBox(<span class="hljs-literal">NULL</span>, strMsg, TEXT(<span class="hljs-string">"Warning"</span>), MB_OK);</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	HANDLE hCSProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPid);</span><br><span class="line">	<span class="hljs-keyword">if</span> (hCSProcess == <span class="hljs-literal">NULL</span>) &#123;</span><br><span class="line">		strMsg.Format(TEXT(<span class="hljs-string">"OpenProcess() failed, error code: %d"</span>), GetLastError());</span><br><span class="line">		MessageBox(<span class="hljs-literal">NULL</span>, strMsg, TEXT(<span class="hljs-string">"Warning"</span>), MB_OK);</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-keyword">char</span> dllName[] = <span class="hljs-string">"CHEATINGPLUGIN.dll"</span>;</span><br><span class="line">	DWORD size = <span class="hljs-built_in">strlen</span>(dllName) + <span class="hljs-number">5</span>;</span><br><span class="line">	LPVOID lpAddr = VirtualAllocEx(hCSProcess, <span class="hljs-literal">NULL</span>, size, MEM_COMMIT, PAGE_READWRITE);</span><br><span class="line">	<span class="hljs-keyword">if</span> (lpAddr == <span class="hljs-literal">NULL</span>) &#123;</span><br><span class="line">		strMsg.Format(TEXT(<span class="hljs-string">"VirtualAllocEx() failed, error code: %d"</span>), GetLastError());</span><br><span class="line">		MessageBox(<span class="hljs-literal">NULL</span>, strMsg, TEXT(<span class="hljs-string">"Warning"</span>), MB_OK);</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="hljs-keyword">if</span> (FALSE == WriteProcessMemory(</span><br><span class="line">		hCSProcess,</span><br><span class="line">		lpAddr,</span><br><span class="line">		dllName,</span><br><span class="line">		size,</span><br><span class="line">		<span class="hljs-literal">NULL</span></span><br><span class="line">	)) &#123;</span><br><span class="line">		strMsg.Format(TEXT(<span class="hljs-string">"WriteProcessMemory() failed, error code: %d"</span>), GetLastError());</span><br><span class="line">		MessageBox(<span class="hljs-literal">NULL</span>, strMsg, TEXT(<span class="hljs-string">"Warning"</span>), MB_OK);</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	PTHREAD_START_ROUTINE pfnStartAddr = (PTHREAD_START_ROUTINE)::GetProcAddress(::GetModuleHandle(</span><br><span class="line">		TEXT(<span class="hljs-string">"Kernel32.dll"</span>)),</span><br><span class="line">		<span class="hljs-string">"LoadLibraryA"</span></span><br><span class="line">	);</span><br><span class="line">	HANDLE hThreadHandle = ::CreateRemoteThread(hCSProcess, <span class="hljs-literal">NULL</span>, <span class="hljs-number">0</span>, pfnStartAddr, lpAddr, <span class="hljs-number">0</span>, <span class="hljs-literal">NULL</span>);</span><br><span class="line">	<span class="hljs-keyword">if</span> (<span class="hljs-literal">NULL</span> == hThreadHandle) &#123;</span><br><span class="line">		strMsg.Format(TEXT(<span class="hljs-string">"CreateRemoteThread() failed, error code: %d"</span>), GetLastError());</span><br><span class="line">		MessageBox(<span class="hljs-literal">NULL</span>, strMsg, TEXT(<span class="hljs-string">"Warning"</span>), MB_OK);</span><br><span class="line">		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="hljs-comment">//MessageBox(NULL, "Succeed!", "Congratulations", MB_OK);</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>Dll文件代码：</p>
@@ -193,6 +194,13 @@
 <p>效果如下，左下角血量（锁血延迟设置的较高0.3s，所以被秒没办法hhhh，我起了，一枪秒了，有什么好说的🔫）：</p>
 <p><img src="https://i.loli.net/2019/08/04/sS3rQ8RkNxZo5O4.png" alt=""></p>
 <p><img src="https://github.com/Hvnt3r/My_Images/blob/master/cs_dll_inject.gif?raw=true" alt=""></p>
+<p>其实在做这个期间遇到一些坑：</p>
+<ul>
+<li><code>DllMain()</code>中不要创建多线程，易造成死锁，或者是长时间无返回的函数如<code>MessageBox()</code></li>
+<li><code>CreateRemoteThread()</code>创建远程线程时，<code>Dll</code>中不能含有静态变量如静态字符串或者static声明的函数，会在附加时产生一些权限问题，且data段已经确定无法修改，这样操作可能会使远程线程崩溃</li>
+<li>最好不要创建模态窗口</li>
+<li>等等。。。</li>
+</ul>
 
         </div>
         
@@ -405,11 +413,7 @@
             <h3 class="menu-label">
                 目录
             </h3>
-            <ul class="menu-list"><li>
-        <a class="is-flex" href="#CS1-6DLL注入外挂实践">
-        <span class="has-mr-6">1</span>
-        <span>CS1.6DLL注入外挂实践</span>
-        </a></li></ul>
+            
         </div>
     </div>
 </div>
@@ -651,7 +655,7 @@
             
             <div class="media-content">
                 <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-22T15:01:47.000Z">2019-07-22</time></div>
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-11T15:01:47.000Z">2019-07-11</time></div>
                     <a href="/2019/07/CS1-6DLL注入外挂/" class="has-link-black-ter is-size-6">CS1.6DLL注入外挂</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/反外挂/">反外挂</a>
@@ -1443,7 +1447,7 @@
             
             <div class="media-content">
                 <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-22T15:01:47.000Z">2019-07-22</time></div>
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-11T15:01:47.000Z">2019-07-11</time></div>
                     <a href="/2019/07/CS1-6DLL注入外挂/" class="has-link-black-ter is-size-6">CS1.6DLL注入外挂</a>
                     <p class="is-size-7 is-uppercase">
                         <a class="has-link-grey -link" href="/categories/反外挂/">反外挂</a>
