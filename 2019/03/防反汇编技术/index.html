@@ -16,7 +16,7 @@
 <meta property="og:description" content="知识点所谓对抗反汇编技术，就是在程序中使用一些特殊构造的代码或数据，让反汇编分析工具产生不正确的程序代码列表。这种技术由恶意代码编写者手工构造，在恶意代码编译和部署阶段使用一个单独的混淆工具，或是直接在源码中插入混淆代码。除了延缓或者防止人工分析以外，防反汇编技术也能在一定程度上阻碍特定的自动化分析技术。 线性反汇编：线性反汇编策略是遍历一个代码段，一次一条指令地线性反汇编，线性反汇编用已经反汇">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://hvnt3r.top/images/og_image.png">
-<meta property="og:updated_time" content="2019-05-23T03:04:31.800Z">
+<meta property="og:updated_time" content="2019-06-11T08:36:20.149Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="防反汇编技术">
 <meta name="twitter:description" content="知识点所谓对抗反汇编技术，就是在程序中使用一些特殊构造的代码或数据，让反汇编分析工具产生不正确的程序代码列表。这种技术由恶意代码编写者手工构造，在恶意代码编译和部署阶段使用一个单独的混淆工具，或是直接在源码中插入混淆代码。除了延缓或者防止人工分析以外，防反汇编技术也能在一定程度上阻碍特定的自动化分析技术。 线性反汇编：线性反汇编策略是遍历一个代码段，一次一条指令地线性反汇编，线性反汇编用已经反汇">
@@ -162,7 +162,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    27 分钟 读完 (大约 4028 个字)
+                    27 分钟 读完 (大约 4027 个字)
                 </span>
                 
                 
@@ -192,10 +192,10 @@
 <p>从概念上讲，这个链表以栈的方式进行操作，第一个调用的是最后一个加入链表的记录，由于子进程的调用与嵌套异常处理块的原因，SEH链的增长和缩小等同于程序中异常处理层的改变，所以SEH记录总是在栈上。</p>
 <p>为了实现向<code>SEH</code>中添加函数，需要在栈上构造一条新的记录，因为记录结构由两个<code>DWORD</code>变量组成，所以使用两个<code>push</code>指令来完成，栈的增长方向是从下向上，所以第一个<code>push</code>进栈的是异常处理函数指针，第二个是下一条记录的指针，当添加一条记录到链表头部时，下一条记录需要完成异常处理的是当前的栈顶，它由<code>fs:[0]</code>指针指出：</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">push ExceptionHandler</span><br><span class="line">push fs:[0]</span><br><span class="line">mov fs:[0],esp</span><br></pre></td></tr></table></figure>
-<p>异常发生时，首先将调用函数<code>ExceptionHandler</code>，这个动作会受到微软的<code>DEP`</code>保护的限制<code>，对于DEP他的目的是阻止应用程序在运行的过程中添加第三方的异常处理，可以使用支持</code>SafeSEH<code>指令的汇编器，另外，使用微软的C编译器也能到达此目的，添加</code>/SAFESEH:NO`到链接器命令行就可以使这种限制失效。</p>
+<p>异常发生时，首先将调用函数<code>ExceptionHandler</code>，这个动作会受到微软的<code>DEP</code>保护的限制 ，对于DEP他的目的是阻止应用程序在运行的过程中添加第三方的异常处理，可以使用支持<code>SafeSEH</code>指令的汇编器，另外，使用微软的C编译器也能到达此目的，添加<code>/SAFESEH:NO</code>到链接器命令行就可以使这种限制失效。</p>
 <p>当调用<code>ExceptionHandler</code>函数时，栈将大幅改变。我们需要知道怎么返回异常发生前的栈位置，当异常处理被调用时，操作系统添加了其他的<code>SEH</code>处理，为了让程序恢复正常操作，我们需要将异常处理从异常处理链中断开，还要将系如添加的异常处理从异常处理链中断开，因此我们需要从<code>esp+8</code>而不是<code>esp</code>中取出原始的栈指针：</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mov esp, [esp+8]</span><br><span class="line">mov eax, fs:[0]</span><br><span class="line">mov eax, [eax]</span><br><span class="line">mov eax, [eax]</span><br><span class="line">mov fs:[0], eax</span><br><span class="line">add esp, 8</span><br></pre></td></tr></table></figure>
-<p><strong>挫败栈帧分析：</strong>先进的反汇编器能够通过分析一个函数中指令推导出函数栈的结构，这使得反汇编器嫩能够显示局部变量及函数相关的参数。这些信息对恶意代码分析人员非常有价值，它使得分析人员一次分析一个函数，并且可以更好的理解函数的输入输出及结构，然而通过一个函数来确定它的栈帧结构并不十分科学，与反汇编的很多其他因素一样，用来决定栈帧结构的算法必须做出某些假设与合理猜想，但是这很容易被有经验的恶意代码编写者利用。挫败栈帧分析也可以阻止特定的技术分析操作，其中最明显的时IDA反编译插件，他可以产生一个函数的类C语言伪代码。</p>
+<p><strong>挫败栈帧分析：</strong>先进的反汇编器能够通过分析一个函数中指令推导出函数栈的结构，这使得反汇编器能够显示局部变量及函数相关的参数。这些信息对恶意代码分析人员非常有价值，它使得分析人员一次分析一个函数，并且可以更好的理解函数的输入输出及结构，然而通过一个函数来确定它的栈帧结构并不十分科学，与反汇编的很多其他因素一样，用来决定栈帧结构的算法必须做出某些假设与合理猜想，但是这很容易被有经验的恶意代码编写者利用。挫败栈帧分析也可以阻止特定的技术分析操作，其中最明显的时IDA反编译插件，他可以产生一个函数的类C语言伪代码。</p>
 <h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab15-1"><a href="#Lab15-1" class="headerlink" title="Lab15-1"></a>Lab15-1</h3><p><strong>分析样本Lab15-01.exe它是一个命令行程序，它接收一个参数，如果这个参数与一个秘密代码相匹配，程序会输出”Good Job！”。</strong></p>
 <p><strong>问题</strong></p>
 <p><strong>1.这个二进制程序中使用了哪种防反汇编技术？</strong></p>
@@ -385,7 +385,7 @@
                         文章
                     </p>
                     <p class="title has-text-weight-normal">
-                        68
+                        69
                     </p>
                 </div>
             </div>
@@ -395,7 +395,7 @@
                         分类
                     </p>
                     <p class="title has-text-weight-normal">
-                        18
+                        19
                     </p>
                 </div>
             </div>
@@ -405,7 +405,7 @@
                         标签
                     </p>
                     <p class="title has-text-weight-normal">
-                        75
+                        77
                     </p>
                 </div>
             </div>
@@ -639,6 +639,14 @@
                 <span class="level-item tag">1</span>
             </span>
         </a></li><li>
+        <a class="level is-marginless" href="/categories/反外挂/">
+            <span class="level-start">
+                <span class="level-item">反外挂</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
         <a class="level is-marginless" href="/categories/工业控制安全/">
             <span class="level-start">
                 <span class="level-item">工业控制安全</span>
@@ -698,7 +706,7 @@
         <h3 class="menu-label">
             标签云
         </h3>
-        <a href="/tags/2018年工业信息安全技能大赛/" style="font-size: 10px;">2018年工业信息安全技能大赛</a> <a href="/tags/2018护网杯/" style="font-size: 10px;">2018护网杯</a> <a href="/tags/APT/" style="font-size: 12px;">APT</a> <a href="/tags/C/" style="font-size: 10px;">C++</a> <a href="/tags/CTF/" style="font-size: 18px;">CTF</a> <a href="/tags/CVE/" style="font-size: 14px;">CVE</a> <a href="/tags/CrackMe/" style="font-size: 12px;">CrackMe</a> <a href="/tags/C语言/" style="font-size: 10px;">C语言</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/IDA/" style="font-size: 10px;">IDA</a> <a href="/tags/IDA-Pro/" style="font-size: 10px;">IDA Pro</a> <a href="/tags/IDS/" style="font-size: 10px;">IDS</a> <a href="/tags/Kali-Linux/" style="font-size: 10px;">Kali Linux</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Linux子系统/" style="font-size: 10px;">Linux子系统</a> <a href="/tags/OllyDbg/" style="font-size: 10px;">OllyDbg</a> <a href="/tags/PHP/" style="font-size: 14px;">PHP</a> <a href="/tags/PWN/" style="font-size: 18px;">PWN</a> <a href="/tags/PwnTools/" style="font-size: 10px;">PwnTools</a> <a href="/tags/Python/" style="font-size: 10px;">Python</a> <a href="/tags/ROP/" style="font-size: 10px;">ROP</a> <a href="/tags/Reverse/" style="font-size: 10px;">Reverse</a> <a href="/tags/ShellCode/" style="font-size: 12px;">ShellCode</a> <a href="/tags/Shellcode/" style="font-size: 10px;">Shellcode</a> <a href="/tags/Slmail/" style="font-size: 10px;">Slmail</a> <a href="/tags/Snort/" style="font-size: 10px;">Snort</a> <a href="/tags/VPN/" style="font-size: 10px;">VPN</a> <a href="/tags/WinDbg/" style="font-size: 10px;">WinDbg</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/Windows恶意代码/" style="font-size: 12px;">Windows恶意代码</a> <a href="/tags/Windows系统安全/" style="font-size: 12px;">Windows系统安全</a> <a href="/tags/Wordpress/" style="font-size: 12px;">Wordpress</a> <a href="/tags/WriteUp/" style="font-size: 10px;">WriteUp</a> <a href="/tags/二进制安全/" style="font-size: 12px;">二进制安全</a> <a href="/tags/信息安全/" style="font-size: 12px;">信息安全</a> <a href="/tags/内核调试/" style="font-size: 10px;">内核调试</a> <a href="/tags/分析报告/" style="font-size: 10px;">分析报告</a> <a href="/tags/加壳与脱壳/" style="font-size: 10px;">加壳与脱壳</a> <a href="/tags/加密/" style="font-size: 10px;">加密</a> <a href="/tags/动态分析/" style="font-size: 14px;">动态分析</a> <a href="/tags/动态分析技术/" style="font-size: 10px;">动态分析技术</a> <a href="/tags/动态调试/" style="font-size: 10px;">动态调试</a> <a href="/tags/反汇编/" style="font-size: 10px;">反汇编</a> <a href="/tags/反虚拟机技术/" style="font-size: 10px;">反虚拟机技术</a> <a href="/tags/反调试/" style="font-size: 12px;">反调试</a> <a href="/tags/安全局势/" style="font-size: 10px;">安全局势</a> <a href="/tags/安全竞赛/" style="font-size: 10px;">安全竞赛</a> <a href="/tags/小窍门/" style="font-size: 10px;">小窍门</a> <a href="/tags/工业控制安全/" style="font-size: 10px;">工业控制安全</a> <a href="/tags/心得/" style="font-size: 12px;">心得</a> <a href="/tags/恶意代码分析/" style="font-size: 20px;">恶意代码分析</a> <a href="/tags/恶意代码分析实战/" style="font-size: 12px;">恶意代码分析实战</a> <a href="/tags/恶意代码启动方式/" style="font-size: 10px;">恶意代码启动方式</a> <a href="/tags/恶意行为分析/" style="font-size: 10px;">恶意行为分析</a> <a href="/tags/数据包分析/" style="font-size: 10px;">数据包分析</a> <a href="/tags/木马/" style="font-size: 10px;">木马</a> <a href="/tags/栈溢出/" style="font-size: 10px;">栈溢出</a> <a href="/tags/格式化字符串漏洞/" style="font-size: 10px;">格式化字符串漏洞</a> <a href="/tags/桌面/" style="font-size: 10px;">桌面</a> <a href="/tags/汇编语言/" style="font-size: 10px;">汇编语言</a> <a href="/tags/游戏安全/" style="font-size: 10px;">游戏安全</a> <a href="/tags/特洛伊木马化技术/" style="font-size: 10px;">特洛伊木马化技术</a> <a href="/tags/生活/" style="font-size: 10px;">生活</a> <a href="/tags/破解/" style="font-size: 10px;">破解</a> <a href="/tags/离线翻译/" style="font-size: 10px;">离线翻译</a> <a href="/tags/缓冲区溢出/" style="font-size: 10px;">缓冲区溢出</a> <a href="/tags/编程/" style="font-size: 10px;">编程</a> <a href="/tags/网络流量识别/" style="font-size: 10px;">网络流量识别</a> <a href="/tags/自动化/" style="font-size: 10px;">自动化</a> <a href="/tags/虚拟化/" style="font-size: 10px;">虚拟化</a> <a href="/tags/调试/" style="font-size: 10px;">调试</a> <a href="/tags/远程控制/" style="font-size: 10px;">远程控制</a> <a href="/tags/逆向/" style="font-size: 16px;">逆向</a> <a href="/tags/防反汇编技术/" style="font-size: 10px;">防反汇编技术</a> <a href="/tags/静态分析/" style="font-size: 12px;">静态分析</a>
+        <a href="/tags/2018年工业信息安全技能大赛/" style="font-size: 10px;">2018年工业信息安全技能大赛</a> <a href="/tags/2018护网杯/" style="font-size: 10px;">2018护网杯</a> <a href="/tags/APT/" style="font-size: 12px;">APT</a> <a href="/tags/C/" style="font-size: 10px;">C++</a> <a href="/tags/CTF/" style="font-size: 18px;">CTF</a> <a href="/tags/CVE/" style="font-size: 14px;">CVE</a> <a href="/tags/CrackMe/" style="font-size: 12px;">CrackMe</a> <a href="/tags/C语言/" style="font-size: 10px;">C语言</a> <a href="/tags/DLL注入/" style="font-size: 10px;">DLL注入</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/IDA/" style="font-size: 10px;">IDA</a> <a href="/tags/IDA-Pro/" style="font-size: 10px;">IDA Pro</a> <a href="/tags/IDS/" style="font-size: 10px;">IDS</a> <a href="/tags/Kali-Linux/" style="font-size: 10px;">Kali Linux</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Linux子系统/" style="font-size: 10px;">Linux子系统</a> <a href="/tags/OllyDbg/" style="font-size: 10px;">OllyDbg</a> <a href="/tags/PHP/" style="font-size: 14px;">PHP</a> <a href="/tags/PWN/" style="font-size: 18px;">PWN</a> <a href="/tags/PwnTools/" style="font-size: 10px;">PwnTools</a> <a href="/tags/Python/" style="font-size: 10px;">Python</a> <a href="/tags/ROP/" style="font-size: 10px;">ROP</a> <a href="/tags/Reverse/" style="font-size: 10px;">Reverse</a> <a href="/tags/ShellCode/" style="font-size: 12px;">ShellCode</a> <a href="/tags/Shellcode/" style="font-size: 10px;">Shellcode</a> <a href="/tags/Slmail/" style="font-size: 10px;">Slmail</a> <a href="/tags/Snort/" style="font-size: 10px;">Snort</a> <a href="/tags/VPN/" style="font-size: 10px;">VPN</a> <a href="/tags/WinDbg/" style="font-size: 10px;">WinDbg</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/Windows恶意代码/" style="font-size: 12px;">Windows恶意代码</a> <a href="/tags/Windows系统安全/" style="font-size: 12px;">Windows系统安全</a> <a href="/tags/Wordpress/" style="font-size: 12px;">Wordpress</a> <a href="/tags/WriteUp/" style="font-size: 10px;">WriteUp</a> <a href="/tags/二进制安全/" style="font-size: 12px;">二进制安全</a> <a href="/tags/信息安全/" style="font-size: 12px;">信息安全</a> <a href="/tags/内核调试/" style="font-size: 10px;">内核调试</a> <a href="/tags/分析报告/" style="font-size: 10px;">分析报告</a> <a href="/tags/加壳与脱壳/" style="font-size: 10px;">加壳与脱壳</a> <a href="/tags/加密/" style="font-size: 10px;">加密</a> <a href="/tags/动态分析/" style="font-size: 14px;">动态分析</a> <a href="/tags/动态分析技术/" style="font-size: 10px;">动态分析技术</a> <a href="/tags/动态调试/" style="font-size: 10px;">动态调试</a> <a href="/tags/反汇编/" style="font-size: 10px;">反汇编</a> <a href="/tags/反虚拟机技术/" style="font-size: 10px;">反虚拟机技术</a> <a href="/tags/反调试/" style="font-size: 12px;">反调试</a> <a href="/tags/安全局势/" style="font-size: 10px;">安全局势</a> <a href="/tags/安全竞赛/" style="font-size: 10px;">安全竞赛</a> <a href="/tags/小窍门/" style="font-size: 10px;">小窍门</a> <a href="/tags/工业控制安全/" style="font-size: 10px;">工业控制安全</a> <a href="/tags/心得/" style="font-size: 12px;">心得</a> <a href="/tags/恶意代码分析/" style="font-size: 20px;">恶意代码分析</a> <a href="/tags/恶意代码分析实战/" style="font-size: 12px;">恶意代码分析实战</a> <a href="/tags/恶意代码启动方式/" style="font-size: 10px;">恶意代码启动方式</a> <a href="/tags/恶意行为分析/" style="font-size: 10px;">恶意行为分析</a> <a href="/tags/数据包分析/" style="font-size: 10px;">数据包分析</a> <a href="/tags/木马/" style="font-size: 10px;">木马</a> <a href="/tags/栈溢出/" style="font-size: 10px;">栈溢出</a> <a href="/tags/格式化字符串漏洞/" style="font-size: 10px;">格式化字符串漏洞</a> <a href="/tags/桌面/" style="font-size: 10px;">桌面</a> <a href="/tags/汇编语言/" style="font-size: 10px;">汇编语言</a> <a href="/tags/游戏安全/" style="font-size: 12px;">游戏安全</a> <a href="/tags/特洛伊木马化技术/" style="font-size: 10px;">特洛伊木马化技术</a> <a href="/tags/生活/" style="font-size: 10px;">生活</a> <a href="/tags/破解/" style="font-size: 10px;">破解</a> <a href="/tags/离线翻译/" style="font-size: 10px;">离线翻译</a> <a href="/tags/缓冲区溢出/" style="font-size: 10px;">缓冲区溢出</a> <a href="/tags/编程/" style="font-size: 10px;">编程</a> <a href="/tags/网络流量识别/" style="font-size: 10px;">网络流量识别</a> <a href="/tags/自动化/" style="font-size: 10px;">自动化</a> <a href="/tags/虚拟化/" style="font-size: 10px;">虚拟化</a> <a href="/tags/调试/" style="font-size: 10px;">调试</a> <a href="/tags/进程注入/" style="font-size: 10px;">进程注入</a> <a href="/tags/远程控制/" style="font-size: 10px;">远程控制</a> <a href="/tags/逆向/" style="font-size: 16px;">逆向</a> <a href="/tags/防反汇编技术/" style="font-size: 10px;">防反汇编技术</a> <a href="/tags/静态分析/" style="font-size: 12px;">静态分析</a>
     </div>
 </div>
 
@@ -712,6 +720,25 @@
         <h3 class="menu-label">
             最新文章
         </h3>
+        
+        <article class="media">
+            
+            <a href="/2019/07/CS1-6DLL注入外挂/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/thumbnails/cs.jpg" alt="CS1.6DLL注入外挂">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-22T15:01:47.000Z">2019-07-22</time></div>
+                    <a href="/2019/07/CS1-6DLL注入外挂/" class="has-link-black-ter is-size-6">CS1.6DLL注入外挂</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/反外挂/">反外挂</a>
+                    </p>
+                </div>
+            </div>
+        </article>
         
         <article class="media">
             
@@ -789,25 +816,6 @@
             </div>
         </article>
         
-        <article class="media">
-            
-            <a href="/2019/05/Windows反调试实现与绕过姿势汇总/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/thumbnails/windows-anti-debug.jpg" alt="Windows反调试实现与绕过姿势汇总">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-07T11:05:15.000Z">2019-05-07</time></div>
-                    <a href="/2019/05/Windows反调试实现与绕过姿势汇总/" class="has-link-black-ter is-size-6">Windows反调试实现与绕过姿势汇总</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/二进制安全/">二进制安全</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
     </div>
 </div>
 
@@ -819,6 +827,17 @@
             归档
         </h3>
         <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/07/">
+                <span class="level-start">
+                    <span class="level-item">七月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
         
         <li>
             <a class="level is-marginless" href="/archives/2019/05/">
@@ -984,6 +1003,13 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/C语言/">
                         <span class="tag">C语言</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/DLL注入/">
+                        <span class="tag">DLL注入</span>
                         <span class="tag is-grey">1</span>
                     </a>
                 </div>
@@ -1355,7 +1381,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/游戏安全/">
                         <span class="tag">游戏安全</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 
@@ -1425,6 +1451,13 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/调试/">
                         <span class="tag">调试</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/进程注入/">
+                        <span class="tag">进程注入</span>
                         <span class="tag is-grey">1</span>
                     </a>
                 </div>
@@ -1482,6 +1515,25 @@
         
         <article class="media">
             
+            <a href="/2019/07/CS1-6DLL注入外挂/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/thumbnails/cs.jpg" alt="CS1.6DLL注入外挂">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-22T15:01:47.000Z">2019-07-22</time></div>
+                    <a href="/2019/07/CS1-6DLL注入外挂/" class="has-link-black-ter is-size-6">CS1.6DLL注入外挂</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/反外挂/">反外挂</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/05/CVE-2019-0708/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/thumbnails/cve20190708.png" alt="CVE-2019-0708">
@@ -1556,25 +1608,6 @@
             </div>
         </article>
         
-        <article class="media">
-            
-            <a href="/2019/05/Windows反调试实现与绕过姿势汇总/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/thumbnails/windows-anti-debug.jpg" alt="Windows反调试实现与绕过姿势汇总">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-07T11:05:15.000Z">2019-05-07</time></div>
-                    <a href="/2019/05/Windows反调试实现与绕过姿势汇总/" class="has-link-black-ter is-size-6">Windows反调试实现与绕过姿势汇总</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/二进制安全/">二进制安全</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
     </div>
 </div>
 
@@ -1586,6 +1619,17 @@
             归档
         </h3>
         <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/07/">
+                <span class="level-start">
+                    <span class="level-item">七月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
         
         <li>
             <a class="level is-marginless" href="/archives/2019/05/">
@@ -1751,6 +1795,13 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/C语言/">
                         <span class="tag">C语言</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/DLL注入/">
+                        <span class="tag">DLL注入</span>
                         <span class="tag is-grey">1</span>
                     </a>
                 </div>
@@ -2122,7 +2173,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/游戏安全/">
                         <span class="tag">游戏安全</span>
-                        <span class="tag is-grey">1</span>
+                        <span class="tag is-grey">2</span>
                     </a>
                 </div>
                 
@@ -2192,6 +2243,13 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/调试/">
                         <span class="tag">调试</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/进程注入/">
+                        <span class="tag">进程注入</span>
                         <span class="tag is-grey">1</span>
                     </a>
                 </div>
