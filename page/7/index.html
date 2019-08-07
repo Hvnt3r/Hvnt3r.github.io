@@ -145,6 +145,58 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2018-09-15T15:58:45.000Z">2018-09-15</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/Python/">Python</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    2 分钟 读完 (大约 327 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2018/09/Python将base64转为文档或者图片/">Python将base64转为文档或者图片</a>
+            
+        </h1>
+        <div class="content">
+            <p>有时候使用在线的base64解码遇到一些大文件或者编码比较复杂的可能会出现一些问题，就写了个脚本来解决<br>gist地址：<a href="https://gist.github.com/Hvnt3r/dad413128496cea8b4e4f66757b8e8c3" target="_blank" rel="noopener">https://gist.github.com/Hvnt3r/dad413128496cea8b4e4f66757b8e8c3</a></p>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2018/09/Python将base64转为文档或者图片/#more">阅读更多</a>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    <div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
                 <time class="level-item has-text-grey" datetime="2018-09-15T15:55:59.000Z">2018-09-15</time>
                 
                 <div class="level-item">
@@ -624,81 +676,6 @@
 
 
 
-    <div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2018-03-07T12:25:01.000Z">2018-03-07</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/二进制安全/">二进制安全</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    9 分钟 读完 (大约 1383 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2018/03/2018腾讯游戏安全竞赛题目分析/">2018腾讯游戏安全竞赛题目分析</a>
-            
-        </h1>
-        <div class="content">
-            <p>今年的腾讯游戏安全竞赛就要开始了，但是我对游戏安全这个方向还不太熟悉，因此找了去年的题目来做赛前练习</p>
-<h2 id="资格赛题目"><a href="#资格赛题目" class="headerlink" title="资格赛题目"></a>资格赛题目</h2><h3 id="标准版"><a href="#标准版" class="headerlink" title="标准版"></a>标准版</h3><p>题目一打开长这样：</p>
-<p><img src="https://i.loli.net/2019/03/07/5c810e6a6711e.png" alt=""></p>
-<p>赛题说明：</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1.username与regcode是一一对应的关系，填入正确的username和regcode点击Go按钮出现注册成功提示。</span><br><span class="line">2.要求根据CrackMe写出对应注册机，注册机能够根据任意合法用户名生成正确的注册码。</span><br></pre></td></tr></table></figure>
-<p>可以看出这是一个<code>CrackMe</code>程序，开始分析。</p>
-<p><img src="https://i.loli.net/2019/03/07/5c8133abd7eff.png" alt=""></p>
-<p>上图为一神器，可直接通过可视化界面获取到MFC组件的响应函数，<a href="https://bbs.pediy.com/thread-170033.htm" target="_blank" rel="noopener">神器链接</a>。</p>
-<p>如果不使用上面的神器的话，此程序是一个MFC程序，获取输入框的方式有两种<code>GetDlgItem</code>和<code>GetWindowText</code>，查看这两个函数的调用，发现在<code>sub_4026F0</code>中有多处对<code>GetDlgItem</code>的调用，因此分析这个函数，IDA对此函数生成的主要伪C代码如下：</p>
-<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">void</span> __<span class="hljs-function">thiscall <span class="hljs-title">sub_4026F0</span><span class="hljs-params">(HWND *<span class="hljs-keyword">this</span>)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">  ......</span><br><span class="line">      </span><br><span class="line">  v21 = (CWnd *)<span class="hljs-keyword">this</span>;</span><br><span class="line">  v1 = GetDlgItem(<span class="hljs-keyword">this</span>[<span class="hljs-number">8</span>], <span class="hljs-number">1000</span>);</span><br><span class="line">  <span class="hljs-built_in">memset</span>(&amp;lParam, <span class="hljs-number">0</span>, <span class="hljs-number">0x400</span>u);</span><br><span class="line">  SendMessageA(v1, <span class="hljs-number">0xD</span>u, <span class="hljs-number">0x400</span>u, (LPARAM)&amp;lParam);</span><br><span class="line">  v2 = GetDlgItem(*((HWND *)v21 + <span class="hljs-number">8</span>), <span class="hljs-number">1001</span>);</span><br><span class="line">  <span class="hljs-built_in">memset</span>(&amp;v23, <span class="hljs-number">0</span>, <span class="hljs-number">0x400</span>u);</span><br><span class="line">  SendMessageA(v2, <span class="hljs-number">0xD</span>u, <span class="hljs-number">0x400</span>u, (LPARAM)&amp;v23);</span><br><span class="line">  v3 = v21;</span><br><span class="line">  v4 = CWnd::GetDlgItem(v21, <span class="hljs-number">1004</span>);</span><br><span class="line">  v20 = SendMessageW(*((HWND *)v4 + <span class="hljs-number">8</span>), <span class="hljs-number">0xF0</span>u, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>) == <span class="hljs-number">1</span>;</span><br><span class="line">  v21 = (CWnd *)&amp;v14;</span><br><span class="line">  v19 = <span class="hljs-number">15</span>;</span><br><span class="line">  v18 = <span class="hljs-number">0</span>;</span><br><span class="line">  LOBYTE(v14) = <span class="hljs-number">0</span>;</span><br><span class="line">  <span class="hljs-keyword">if</span> ( (_BYTE)v23 )</span><br><span class="line">    v5 = <span class="hljs-built_in">strlen</span>((<span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span> *)&amp;v23);</span><br><span class="line">  <span class="hljs-keyword">else</span></span><br><span class="line">    v5 = <span class="hljs-number">0</span>;</span><br><span class="line">  sub_402A70(&amp;v14, &amp;v23, v5);</span><br><span class="line">  v49 = <span class="hljs-number">0</span>;</span><br><span class="line">  v13 = <span class="hljs-number">15</span>;</span><br><span class="line">  v12 = <span class="hljs-number">0</span>;</span><br><span class="line">  v8 = <span class="hljs-number">0</span>;</span><br><span class="line">  <span class="hljs-keyword">if</span> ( (_BYTE)lParam )</span><br><span class="line">    v6 = <span class="hljs-built_in">strlen</span>((<span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span> *)&amp;lParam);</span><br><span class="line">  <span class="hljs-keyword">else</span></span><br><span class="line">    v6 = <span class="hljs-number">0</span>;</span><br><span class="line">  sub_402A70(&amp;v8, &amp;lParam, v6);</span><br><span class="line">  v49 = <span class="hljs-number">-1</span>;</span><br><span class="line">  <span class="hljs-keyword">if</span> ( (<span class="hljs-keyword">unsigned</span> __int8)sub_405510(*(LPVOID *)&amp;v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20) )</span><br><span class="line">  &#123;</span><br><span class="line">    v24 = 'e\0R';</span><br><span class="line">    v40 = <span class="hljs-number">0</span>;</span><br><span class="line">    v7 = (<span class="hljs-keyword">wchar_t</span> *)&amp;v24;</span><br><span class="line">    v25 = 'i\0g';</span><br><span class="line">    v26 = 't\0s';</span><br><span class="line">    v27 = 'r\0e';</span><br><span class="line">    v28 = (<span class="hljs-keyword">int</span>)&amp;loc_53001D + <span class="hljs-number">3</span>;</span><br><span class="line">    v29 = 'c\0u';</span><br><span class="line">    v30 = 'e\0c';</span><br><span class="line">    v31 = 's\0s';</span><br><span class="line">    v32 = &amp;loc_43002C;</span><br><span class="line">    v33 = 'n\0o';</span><br><span class="line">    v34 = 'r\0g';</span><br><span class="line">    v35 = 't\0a';</span><br><span class="line">    v36 = 'l\0u';</span><br><span class="line">    v37 = 't\0a';</span><br><span class="line">    v38 = 'o\0i';</span><br><span class="line">    v39 = '!\0n';</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="hljs-keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    *(_DWORD *)v41 = 'e\0R';</span><br><span class="line">    v7 = v41;</span><br><span class="line">    v42 = 'i\0g';</span><br><span class="line">    v43 = 't\0s';</span><br><span class="line">    v44 = 'r\0e';</span><br><span class="line">    v45 = &amp;loc_460020;</span><br><span class="line">    v46 = 'i\0a';</span><br><span class="line">    v47 = 'e\0l';</span><br><span class="line">    v48 = <span class="hljs-string">'d'</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  CWnd::SetDlgItemTextW(v3, <span class="hljs-number">1003</span>, v7);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>可以看出这是程序的主流程。下面就一步一步分析此函数：</p>
-<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">void</span> __<span class="hljs-function">thiscall <span class="hljs-title">sub_4026F0</span><span class="hljs-params">(HWND *<span class="hljs-keyword">this</span>)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">  ......</span><br><span class="line">      </span><br><span class="line">  v21 = (CWnd *)<span class="hljs-keyword">this</span>;</span><br><span class="line">  UserName_Text_ID = GetDlgItem(<span class="hljs-keyword">this</span>[<span class="hljs-number">8</span>], <span class="hljs-number">1000</span>);</span><br><span class="line">  <span class="hljs-built_in">memset</span>(&amp;UserName, <span class="hljs-number">0</span>, <span class="hljs-number">02000u</span>);</span><br><span class="line">  SendMessageA(UserName_Text_ID, <span class="hljs-string">'\r'</span>, <span class="hljs-number">02000u</span>, (LPARAM)&amp;UserName);<span class="hljs-comment">// 存储UserName</span></span><br><span class="line">  RegCode_Text_ID = GetDlgItem(*((HWND *)v21 + <span class="hljs-number">8</span>), <span class="hljs-number">1001</span>);</span><br><span class="line">  <span class="hljs-built_in">memset</span>(&amp;RegCode, <span class="hljs-number">0</span>, <span class="hljs-number">02000u</span>);</span><br><span class="line">  SendMessageA(RegCode_Text_ID, <span class="hljs-string">'\r'</span>, <span class="hljs-number">02000u</span>, (LPARAM)&amp;RegCode);<span class="hljs-comment">// 存储RegCode</span></span><br><span class="line">  v3 = v21;</span><br><span class="line">  User_Choice = CWnd::GetDlgItem(v21, <span class="hljs-number">1004</span>);</span><br><span class="line">  v20 = SendMessageW(*((HWND *)User_Choice + <span class="hljs-number">8</span>), <span class="hljs-number">0xF0</span>u, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>) == <span class="hljs-number">1</span>;<span class="hljs-comment">// 判断选择的是标准版还是进阶版</span></span><br><span class="line">  v21 = (CWnd *)&amp;v14;</span><br><span class="line">  v19 = <span class="hljs-number">15</span>;</span><br><span class="line">  v18 = <span class="hljs-number">0</span>;</span><br><span class="line">  LOBYTE(v14) = <span class="hljs-number">0</span>;</span><br><span class="line">  <span class="hljs-keyword">if</span> ( (_BYTE)RegCode )</span><br><span class="line">    v5 = <span class="hljs-built_in">strlen</span>((<span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span> *)&amp;RegCode);        <span class="hljs-comment">// 判断RegCode长度</span></span><br><span class="line">  <span class="hljs-keyword">else</span></span><br><span class="line">    v5 = <span class="hljs-number">0</span>;</span><br><span class="line">  assign_sub_402A70(&amp;v14, &amp;RegCode, v5);        <span class="hljs-comment">// string assign </span></span><br><span class="line">                                                <span class="hljs-comment">// 将RegCode的值赋给v14</span></span><br><span class="line">  v49 = <span class="hljs-number">0</span>;</span><br><span class="line">  v13 = <span class="hljs-number">15</span>;</span><br><span class="line">  v12 = <span class="hljs-number">0</span>;</span><br><span class="line">  v8 = <span class="hljs-number">0</span>;</span><br><span class="line">  <span class="hljs-keyword">if</span> ( (_BYTE)UserName )</span><br><span class="line">    v6 = <span class="hljs-built_in">strlen</span>((<span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span> *)&amp;UserName);       <span class="hljs-comment">// 判断UserName长度</span></span><br><span class="line">  <span class="hljs-keyword">else</span></span><br><span class="line">    v6 = <span class="hljs-number">0</span>;</span><br><span class="line">  assign_sub_402A70(&amp;v8, &amp;UserName, v6);        <span class="hljs-comment">// string assign </span></span><br><span class="line">                                                <span class="hljs-comment">// 将Username的值赋给v8</span></span><br><span class="line">  v49 = <span class="hljs-number">-1</span>;</span><br><span class="line">  <span class="hljs-keyword">if</span> ( sub_405510(*(LPVOID *)&amp;v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20) )<span class="hljs-comment">// 主检验函数</span></span><br><span class="line">  &#123;</span><br><span class="line">    v24 = 'e\0R';</span><br><span class="line">    v40 = <span class="hljs-number">0</span>;</span><br><span class="line">    v7 = (<span class="hljs-keyword">wchar_t</span> *)&amp;v24;</span><br><span class="line">    v25 = 'i\0g';</span><br><span class="line">    v26 = 't\0s';</span><br><span class="line">    v27 = 'r\0e';</span><br><span class="line">    v28 = (<span class="hljs-keyword">int</span>)&amp;loc_53001D + <span class="hljs-number">3</span>;</span><br><span class="line">    v29 = 'c\0u';</span><br><span class="line">    v30 = 'e\0c';                               // RegisterSuccess,Congratulation!</span><br><span class="line">    v31 = 's\0s';</span><br><span class="line">    v32 = &amp;loc_43002C;</span><br><span class="line">    v33 = 'n\0o';</span><br><span class="line">    v34 = 'r\0g';</span><br><span class="line">    v35 = 't\0a';</span><br><span class="line">    v36 = 'l\0u';</span><br><span class="line">    v37 = 't\0a';</span><br><span class="line">    v38 = 'o\0i';</span><br><span class="line">    v39 = '!\0n';</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="hljs-keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    *(_DWORD *)v41 = 'e\0R';</span><br><span class="line">    v7 = v41;</span><br><span class="line">    v42 = 'i\0g';</span><br><span class="line">    v43 = 't\0s';</span><br><span class="line">    v44 = 'r\0e';                               // RegisterFailed</span><br><span class="line">    v45 = &amp;loc_460020;</span><br><span class="line">    v46 = 'i\0a';</span><br><span class="line">    v47 = 'e\0l';</span><br><span class="line">    v48 = <span class="hljs-string">'d'</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  CWnd::SetDlgItemTextW(v3, <span class="hljs-number">1003</span>, v7);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>以上步骤完成了基本的数据获取、校验操作，其中有一个主要的校验函数<code>sub_405510</code>，下面来重点分析这个函数：</p>
-<p><img src="https://i.loli.net/2019/03/08/5c8140c51a4f1.png" alt=""></p>
-<p>当返回值<code>v13</code>为<code>True</code>时才能注册成功，因此我们需要关注使<code>v13</code>为<code>True</code>的函数。</p>
-<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">if</span> ( sub_404F00((<span class="hljs-keyword">int</span> *)&amp;UserName) )</span><br><span class="line">  &#123;</span><br><span class="line">    sub_405040((<span class="hljs-keyword">int</span>)&amp;UserName, &amp;v26, &amp;v27, &amp;v28, (<span class="hljs-keyword">int</span> *)&amp;v29, &amp;v30);</span><br><span class="line">    v31 = <span class="hljs-string">'\0'</span>;</span><br><span class="line">    v32 = <span class="hljs-number">0</span>;</span><br><span class="line">    LOBYTE(v34) = <span class="hljs-number">2</span>;</span><br><span class="line">    v14 = &amp;a7;</span><br><span class="line">    <span class="hljs-keyword">if</span> ( (<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span>)a12 &gt;= <span class="hljs-number">0x10</span> )</span><br><span class="line">      v14 = a7;</span><br><span class="line">    <span class="hljs-keyword">if</span> ( (<span class="hljs-keyword">unsigned</span> __int8)sub_406080(v14, &amp;v31)</span><br><span class="line">      &amp;&amp; ((v16 = HIDWORD(v31), v17 = (__m128i *)v31, a13)</span><br><span class="line">       || (v33 = xmmword_5AC470, (<span class="hljs-keyword">unsigned</span> __int8)sub_403010(&amp;v33, v15, v31)))</span><br><span class="line">      &amp;&amp; v16 - (_DWORD)v17 == <span class="hljs-number">32</span></span><br><span class="line">      &amp;&amp; v17[1].m128i_i32[2] == '2018'</span><br><span class="line">      &amp;&amp; !v17[<span class="hljs-number">1</span>].m128i_i32[<span class="hljs-number">3</span>] )</span><br><span class="line">    &#123;</span><br><span class="line">      v18 = *v17;</span><br><span class="line">      *((_QWORD *)&amp;v33 + <span class="hljs-number">1</span>) = v17[<span class="hljs-number">1</span>].m128i_i64[<span class="hljs-number">0</span>];</span><br><span class="line">      v13 = sub_402F20(</span><br><span class="line">              v26,</span><br><span class="line">              v27,</span><br><span class="line">              v28,</span><br><span class="line">              v29,</span><br><span class="line">              v30,</span><br><span class="line">              __PAIR__(_mm_cvtsi128_si32(_mm_srli_si128(v18, <span class="hljs-number">4</span>)), _mm_cvtsi128_si32(v18)),</span><br><span class="line">              __PAIR__(_mm_cvtsi128_si32(_mm_srli_si128(v18, <span class="hljs-number">12</span>)), _mm_cvtsi128_si32(_mm_srli_si128(v18, <span class="hljs-number">8</span>))),</span><br><span class="line">              *((__int64 *)&amp;v33 + <span class="hljs-number">1</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">      v13 = <span class="hljs-number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    sub_405740(&amp;v31);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="hljs-keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    v13 = <span class="hljs-number">0</span>;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<p>首先我们查看 <code>sub_404F00</code>函数，同样按照逆向思维，寻找使返回值为True的条件。此函数中有如下几个关键片段：</p>
-<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">v1 = UserName;</span><br><span class="line"><span class="hljs-keyword">if</span> ( UserName[<span class="hljs-number">4</span>] != <span class="hljs-number">39</span> )                      <span class="hljs-comment">// 判断UserName的长度是否为39</span></span><br><span class="line">  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">v3 = UserName[<span class="hljs-number">5</span>];</span><br><span class="line"><span class="hljs-keyword">if</span> ( v3 &lt; <span class="hljs-number">020</span> )</span><br><span class="line">  v23 = UserName;</span><br><span class="line"><span class="hljs-keyword">else</span></span><br><span class="line">  v23 = (<span class="hljs-keyword">int</span> *)*UserName;</span><br><span class="line"><span class="hljs-keyword">if</span> ( v3 &lt; <span class="hljs-number">020</span> )</span><br><span class="line">  v4 = UserName;</span><br><span class="line"><span class="hljs-keyword">else</span></span><br><span class="line">  v4 = (<span class="hljs-keyword">int</span> *)*UserName;                      <span class="hljs-comment">// String的相关函数，用于决定字符串的存储位置等</span></span><br><span class="line">v5 = (<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span>)v4 + <span class="hljs-number">39</span>;</span><br><span class="line"><span class="hljs-keyword">if</span> ( v3 &lt; <span class="hljs-number">0x10</span> )</span><br><span class="line">  v6 = UserName;</span><br><span class="line"><span class="hljs-keyword">else</span></span><br><span class="line">  v6 = (<span class="hljs-keyword">int</span> *)*UserName;</span><br><span class="line">v7 = v5 - (_DWORD)v6;</span><br><span class="line">i = <span class="hljs-number">0</span>;</span><br><span class="line"><span class="hljs-keyword">if</span> ( (<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span>)v6 &gt; v5 )</span><br><span class="line">  v7 = <span class="hljs-number">0</span>;</span><br></pre></td></tr></table></figure>
-<p>将<code>UserName</code>中的小写字母转换为大写：</p>
-<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">if</span> ( v7 )</span><br><span class="line">  &#123;</span><br><span class="line">    Username_len = v7;</span><br><span class="line">    <span class="hljs-keyword">do</span></span><br><span class="line">    &#123;</span><br><span class="line">      *((_BYTE *)v23 + i) = <span class="hljs-built_in">toupper</span>(*((<span class="hljs-keyword">char</span> *)v6 + i));<span class="hljs-comment">// 将小写字母转换为大写字母</span></span><br><span class="line">      ++i;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">while</span> ( i != Username_len );</span><br><span class="line">    v1 = UserName;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">v16 = <span class="hljs-number">0</span>;                                      <span class="hljs-comment">// v16为一个字符串</span></span><br><span class="line">  assign_sub_402A70(&amp;v16, &amp;unk_5AC430, '\x01'); // 给v16赋值为'#'</span><br><span class="line">  sub_404D70((<span class="hljs-keyword">int</span>)v24, (<span class="hljs-keyword">int</span>)UserName_Upper, *(LPVOID *)&amp;v16, v17, v18, v19, v20, v21);<span class="hljs-comment">// 将大写的UserName用#分割，分割后的结果保存在v24中</span></span><br><span class="line">  v10 = (_DWORD *)v24[<span class="hljs-number">0</span>];</span><br><span class="line">  <span class="hljs-keyword">if</span> ( (<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span>)(v24[<span class="hljs-number">1</span>] - v24[<span class="hljs-number">0</span>] - <span class="hljs-number">192</span>) &gt;= <span class="hljs-number">24</span> )</span><br><span class="line">    <span class="hljs-keyword">goto</span> LABEL_30;</span><br><span class="line">  <span class="hljs-keyword">if</span> ( v24[<span class="hljs-number">0</span>] != v24[<span class="hljs-number">1</span>] )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="hljs-keyword">while</span> ( <span class="hljs-number">1</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      v11 = v10[<span class="hljs-number">4</span>];</span><br><span class="line">      v12 = <span class="hljs-number">0</span>;</span><br><span class="line">      <span class="hljs-keyword">if</span> ( v11 &gt; <span class="hljs-number">0</span> )</span><br><span class="line">        <span class="hljs-keyword">break</span>;</span><br><span class="line">LABEL_28:</span><br><span class="line">      v10 += <span class="hljs-number">6</span>;</span><br><span class="line">      <span class="hljs-keyword">if</span> ( v10 == (_DWORD *)v24[<span class="hljs-number">1</span>] )            <span class="hljs-comment">// 字符串验证成功</span></span><br><span class="line">        <span class="hljs-keyword">goto</span> LABEL_29;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">while</span> ( <span class="hljs-number">1</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      v13 = v10[<span class="hljs-number">5</span>] &lt; <span class="hljs-number">0x10</span>u ? v10 : *v10;</span><br><span class="line">      v14 = *((_BYTE *)v13 + v12);</span><br><span class="line">      <span class="hljs-keyword">if</span> ( (v14 &gt; <span class="hljs-number">57</span> || v14 &lt; <span class="hljs-number">48</span>) &amp;&amp; (<span class="hljs-keyword">unsigned</span> __int8)(v14 - <span class="hljs-string">'A'</span>) &gt; <span class="hljs-number">5u</span> )<span class="hljs-comment">// 要求Username的范围为数字和ABCDEF</span></span><br><span class="line">        <span class="hljs-keyword">break</span>;</span><br><span class="line">      <span class="hljs-keyword">if</span> ( ++v12 &gt;= v11 )</span><br><span class="line">        <span class="hljs-keyword">goto</span> LABEL_28;</span><br><span class="line">    &#125;</span><br><span class="line">LABEL_30:</span><br><span class="line">    v15 = <span class="hljs-number">0</span>;</span><br><span class="line">    <span class="hljs-keyword">goto</span> LABEL_31;</span><br><span class="line">  &#125;</span><br><span class="line">LABEL_29:</span><br><span class="line">  v15 = <span class="hljs-number">1</span>;</span><br><span class="line">LABEL_31:</span><br><span class="line">  sub_405A00((<span class="hljs-keyword">char</span> **)v24);</span><br><span class="line">  <span class="hljs-keyword">return</span> v15;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>分析到这里我们可以得出关于<code>UserName</code>的几个信息：</p>
-<ul>
-<li><code>UserName</code>的长度必须为<code>39</code></li>
-<li>存放UserName的数组的元素个数为8</li>
-<li><code>UserName</code>会被<code>#</code>分割</li>
-<li><code>UserName</code>由数字和<code>ABCDEF</code>组成</li>
-</ul>
-<p>因此可以得知<code>UserName</code>的形式为：</p>
-<p><code>xxxx#xxxx#xxxx#xxxx#xxxx#xxxx#xxxx#xxxx</code></p>
-<p>base64：<code>YtTJUVEn0$HI34y#8rsFewxlm+/u5a^2welcomegslab2018zQfghDRSG@di*kABZO6Kq79L&amp;CPWvNop</code></p>
-<h3 id="未完待续…-…-📐"><a href="#未完待续…-…-📐" class="headerlink" title="未完待续… … 📐"></a>未完待续… … 📐</h3>
-        </div>
-        
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
 
     
 <div class="card card-transparent">
@@ -706,7 +683,7 @@
         <div class="pagination-previous">
             <a class="is-flex-grow has-text-black-ter" href="/page/6/">上一页</a>
         </div>
-        <div class="pagination-next is-invisible is-hidden-mobile">
+        <div class="pagination-next">
             <a class="is-flex-grow has-text-black-ter" href="/page/8/">下一页</a>
         </div>
         <ul class="pagination-list is-hidden-mobile">
@@ -718,6 +695,8 @@
             <li><a class="pagination-link has-text-black-ter" href="/page/6/">6</a></li>
             
             <li><a class="pagination-link is-current" href="/page/7/">7</a></li>
+            
+            <li><a class="pagination-link has-text-black-ter" href="/page/8/">8</a></li>
             
         </ul>
     </nav>
@@ -765,7 +744,7 @@
                         文章
                     </p>
                     <p class="title has-text-weight-normal">
-                        70
+                        71
                     </p>
                 </div>
             </div>
@@ -785,7 +764,7 @@
                         标签
                     </p>
                     <p class="title has-text-weight-normal">
-                        78
+                        79
                     </p>
                 </div>
             </div>
@@ -925,7 +904,7 @@
                 <span class="level-item">Linux</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">1</span>
+                <span class="level-item tag">2</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/Python/">
@@ -1051,7 +1030,7 @@
         <h3 class="menu-label">
             标签云
         </h3>
-        <a href="/tags/2018年工业信息安全技能大赛/" style="font-size: 10px;">2018年工业信息安全技能大赛</a> <a href="/tags/2018护网杯/" style="font-size: 10px;">2018护网杯</a> <a href="/tags/APT/" style="font-size: 11.67px;">APT</a> <a href="/tags/C/" style="font-size: 10px;">C++</a> <a href="/tags/CTF/" style="font-size: 16.67px;">CTF</a> <a href="/tags/CVE/" style="font-size: 13.33px;">CVE</a> <a href="/tags/CrackMe/" style="font-size: 11.67px;">CrackMe</a> <a href="/tags/C语言/" style="font-size: 10px;">C语言</a> <a href="/tags/DLL注入/" style="font-size: 10px;">DLL注入</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/IDA/" style="font-size: 10px;">IDA</a> <a href="/tags/IDA-Pro/" style="font-size: 10px;">IDA Pro</a> <a href="/tags/IDS/" style="font-size: 10px;">IDS</a> <a href="/tags/Kali-Linux/" style="font-size: 10px;">Kali Linux</a> <a href="/tags/Linux/" style="font-size: 10px;">Linux</a> <a href="/tags/Linux子系统/" style="font-size: 10px;">Linux子系统</a> <a href="/tags/OllyDbg/" style="font-size: 10px;">OllyDbg</a> <a href="/tags/PHP/" style="font-size: 13.33px;">PHP</a> <a href="/tags/PWN/" style="font-size: 18.33px;">PWN</a> <a href="/tags/PwnTools/" style="font-size: 10px;">PwnTools</a> <a href="/tags/Pwnable-kr/" style="font-size: 10px;">Pwnable.kr</a> <a href="/tags/Python/" style="font-size: 10px;">Python</a> <a href="/tags/ROP/" style="font-size: 10px;">ROP</a> <a href="/tags/Reverse/" style="font-size: 10px;">Reverse</a> <a href="/tags/ShellCode/" style="font-size: 11.67px;">ShellCode</a> <a href="/tags/Shellcode/" style="font-size: 10px;">Shellcode</a> <a href="/tags/Slmail/" style="font-size: 10px;">Slmail</a> <a href="/tags/Snort/" style="font-size: 10px;">Snort</a> <a href="/tags/VPN/" style="font-size: 10px;">VPN</a> <a href="/tags/WinDbg/" style="font-size: 10px;">WinDbg</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/Windows恶意代码/" style="font-size: 11.67px;">Windows恶意代码</a> <a href="/tags/Windows系统安全/" style="font-size: 11.67px;">Windows系统安全</a> <a href="/tags/Wordpress/" style="font-size: 11.67px;">Wordpress</a> <a href="/tags/WriteUp/" style="font-size: 10px;">WriteUp</a> <a href="/tags/二进制安全/" style="font-size: 11.67px;">二进制安全</a> <a href="/tags/信息安全/" style="font-size: 11.67px;">信息安全</a> <a href="/tags/内核调试/" style="font-size: 10px;">内核调试</a> <a href="/tags/分析报告/" style="font-size: 10px;">分析报告</a> <a href="/tags/加壳与脱壳/" style="font-size: 10px;">加壳与脱壳</a> <a href="/tags/加密/" style="font-size: 10px;">加密</a> <a href="/tags/动态分析/" style="font-size: 13.33px;">动态分析</a> <a href="/tags/动态分析技术/" style="font-size: 10px;">动态分析技术</a> <a href="/tags/动态调试/" style="font-size: 10px;">动态调试</a> <a href="/tags/反汇编/" style="font-size: 10px;">反汇编</a> <a href="/tags/反虚拟机技术/" style="font-size: 10px;">反虚拟机技术</a> <a href="/tags/反调试/" style="font-size: 11.67px;">反调试</a> <a href="/tags/安全局势/" style="font-size: 10px;">安全局势</a> <a href="/tags/安全竞赛/" style="font-size: 10px;">安全竞赛</a> <a href="/tags/小窍门/" style="font-size: 10px;">小窍门</a> <a href="/tags/工业控制安全/" style="font-size: 10px;">工业控制安全</a> <a href="/tags/心得/" style="font-size: 11.67px;">心得</a> <a href="/tags/恶意代码分析/" style="font-size: 20px;">恶意代码分析</a> <a href="/tags/恶意代码分析实战/" style="font-size: 11.67px;">恶意代码分析实战</a> <a href="/tags/恶意代码启动方式/" style="font-size: 10px;">恶意代码启动方式</a> <a href="/tags/恶意行为分析/" style="font-size: 10px;">恶意行为分析</a> <a href="/tags/数据包分析/" style="font-size: 10px;">数据包分析</a> <a href="/tags/木马/" style="font-size: 10px;">木马</a> <a href="/tags/栈溢出/" style="font-size: 10px;">栈溢出</a> <a href="/tags/格式化字符串漏洞/" style="font-size: 10px;">格式化字符串漏洞</a> <a href="/tags/桌面/" style="font-size: 10px;">桌面</a> <a href="/tags/汇编语言/" style="font-size: 10px;">汇编语言</a> <a href="/tags/游戏安全/" style="font-size: 11.67px;">游戏安全</a> <a href="/tags/特洛伊木马化技术/" style="font-size: 10px;">特洛伊木马化技术</a> <a href="/tags/生活/" style="font-size: 10px;">生活</a> <a href="/tags/破解/" style="font-size: 10px;">破解</a> <a href="/tags/离线翻译/" style="font-size: 10px;">离线翻译</a> <a href="/tags/缓冲区溢出/" style="font-size: 10px;">缓冲区溢出</a> <a href="/tags/编程/" style="font-size: 10px;">编程</a> <a href="/tags/网络流量识别/" style="font-size: 10px;">网络流量识别</a> <a href="/tags/自动化/" style="font-size: 10px;">自动化</a> <a href="/tags/虚拟化/" style="font-size: 10px;">虚拟化</a> <a href="/tags/调试/" style="font-size: 10px;">调试</a> <a href="/tags/进程注入/" style="font-size: 10px;">进程注入</a> <a href="/tags/远程控制/" style="font-size: 10px;">远程控制</a> <a href="/tags/逆向/" style="font-size: 15px;">逆向</a> <a href="/tags/防反汇编技术/" style="font-size: 10px;">防反汇编技术</a> <a href="/tags/静态分析/" style="font-size: 11.67px;">静态分析</a>
+        <a href="/tags/2018年工业信息安全技能大赛/" style="font-size: 10px;">2018年工业信息安全技能大赛</a> <a href="/tags/2018护网杯/" style="font-size: 10px;">2018护网杯</a> <a href="/tags/APT/" style="font-size: 11.67px;">APT</a> <a href="/tags/C/" style="font-size: 10px;">C++</a> <a href="/tags/CTF/" style="font-size: 16.67px;">CTF</a> <a href="/tags/CVE/" style="font-size: 13.33px;">CVE</a> <a href="/tags/CrackMe/" style="font-size: 11.67px;">CrackMe</a> <a href="/tags/C语言/" style="font-size: 10px;">C语言</a> <a href="/tags/DLL注入/" style="font-size: 10px;">DLL注入</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/IDA/" style="font-size: 10px;">IDA</a> <a href="/tags/IDA-Pro/" style="font-size: 10px;">IDA Pro</a> <a href="/tags/IDS/" style="font-size: 10px;">IDS</a> <a href="/tags/Kali-Linux/" style="font-size: 10px;">Kali Linux</a> <a href="/tags/Linux/" style="font-size: 11.67px;">Linux</a> <a href="/tags/Linux动态链接库/" style="font-size: 10px;">Linux动态链接库</a> <a href="/tags/Linux子系统/" style="font-size: 10px;">Linux子系统</a> <a href="/tags/OllyDbg/" style="font-size: 10px;">OllyDbg</a> <a href="/tags/PHP/" style="font-size: 13.33px;">PHP</a> <a href="/tags/PWN/" style="font-size: 18.33px;">PWN</a> <a href="/tags/PwnTools/" style="font-size: 10px;">PwnTools</a> <a href="/tags/Pwnable-kr/" style="font-size: 10px;">Pwnable.kr</a> <a href="/tags/Python/" style="font-size: 10px;">Python</a> <a href="/tags/ROP/" style="font-size: 10px;">ROP</a> <a href="/tags/Reverse/" style="font-size: 10px;">Reverse</a> <a href="/tags/ShellCode/" style="font-size: 11.67px;">ShellCode</a> <a href="/tags/Shellcode/" style="font-size: 10px;">Shellcode</a> <a href="/tags/Slmail/" style="font-size: 10px;">Slmail</a> <a href="/tags/Snort/" style="font-size: 10px;">Snort</a> <a href="/tags/VPN/" style="font-size: 10px;">VPN</a> <a href="/tags/WinDbg/" style="font-size: 10px;">WinDbg</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/Windows恶意代码/" style="font-size: 11.67px;">Windows恶意代码</a> <a href="/tags/Windows系统安全/" style="font-size: 11.67px;">Windows系统安全</a> <a href="/tags/Wordpress/" style="font-size: 11.67px;">Wordpress</a> <a href="/tags/WriteUp/" style="font-size: 10px;">WriteUp</a> <a href="/tags/二进制安全/" style="font-size: 13.33px;">二进制安全</a> <a href="/tags/信息安全/" style="font-size: 11.67px;">信息安全</a> <a href="/tags/内核调试/" style="font-size: 10px;">内核调试</a> <a href="/tags/分析报告/" style="font-size: 10px;">分析报告</a> <a href="/tags/加壳与脱壳/" style="font-size: 10px;">加壳与脱壳</a> <a href="/tags/加密/" style="font-size: 10px;">加密</a> <a href="/tags/动态分析/" style="font-size: 13.33px;">动态分析</a> <a href="/tags/动态分析技术/" style="font-size: 10px;">动态分析技术</a> <a href="/tags/动态调试/" style="font-size: 10px;">动态调试</a> <a href="/tags/反汇编/" style="font-size: 10px;">反汇编</a> <a href="/tags/反虚拟机技术/" style="font-size: 10px;">反虚拟机技术</a> <a href="/tags/反调试/" style="font-size: 11.67px;">反调试</a> <a href="/tags/安全局势/" style="font-size: 10px;">安全局势</a> <a href="/tags/安全竞赛/" style="font-size: 10px;">安全竞赛</a> <a href="/tags/小窍门/" style="font-size: 10px;">小窍门</a> <a href="/tags/工业控制安全/" style="font-size: 10px;">工业控制安全</a> <a href="/tags/心得/" style="font-size: 11.67px;">心得</a> <a href="/tags/恶意代码分析/" style="font-size: 20px;">恶意代码分析</a> <a href="/tags/恶意代码分析实战/" style="font-size: 11.67px;">恶意代码分析实战</a> <a href="/tags/恶意代码启动方式/" style="font-size: 10px;">恶意代码启动方式</a> <a href="/tags/恶意行为分析/" style="font-size: 10px;">恶意行为分析</a> <a href="/tags/数据包分析/" style="font-size: 10px;">数据包分析</a> <a href="/tags/木马/" style="font-size: 10px;">木马</a> <a href="/tags/栈溢出/" style="font-size: 10px;">栈溢出</a> <a href="/tags/格式化字符串漏洞/" style="font-size: 10px;">格式化字符串漏洞</a> <a href="/tags/桌面/" style="font-size: 10px;">桌面</a> <a href="/tags/汇编语言/" style="font-size: 10px;">汇编语言</a> <a href="/tags/游戏安全/" style="font-size: 11.67px;">游戏安全</a> <a href="/tags/特洛伊木马化技术/" style="font-size: 10px;">特洛伊木马化技术</a> <a href="/tags/生活/" style="font-size: 10px;">生活</a> <a href="/tags/破解/" style="font-size: 10px;">破解</a> <a href="/tags/离线翻译/" style="font-size: 10px;">离线翻译</a> <a href="/tags/缓冲区溢出/" style="font-size: 10px;">缓冲区溢出</a> <a href="/tags/编程/" style="font-size: 10px;">编程</a> <a href="/tags/网络流量识别/" style="font-size: 10px;">网络流量识别</a> <a href="/tags/自动化/" style="font-size: 10px;">自动化</a> <a href="/tags/虚拟化/" style="font-size: 10px;">虚拟化</a> <a href="/tags/调试/" style="font-size: 10px;">调试</a> <a href="/tags/进程注入/" style="font-size: 10px;">进程注入</a> <a href="/tags/远程控制/" style="font-size: 10px;">远程控制</a> <a href="/tags/逆向/" style="font-size: 15px;">逆向</a> <a href="/tags/防反汇编技术/" style="font-size: 10px;">防反汇编技术</a> <a href="/tags/静态分析/" style="font-size: 11.67px;">静态分析</a>
     </div>
 </div>
 
@@ -1065,6 +1044,25 @@
         <h3 class="menu-label">
             最新文章
         </h3>
+        
+        <article class="media">
+            
+            <a href="/2019/08/Linux动态链接库-so的生成与使用/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/thumbnails/linux.jpg" alt="Linux动态链接库.so的生成与使用">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-07T12:56:01.000Z">2019-08-07</time></div>
+                    <a href="/2019/08/Linux动态链接库-so的生成与使用/" class="has-link-black-ter is-size-6">Linux动态链接库.so的生成与使用</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Linux/">Linux</a>
+                    </p>
+                </div>
+            </div>
+        </article>
         
         <article class="media">
             
@@ -1142,25 +1140,6 @@
             </div>
         </article>
         
-        <article class="media">
-            
-            <a href="/2019/05/某远控木马分析报告/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/thumbnails/trojan-anna.jpg" alt="远程控制木马分析报告">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-17T08:51:26.000Z">2019-05-17</time></div>
-                    <a href="/2019/05/某远控木马分析报告/" class="has-link-black-ter is-size-6">远程控制木马分析报告</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Windows恶意代码/">Windows恶意代码</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
     </div>
 </div>
 
@@ -1179,7 +1158,7 @@
                     <span class="level-item">八月 2019</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">1</span>
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -1408,6 +1387,13 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/Linux/">
                         <span class="tag">Linux</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Linux动态链接库/">
+                        <span class="tag">Linux动态链接库</span>
                         <span class="tag is-grey">1</span>
                     </a>
                 </div>
@@ -1555,7 +1541,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/二进制安全/">
                         <span class="tag">二进制安全</span>
-                        <span class="tag is-grey">2</span>
+                        <span class="tag is-grey">3</span>
                     </a>
                 </div>
                 
@@ -1878,6 +1864,25 @@
         
         <article class="media">
             
+            <a href="/2019/08/Linux动态链接库-so的生成与使用/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/thumbnails/linux.jpg" alt="Linux动态链接库.so的生成与使用">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-07T12:56:01.000Z">2019-08-07</time></div>
+                    <a href="/2019/08/Linux动态链接库-so的生成与使用/" class="has-link-black-ter is-size-6">Linux动态链接库.so的生成与使用</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Linux/">Linux</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/08/Pwnable-kr-Part-1-15-21/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/thumbnails/pwnable_1.jpg" alt="Pwnable.kr_Part_1_15/21">
@@ -1952,25 +1957,6 @@
             </div>
         </article>
         
-        <article class="media">
-            
-            <a href="/2019/05/某远控木马分析报告/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/thumbnails/trojan-anna.jpg" alt="远程控制木马分析报告">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-05-17T08:51:26.000Z">2019-05-17</time></div>
-                    <a href="/2019/05/某远控木马分析报告/" class="has-link-black-ter is-size-6">远程控制木马分析报告</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/Windows恶意代码/">Windows恶意代码</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
     </div>
 </div>
 
@@ -1989,7 +1975,7 @@
                     <span class="level-item">八月 2019</span>
                 </span>
                 <span class="level-end">
-                    <span class="level-item tag">1</span>
+                    <span class="level-item tag">2</span>
                 </span>
             </a>
         </li>
@@ -2218,6 +2204,13 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/Linux/">
                         <span class="tag">Linux</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Linux动态链接库/">
+                        <span class="tag">Linux动态链接库</span>
                         <span class="tag is-grey">1</span>
                     </a>
                 </div>
@@ -2365,7 +2358,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/二进制安全/">
                         <span class="tag">二进制安全</span>
-                        <span class="tag is-grey">2</span>
+                        <span class="tag is-grey">3</span>
                     </a>
                 </div>
                 
