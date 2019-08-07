@@ -7,19 +7,19 @@
 
 
 
-    <meta name="description" content="用到以下三个文件，为以后展开相关攻击过程做铺垫。 main.c 1234567891011#include &amp;lt;stdio.h&amp;gt;#include &amp;lt;unistd.h&amp;gt;int print_test();int main()&amp;#123;	while(1)&amp;#123;				print_test();		sleep(5);	&amp;#125;&amp;#125; lib_ptrace_norma">
-<meta name="keywords" content="二进制安全,Linux,Linux动态链接库">
+    <meta name="description" content="用到以下三个文件，为以后展开相关攻击过程做铺垫。 main.c 1234567891011#include &amp;lt;stdio.h&amp;gt;#include &amp;lt;unistd.h&amp;gt;int print_test();int main()&amp;#123;	while(1)&amp;#123;				print_test();		sleep(5);	&amp;#125;&amp;#125;">
+<meta name="keywords" content="Linux,二进制安全,Linux动态链接库">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux动态链接库.so的生成与使用">
 <meta property="og:url" content="https://hvnt3r.top/2019/08/Linux动态链接库-so的生成与使用/index.html">
 <meta property="og:site_name" content="Hvnt3r&#39;s Blog">
-<meta property="og:description" content="用到以下三个文件，为以后展开相关攻击过程做铺垫。 main.c 1234567891011#include &amp;lt;stdio.h&amp;gt;#include &amp;lt;unistd.h&amp;gt;int print_test();int main()&amp;#123;	while(1)&amp;#123;				print_test();		sleep(5);	&amp;#125;&amp;#125; lib_ptrace_norma">
+<meta property="og:description" content="用到以下三个文件，为以后展开相关攻击过程做铺垫。 main.c 1234567891011#include &amp;lt;stdio.h&amp;gt;#include &amp;lt;unistd.h&amp;gt;int print_test();int main()&amp;#123;	while(1)&amp;#123;				print_test();		sleep(5);	&amp;#125;&amp;#125;">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://hvnt3r.top/gallery/thumbnails/linux.jpg">
-<meta property="og:updated_time" content="2019-08-07T13:01:40.186Z">
+<meta property="og:updated_time" content="2019-08-07T13:04:11.661Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux动态链接库.so的生成与使用">
-<meta name="twitter:description" content="用到以下三个文件，为以后展开相关攻击过程做铺垫。 main.c 1234567891011#include &amp;lt;stdio.h&amp;gt;#include &amp;lt;unistd.h&amp;gt;int print_test();int main()&amp;#123;	while(1)&amp;#123;				print_test();		sleep(5);	&amp;#125;&amp;#125; lib_ptrace_norma">
+<meta name="twitter:description" content="用到以下三个文件，为以后展开相关攻击过程做铺垫。 main.c 1234567891011#include &amp;lt;stdio.h&amp;gt;#include &amp;lt;unistd.h&amp;gt;int print_test();int main()&amp;#123;	while(1)&amp;#123;				print_test();		sleep(5);	&amp;#125;&amp;#125;">
 <meta name="twitter:image" content="https://hvnt3r.top/gallery/thumbnails/linux.jpg">
 
 
@@ -168,7 +168,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    4 分钟 读完 (大约 674 个字)
+                    5 分钟 读完 (大约 675 个字)
                 </span>
                 
                 
@@ -184,6 +184,7 @@
             <p>用到以下三个文件，为以后展开相关攻击过程做铺垫。</p>
 <p>main.c</p>
 <figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">print_test</span><span class="hljs-params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;</span><br><span class="line">	<span class="hljs-keyword">while</span>(<span class="hljs-number">1</span>)&#123;		</span><br><span class="line">		print_test();</span><br><span class="line">		sleep(<span class="hljs-number">5</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
 <p>lib_ptrace_normal.c</p>
 <figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">print_test</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-built_in">printf</span>(<span class="hljs-string">"I am good guy"</span>);</span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>lib_ptrace_attack.c</p>

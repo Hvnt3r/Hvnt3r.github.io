@@ -171,7 +171,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    4 分钟 读完 (大约 674 个字)
+                    5 分钟 读完 (大约 675 个字)
                 </span>
                 
                 
@@ -187,36 +187,16 @@
             <p>用到以下三个文件，为以后展开相关攻击过程做铺垫。</p>
 <p>main.c</p>
 <figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">print_test</span><span class="hljs-params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;</span><br><span class="line">	<span class="hljs-keyword">while</span>(<span class="hljs-number">1</span>)&#123;		</span><br><span class="line">		print_test();</span><br><span class="line">		sleep(<span class="hljs-number">5</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>lib_ptrace_normal.c</p>
-<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">print_test</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-built_in">printf</span>(<span class="hljs-string">"I am good guy"</span>);</span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>lib_ptrace_attack.c</p>
-<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">print_test</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-built_in">printf</span>(<span class="hljs-string">"I am bad guy :P"</span>);</span><br><span class="line">	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>使用如下命令编译so文件：</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">test@ubuntu:~/ptrace$ gcc -fPIC -shared lib_ptrace_normal.cpp  -o lib_normal.so</span><br><span class="line">test@ubuntu:~/ptrace$ gcc -fPIC -shared lib_ptrace_attack.cpp  -o lib_attack.so</span><br></pre></td></tr></table></figure>
-<p>参数说明：</p>
-<blockquote>
-<p>如果想创建一个动态链接库，可以使用 GCC 的<code>-shared</code>选项。输入文件可以是源文件、汇编文件或者目标文件。</p>
-<p>另外还得结合<code>-fPIC</code>选项。-fPIC 选项作用于编译阶段，告诉编译器产生与位置无关代码（Position-Independent Code）；这样一来，产生的代码中就没有绝对地址了，全部使用相对地址，所以代码可以被加载器加载到内存的任意位置，都可以正确的执行。这正是共享库所要求的，共享库被加载时，在内存的位置不是固定的。 </p>
-</blockquote>
-<p>编辑<code>/etc/ld.so.conf.d/libc.conf</code>，在文件末尾添加生成so文件的目录，然后执行<code>sudo ldconfig</code>使设置生效。</p>
-<p>之后执行来将 <code>main.c</code> 和 <code>lib_normal.so</code> 一起编译成<code>main.out</code>，当 <code>main.out</code> 运行时，会动态地加载链接库 <code>lib_normal.so</code>。</p>
-<figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc main.c -L. -l_normal -o main.out</span><br></pre></td></tr></table></figure>
-<p>参数说明：</p>
-<ul>
-<li><code>-L</code>：指定<code>lib</code>文件的目录，本例中<code>lib_normal.so</code>与<code>main.c</code>处于同一目录下，所以使用<code>.</code>表示当前目录，如需指定其他目录可以写成：<code>-L/usr/lib/xxx</code>的形式</li>
-<li><code>-l</code>：指定lib文件的文件名称，在本例中将<code>lib_normal.so</code>分解为三部分：<code>lib + _normal + .so</code>，-l参数之后仅需写这三部分的中间部分即<code>_normal</code>。</li>
-</ul>
-<p>执行<code>ldd</code>命令查看<code>main.out</code>的链接情况，可以看到系统可以找到<code>lib_normal.so</code>的位置：</p>
-<figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-built_in">test</span>@ubuntu:~/ptrace$ ldd main.out </span><br><span class="line">	linux-vdso.so.1 =&gt;  (0x00007fff045df000)</span><br><span class="line">	lib_normal.so =&gt; /home/<span class="hljs-built_in">test</span>/ptrace/lib_normal.so (0x00007fa8428c0000)</span><br><span class="line">	libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007fa8424f7000)</span><br><span class="line">	/lib64/ld-linux-x86-64.so.2 (0x000055ca59221000)</span><br></pre></td></tr></table></figure>
-<p>此时运行<code>main.out</code>，运行结果：</p>
-<figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-built_in">test</span>@ubuntu:~/ptrace$ ./main.out </span><br><span class="line"></span><br><span class="line">I am good guy</span><br><span class="line">I am good guy</span><br><span class="line">I am good guy</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>此处有一点疑问，为何在程序刚运行时缺少了一次<code>print_test()</code>的调用，直接打印了<code>\n</code>？个人猜想是虚拟环境磁盘IO性能差导致此函数在so文件未被成功加载的时候跳过了？</p>
-</blockquote>
-<p>Done!🍟</p>
-
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/08/Linux动态链接库-so的生成与使用/#more">阅读更多</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>
