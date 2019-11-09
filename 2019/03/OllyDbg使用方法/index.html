@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html  lang="zh">
-<head>
+<html lang="zh">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>OllyDbg使用方法 - Hvnt3r&#39;s Blog</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
@@ -100,20 +100,15 @@
             
             <div class="navbar-start">
                 
-                <a class="navbar-item"
-                href="/">主页</a>
+                <a class="navbar-item" href="/">主页</a>
                 
-                <a class="navbar-item"
-                href="/archives/">归档</a>
+                <a class="navbar-item" href="/archives/">归档</a>
                 
-                <a class="navbar-item"
-                href="/categories/">分类</a>
+                <a class="navbar-item" href="/categories/">分类</a>
                 
-                <a class="navbar-item"
-                href="/tags/">标签</a>
+                <a class="navbar-item" href="/tags/">标签</a>
                 
-                <a class="navbar-item"
-                href="/about/">关于我</a>
+                <a class="navbar-item" href="/about/">关于我</a>
                 
             </div>
             
@@ -213,14 +208,14 @@
 <p><strong>问题</strong></p>
 <p><strong>1.如何让这个恶意代码安装自身？</strong></p>
 <p>首先这道题先前在第三章分析过，但是当时还没有学习动态调试地知识，因此将本题留在了本章，根据之前静态分析地结果我们可以知道这个程序可能会因为参数地错误而进行自我删除，执行删除指令的代码如下：</p>
-<p><img src="https://i.loli.net/2019/03/15/5c8b8331f1d2e.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/15/5c8b8331f1d2e.png" alt></p>
 <p>我们先找到程序的主函数所在位置，这些代码会判断程序是否有参数，如果没有参数则会直接执行上图中的自我删除动作：</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.text:00402AF0                 push    ebp</span><br><span class="line">.text:00402AF1                 mov     ebp, esp</span><br><span class="line">.text:00402AF3                 mov     eax, 182Ch</span><br><span class="line">.text:00402AF8                 call    __alloca_probe</span><br><span class="line">.text:00402AFD                 cmp     [ebp+argc], 1</span><br><span class="line">.text:00402B01                 jnz     short loc_402B1D</span><br><span class="line">.text:00402B03                 call    sub_401000</span><br><span class="line">.text:00402B08                 test    eax, eax</span><br><span class="line">.text:00402B0A                 jz      short loc_402B13</span><br><span class="line">.text:00402B0C                 call    sub_402360</span><br><span class="line">.text:00402B11                 jmp     short loc_402B18</span><br></pre></td></tr></table></figure>
 <p>但是如果程序带有参数，程序则会进入参数判断的过程，参数字符串判断函数的完成汇编代码如下：</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line">.text:00402510                 push    ebp</span><br><span class="line">.text:00402511                 mov     ebp, esp</span><br><span class="line">.text:00402513                 push    ecx</span><br><span class="line">.text:00402514                 push    edi</span><br><span class="line">.text:00402515                 mov     edi, [ebp+arg_0]</span><br><span class="line">.text:00402518                 or      ecx, 0FFFFFFFFh</span><br><span class="line">.text:0040251B                 xor     eax, eax</span><br><span class="line">.text:0040251D                 repne scasb</span><br><span class="line">.text:0040251F                 not     ecx</span><br><span class="line">.text:00402521                 add     ecx, 0FFFFFFFFh</span><br><span class="line">.text:00402524                 cmp     ecx, 4</span><br><span class="line">.text:00402527                 jz      short loc_40252D</span><br><span class="line">.text:00402529                 xor     eax, eax</span><br><span class="line">.text:0040252B                 jmp     short loc_4025A0</span><br><span class="line">.text:0040252D ; ---------------------------------------------------------------------------</span><br><span class="line">.text:0040252D</span><br><span class="line">.text:0040252D loc_40252D:                             ; CODE XREF: sub_402510+17↑j</span><br><span class="line">.text:0040252D                 mov     eax, [ebp+arg_0]</span><br><span class="line">.text:00402530                 mov     cl, [eax]</span><br><span class="line">.text:00402532                 mov     [ebp+var_4], cl</span><br><span class="line">.text:00402535                 movsx   edx, [ebp+var_4]</span><br><span class="line">.text:00402539                 cmp     edx, 61h</span><br><span class="line">.text:0040253C                 jz      short loc_402542</span><br><span class="line">.text:0040253E                 xor     eax, eax</span><br><span class="line">.text:00402540                 jmp     short loc_4025A0</span><br><span class="line">.text:00402542 ; ---------------------------------------------------------------------------</span><br><span class="line">.text:00402542</span><br><span class="line">.text:00402542 loc_402542:                             ; CODE XREF: sub_402510+2C↑j</span><br><span class="line">.text:00402542                 mov     eax, [ebp+arg_0]</span><br><span class="line">.text:00402545                 mov     cl, [eax+1]</span><br><span class="line">.text:00402548                 mov     [ebp+var_4], cl</span><br><span class="line">.text:0040254B                 mov     edx, [ebp+arg_0]</span><br><span class="line">.text:0040254E                 mov     al, [ebp+var_4]</span><br><span class="line">.text:00402551                 sub     al, [edx]</span><br><span class="line">.text:00402553                 mov     [ebp+var_4], al</span><br><span class="line">.text:00402556                 movsx   ecx, [ebp+var_4]</span><br><span class="line">.text:0040255A                 cmp     ecx, 1</span><br><span class="line">.text:0040255D                 jz      short loc_402563</span><br><span class="line">.text:0040255F                 xor     eax, eax</span><br><span class="line">.text:00402561                 jmp     short loc_4025A0</span><br><span class="line">.text:00402563 ; ---------------------------------------------------------------------------</span><br><span class="line">.text:00402563</span><br><span class="line">.text:00402563 loc_402563:                             ; CODE XREF: sub_402510+4D↑j</span><br><span class="line">.text:00402563                 mov     al, [ebp+var_4]</span><br><span class="line">.text:00402566                 mov     dl, 63h</span><br><span class="line">.text:00402568                 imul    dl</span><br><span class="line">.text:0040256A                 mov     [ebp+var_4], al</span><br><span class="line">.text:0040256D                 movsx   eax, [ebp+var_4]</span><br><span class="line">.text:00402571                 mov     ecx, [ebp+arg_0]</span><br><span class="line">.text:00402574                 movsx   edx, byte ptr [ecx+2]</span><br><span class="line">.text:00402578                 cmp     eax, edx</span><br><span class="line">.text:0040257A                 jz      short loc_402580</span><br><span class="line">.text:0040257C                 xor     eax, eax</span><br><span class="line">.text:0040257E                 jmp     short loc_4025A0</span><br><span class="line">.text:00402580 ; ---------------------------------------------------------------------------</span><br><span class="line">.text:00402580</span><br><span class="line">.text:00402580 loc_402580:                             ; CODE XREF: sub_402510+6A↑j</span><br><span class="line">.text:00402580                 mov     al, [ebp+var_4]</span><br><span class="line">.text:00402583                 add     al, 1</span><br><span class="line">.text:00402585                 mov     [ebp+var_4], al</span><br><span class="line">.text:00402588                 movsx   ecx, [ebp+var_4]</span><br><span class="line">.text:0040258C                 mov     edx, [ebp+arg_0]</span><br><span class="line">.text:0040258F                 movsx   eax, byte ptr [edx+3]</span><br><span class="line">.text:00402593                 cmp     ecx, eax</span><br><span class="line">.text:00402595                 jz      short loc_40259B</span><br><span class="line">.text:00402597                 xor     eax, eax</span><br><span class="line">.text:00402599                 jmp     short loc_4025A0</span><br><span class="line">.text:0040259B ; ---------------------------------------------------------------------------</span><br><span class="line">.text:0040259B</span><br><span class="line">.text:0040259B loc_40259B:                             ; CODE XREF: sub_402510+85↑j</span><br><span class="line">.text:0040259B                 mov     eax, 1</span><br><span class="line">.text:004025A0</span><br><span class="line">.text:004025A0 loc_4025A0:                             ; CODE XREF: sub_402510+1B↑j</span><br><span class="line">.text:004025A0                                         ; sub_402510+30↑j ...</span><br><span class="line">.text:004025A0                 pop     edi</span><br><span class="line">.text:004025A1                 mov     esp, ebp</span><br><span class="line">.text:004025A3                 pop     ebp</span><br><span class="line">.text:004025A4                 retn</span><br></pre></td></tr></table></figure>
 <p>为了注释以上代码，下面是我在OD中对这些代码分析的过程中的注释截图：</p>
-<p><img src="https://i.loli.net/2019/03/15/5c8b9ed40d538.png" alt=""></p>
-<p><img src="https://i.loli.net/2019/03/15/5c8b9f2e83ce7.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/15/5c8b9ed40d538.png" alt></p>
+<p><img src="https://i.loli.net/2019/03/15/5c8b9f2e83ce7.png" alt></p>
 <p>以上代码算是一个简单的硬编码的加密，绕了个大圈子实际上就是看参数是否为<code>abcd</code></p>
 <p>因此此程序可以通过附加参数<code>-in abcd</code>来进行安装。</p>
 <p><strong>2.这个代码的命令行选项是什么？它要求的密码是什么？</strong></p>
@@ -256,9 +251,9 @@
 <p>只需将密码对比函数的返回值修改为1即可。</p>
 <p><strong>4.这个恶意代码基于系统的特征是什么？</strong></p>
 <p>程序创建了一个注册表。创建了一个服务<code>%SYSTEMROOT%\system32\文件名</code>：</p>
-<p><img src="https://i.loli.net/2019/03/17/5c8dac11a8411.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/17/5c8dac11a8411.png" alt></p>
 <p>程序会将自身拷贝到<code>C:\Winodows\System32\</code></p>
-<p><img src="https://i.loli.net/2019/03/17/5c8dacb81a879.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/17/5c8dacb81a879.png" alt></p>
 <p>创建注册表项<code>HKLM\SOFTWARE\Microsoft \XPS\Configuration</code></p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">.text:00401009                 push    eax             ; phkResult</span><br><span class="line">.text:0040100A                 push    0F003Fh         ; samDesired</span><br><span class="line">.text:0040100F                 push    0               ; ulOptions</span><br><span class="line">.text:00401011                 push    offset SubKey   ; &quot;SOFTWARE\\Microsoft \\XPS&quot;</span><br><span class="line">.text:00401016                 push    80000002h       ; hKey</span><br><span class="line">.text:0040101B                 call    ds:RegOpenKeyExA</span><br><span class="line">.text:00401021                 test    eax, eax</span><br><span class="line">.text:00401023                 jz      short loc_401029</span><br><span class="line">.text:00401025                 xor     eax, eax</span><br><span class="line">.text:00401027                 jmp     short loc_401066</span><br><span class="line">.text:00401029                 push    0               ; lpcbData</span><br><span class="line">.text:0040102B                 push    0               ; lpData</span><br><span class="line">.text:0040102D                 push    0               ; lpType</span><br><span class="line">.text:0040102F                 push    0               ; lpReserved</span><br><span class="line">.text:00401031                 push    offset ValueName ; &quot;Configuration&quot;</span><br><span class="line">.text:00401036                 mov     ecx, [ebp+phkResult]</span><br><span class="line">.text:00401039                 push    ecx             ; hKey</span><br><span class="line">.text:0040103A                 call    ds:RegQueryValueExA</span><br></pre></td></tr></table></figure>
 <p><strong>5.这个恶意代码通过网络命令执行了哪些不同的操作？</strong></p>
@@ -297,7 +292,7 @@
 </table>
 <p><strong>6.这个恶意代码是否有网络特征？</strong></p>
 <p>恶意代码向<code>http://www.practicalmalwareanalysis.com</code>发出一个<code>http</code>的请求</p>
-<p><img src="https://i.loli.net/2019/03/17/5c8dade95f964.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/17/5c8dade95f964.png" alt></p>
 <h3 id="Lab9-2"><a href="#Lab9-2" class="headerlink" title="Lab9-2"></a>Lab9-2</h3><p><strong>用OllyDbg分析恶意代码文件Lab09-02.exe，回答下列问题。</strong></p>
 <p><strong>问题</strong></p>
 <p><strong>1.在二进制文件中，你看到的静态字符串是什么？</strong></p>
@@ -308,7 +303,7 @@
 <p>看到如下代码：</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">.text:00401205                 push    eax             ; lpFilename</span><br><span class="line">.text:00401206                 push    0               ; hModule</span><br><span class="line">.text:00401208                 call    ds:GetModuleFileNameA</span><br><span class="line">.text:0040120E                 push    5Ch             ; int</span><br><span class="line">.text:00401210                 lea     ecx, [ebp+Filename]</span><br><span class="line">.text:00401216                 push    ecx             ; char *</span><br><span class="line">.text:00401217                 call    _strrchr</span><br><span class="line">.text:0040121C                 add     esp, 8</span><br><span class="line">.text:0040121F                 mov     [ebp+var_4], eax</span><br><span class="line">.text:00401222                 mov     edx, [ebp+var_4]</span><br><span class="line">.text:00401225                 add     edx, 1</span><br><span class="line">.text:00401228                 mov     [ebp+var_4], edx</span><br><span class="line">.text:0040122B                 mov     eax, [ebp+var_4]</span><br><span class="line">.text:0040122E                 push    eax             ; char *</span><br><span class="line">.text:0040122F                 lea     ecx, [ebp+var_1A0]</span><br><span class="line">.text:00401235                 push    ecx             ; char *</span><br><span class="line">.text:00401236                 call    _strcmp</span><br><span class="line">.text:0040123B                 add     esp, 8</span><br><span class="line">.text:0040123E                 test    eax, eax</span><br><span class="line">.text:00401240                 jz      short loc_40124C</span><br><span class="line">.text:00401242                 mov     eax, 1</span><br><span class="line">.text:00401247                 jmp     loc_4013D6</span><br></pre></td></tr></table></figure>
 <p>用于字符串比较的函数的两个参数一个是此程序的文件名，另一个是<code>ocl.exe</code></p>
-<p><img src="https://i.loli.net/2019/03/17/5c8e05579ff61.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/17/5c8e05579ff61.png" alt></p>
 <p>如果文件名不是<code>ocl.exe</code>的话程序会直接退出，因此我们需要将文件名修改为<code>ocl.exe</code>。</p>
 <p><strong>4.在地址0x00401133处发生了什么？</strong></p>
 <figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">v13 = <span class="hljs-string">'1'</span>;</span><br><span class="line">v14 = <span class="hljs-string">'q'</span>;</span><br><span class="line">v15 = <span class="hljs-string">'a'</span>;</span><br><span class="line">v16 = <span class="hljs-string">'z'</span>;</span><br><span class="line">v17 = <span class="hljs-string">'2'</span>;</span><br><span class="line">v18 = <span class="hljs-string">'w'</span>;</span><br><span class="line">v19 = <span class="hljs-string">'s'</span>;</span><br><span class="line">v20 = <span class="hljs-string">'x'</span>;</span><br><span class="line">v21 = <span class="hljs-string">'3'</span>;</span><br><span class="line">v22 = <span class="hljs-string">'e'</span>;</span><br><span class="line">v23 = <span class="hljs-string">'d'</span>;</span><br><span class="line">v24 = <span class="hljs-string">'c'</span>;</span><br><span class="line">v25 = <span class="hljs-string">'\0'</span>;</span><br><span class="line">v26 = <span class="hljs-string">'o'</span>;</span><br><span class="line">v27 = <span class="hljs-string">'c'</span>;</span><br><span class="line">v28 = <span class="hljs-string">'l'</span>;</span><br><span class="line">v29 = <span class="hljs-string">'.'</span>;</span><br><span class="line">v30 = <span class="hljs-string">'e'</span>;</span><br><span class="line">v31 = <span class="hljs-string">'x'</span>;</span><br><span class="line">v32 = <span class="hljs-string">'e'</span>;</span><br><span class="line">v33 = <span class="hljs-string">'\0'</span>;</span><br></pre></td></tr></table></figure>
@@ -317,7 +312,7 @@
 <p><code>1qaz2wsx3edc</code>和一个位于<code>00405034</code>长度<code>21h</code>的数据缓冲区</p>
 <p><strong>6.恶意代码使用的域名是什么？</strong>、</p>
 <p>把断点下在加密函数的rten语句之后可以看到返回值如下：</p>
-<p><img src="https://i.loli.net/2019/03/17/5c8e0b39e63e9.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/17/5c8e0b39e63e9.png" alt></p>
 <p><code>www.practicalmalwareanalysis.com</code></p>
 <p><strong>7.恶意代码使用什么编码函数来混淆域名？</strong></p>
 <p>通过对<code>0x00401089</code>函数的分析，此函数将<code>1qaz2wsx3edc</code>与<code>i</code>循环取余的结果作了异或操作。</p>
@@ -336,21 +331,21 @@
 <li>DLL3：10000000h</li>
 </ul>
 <p><strong>3.当使用OD调试Lab09-03.exe时，为DLL1.dll、DLL2.dll、DLL3.dll分配的基地址是什么？</strong></p>
-<p><img src="https://i.loli.net/2019/03/18/5c8e7123427e3.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/18/5c8e7123427e3.png" alt></p>
 <p>如图三个程序的基地址分别为：<code>10000000</code>、<code>00030000</code>、<code>00A50000</code>。</p>
 <p><strong>4.当Lab09-03.exe调用DLL1.dll中的一个导入函数时，这个导入函数都做了什么？</strong></p>
-<p><img src="https://i.loli.net/2019/03/18/5c8e7268ebb68.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/18/5c8e7268ebb68.png" alt></p>
 <p>进入此函数发现：</p>
-<p><img src="https://i.loli.net/2019/03/18/5c8e74254e6b0.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/18/5c8e74254e6b0.png" alt></p>
 <p>通过查看<code>DLL1.10008034</code>的交叉引用发现这个值等于<code>GetCurrentProcessId()</code>的返回值。</p>
 <p><strong>5.当Lab09-03.exe调用WriteFile函数时，它写入的函数名是什么？</strong></p>
 <p>第一处：</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">.text:00401006                 call    ds:DLL1Print</span><br><span class="line">.text:0040100C                 call    ds:DLL2Print</span><br><span class="line">.text:00401012                 call    ds:DLL2ReturnJ</span><br><span class="line">.text:00401018                 mov     [ebp+hFile], eax</span><br><span class="line">.text:0040101B                 push    0               ; lpOverlapped</span><br><span class="line">.text:0040101D                 lea     eax, [ebp+NumberOfBytesWritten]</span><br><span class="line">.text:00401020                 push    eax             ; lpNumberOfBytesWritten</span><br><span class="line">.text:00401021                 push    17h             ; nNumberOfBytesToWrite</span><br><span class="line">.text:00401023                 push    offset aMalwareanalysi ; &quot;malwareanalysisbook.com&quot;</span><br><span class="line">.text:00401028                 mov     ecx, [ebp+hFile]</span><br><span class="line">.text:0040102B                 push    ecx             ; hFile</span><br><span class="line">.text:0040102C                 call    ds:WriteFile</span><br></pre></td></tr></table></figure>
 <p>可以看到程序员的参数是<code>DLL2ReturnJ</code>的返回值，因此进入<code>DLL2</code>中看到参数是一个对<code>0x1000B078</code>的访问，在OD中在此位置下一个访问断点，运行之后看到如下结果：</p>
-<p><img src="https://i.loli.net/2019/03/18/5c8ee5da97029.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/18/5c8ee5da97029.png" alt></p>
 <p>因此得知此文件是<code>temp.txt</code>。</p>
 <p><strong>6.当Lab09-03.exe使用NetScheduleJobAdd函数创建一个job时，从哪里获取第二个参数的数据？</strong></p>
-<p><img src="https://i.loli.net/2019/03/18/5c8eebba7daed.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/18/5c8eebba7daed.png" alt></p>
 <p>在OD中看到<code>Lab09-03.exe</code>中<code>NetScheduleJobAdd</code>的第二个参数来自于DLL3的<code>00B5B0A0</code>，DLL3的基地址是<code>00B50000</code>，因此对应到DLL3中就是<code>B050</code>的位置，在DLL3中发现：</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.text:10001066                 mov     dword ptr [eax], offset dword_1000B0A0</span><br></pre></td></tr></table></figure>
 <p><strong>7.在运行或调试Lab09-03.exe时，你会看到Lab09-03.exe打印出三块神秘数据。DLL1的神秘数据、DLL2的神秘数据、DLL3的神秘数据分别是什么？</strong></p>
@@ -361,9 +356,9 @@
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">.text:10001004                 mov     [ebp+lpMultiByteStr], offset aPingWwwMalware ; &quot;ping www.malwareanalysisbook.com&quot;</span><br><span class="line">.text:1000100B                 push    32h             ; cchWideChar</span><br><span class="line">.text:1000100D                 push    offset WideCharStr ; lpWideCharStr</span><br><span class="line">.text:10001012                 push    0FFFFFFFFh      ; cbMultiByte</span><br><span class="line">.text:10001014                 mov     eax, [ebp+lpMultiByteStr]</span><br><span class="line">.text:10001017                 push    eax             ; lpMultiByteStr</span><br><span class="line">.text:10001018                 push    0               ; dwFlags</span><br><span class="line">.text:1000101A                 push    0               ; CodePage</span><br><span class="line">.text:1000101C                 call    ds:MultiByteToWideChar</span><br></pre></td></tr></table></figure>
 <p><strong>8.如何将DLL2.dll加载到IDA Pro中，使得他与OD的加载地址匹配？</strong></p>
 <p>选择手动加载：</p>
-<p><img src="https://i.loli.net/2019/03/18/5c8eefff2907c.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/18/5c8eefff2907c.png" alt></p>
 <p>在弹出的窗口中设置新的基地址即可：</p>
-<p><img src="https://i.loli.net/2019/03/18/5c8ef037b3f2c.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/18/5c8ef037b3f2c.png" alt></p>
 <h3 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h3>
         </div>
         
@@ -536,36 +531,31 @@
         
         <div class="level is-mobile">
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Github" href="https://github.com/Hvnt3r">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/Hvnt3r">
                 
                 <i class="fab fa-github"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Facebook" href="https://facebook.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Facebook" href="https://facebook.com">
                 
                 <i class="fab fa-facebook"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Twitter" href="https://twitter.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Twitter" href="https://twitter.com">
                 
                 <i class="fab fa-twitter"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Dribbble" href="https://dribbble.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Dribbble" href="https://dribbble.com">
                 
                 <i class="fab fa-dribbble"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="RSS" href="https://hvnt3r.top/atom.xml">
+            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="https://hvnt3r.top/atom.xml">
                 
                 <i class="fas fa-rss"></i>
                 
@@ -2494,8 +2484,7 @@
                 </a>
                 <p class="is-size-7">
                 &copy; 2019 Hvnt3r&nbsp;
-                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
-                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
                 
                 </p>
             </div>
@@ -2631,7 +2620,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="searchbox ins-search">
     <div class="searchbox-container ins-search-container">
         <div class="searchbox-input-wrapper">
-            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么...">
             <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
         </div>
         <div class="searchbox-result-wrapper ins-section-wrapper">
@@ -2658,5 +2647,5 @@ document.addEventListener('DOMContentLoaded', function () {
 <link rel="stylesheet" href="/css/search.css">
 <link rel="stylesheet" href="/css/insight.css">
     
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"live2d-widget-model-koharu"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 </html>

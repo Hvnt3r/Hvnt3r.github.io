@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html  lang="zh">
-<head>
+<html lang="zh">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>静态分析基础技术 - Hvnt3r&#39;s Blog</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
@@ -100,20 +100,15 @@
             
             <div class="navbar-start">
                 
-                <a class="navbar-item"
-                href="/">主页</a>
+                <a class="navbar-item" href="/">主页</a>
                 
-                <a class="navbar-item"
-                href="/archives/">归档</a>
+                <a class="navbar-item" href="/archives/">归档</a>
                 
-                <a class="navbar-item"
-                href="/categories/">分类</a>
+                <a class="navbar-item" href="/categories/">分类</a>
                 
-                <a class="navbar-item"
-                href="/tags/">标签</a>
+                <a class="navbar-item" href="/tags/">标签</a>
                 
-                <a class="navbar-item"
-                href="/about/">关于我</a>
+                <a class="navbar-item" href="/about/">关于我</a>
                 
             </div>
             
@@ -196,7 +191,7 @@
 <p>其实VT上已经显示了此程序的<code>MetaData</code>即元信息：</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">CodeSize	4096</span><br><span class="line">EntryPoint	0x1820</span><br><span class="line">FileType	Win32 EXE</span><br><span class="line">FileTypeExtension	exe</span><br><span class="line">ImageFileCharacteristics	No relocs, Executable, No line numbers, No symbols, 32-bit</span><br><span class="line">ImageVersion	0.0</span><br><span class="line">InitializedDataSize	8192</span><br><span class="line">LinkerVersion	6.0</span><br><span class="line">MIMEType	application/octet-stream</span><br><span class="line">MachineType	Intel 386 or later, and compatibles</span><br><span class="line">OSVersion	4.0</span><br><span class="line">PEType	PE32</span><br><span class="line">Subsystem	Windows command line</span><br><span class="line">SubsystemVersion	4.0</span><br><span class="line">TimeStamp	2010:12:19 17:16:19+01:00</span><br><span class="line">UninitializedDataSize	0</span><br></pre></td></tr></table></figure>
 <p>这里已经显示了程序的编译时间为2010:12:19，另外可以通过软件<code>PEexplore</code>来查看时间戳：</p>
-<p><img src="https://i.loli.net/2019/01/17/5c4035990c466.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/01/17/5c4035990c466.png" alt></p>
 <p><strong>3.这两个文件中是否存在迹象说明他们是否被加壳或者混淆了？如果是，这些迹象在哪里。</strong></p>
 <p>VT上显示的结果为此程序加壳，壳是穿山甲(Armadillo)</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Packers</span><br><span class="line">PEiD	Armadillo v1.71</span><br></pre></td></tr></table></figure>
@@ -247,10 +242,10 @@
 <p>按照题目要求上传至<code>VT</code>查看结果即可。</p>
 <p><strong>2.这个文件是否有加壳或混淆的情况？请指明。如果该文件被加壳，请进行脱壳。</strong></p>
 <p>把这个程序丢进<code>IDA</code>看一下发现弹出了一个警告框，提示该程序可能加了壳：</p>
-<p><img src="https://i.loli.net/2019/01/18/5c41e123a6e41.png" alt=""></p>
-<p><img src="https://i.loli.net/2019/01/18/5c41e2d17223d.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/01/18/5c41e123a6e41.png" alt></p>
+<p><img src="https://i.loli.net/2019/01/18/5c41e2d17223d.png" alt></p>
 <p>用<code>PEiD</code>查壳得知这个壳是<code>UPX</code></p>
-<p><img src="https://i.loli.net/2019/01/18/5c41e31d9b699.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/01/18/5c41e31d9b699.png" alt></p>
 <p>下载<code>UPX</code>脱壳工具使用命令<code>upx -d Lab01-02.exe</code>对程序脱脱壳，脱壳后发现程序由原来的<code>3kb</code>变为了<code>16kb</code></p>
 <p><strong>3.有没有任何导入函数能暗示出这个程序的功能，如果有，这些导入函数是什么，给了你什么信息？</strong></p>
 <p>将脱壳后的程序放入IDA中查看导入函数：</p>
@@ -285,7 +280,7 @@
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">.data:0040302C aSedebugprivile db &apos;SeDebugPrivilege&apos;,0 ; DATA XREF: sub_401174+1B↑o</span><br><span class="line">.data:0040303D                 align 10h</span><br><span class="line">.data:00403040 ; CHAR LibFileName[]</span><br><span class="line">.data:00403040 LibFileName     db &apos;sfc_os.dll&apos;,0       ; DATA XREF: sub_401174+2F↑o</span><br><span class="line">.data:0040304B                 align 4</span><br><span class="line">.data:0040304C aSystem32Wupdmg db &apos;\system32\wupdmgr.exe&apos;,0</span><br><span class="line">.data:0040304C                                         ; DATA XREF: sub_4011FC+7D↑o</span><br><span class="line">.data:00403062                 align 4</span><br><span class="line">.data:00403064 ; char Format[]</span><br><span class="line">.data:00403064 Format          db &apos;%s%s&apos;,0             ; DATA XREF: sub_4011FC+89↑o</span><br><span class="line">.data:00403069                 align 4</span><br><span class="line">.data:0040306C ; CHAR Type[]</span><br><span class="line">.data:0040306C Type            db &apos;BIN&apos;,0              ; DATA XREF: sub_4011FC+AE↑o</span><br><span class="line">.data:00403070 ; CHAR Name[]</span><br><span class="line">.data:00403070 Name            db &apos;#101&apos;,0             ; DATA XREF: sub_4011FC+B3↑o</span><br><span class="line">.data:00403075                 align 4</span><br><span class="line">.data:00403078 ; CHAR ProcName[]</span><br><span class="line">.data:00403078 ProcName        db &apos;EnumProcessModules&apos;,0</span><br><span class="line">.data:00403078                                         ; DATA XREF: _main+5A↑o</span><br><span class="line">.data:0040308B                 align 4</span><br><span class="line">.data:0040308C ; CHAR aPsapiDll[]</span><br><span class="line">.data:0040308C aPsapiDll       db &apos;psapi.dll&apos;,0        ; DATA XREF: _main+5F↑o</span><br><span class="line">.data:00403096                 align 4</span><br><span class="line">.data:00403098 ; CHAR aGetmodulebasen[]</span><br><span class="line">.data:00403098 aGetmodulebasen db &apos;GetModuleBaseNameA&apos;,0</span><br><span class="line">.data:00403098                                         ; DATA XREF: _main+76↑o</span><br><span class="line">.data:004030AB                 align 4</span><br><span class="line">.data:004030AC ; CHAR aPsapiDll_0[]</span><br><span class="line">.data:004030AC aPsapiDll_0     db &apos;psapi.dll&apos;,0        ; DATA XREF: _main+7B↑o</span><br><span class="line">.data:004030B6                 align 4</span><br><span class="line">.data:004030B8 ; CHAR aEnumprocesses[]</span><br><span class="line">.data:004030B8 aEnumprocesses  db &apos;EnumProcesses&apos;,0    ; DATA XREF: _main+92↑o</span><br><span class="line">.data:004030C6                 align 4</span><br><span class="line">.data:004030C8 ; CHAR aPsapiDll_1[]</span><br><span class="line">.data:004030C8 aPsapiDll_1     db &apos;psapi.dll&apos;,0        ; DATA XREF: _main+97↑o</span><br><span class="line">.data:004030D2                 align 4</span><br><span class="line">.data:004030D4 aSystem32Wupdmg_0 db &apos;\system32\wupdmgr.exe&apos;,0</span><br><span class="line">.data:004030D4                                         ; DATA XREF: _main+1C8↑o</span><br><span class="line">.data:004030EA                 align 4</span><br><span class="line">.data:004030EC ; char aSS_0[]</span><br><span class="line">.data:004030EC aSS_0           db &apos;%s%s&apos;,0             ; DATA XREF: _main+1D4↑o</span><br><span class="line">.data:004030F1                 align 4</span><br><span class="line">.data:004030F4 aWinupExe       db &apos;\winup.exe&apos;,0       ; DATA XREF: _main+200↑o</span><br><span class="line">.data:004030FF                 align 10h</span><br><span class="line">.data:00403100 ; char aSS_1[]</span><br><span class="line">.data:00403100 aSS_1           db &apos;%s%s&apos;,0             ; DATA XREF: _main+20C↑o</span><br><span class="line">.data:00403105                 align 10h</span><br><span class="line">.data:00403110 dword_403110    dd 1                    ; DATA XREF: start+6E↑r</span><br><span class="line">.data:00403114                 align 10h</span><br></pre></td></tr></table></figure>
 <p>根据以上信息和汇编代码猜测病毒会在<code>\system32</code>目录下创建<code>wupdmgr.exe</code>文件，并尝试执行此程序，如果执行成功，则函数<code>sub_401174</code>返回<code>0</code></p>
 <p>还有一个隐藏在资源节的PE文件，用二进制模式打开后可以看到如下文本</p>
-<p><img src="https://i.loli.net/2019/01/19/5c43386273988.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/01/19/5c43386273988.png" alt></p>
 <p><strong>6.这个文件在资源段包含一个资源。使用Resource Hacker工具来检查资源，然后抽取资源。从资源中你能发现什么吗？</strong></p>
 <p>使用<code>Resource Hacker</code>可以发现该程序的资源节存在一个可执行程序，程序指向一个网址并从该网址下载文件，但下载的文件内容未知。</p>
 <hr>
@@ -461,36 +456,31 @@
         
         <div class="level is-mobile">
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Github" href="https://github.com/Hvnt3r">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/Hvnt3r">
                 
                 <i class="fab fa-github"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Facebook" href="https://facebook.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Facebook" href="https://facebook.com">
                 
                 <i class="fab fa-facebook"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Twitter" href="https://twitter.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Twitter" href="https://twitter.com">
                 
                 <i class="fab fa-twitter"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Dribbble" href="https://dribbble.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Dribbble" href="https://dribbble.com">
                 
                 <i class="fab fa-dribbble"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="RSS" href="https://hvnt3r.top/atom.xml">
+            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="https://hvnt3r.top/atom.xml">
                 
                 <i class="fas fa-rss"></i>
                 
@@ -2423,8 +2413,7 @@
                 </a>
                 <p class="is-size-7">
                 &copy; 2019 Hvnt3r&nbsp;
-                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
-                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
                 
                 </p>
             </div>
@@ -2560,7 +2549,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="searchbox ins-search">
     <div class="searchbox-container ins-search-container">
         <div class="searchbox-input-wrapper">
-            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么...">
             <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
         </div>
         <div class="searchbox-result-wrapper ins-section-wrapper">
@@ -2587,5 +2576,5 @@ document.addEventListener('DOMContentLoaded', function () {
 <link rel="stylesheet" href="/css/search.css">
 <link rel="stylesheet" href="/css/insight.css">
     
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"live2d-widget-model-koharu"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 </html>

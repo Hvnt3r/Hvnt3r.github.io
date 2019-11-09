@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html  lang="zh">
-<head>
+<html lang="zh">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>识别汇编中的C代码结构 - Hvnt3r&#39;s Blog</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
@@ -100,20 +100,15 @@
             
             <div class="navbar-start">
                 
-                <a class="navbar-item"
-                href="/">主页</a>
+                <a class="navbar-item" href="/">主页</a>
                 
-                <a class="navbar-item"
-                href="/archives/">归档</a>
+                <a class="navbar-item" href="/archives/">归档</a>
                 
-                <a class="navbar-item"
-                href="/categories/">分类</a>
+                <a class="navbar-item" href="/categories/">分类</a>
                 
-                <a class="navbar-item"
-                href="/tags/">标签</a>
+                <a class="navbar-item" href="/tags/">标签</a>
                 
-                <a class="navbar-item"
-                href="/about/">关于我</a>
+                <a class="navbar-item" href="/about/">关于我</a>
                 
             </div>
             
@@ -195,12 +190,12 @@
 <p><strong>问题</strong></p>
 <p><strong>1.由main函数调用的唯一子过程中发现的主要代码结构是什么？</strong></p>
 <p>可以由IDA的图形模式很简单的看出这是一个if语句的结构</p>
-<p><img src="https://i.loli.net/2019/03/06/5c7fcd9f62ae2.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/06/5c7fcd9f62ae2.png" alt></p>
 <p><strong>2.位于0x40105F的子过程是什么？</strong></p>
 <p><code>printf</code></p>
 <p><strong>3.这个程序的目的是什么？</strong></p>
 <p>跟着程序的顺序走，先找到<code>main</code>函数：</p>
-<p><img src="https://i.loli.net/2019/03/06/5c7fd47640f98.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/06/5c7fd47640f98.png" alt></p>
 <p><code>main</code>函数中只有一处函数调用<code>sub_401000</code>，查看该函数的逻辑：</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">.text:00401000 sub_401000      proc near               ; CODE XREF: _main+4↓p</span><br><span class="line">.text:00401000</span><br><span class="line">.text:00401000 var_4           = dword ptr -4</span><br><span class="line">.text:00401000</span><br><span class="line">.text:00401000                 push    ebp</span><br><span class="line">.text:00401001                 mov     ebp, esp</span><br><span class="line">.text:00401003                 push    ecx</span><br><span class="line">.text:00401004                 push    0               ; dwReserved</span><br><span class="line">.text:00401006                 push    0               ; lpdwFlags</span><br><span class="line">.text:00401008                 call    ds:InternetGetConnectedState</span><br><span class="line">.text:0040100E                 mov     [ebp+var_4], eax</span><br><span class="line">.text:00401011                 cmp     [ebp+var_4], 0</span><br><span class="line">.text:00401015                 jz      short loc_40102B</span><br><span class="line">.text:00401017                 push    offset aSuccessInterne ; &quot;Success: Internet Connection\n&quot;</span><br><span class="line">.text:0040101C                 call    sub_40105F</span><br><span class="line">.text:00401021                 add     esp, 4</span><br><span class="line">.text:00401024                 mov     eax, 1</span><br><span class="line">.text:00401029                 jmp     short loc_40103A</span><br><span class="line">.text:0040102B</span><br><span class="line">.text:0040102B loc_40102B:                             ; CODE XREF: sub_401000+15↑j</span><br><span class="line">.text:0040102B                 push    offset aError11NoInter ; &quot;Error 1.1: No Internet\n&quot;</span><br><span class="line">.text:00401030                 call    sub_40105F</span><br><span class="line">.text:00401035                 add     esp, 4</span><br><span class="line">.text:00401038                 xor     eax, eax</span><br><span class="line">.text:0040103A</span><br><span class="line">.text:0040103A loc_40103A:                             ; CODE XREF: sub_401000+29↑j</span><br><span class="line">.text:0040103A                 mov     esp, ebp</span><br><span class="line">.text:0040103C                 pop     ebp</span><br><span class="line">.text:0040103D                 retn</span><br><span class="line">.text:0040103D sub_401000      endp</span><br></pre></td></tr></table></figure>
 <p>可以从以上内容看到决定<code>jz</code>跳转的是函数<code>InternetGetConnectedState</code>，查阅MSDN发现此函数当存在一个可用的网络连接时返回值为1，ZF标志位为0，<code>jz</code>指令不执行，因此程序调用<code>printf</code>输出<code>&quot;Success: Internet Connection\n&quot;</code>否则输出<code>&quot;Error 1.1: No Internet\n&quot;</code>。因此可以得出判断这是一个用于测试网络连接状态的函数。</p>
@@ -216,7 +211,7 @@
 <figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">if</span> ( Buffer != <span class="hljs-string">'&lt;'</span> || v2 != <span class="hljs-string">'!'</span> || v3 != <span class="hljs-string">'-'</span> || v4 != <span class="hljs-string">'-'</span> )</span><br><span class="line">      &#123;</span><br><span class="line">        sub_401271(aError23FailToG);</span><br><span class="line">        result = <span class="hljs-number">0</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="hljs-keyword">else</span></span><br><span class="line">      &#123;</span><br><span class="line">        result = v5;</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
 <p><strong>4.在这个子过程中使用了什么类型的代码结构？</strong></p>
 <p><code>if</code>语句的结构和数组，以下明显是一个数组的比较过程：</p>
-<p><img src="https://i.loli.net/2019/03/06/5c7fe867a4b16.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/06/5c7fe867a4b16.png" alt></p>
 <p><strong>5.在这个程序中有任何基于网络的指示吗？</strong></p>
 <p>程序会尝试下载网页<code>http://www.practicalmalwareanalysis.com/cc.htm</code></p>
 <p><strong>6.这个恶意代码的目的是什么？</strong></p>
@@ -255,13 +250,13 @@
 <p>函数地址发生了变化。</p>
 <p><strong>2.新的代码结构已经被添加到main中？</strong></p>
 <p>实验6-4的main函数中有一个for循环，而实验6-3是一个if判断语句：</p>
-<p><img src="https://i.loli.net/2019/03/06/5c7fe49b20616.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/06/5c7fe49b20616.png" alt></p>
 <p><strong>3.这个实验的解析HTML的函数和前面实验中的那些有什么区别？</strong></p>
 <p>这个实验中，此函数新增了一个参数作为函数<code>sprintf()</code>的参数</p>
 <p><code>sprintf(&amp;szAgent, aInternetExplor, a1);</code></p>
 <p><strong>4.这个程序会运行多久？（假设它以经连接到互联网）</strong></p>
 <p>Sleep函数的参数为</p>
-<p><img src="https://i.loli.net/2019/03/06/5c7fe545a0a81.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/06/5c7fe545a0a81.png" alt></p>
 <p>此循环会执行1440次，因此程序会运行<code>1440*60s=1440m=24h=1d</code></p>
 <p>所以此程序会运行整整一天。</p>
 <p><strong>5.在这个恶意代码中有什么新的基于网络的迹象吗？</strong></p>
@@ -441,36 +436,31 @@
         
         <div class="level is-mobile">
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Github" href="https://github.com/Hvnt3r">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/Hvnt3r">
                 
                 <i class="fab fa-github"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Facebook" href="https://facebook.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Facebook" href="https://facebook.com">
                 
                 <i class="fab fa-facebook"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Twitter" href="https://twitter.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Twitter" href="https://twitter.com">
                 
                 <i class="fab fa-twitter"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Dribbble" href="https://dribbble.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Dribbble" href="https://dribbble.com">
                 
                 <i class="fab fa-dribbble"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="RSS" href="https://hvnt3r.top/atom.xml">
+            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="https://hvnt3r.top/atom.xml">
                 
                 <i class="fas fa-rss"></i>
                 
@@ -2403,8 +2393,7 @@
                 </a>
                 <p class="is-size-7">
                 &copy; 2019 Hvnt3r&nbsp;
-                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
-                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
                 
                 </p>
             </div>
@@ -2540,7 +2529,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="searchbox ins-search">
     <div class="searchbox-container ins-search-container">
         <div class="searchbox-input-wrapper">
-            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么...">
             <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
         </div>
         <div class="searchbox-result-wrapper ins-section-wrapper">
@@ -2567,5 +2556,5 @@ document.addEventListener('DOMContentLoaded', function () {
 <link rel="stylesheet" href="/css/search.css">
 <link rel="stylesheet" href="/css/insight.css">
     
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"live2d-widget-model-koharu"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 </html>

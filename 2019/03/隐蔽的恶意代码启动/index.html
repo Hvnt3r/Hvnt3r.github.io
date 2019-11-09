@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html  lang="zh">
-<head>
+<html lang="zh">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>隐蔽的恶意代码启动 - Hvnt3r&#39;s Blog</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
@@ -100,20 +100,15 @@
             
             <div class="navbar-start">
                 
-                <a class="navbar-item"
-                href="/">主页</a>
+                <a class="navbar-item" href="/">主页</a>
                 
-                <a class="navbar-item"
-                href="/archives/">归档</a>
+                <a class="navbar-item" href="/archives/">归档</a>
                 
-                <a class="navbar-item"
-                href="/categories/">分类</a>
+                <a class="navbar-item" href="/categories/">分类</a>
                 
-                <a class="navbar-item"
-                href="/tags/">标签</a>
+                <a class="navbar-item" href="/tags/">标签</a>
                 
-                <a class="navbar-item"
-                href="/about/">关于我</a>
+                <a class="navbar-item" href="/about/">关于我</a>
                 
             </div>
             
@@ -238,7 +233,7 @@
 <p><strong>3.恶意代码的负载存储在哪里？</strong></p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">push    offset Type     ; &quot;UNICODE&quot;</span><br><span class="line">push    offset Name     ; &quot;LOCALIZATION&quot;</span><br><span class="line">mov     eax, [ebp+hModule]</span><br><span class="line">push    eax             ; hModule</span><br><span class="line">call    ds:FindResourceA</span><br></pre></td></tr></table></figure>
 <p>程序将恶意负载存储在资源节<code>LOCALIZATION</code>中。</p>
-<p><img src="https://i.loli.net/2019/03/26/5c999194b3465.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/26/5c999194b3465.png" alt></p>
 <p><strong>4.恶意负载是如何被保护的？</strong></p>
 <p>通过XOR编码加密。</p>
 <p><strong>5.字符串列表是如何被保护的？</strong></p>
@@ -247,7 +242,7 @@
 <h3 id="Lab12-3"><a href="#Lab12-3" class="headerlink" title="Lab12-3"></a>Lab12-3</h3><p><strong>问题</strong></p>
 <p><strong>1.这个恶意负载的目的是什么？</strong></p>
 <p>其实看到这些跟键盘相关的字符串就能差不多猜出这是一个键盘监听器：</p>
-<p><img src="https://i.loli.net/2019/03/26/5c9a1eefc03f9.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/26/5c9a1eefc03f9.png" alt></p>
 <p>通过分析函数<code>sub_4010C7</code>也可以看出这是一个键盘窃听器。</p>
 <p><strong>2.恶意负载时如何注入自身的？</strong></p>
 <figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">int</span> __<span class="hljs-function">cdecl <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span> **argv, <span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span> **envp)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">  HMODULE v3; <span class="hljs-comment">// eax</span></span><br><span class="line">  HWND hWnd; <span class="hljs-comment">// [esp+0h] [ebp-8h]</span></span><br><span class="line">  HHOOK hhk; <span class="hljs-comment">// [esp+4h] [ebp-4h]</span></span><br><span class="line"></span><br><span class="line">  AllocConsole();</span><br><span class="line">  hWnd = FindWindowA(ClassName, <span class="hljs-number">0</span>);</span><br><span class="line">  <span class="hljs-keyword">if</span> ( hWnd )</span><br><span class="line">    ShowWindow(hWnd, <span class="hljs-number">0</span>);</span><br><span class="line">  <span class="hljs-built_in">memset</span>(byte_405350, <span class="hljs-number">1</span>, <span class="hljs-number">0x400</span>u);</span><br><span class="line">  v3 = GetModuleHandleA(<span class="hljs-number">0</span>);</span><br><span class="line">  hhk = SetWindowsHookExA(<span class="hljs-number">13</span>, fn, v3, <span class="hljs-number">0</span>);</span><br><span class="line">  <span class="hljs-keyword">while</span> ( GetMessageA(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>) )</span><br><span class="line">    ;</span><br><span class="line">  <span class="hljs-keyword">return</span> UnhookWindowsHookEx(hhk);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -271,7 +266,7 @@
 <p>在函数<code>sub_4011FC()</code>中可以看到如下代码：</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.text:004012A7                 mov     [ebp+hModule], eax</span><br><span class="line">.text:004012AA                 push    offset Type     ; &quot;BIN&quot;</span><br><span class="line">.text:004012AF                 push    offset Name     ; &quot;#101&quot;</span><br><span class="line">.text:004012B4                 mov     eax, [ebp+hModule]</span><br><span class="line">.text:004012B7                 push    eax             ; hModule</span><br><span class="line">.text:004012B8                 call    ds:FindResourceA</span><br></pre></td></tr></table></figure>
 <p>于是在<code>ResourceHacker</code>中看一下资源节发现确实有一个PE文件：</p>
-<p><img src="https://i.loli.net/2019/03/26/5c9a3c5f65a0a.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/26/5c9a3c5f65a0a.png" alt></p>
 <p>释放的文件名为<code>\system32\wupdmgr.exe</code>。</p>
 <p><strong>6.释放出恶意代码的目的是什么？</strong></p>
 <p>恶意代码使用这个程序进行自我更新。</p>
@@ -448,36 +443,31 @@
         
         <div class="level is-mobile">
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Github" href="https://github.com/Hvnt3r">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/Hvnt3r">
                 
                 <i class="fab fa-github"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Facebook" href="https://facebook.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Facebook" href="https://facebook.com">
                 
                 <i class="fab fa-facebook"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Twitter" href="https://twitter.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Twitter" href="https://twitter.com">
                 
                 <i class="fab fa-twitter"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Dribbble" href="https://dribbble.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Dribbble" href="https://dribbble.com">
                 
                 <i class="fab fa-dribbble"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="RSS" href="https://hvnt3r.top/atom.xml">
+            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="https://hvnt3r.top/atom.xml">
                 
                 <i class="fas fa-rss"></i>
                 
@@ -2410,8 +2400,7 @@
                 </a>
                 <p class="is-size-7">
                 &copy; 2019 Hvnt3r&nbsp;
-                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
-                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
                 
                 </p>
             </div>
@@ -2547,7 +2536,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="searchbox ins-search">
     <div class="searchbox-container ins-search-container">
         <div class="searchbox-input-wrapper">
-            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么...">
             <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
         </div>
         <div class="searchbox-result-wrapper ins-section-wrapper">
@@ -2574,5 +2563,5 @@ document.addEventListener('DOMContentLoaded', function () {
 <link rel="stylesheet" href="/css/search.css">
 <link rel="stylesheet" href="/css/insight.css">
     
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"live2d-widget-model-koharu"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 </html>

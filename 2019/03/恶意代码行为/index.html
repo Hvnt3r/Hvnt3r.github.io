@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html  lang="zh">
-<head>
+<html lang="zh">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>恶意代码行为 - Hvnt3r&#39;s Blog</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
@@ -100,20 +100,15 @@
             
             <div class="navbar-start">
                 
-                <a class="navbar-item"
-                href="/">主页</a>
+                <a class="navbar-item" href="/">主页</a>
                 
-                <a class="navbar-item"
-                href="/archives/">归档</a>
+                <a class="navbar-item" href="/archives/">归档</a>
                 
-                <a class="navbar-item"
-                href="/categories/">分类</a>
+                <a class="navbar-item" href="/categories/">分类</a>
                 
-                <a class="navbar-item"
-                href="/tags/">标签</a>
+                <a class="navbar-item" href="/tags/">标签</a>
                 
-                <a class="navbar-item"
-                href="/about/">关于我</a>
+                <a class="navbar-item" href="/about/">关于我</a>
                 
             </div>
             
@@ -221,9 +216,9 @@
 <p><strong>1.这个恶意代码项磁盘释放了什么？</strong></p>
 <p>通过静态分析，在004010C9位置发现如下代码：</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">.text:004010B8                 mov     eax, lpType</span><br><span class="line">.text:004010BD                 push    eax             ; lpType</span><br><span class="line">.text:004010BE                 mov     ecx, lpName</span><br><span class="line">.text:004010C4                 push    ecx             ; lpName</span><br><span class="line">.text:004010C5                 mov     edx, [ebp+hModule]</span><br><span class="line">.text:004010C8                 push    edx             ; hModule</span><br><span class="line">.text:004010C9                 call    ds:FindResourceA</span><br><span class="line">.text:004010CF                 mov     [ebp+hResInfo], eax</span><br><span class="line">.text:004010D2                 cmp     [ebp+hResInfo], 0</span><br><span class="line">.text:004010D6                 jnz     short loc_4010DF</span><br><span class="line">.text:004010D8                 xor     eax, eax</span><br><span class="line">.text:004010DA                 jmp     loc_4011BF</span><br><span class="line">.text:004010DF ; ---------------------------------------------------------------------------</span><br><span class="line">.text:004010DF</span><br><span class="line">.text:004010DF loc_4010DF:                             ; CODE XREF: sub_401080+56↑j</span><br><span class="line">.text:004010DF                 mov     eax, [ebp+hResInfo]</span><br><span class="line">.text:004010E2                 push    eax             ; hResInfo</span><br><span class="line">.text:004010E3                 mov     ecx, [ebp+hModule]</span><br><span class="line">.text:004010E6                 push    ecx             ; hModule</span><br><span class="line">.text:004010E7                 call    ds:LoadResource</span><br><span class="line">.text:004010ED                 mov     [ebp+hResData], eax</span><br><span class="line">.text:004010F0                 cmp     [ebp+hResData], 0</span><br><span class="line">.text:004010F4                 jnz     short loc_4010FB</span><br><span class="line">.text:004010F6                 jmp     loc_4011A5</span><br><span class="line">.text:004010FB ; ---------------------------------------------------------------------------</span><br><span class="line">.text:004010FB</span><br><span class="line">.text:004010FB loc_4010FB:                             ; CODE XREF: sub_401080+74↑j</span><br><span class="line">.text:004010FB                 mov     edx, [ebp+hResData]</span><br><span class="line">.text:004010FE                 push    edx             ; hResData</span><br><span class="line">.text:004010FF                 call    ds:LockResource</span><br></pre></td></tr></table></figure>
-<p><img src="https://i.loli.net/2019/03/21/5c92e2d4b1d97.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/21/5c92e2d4b1d97.png" alt></p>
 <p>在资源节发现了名为TGAD的节，程序对此节进行了二进制资源的提取。</p>
-<p><img src="https://i.loli.net/2019/03/21/5c92e4d4113dd.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/21/5c92e4d4113dd.png" alt></p>
 <p>因此程序在磁盘上释放的文件是从资源节中提取出来的数据存储为<code>msgina32.dll</code>。</p>
 <p><strong>2.这个恶意代码如何进行驻留？</strong></p>
 <p>根据如下代码：</p>
@@ -231,7 +226,7 @@
 <p>得知恶意代码写入注册表项<code>SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon</code>并设置了值<code>GinaDLL</code>。</p>
 <p><strong>3.这个恶意代码如何窃取用户登陆凭证？</strong></p>
 <p>在msgina32.dll文件的导出函数中发现了大量的以<code>Wlx</code>开头的函数名：</p>
-<p><img src="https://i.loli.net/2019/03/21/5c933c2f74f97.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/21/5c933c2f74f97.png" alt></p>
 <p>这些函数都会调用函数<code>sub_10001000()</code>，此函数会直接将调用函数的名称用<code>GetProcAddress</code>函数在<code>msgina.dll</code>文件中查找此函数的地址并将执行流程交给目标函数，目标函数执行完成之后又会返回到恶意程序中，<code>msgina32.dll</code>中的大部分<code>Wlx</code>开头的函数都是这个结构，但是在函数<code>WlxLoggedOutSAS</code>中却不一样，在<code>WlxLoggedOutSAS</code>中调用了函数<code>sub_10001570()</code>向文件<code>msutil32.sys</code>存储了用户凭证的数据。</p>
 <p><strong>4.这个恶意代码对窃取的证书做了什么处理？</strong></p>
 <p>通过查看<code>10001570</code>处代码找到程序将窃取的证书存储在了一个名为<code>msutil32.sys</code>的文件中。</p>
@@ -286,13 +281,13 @@
 <p>函数将文件<code>cisvc.exe</code>映射到内存之后对此文件进行了一些列的修改行为，但是由于代码又很多混淆，不容易进行静态分析，因此需要进行动态分析，载入OD中函数sub_401070下断点并进行单步调试，发现Lab11-03.exe会先查找<code>cisvc.exe</code>的PE头再查找到.text，然后在此位置有一个较为复杂的循环写值的操作：</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">.text:004011FF                 cmp     [ebp+var_20], 13Ah</span><br><span class="line">.text:00401206                 jnb     short loc_40127C</span><br><span class="line">.text:00401208                 mov     edx, [ebp+var_20]</span><br><span class="line">.text:0040120B                 xor     eax, eax</span><br><span class="line">.text:0040120D                 mov     al, byte ptr dword_409030[edx] ; shellcode</span><br><span class="line">.text:00401213                 cmp     eax, 78h</span><br><span class="line">.text:00401216                 jnz     short loc_401277</span><br><span class="line">.text:00401218                 mov     ecx, [ebp+var_20]</span><br><span class="line">.text:0040121B                 xor     edx, edx</span><br><span class="line">.text:0040121D                 mov     dl, byte ptr (dword_409030+1)[ecx]</span><br><span class="line">.text:00401223                 cmp     edx, 56h</span><br><span class="line">.text:00401226                 jnz     short loc_401277</span><br><span class="line">.text:00401228                 mov     eax, [ebp+var_20]</span><br><span class="line">.text:0040122B                 xor     ecx, ecx</span><br><span class="line">.text:0040122D                 mov     cl, byte ptr (dword_409030+2)[eax]</span><br><span class="line">.text:00401233                 cmp     ecx, 34h</span><br><span class="line">.text:00401236                 jnz     short loc_401277</span><br><span class="line">.text:00401238                 mov     edx, [ebp+var_20]</span><br><span class="line">.text:0040123B                 xor     eax, eax</span><br><span class="line">.text:0040123D                 mov     al, byte ptr (dword_409030+3)[edx]</span><br><span class="line">.text:00401243                 cmp     eax, 12h</span><br><span class="line">.text:00401246                 jnz     short loc_401277</span><br><span class="line">.text:00401248                 mov     ecx, [ebp+var_24]</span><br><span class="line">.text:0040124B                 mov     edx, [ecx+28h]</span><br><span class="line">.text:0040124E                 mov     eax, [ebp+var_14]</span><br><span class="line">.text:00401251                 add     edx, [eax+14h]</span><br><span class="line">.text:00401254                 mov     ecx, [ebp+var_24]</span><br><span class="line">.text:00401257                 sub     edx, [ecx+2Ch]</span><br><span class="line">.text:0040125A                 mov     eax, [ebp+var_20]</span><br><span class="line">.text:0040125D                 mov     ecx, [ebp+var_28]</span><br><span class="line">.text:00401260                 lea     eax, [ecx+eax+4]</span><br><span class="line">.text:00401264                 sub     edx, eax</span><br><span class="line">.text:00401266                 mov     [ebp+var_30], edx</span><br><span class="line">.text:00401269                 mov     ecx, [ebp+var_20]</span><br><span class="line">.text:0040126C                 mov     edx, [ebp+var_30]</span><br><span class="line">.text:0040126F                 mov     dword_409030[ecx], edx</span><br><span class="line">.text:00401275                 jmp     short loc_40127C</span><br></pre></td></tr></table></figure>
 <p>修改前：</p>
-<p><img src="https://i.loli.net/2019/03/24/5c972de3c9b9f.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/24/5c972de3c9b9f.png" alt></p>
 <p>修改后：</p>
-<p><img src="https://i.loli.net/2019/03/24/5c972df904409.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/24/5c972df904409.png" alt></p>
 <p>使用HexCmp工具查看这两个二进制文件的区别（淡红色区域）：</p>
-<p><img src="https://i.loli.net/2019/03/24/5c972fa1d5de8.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/24/5c972fa1d5de8.png" alt></p>
 <p>经过一步一步对比发现这些新的shellcode是位于<code>004011FF</code>的代码进行的，恶意代码对此文件的入口点进行了修改，由原来的<code>129B</code>修改为了<code>1A28</code>:</p>
-<p><img src="https://i.loli.net/2019/03/24/5c97323378bd9.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/24/5c97323378bd9.png" alt></p>
 <p>在OD中打开修改后的文件<code>cisvc.exe</code>看到如下<code>shellcode</code>：</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">01001B0A   .  FF55 FC       call dword ptr ss:[ebp-0x4]              ;  kernel32.LoadLibraryExA</span><br><span class="line">01001B0D   .  8945 F0       mov dword ptr ss:[ebp-0x10],eax          ;  inet_epa.10000000</span><br><span class="line">01001B10   .  8D83 24000000 lea eax,dword ptr ds:[ebx+0x24]</span><br><span class="line">01001B16   .  50            push eax                                 ;  inet_epa.10000000</span><br><span class="line">01001B17   .  8B45 F0       mov eax,dword ptr ss:[ebp-0x10]          ;  inet_epa.10000000</span><br><span class="line">01001B1A   .  50            push eax                                 ;  inet_epa.10000000</span><br><span class="line">01001B1B   .  FF55 F4       call dword ptr ss:[ebp-0xC]              ;  kernel32.GetProcAddress</span><br><span class="line">01001B1E   .  8945 F8       mov dword ptr ss:[ebp-0x8],eax           ;  inet_epa.10000000</span><br><span class="line">01001B21   .  FF55 F8       call dword ptr ss:[ebp-0x8]</span><br><span class="line">01001B24   .  89EC          mov esp,ebp</span><br><span class="line">01001B26   .  5D            pop ebp</span><br><span class="line">01001B27   .^ E9 6FF7FFFF   jmp cisvc.0100129B</span><br></pre></td></tr></table></figure>
 <p><code>cisvc.exe</code>现时使用<code>LoadLibrary</code>函数将<code>C:\WINDOWS\System32\inet_epar32.dll</code>加载到内存中然后获取导出函数<code>zzz69806582</code>的地址并执行此函数，之后在跳转到正常的程序入口点，从而使恶意代码达到长期驻留的目的。</p>
@@ -483,36 +478,31 @@
         
         <div class="level is-mobile">
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Github" href="https://github.com/Hvnt3r">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/Hvnt3r">
                 
                 <i class="fab fa-github"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Facebook" href="https://facebook.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Facebook" href="https://facebook.com">
                 
                 <i class="fab fa-facebook"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Twitter" href="https://twitter.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Twitter" href="https://twitter.com">
                 
                 <i class="fab fa-twitter"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Dribbble" href="https://dribbble.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Dribbble" href="https://dribbble.com">
                 
                 <i class="fab fa-dribbble"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="RSS" href="https://hvnt3r.top/atom.xml">
+            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="https://hvnt3r.top/atom.xml">
                 
                 <i class="fas fa-rss"></i>
                 
@@ -2441,8 +2431,7 @@
                 </a>
                 <p class="is-size-7">
                 &copy; 2019 Hvnt3r&nbsp;
-                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
-                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
                 
                 </p>
             </div>
@@ -2578,7 +2567,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="searchbox ins-search">
     <div class="searchbox-container ins-search-container">
         <div class="searchbox-input-wrapper">
-            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么...">
             <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
         </div>
         <div class="searchbox-result-wrapper ins-section-wrapper">
@@ -2605,5 +2594,5 @@ document.addEventListener('DOMContentLoaded', function () {
 <link rel="stylesheet" href="/css/search.css">
 <link rel="stylesheet" href="/css/insight.css">
     
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"live2d-widget-model-koharu"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 </html>

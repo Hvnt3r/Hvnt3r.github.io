@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html  lang="zh">
-<head>
+<html lang="zh">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>反调试技术 - Hvnt3r&#39;s Blog</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
@@ -100,20 +100,15 @@
             
             <div class="navbar-start">
                 
-                <a class="navbar-item"
-                href="/">主页</a>
+                <a class="navbar-item" href="/">主页</a>
                 
-                <a class="navbar-item"
-                href="/archives/">归档</a>
+                <a class="navbar-item" href="/archives/">归档</a>
                 
-                <a class="navbar-item"
-                href="/categories/">分类</a>
+                <a class="navbar-item" href="/categories/">分类</a>
                 
-                <a class="navbar-item"
-                href="/tags/">标签</a>
+                <a class="navbar-item" href="/tags/">标签</a>
                 
-                <a class="navbar-item"
-                href="/about/">关于我</a>
+                <a class="navbar-item" href="/about/">关于我</a>
                 
             </div>
             
@@ -266,19 +261,19 @@
 <p><strong>4.使用IDA Pro加载Lab16-02.exe，在main函数的何处可以找到strncmp函数？</strong></p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.tls:0040122C                 push    4               ; size_t</span><br><span class="line">.tls:0040122E                 push    offset aP       ; char *</span><br><span class="line">.tls:00401233                 mov     eax, [ebp+argv]</span><br><span class="line">.tls:00401236                 mov     ecx, [eax+4]</span><br><span class="line">.tls:00401239                 push    ecx             ; char *</span><br><span class="line">.tls:0040123A                 call    _strncmp</span><br></pre></td></tr></table></figure>
 <p><strong>5.在默认设置下，将这个恶意代码加载到OllyDbg中会发生什么？</strong></p>
-<p><img src="https://i.loli.net/2019/03/27/5c9b7845ac225.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/27/5c9b7845ac225.png" alt></p>
 <p><strong>6.Lab16-02.exe中PE结构的独特之处是什么？</strong></p>
 <p>该程序有<code>.tls</code>段:</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Name	Start	End	R	W	X	D	L	Align	Base	Type	Class	AD	es	ss	ds	fs	gs</span><br><span class="line">.tls	00401000	00402000	R	.	X	.	L	para	0001	public	CODE	32	0000	0000	0004	FFFFFFFF	FFFFFFFF</span><br><span class="line">.text	00402000	00407000	R	.	X	.	L	para	0002	public	CODE	32	0000	0000	0004	FFFFFFFF	FFFFFFFF</span><br><span class="line">.idata	00407000	004070C8	R	.	.	.	L	para	0003	public	DATA	32	0000	0000	0004	FFFFFFFF	FFFFFFFF</span><br><span class="line">.rdata	004070C8	00408000	R	.	.	.	L	para	0003	public	DATA	32	0000	0000	0004	FFFFFFFF	FFFFFFFF</span><br><span class="line">.data	00408000	0040C000	R	W	.	.	L	para	0004	public	DATA	32	0000	0000	0004	FFFFFFFF	FFFFFFFF</span><br></pre></td></tr></table></figure>
 <p><strong>7.回调（callback）发生在哪些位置？（提示：在IDA Pro中使用Ctrl+E组合键）</strong></p>
-<p><img src="https://i.loli.net/2019/03/27/5c9b7b198d3f6.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/27/5c9b7b198d3f6.png" alt></p>
 <p><strong>8.恶意代码使用哪一种反调试技术使它在调试器中立即终止运行？如何避免这种检查？</strong></p>
 <figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">void</span> __<span class="hljs-function">stdcall <span class="hljs-title">TlsCallback_0</span><span class="hljs-params">(<span class="hljs-keyword">int</span> a1, <span class="hljs-keyword">int</span> a2, <span class="hljs-keyword">int</span> a3)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">  <span class="hljs-keyword">if</span> ( a2 == <span class="hljs-number">1</span> &amp;&amp; FindWindowA(ClassName, <span class="hljs-number">0</span>) )   <span class="hljs-comment">// OLLYDBG</span></span><br><span class="line">    <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);</span><br><span class="line">  <span class="hljs-keyword">if</span> ( a2 == <span class="hljs-number">2</span> )</span><br><span class="line">    sub_401020();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在调试器中修改函数返回值，或者修改跳转逻辑。</p>
 <p><strong>9.当你禁用反调试技术后，你在调试器中看到的命令行密码是什么？</strong></p>
 <p>在我Win10虚拟机中的OD默认设置了在TLS调用前的断点：</p>
-<p><img src="https://i.loli.net/2019/03/27/5c9b7d6eb430a.png" alt=""></p>
-<p><img src="https://i.loli.net/2019/03/27/5c9b7f9898c26.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/27/5c9b7d6eb430a.png" alt></p>
+<p><img src="https://i.loli.net/2019/03/27/5c9b7f9898c26.png" alt></p>
 <p><strong>10.调试器中找到的密码在命令行中运行有效吗？</strong></p>
 <p>肯定是无效的，这里恶意代码采用了两个不同的执行流程。</p>
 <figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">DWORD __<span class="hljs-function">stdcall <span class="hljs-title">StartAddress</span><span class="hljs-params">(LPVOID lpThreadParameter)</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">  <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span> v1; <span class="hljs-comment">// ebx</span></span><br><span class="line">  <span class="hljs-keyword">signed</span> <span class="hljs-keyword">int</span> i; <span class="hljs-comment">// ecx</span></span><br><span class="line">  <span class="hljs-keyword">int</span> v3; <span class="hljs-comment">// ebx</span></span><br><span class="line"></span><br><span class="line">  byte_408032 = <span class="hljs-number">4</span> * __ROL1__(<span class="hljs-number">7</span>, <span class="hljs-number">6</span>);</span><br><span class="line">  byte_408032 ^= <span class="hljs-number">63u</span>;</span><br><span class="line">  byte_408032 *= <span class="hljs-number">2</span>;</span><br><span class="line">  aP[<span class="hljs-number">0</span>] = __ROL1__(<span class="hljs-number">-112</span>, <span class="hljs-number">2</span>);</span><br><span class="line">  aP[<span class="hljs-number">1</span>] = byte_40A968 + __ROL1__(<span class="hljs-number">22</span>, <span class="hljs-number">6</span>);</span><br><span class="line">  aP[<span class="hljs-number">1</span>] *= <span class="hljs-number">2</span>;</span><br><span class="line">  byte_408033 = <span class="hljs-number">56</span>;</span><br><span class="line">  byte_408032 = __ROR1__(byte_408032, <span class="hljs-number">7</span>);</span><br><span class="line">  v1 = __readfsdword(<span class="hljs-number">0x30</span>u);</span><br><span class="line">  aP[<span class="hljs-number">1</span>] = __ROL1__(aP[<span class="hljs-number">1</span>], <span class="hljs-number">4</span>);</span><br><span class="line">  aP[<span class="hljs-number">0</span>] = __ROR1__(__ROL1__(<span class="hljs-number">-112</span>, <span class="hljs-number">2</span>), <span class="hljs-number">3</span>);</span><br><span class="line">  aP[<span class="hljs-number">0</span>] ^= <span class="hljs-number">0xD</span>u;</span><br><span class="line">  aP[<span class="hljs-number">1</span>] = __ROR1__(aP[<span class="hljs-number">1</span>], <span class="hljs-number">5</span>);</span><br><span class="line">  byte_408032 ^= <span class="hljs-number">0xAB</span>u;</span><br><span class="line">  byte_408033 = __ROR1__(__ROR1__(<span class="hljs-number">-3</span>, <span class="hljs-number">4</span>), <span class="hljs-number">1</span>);</span><br><span class="line">  byte_408032 = __ROR1__(byte_408032, <span class="hljs-number">2</span>);</span><br><span class="line">  aP[<span class="hljs-number">1</span>] = __ROR1__(aP[<span class="hljs-number">1</span>], <span class="hljs-number">1</span>);</span><br><span class="line">  aP[<span class="hljs-number">1</span>] ^= <span class="hljs-number">0xFE</span>u;</span><br><span class="line">  aP[<span class="hljs-number">0</span>] = __ROL1__(aP[<span class="hljs-number">0</span>], <span class="hljs-number">6</span>);</span><br><span class="line">  aP[<span class="hljs-number">0</span>] ^= <span class="hljs-number">0x72</span>u;</span><br><span class="line">  LOBYTE(v1) = *(_BYTE *)(v1 + <span class="hljs-number">2</span>);</span><br><span class="line">  aP[<span class="hljs-number">1</span>] = __ROL1__(aP[<span class="hljs-number">1</span>], <span class="hljs-number">1</span>);</span><br><span class="line">  byte_408033 ^= <span class="hljs-number">0x80</span>u;</span><br><span class="line">  byte_408033 = __ROL1__(byte_408033, <span class="hljs-number">7</span>);</span><br><span class="line">  byte_408032 += v1;</span><br><span class="line">  <span class="hljs-keyword">for</span> ( i = <span class="hljs-number">4</span>; i; --i )</span><br><span class="line">  &#123;</span><br><span class="line">    v3 = i - <span class="hljs-number">1</span>;</span><br><span class="line">    aP[v3] &amp;= <span class="hljs-number">0x19</span>u;</span><br><span class="line">    aP[v3] += <span class="hljs-string">'a'</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -481,36 +476,31 @@
         
         <div class="level is-mobile">
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Github" href="https://github.com/Hvnt3r">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/Hvnt3r">
                 
                 <i class="fab fa-github"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Facebook" href="https://facebook.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Facebook" href="https://facebook.com">
                 
                 <i class="fab fa-facebook"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Twitter" href="https://twitter.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Twitter" href="https://twitter.com">
                 
                 <i class="fab fa-twitter"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Dribbble" href="https://dribbble.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Dribbble" href="https://dribbble.com">
                 
                 <i class="fab fa-dribbble"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="RSS" href="https://hvnt3r.top/atom.xml">
+            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="https://hvnt3r.top/atom.xml">
                 
                 <i class="fas fa-rss"></i>
                 
@@ -2439,8 +2429,7 @@
                 </a>
                 <p class="is-size-7">
                 &copy; 2019 Hvnt3r&nbsp;
-                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
-                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
                 
                 </p>
             </div>
@@ -2576,7 +2565,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="searchbox ins-search">
     <div class="searchbox-container ins-search-container">
         <div class="searchbox-input-wrapper">
-            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么...">
             <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
         </div>
         <div class="searchbox-result-wrapper ins-section-wrapper">
@@ -2603,5 +2592,5 @@ document.addEventListener('DOMContentLoaded', function () {
 <link rel="stylesheet" href="/css/search.css">
 <link rel="stylesheet" href="/css/insight.css">
     
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"live2d-widget-model-koharu"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 </html>

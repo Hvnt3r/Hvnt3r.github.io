@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html  lang="zh">
-<head>
+<html lang="zh">
+<head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
 <title>动态分析基础技术 - Hvnt3r&#39;s Blog</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
@@ -100,20 +100,15 @@
             
             <div class="navbar-start">
                 
-                <a class="navbar-item"
-                href="/">主页</a>
+                <a class="navbar-item" href="/">主页</a>
                 
-                <a class="navbar-item"
-                href="/archives/">归档</a>
+                <a class="navbar-item" href="/archives/">归档</a>
                 
-                <a class="navbar-item"
-                href="/categories/">分类</a>
+                <a class="navbar-item" href="/categories/">分类</a>
                 
-                <a class="navbar-item"
-                href="/tags/">标签</a>
+                <a class="navbar-item" href="/tags/">标签</a>
                 
-                <a class="navbar-item"
-                href="/about/">关于我</a>
+                <a class="navbar-item" href="/about/">关于我</a>
                 
             </div>
             
@@ -211,10 +206,10 @@
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">Address	Length	Type	String</span><br><span class="line">.text:0040025A	0000000D	C	kernel32.dll</span><br><span class="line">.data:00400EF7	00000005	C	\b1\a1G</span><br><span class="line">.data:00401087	00000007	C	\n6I*h&lt;8</span><br><span class="line">.data:004010A7	00000010	C	^-m-m&lt;|&lt;|&lt;|M\rM\r^</span><br><span class="line">.data:00401247	00000006	C	ntdll</span><br><span class="line">.data:0040125E	00000007	C	user32</span><br><span class="line">.data:004014F7	00000008	C	advpack</span><br><span class="line">.data:00401623	00000008	C	StubPath</span><br><span class="line">.data:0040162F	00000029	C	SOFTWARE\\Classes\\http\\shell\\open\\commandV</span><br><span class="line">.data:0040165B	00000035	C	Software\\Microsoft\\Active Setup\\Installed Components\\</span><br><span class="line">.data:0040169C	00000022	C	www.practicalmalwareanalysis.com</span><br><span class="line">.data:004016D4	00000007	C	admin\t\r</span><br><span class="line">.data:004016E2	0000000B	C	VideoDriver</span><br><span class="line">.data:004016F1	00000009	C	WinVMX32-</span><br><span class="line">.data:004016FD	0000000D	C	vmx32to64.exe</span><br><span class="line">.data:00401943	00000008	C	AppData</span><br></pre></td></tr></table></figure>
 <p><strong>2.这个恶意代码在主机上的感染迹象特征是什么？</strong></p>
 <p>此题主要考察的时对应用程序在运行时动态行为的捕捉，打开<code>Procmon</code>捕捉当前所有事件，设置过滤器使得程序显示出与Lab03-01.exe相关的进程活动记录：</p>
-<p><img src="https://i.loli.net/2019/02/01/5c544eafc0bec.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/02/01/5c544eafc0bec.png" alt></p>
 <p>这样初步过滤后可以看到恶意代码的事件数量还是很大，我们可以通过其他过滤器来筛选出自己想看到的结果。</p>
 <p>运行<code>RegShot</code>进行注册表快照时我发现Win10的注册表项目十分庞大，拍摄快照时会有很多干扰项，因此我尝试下载<code>WindowsXP</code>进行实验，幸运的是，在我使用<code>WindowXP</code>作为病毒分析环境时，很快就用<code>RegShot</code>分析出了病毒对注册表的改动：</p>
-<p><img src="https://i.loli.net/2019/03/03/5c7b762d204ec.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/03/5c7b762d204ec.png" alt></p>
 <p><strong>3.这个恶意代码是否存在一些有用的网络特征，如果存在，他们是什么？</strong></p>
 <p>在分分析恶意代码中包含的字符串的过程中我们就已经发现了一个敏感的字符串<code>www.practicalmalwareanalysis.com</code>，看到这个网址我们八成就能猜出这个恶意代码很可能会与此域名建立连接。</p>
 <p>使用<code>ApateDNS</code>，过程中发现此程序无法在我的虚拟机中正常启动，因为虚拟机的53端口被其他进程占用了，查看之后发现使<code>svchost</code>，kill掉此进程后<code>ApateDNS</code>即可正常启动</p>
@@ -244,9 +239,9 @@
 <figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* redirect - failed! Error: Sorry, this module requires the Perlipq library (IPTables::IPv4::IPQueue)!</span><br></pre></td></tr></table></figure>
 <p>后来得知<code>InetSim</code>弃用了这个库所以这个功能暂时无法使用，那么就先不用这个了。</p>
 <p>用WireShark抓包看一下发现了一个DNS请求的数据包：</p>
-<p><img src="https://i.loli.net/2019/03/03/5c7b7712d11fb.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/03/5c7b7712d11fb.png" alt></p>
 <p>恶意代码每30秒就会发送一次对此域名的DNS解析请求，而且会广播一个长度为256字节的随机数据：</p>
-<p><img src="https://i.loli.net/2019/03/03/5c7b78f0de32d.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/03/5c7b78f0de32d.png" alt></p>
 <p><code>WireShark</code>将此数据包识别为SSL流量，但是看数据包内容可得知这并不是一个SSL数据包，而只是占用了443端口。</p>
 <h3 id="Lab3-2"><a href="#Lab3-2" class="headerlink" title="Lab3-2"></a>Lab3-2</h3><p><strong>使用动态分析技术来分析在Lab03-02exe文件中发现的恶意代码</strong></p>
 <p><strong>1.您怎样才能让这个恶意代码自行安装？</strong></p>
@@ -262,22 +257,22 @@
 <p>执行完成后可以在RegShot的对比结果中发现恶意代码对注册表的操作：</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">新添加键 (6) 快照 B </span><br><span class="line">[HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\IPRIP] </span><br><span class="line">[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\IPRIP]</span><br></pre></td></tr></table></figure>
 <p>以上信息告诉我们恶意代码创建了一个名为<code>IPRIP</code>的服务，在注册表编辑器中找到相关条目可发现更多与此服务相关的信息：</p>
-<p><img src="https://i.loli.net/2019/03/03/5c7b916b253ff.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/03/5c7b916b253ff.png" alt></p>
 <p>在<code>ImagePath</code>字段中可以得知此DLL会依赖<code>svchost.exe</code>来启动执行，上图中的一些信息可以作为此恶意代码的特殊指纹作为识别依据。</p>
 <p><strong>2.在安装之后，如何让这个恶意代码运行起来？</strong></p>
 <p>使用如下命令：</p>
 <figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net strat IPRIP</span><br></pre></td></tr></table></figure>
-<p><img src="https://i.loli.net/2019/03/03/5c7b9539c9a13.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/03/5c7b9539c9a13.png" alt></p>
 <p><strong>3.你怎么能找到这个恶意代码是在哪个进程下运行的？</strong></p>
 <p>使用Process Explorer并选择查找DLL可以在svchost.exe下找到Lab03-02.dll。</p>
-<p><img src="https://i.loli.net/2019/03/03/5c7b95ab77c28.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/03/5c7b95ab77c28.png" alt></p>
 <p><strong>4.你可以在procmon工具中设置什么样的过滤器，才能收集这个恶意代码的信息？</strong></p>
 <p>可以设置过滤器的PID为svchost.exe的PID或者进程名为svchost.exe。</p>
 <p><strong>5.这个恶意代码在主机上的感染迹象特征是什么？</strong></p>
 <p>此恶意代码会在主机上创建一个名为IPRIP的服务，且服务的描述与服务名称等信息也确定。</p>
 <p><strong>6.这个恶意代码是否存在一些有用的网络特征吗？</strong></p>
 <p>打开WireShark抓包可以发现此程序对<code>www.practicalmalwareanalysis.com</code>的DNS请求，而且程序会对此域名发起一个GET请求用来请求<code>serve.html</code>的文件，请求数据包中的<code>UserAgent</code>为<code>虚拟机的名称</code>＋<code>Windows XP 6.11</code>。</p>
-<p><img src="https://i.loli.net/2019/03/03/5c7b9dd3148de.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/03/5c7b9dd3148de.png" alt></p>
 <h3 id="Lab3-3"><a href="#Lab3-3" class="headerlink" title="Lab3-3"></a>Lab3-3</h3><p><strong>在一个安全的环境下执行Lab03-03.exe文件中发现的恶意代码，同时使用基础的动态行为分析工具监视他的行为。</strong></p>
 <p><strong>1.当你使用Process Explorer工具进行监视时，你注意到了什么？</strong></p>
 <p>通过对恶意代码的静态分析，程序的导入函数如下：</p>
@@ -286,16 +281,16 @@
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">Address	Length	Type	String</span><br><span class="line">.rdata:004040EC	0000000F	C	runtime error </span><br><span class="line">.rdata:00404100	0000000E	C	TLOSS error\r\n</span><br><span class="line">.rdata:00404110	0000000D	C	SING error\r\n</span><br><span class="line">.rdata:00404120	0000000F	C	DOMAIN error\r\n</span><br><span class="line">.rdata:00404130	00000025	C	R6028\r\n- unable to initialize heap\r\n</span><br><span class="line">.rdata:00404158	00000035	C	R6027\r\n- not enough space for lowio initialization\r\n</span><br><span class="line">.rdata:00404190	00000035	C	R6026\r\n- not enough space for stdio initialization\r\n</span><br><span class="line">.rdata:004041C8	00000026	C	R6025\r\n- pure virtual function call\r\n</span><br><span class="line">.rdata:004041F0	00000035	C	R6024\r\n- not enough space for _onexit/atexit table\r\n</span><br><span class="line">.rdata:00404228	00000029	C	R6019\r\n- unable to open console device\r\n</span><br><span class="line">.rdata:00404254	00000021	C	R6018\r\n- unexpected heap error\r\n</span><br><span class="line">.rdata:00404278	0000002D	C	R6017\r\n- unexpected multithread lock error\r\n</span><br><span class="line">.rdata:004042A8	0000002C	C	R6016\r\n- not enough space for thread data\r\n</span><br><span class="line">.rdata:004042D4	00000021	C	\r\nabnormal program termination\r\n</span><br><span class="line">.rdata:004042F8	0000002C	C	R6009\r\n- not enough space for environment\r\n</span><br><span class="line">.rdata:00404324	0000002A	C	R6008\r\n- not enough space for arguments\r\n</span><br><span class="line">.rdata:00404350	00000025	C	R6002\r\n- floating point not loaded\r\n</span><br><span class="line">.rdata:00404378	00000025	C	Microsoft Visual C++ Runtime Library</span><br><span class="line">.rdata:004043A4	0000001A	C	Runtime Error!\n\nProgram: </span><br><span class="line">.rdata:004043C4	00000017	C	&lt;program name unknown&gt;</span><br><span class="line">.rdata:004043DC	00000013	C	GetLastActivePopup</span><br><span class="line">.rdata:004043F0	00000010	C	GetActiveWindow</span><br><span class="line">.rdata:00404400	0000000C	C	MessageBoxA</span><br><span class="line">.rdata:0040440C	0000000B	C	user32.dll</span><br><span class="line">.rdata:004046B8	0000000D	C	KERNEL32.dll</span><br><span class="line">.data:00405030	0000000D	C	\\svchost.exe</span><br><span class="line">.data:00405040	00000015	C	NtUnmapViewOfSection</span><br><span class="line">.data:00405058	0000000A	C	ntdll.dll</span><br><span class="line">.data:00405064	00000008	C	UNICODE</span><br><span class="line">.data:0040506C	0000000D	C	LOCALIZATION</span><br></pre></td></tr></table></figure>
 <p>可以看到，导入函数中有很多涉及内存、文件、线程的操作，因此在动态分析时可以多多注意这些点的动态变化。</p>
 <p>在Process Monitor过滤器中选择进程名称为Lab03-03.exe并选择对应文件的操作，可以看到此恶意代码有对svchost.exe和conime.exe文件的操作，结合之前在导入表中看到的函数猜测恶意代码可能对这些文件进行了内存的修改，打开Process Explorer发现出现了一个svchost.exe作为父进程出现的进程，而正常情况下，svchost.exe通常在Windows中作为子进程出现，因此我们看一下此进程的属性，在字符串页中通过对比发现，此进程的字符串有与Lab03-03.exe的字符串，且内存中的字符串与其他svchost.exe进程的字符串不同，而磁盘映像却与其他正常进程相同，因此可以知道恶意代码确实对程序在内存中的数据进行了修改。</p>
-<p><img src="https://i.loli.net/2019/03/04/5c7c7b6d03cad.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/04/5c7c7b6d03cad.png" alt></p>
 <p><strong>2.你可以找出任何的内存修改行为吗？</strong></p>
 <p>程序修改了svchost.exe程序运行时的内存。</p>
 <p><strong>3.这个恶意代码在主机上的感染迹象特征是什么？</strong></p>
 <p>在Process Monitor中可以看到<code>svchost.exe</code>大量的文件读写操作，目标文件是与<code>Lab03-03.exe</code>文件同一目录下的<code>practicalmalwareanalysis.log</code>。</p>
-<p><img src="https://i.loli.net/2019/03/04/5c7c852d5ab83.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/04/5c7c852d5ab83.png" alt></p>
 <p>打开此文件可以看到如下内容：</p>
-<p><img src="https://i.loli.net/2019/03/04/5c7c85f023607.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/04/5c7c85f023607.png" alt></p>
 <p>结合在内存中看到的类似于<code>[ENTER]</code>、<code>[SHIFT]</code>等字符串猜测这个文件用于记录键盘敲击，验证后发现确实如此。</p>
-<p><img src="https://i.loli.net/2019/03/04/5c7c849d1d099.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/03/04/5c7c849d1d099.png" alt></p>
 <p>因此创建一个名为<code>practicalmalwareanalysis.log</code>的文件是此恶意代码的感染迹象特征。</p>
 <p><strong>4.这个恶意代码的目的是什么？</strong></p>
 <p>此程序使用进程替换技术来运行一个键盘记录器。</p>
@@ -484,36 +479,31 @@
         
         <div class="level is-mobile">
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Github" href="https://github.com/Hvnt3r">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Github" href="https://github.com/Hvnt3r">
                 
                 <i class="fab fa-github"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Facebook" href="https://facebook.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Facebook" href="https://facebook.com">
                 
                 <i class="fab fa-facebook"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Twitter" href="https://twitter.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Twitter" href="https://twitter.com">
                 
                 <i class="fab fa-twitter"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="Dribbble" href="https://dribbble.com">
+            <a class="level-item button is-white is-marginless" target="_blank" title="Dribbble" href="https://dribbble.com">
                 
                 <i class="fab fa-dribbble"></i>
                 
             </a>
             
-            <a class="level-item button is-white is-marginless" target="_blank"
-                title="RSS" href="https://hvnt3r.top/atom.xml">
+            <a class="level-item button is-white is-marginless" target="_blank" title="RSS" href="https://hvnt3r.top/atom.xml">
                 
                 <i class="fas fa-rss"></i>
                 
@@ -2446,8 +2436,7 @@
                 </a>
                 <p class="is-size-7">
                 &copy; 2019 Hvnt3r&nbsp;
-                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
-                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
                 
                 </p>
             </div>
@@ -2583,7 +2572,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="searchbox ins-search">
     <div class="searchbox-container ins-search-container">
         <div class="searchbox-input-wrapper">
-            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么...">
             <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
         </div>
         <div class="searchbox-result-wrapper ins-section-wrapper">
@@ -2610,5 +2599,5 @@ document.addEventListener('DOMContentLoaded', function () {
 <link rel="stylesheet" href="/css/search.css">
 <link rel="stylesheet" href="/css/insight.css">
     
-<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"live2d-widget-model-koharu"},"display":{"position":"right","width":100,"height":200},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 </html>
