@@ -151,6 +151,61 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-01-21T00:42:31.000Z">2019-01-21</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/二进制安全/">二进制安全</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    35 分钟 读完 (大约 5254 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2019/01/动态分析基础技术/">动态分析基础技术</a>
+            
+        </h1>
+        <div class="content">
+            <hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>与静态分析不同，动态分析是将恶意代码加载运行之后观察代码运行状态的一个过程，一般来说，对恶意代码进行分析时先进行静态分析来大致了解软件的功能再进行动态分析以了解恶意代码运行时的更多细节，静态分析与动态分析都有各自的有点以及局限性，本章重点介绍了动态分析的一些手法和技巧。</p>
+<p><strong>用沙箱来分析恶意代码：</strong>沙箱是一种在安全环境下运行不信任的程序的安全机制，沙箱一般包含一个虚拟的环境，并可以定制虚拟网络等“欺骗”恶意代码让恶意代码认为自己所在的沙箱是一个正常的物理机的各种虚拟功能，但是运行在沙箱中的恶意代码并不会对物理机产生任何威胁，因此沙箱是一个很好的用来动态分析恶意代码的工具。</p>
+<p>前一段时间我使用过布谷鸟沙箱（<code>Cuckoo</code>），这一款沙箱的结构是首先开启一个安装有<code>Ubuntu14.04</code>的系统用于安装Cuckoo，然后再向这个虚拟机上安装所有<code>Cuckoo</code>依赖的插件，安装完成后再向<code>Ubuntu</code>中安装一个<code>Vmware</code>虚拟机来安装一个用于运行Windows等系统的虚拟机，整体相当于是一个虚拟机的嵌套结构，布谷鸟对这个在虚拟机中运行的虚拟机的运行状态的存储状态进行记录，并对比运行病毒前后的镜像区别来确定恶意代码对主机做了什么，并会生成一个十分详细的报告，总的来说这种杀向在我们对一个恶意代码进行静态分析遇到困难时还是很有帮助的，但是缺点是此系统十分难于安装，因为很多安装条件会产生冲突，而且此沙箱运行起来也是对电脑性能的极大挑战，除非你有一台安装了<code>Ubuntu14.04</code>的物理主机。</p>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/01/动态分析基础技术/#more">阅读更多</a>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    <div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
                 <time class="level-item has-text-grey" datetime="2019-01-20T07:00:00.000Z">2019-01-20</time>
                 
                 <div class="level-item">
@@ -642,63 +697,6 @@
 
 
 
-    <div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2018-10-17T02:01:33.000Z">2018-10-17</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/二进制安全/">二进制安全</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    19 分钟 读完 (大约 2830 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2018/10/Windows系统安全之SLmail缓冲区溢出漏洞复现/">Windows系统安全之SLMail缓冲区溢出漏洞复现</a>
-            
-        </h1>
-        <div class="content">
-            <p>在我大二时任技术交流协会信安部部长时我曾给学弟学妹们介绍过这个关于<code>SLMail</code>的缓冲区溢出漏洞，给他们讲的原因是想扩展一下他们的知识面，现在我再重新温习一下这个漏洞来跟现阶段学习的Linux缓冲区漏洞做一个对比</p>
-<hr>
-<h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><p>首先需要搭建实验环境，系统可选用<code>Windows_XP</code>，因为Windows7及以上的系统内置了多种安全措施使得此漏洞难以利用，本实验用到的软件及下载链接如下：</p>
-<p><a href="https://slmail.software.informer.com/download/" target="_blank" rel="noopener">SLMail 5.5.0 Mail Server</a></p>
-<p><a href="https://www.softpedia.com/dyn-postdownload.php/dfb40d15ed797f293c5e48eb28f9a891/5bc69b64/277f7/4/1" target="_blank" rel="noopener">ImmunityDebugger_1_85_setup</a></p>
-<p><a href="https://raw.githubusercontent.com/corelan/mona/master/mona.py" target="_blank" rel="noopener">mona.py</a></p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2018/10/Windows系统安全之SLmail缓冲区溢出漏洞复现/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
 
     
 <div class="card card-transparent">
@@ -765,7 +763,7 @@
                         文章
                     </p>
                     <p class="title has-text-weight-normal">
-                        73
+                        74
                     </p>
                 </div>
             </div>
@@ -785,7 +783,7 @@
                         标签
                     </p>
                     <p class="title has-text-weight-normal">
-                        79
+                        81
                     </p>
                 </div>
             </div>
@@ -960,7 +958,7 @@
                 <span class="level-item">二进制安全</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">32</span>
+                <span class="level-item tag">33</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/信息安全学习路径/">
@@ -1046,7 +1044,7 @@
         <h3 class="menu-label">
             标签云
         </h3>
-        <a href="/tags/2018年工业信息安全技能大赛/" style="font-size: 10px;">2018年工业信息安全技能大赛</a> <a href="/tags/2018护网杯/" style="font-size: 10px;">2018护网杯</a> <a href="/tags/APT/" style="font-size: 11.25px;">APT</a> <a href="/tags/C/" style="font-size: 10px;">C++</a> <a href="/tags/CTF/" style="font-size: 17.5px;">CTF</a> <a href="/tags/CVE/" style="font-size: 12.5px;">CVE</a> <a href="/tags/CrackMe/" style="font-size: 11.25px;">CrackMe</a> <a href="/tags/C语言/" style="font-size: 10px;">C语言</a> <a href="/tags/DLL注入/" style="font-size: 10px;">DLL注入</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/IDA/" style="font-size: 10px;">IDA</a> <a href="/tags/IDA-Pro/" style="font-size: 10px;">IDA Pro</a> <a href="/tags/IDS/" style="font-size: 10px;">IDS</a> <a href="/tags/Kali-Linux/" style="font-size: 10px;">Kali Linux</a> <a href="/tags/Linux/" style="font-size: 13.75px;">Linux</a> <a href="/tags/Linux动态链接库/" style="font-size: 10px;">Linux动态链接库</a> <a href="/tags/Linux子系统/" style="font-size: 10px;">Linux子系统</a> <a href="/tags/OllyDbg/" style="font-size: 10px;">OllyDbg</a> <a href="/tags/PHP/" style="font-size: 12.5px;">PHP</a> <a href="/tags/PWN/" style="font-size: 18.75px;">PWN</a> <a href="/tags/PwnTools/" style="font-size: 10px;">PwnTools</a> <a href="/tags/Pwnable-kr/" style="font-size: 10px;">Pwnable.kr</a> <a href="/tags/Python/" style="font-size: 10px;">Python</a> <a href="/tags/ROP/" style="font-size: 10px;">ROP</a> <a href="/tags/Reverse/" style="font-size: 10px;">Reverse</a> <a href="/tags/ShellCode/" style="font-size: 11.25px;">ShellCode</a> <a href="/tags/Shellcode/" style="font-size: 10px;">Shellcode</a> <a href="/tags/Slmail/" style="font-size: 10px;">Slmail</a> <a href="/tags/Snort/" style="font-size: 10px;">Snort</a> <a href="/tags/VPN/" style="font-size: 10px;">VPN</a> <a href="/tags/WinDbg/" style="font-size: 10px;">WinDbg</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/Windows恶意代码/" style="font-size: 11.25px;">Windows恶意代码</a> <a href="/tags/Windows系统安全/" style="font-size: 11.25px;">Windows系统安全</a> <a href="/tags/Wordpress/" style="font-size: 11.25px;">Wordpress</a> <a href="/tags/WriteUp/" style="font-size: 10px;">WriteUp</a> <a href="/tags/二进制安全/" style="font-size: 15px;">二进制安全</a> <a href="/tags/信息安全/" style="font-size: 11.25px;">信息安全</a> <a href="/tags/内核调试/" style="font-size: 10px;">内核调试</a> <a href="/tags/分析报告/" style="font-size: 10px;">分析报告</a> <a href="/tags/加壳与脱壳/" style="font-size: 10px;">加壳与脱壳</a> <a href="/tags/加密/" style="font-size: 10px;">加密</a> <a href="/tags/动态分析/" style="font-size: 12.5px;">动态分析</a> <a href="/tags/动态分析技术/" style="font-size: 10px;">动态分析技术</a> <a href="/tags/动态调试/" style="font-size: 10px;">动态调试</a> <a href="/tags/反汇编/" style="font-size: 10px;">反汇编</a> <a href="/tags/反虚拟机技术/" style="font-size: 10px;">反虚拟机技术</a> <a href="/tags/反调试/" style="font-size: 11.25px;">反调试</a> <a href="/tags/安全局势/" style="font-size: 10px;">安全局势</a> <a href="/tags/安全竞赛/" style="font-size: 10px;">安全竞赛</a> <a href="/tags/小窍门/" style="font-size: 10px;">小窍门</a> <a href="/tags/工业控制安全/" style="font-size: 10px;">工业控制安全</a> <a href="/tags/心得/" style="font-size: 11.25px;">心得</a> <a href="/tags/恶意代码分析/" style="font-size: 20px;">恶意代码分析</a> <a href="/tags/恶意代码分析实战/" style="font-size: 11.25px;">恶意代码分析实战</a> <a href="/tags/恶意代码启动方式/" style="font-size: 10px;">恶意代码启动方式</a> <a href="/tags/恶意行为分析/" style="font-size: 10px;">恶意行为分析</a> <a href="/tags/数据包分析/" style="font-size: 10px;">数据包分析</a> <a href="/tags/木马/" style="font-size: 10px;">木马</a> <a href="/tags/栈溢出/" style="font-size: 10px;">栈溢出</a> <a href="/tags/格式化字符串漏洞/" style="font-size: 10px;">格式化字符串漏洞</a> <a href="/tags/桌面/" style="font-size: 10px;">桌面</a> <a href="/tags/汇编语言/" style="font-size: 10px;">汇编语言</a> <a href="/tags/游戏安全/" style="font-size: 11.25px;">游戏安全</a> <a href="/tags/特洛伊木马化技术/" style="font-size: 10px;">特洛伊木马化技术</a> <a href="/tags/生活/" style="font-size: 10px;">生活</a> <a href="/tags/破解/" style="font-size: 10px;">破解</a> <a href="/tags/离线翻译/" style="font-size: 10px;">离线翻译</a> <a href="/tags/缓冲区溢出/" style="font-size: 10px;">缓冲区溢出</a> <a href="/tags/编程/" style="font-size: 10px;">编程</a> <a href="/tags/网络流量识别/" style="font-size: 10px;">网络流量识别</a> <a href="/tags/自动化/" style="font-size: 10px;">自动化</a> <a href="/tags/虚拟化/" style="font-size: 10px;">虚拟化</a> <a href="/tags/调试/" style="font-size: 10px;">调试</a> <a href="/tags/进程注入/" style="font-size: 10px;">进程注入</a> <a href="/tags/远程控制/" style="font-size: 10px;">远程控制</a> <a href="/tags/逆向/" style="font-size: 16.25px;">逆向</a> <a href="/tags/防反汇编技术/" style="font-size: 10px;">防反汇编技术</a> <a href="/tags/静态分析/" style="font-size: 11.25px;">静态分析</a>
+        <a href="/tags/2018年工业信息安全技能大赛/" style="font-size: 10px;">2018年工业信息安全技能大赛</a> <a href="/tags/2018护网杯/" style="font-size: 10px;">2018护网杯</a> <a href="/tags/APT/" style="font-size: 11.25px;">APT</a> <a href="/tags/C/" style="font-size: 10px;">C++</a> <a href="/tags/CTF/" style="font-size: 17.5px;">CTF</a> <a href="/tags/CVE/" style="font-size: 12.5px;">CVE</a> <a href="/tags/CrackMe/" style="font-size: 11.25px;">CrackMe</a> <a href="/tags/C语言/" style="font-size: 10px;">C语言</a> <a href="/tags/DLL注入/" style="font-size: 10px;">DLL注入</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/IDA/" style="font-size: 10px;">IDA</a> <a href="/tags/IDA-Pro/" style="font-size: 10px;">IDA Pro</a> <a href="/tags/IDS/" style="font-size: 10px;">IDS</a> <a href="/tags/IoT/" style="font-size: 10px;">IoT</a> <a href="/tags/Kali-Linux/" style="font-size: 10px;">Kali Linux</a> <a href="/tags/Linux/" style="font-size: 13.75px;">Linux</a> <a href="/tags/Linux动态链接库/" style="font-size: 10px;">Linux动态链接库</a> <a href="/tags/Linux子系统/" style="font-size: 10px;">Linux子系统</a> <a href="/tags/OllyDbg/" style="font-size: 10px;">OllyDbg</a> <a href="/tags/PHP/" style="font-size: 12.5px;">PHP</a> <a href="/tags/PWN/" style="font-size: 18.75px;">PWN</a> <a href="/tags/PwnTools/" style="font-size: 10px;">PwnTools</a> <a href="/tags/Pwnable-kr/" style="font-size: 10px;">Pwnable.kr</a> <a href="/tags/Python/" style="font-size: 10px;">Python</a> <a href="/tags/ROP/" style="font-size: 10px;">ROP</a> <a href="/tags/Reverse/" style="font-size: 10px;">Reverse</a> <a href="/tags/ShellCode/" style="font-size: 11.25px;">ShellCode</a> <a href="/tags/Shellcode/" style="font-size: 10px;">Shellcode</a> <a href="/tags/Slmail/" style="font-size: 10px;">Slmail</a> <a href="/tags/Snort/" style="font-size: 10px;">Snort</a> <a href="/tags/VPN/" style="font-size: 10px;">VPN</a> <a href="/tags/WinDbg/" style="font-size: 10px;">WinDbg</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/Windows恶意代码/" style="font-size: 11.25px;">Windows恶意代码</a> <a href="/tags/Windows系统安全/" style="font-size: 11.25px;">Windows系统安全</a> <a href="/tags/Wordpress/" style="font-size: 11.25px;">Wordpress</a> <a href="/tags/WriteUp/" style="font-size: 10px;">WriteUp</a> <a href="/tags/二进制安全/" style="font-size: 15px;">二进制安全</a> <a href="/tags/信息安全/" style="font-size: 11.25px;">信息安全</a> <a href="/tags/内核调试/" style="font-size: 10px;">内核调试</a> <a href="/tags/分析报告/" style="font-size: 10px;">分析报告</a> <a href="/tags/加壳与脱壳/" style="font-size: 10px;">加壳与脱壳</a> <a href="/tags/加密/" style="font-size: 10px;">加密</a> <a href="/tags/动态分析/" style="font-size: 12.5px;">动态分析</a> <a href="/tags/动态分析技术/" style="font-size: 10px;">动态分析技术</a> <a href="/tags/动态调试/" style="font-size: 10px;">动态调试</a> <a href="/tags/反汇编/" style="font-size: 10px;">反汇编</a> <a href="/tags/反虚拟机技术/" style="font-size: 10px;">反虚拟机技术</a> <a href="/tags/反调试/" style="font-size: 11.25px;">反调试</a> <a href="/tags/安全局势/" style="font-size: 10px;">安全局势</a> <a href="/tags/安全竞赛/" style="font-size: 10px;">安全竞赛</a> <a href="/tags/小窍门/" style="font-size: 10px;">小窍门</a> <a href="/tags/工业控制安全/" style="font-size: 10px;">工业控制安全</a> <a href="/tags/心得/" style="font-size: 11.25px;">心得</a> <a href="/tags/恶意代码分析/" style="font-size: 20px;">恶意代码分析</a> <a href="/tags/恶意代码分析实战/" style="font-size: 11.25px;">恶意代码分析实战</a> <a href="/tags/恶意代码启动方式/" style="font-size: 10px;">恶意代码启动方式</a> <a href="/tags/恶意行为分析/" style="font-size: 10px;">恶意行为分析</a> <a href="/tags/数据包分析/" style="font-size: 10px;">数据包分析</a> <a href="/tags/木马/" style="font-size: 10px;">木马</a> <a href="/tags/栈溢出/" style="font-size: 10px;">栈溢出</a> <a href="/tags/格式化字符串漏洞/" style="font-size: 10px;">格式化字符串漏洞</a> <a href="/tags/桌面/" style="font-size: 10px;">桌面</a> <a href="/tags/模糊测试/" style="font-size: 10px;">模糊测试</a> <a href="/tags/汇编语言/" style="font-size: 10px;">汇编语言</a> <a href="/tags/游戏安全/" style="font-size: 11.25px;">游戏安全</a> <a href="/tags/特洛伊木马化技术/" style="font-size: 10px;">特洛伊木马化技术</a> <a href="/tags/生活/" style="font-size: 10px;">生活</a> <a href="/tags/破解/" style="font-size: 10px;">破解</a> <a href="/tags/离线翻译/" style="font-size: 10px;">离线翻译</a> <a href="/tags/缓冲区溢出/" style="font-size: 10px;">缓冲区溢出</a> <a href="/tags/编程/" style="font-size: 10px;">编程</a> <a href="/tags/网络流量识别/" style="font-size: 10px;">网络流量识别</a> <a href="/tags/自动化/" style="font-size: 10px;">自动化</a> <a href="/tags/虚拟化/" style="font-size: 10px;">虚拟化</a> <a href="/tags/调试/" style="font-size: 10px;">调试</a> <a href="/tags/进程注入/" style="font-size: 10px;">进程注入</a> <a href="/tags/远程控制/" style="font-size: 10px;">远程控制</a> <a href="/tags/逆向/" style="font-size: 16.25px;">逆向</a> <a href="/tags/防反汇编技术/" style="font-size: 10px;">防反汇编技术</a> <a href="/tags/静态分析/" style="font-size: 11.25px;">静态分析</a>
     </div>
 </div>
 
@@ -1060,6 +1058,25 @@
         <h3 class="menu-label">
             最新文章
         </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/02/AFL初体验/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/thumbnails/afl-fuzz.png" alt="AFL初体验">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-23T14:19:17.000Z">2020-02-23</time></div>
+                    <a href="/2020/02/AFL初体验/" class="has-link-black-ter is-size-6">AFL初体验</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/二进制安全/">二进制安全</a>
+                    </p>
+                </div>
+            </div>
+        </article>
         
         <article class="media">
             
@@ -1137,25 +1154,6 @@
             </div>
         </article>
         
-        <article class="media">
-            
-            <a href="/2019/07/CS1-6DLL注入外挂/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/thumbnails/cs.jpg" alt="CS1.6DLL注入外挂">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-11T15:01:47.000Z">2019-07-11</time></div>
-                    <a href="/2019/07/CS1-6DLL注入外挂/" class="has-link-black-ter is-size-6">CS1.6DLL注入外挂</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/反外挂/">反外挂</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
     </div>
 </div>
 
@@ -1167,6 +1165,17 @@
             归档
         </h3>
         <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/02/">
+                <span class="level-start">
+                    <span class="level-item">二月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
         
         <li>
             <a class="level is-marginless" href="/archives/2019/11/">
@@ -1416,6 +1425,13 @@
                 </div>
                 
                 <div class="control">
+                    <a class="tags has-addons" href="/tags/IoT/">
+                        <span class="tag">IoT</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
                     <a class="tags has-addons" href="/tags/Kali-Linux/">
                         <span class="tag">Kali Linux</span>
                         <span class="tag is-grey">1</span>
@@ -1579,7 +1595,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/二进制安全/">
                         <span class="tag">二进制安全</span>
-                        <span class="tag is-grey">5</span>
+                        <span class="tag is-grey">6</span>
                     </a>
                 </div>
                 
@@ -1754,6 +1770,13 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/桌面/">
                         <span class="tag">桌面</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/模糊测试/">
+                        <span class="tag">模糊测试</span>
                         <span class="tag is-grey">1</span>
                     </a>
                 </div>
@@ -1902,6 +1925,25 @@
         
         <article class="media">
             
+            <a href="/2020/02/AFL初体验/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/thumbnails/afl-fuzz.png" alt="AFL初体验">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-23T14:19:17.000Z">2020-02-23</time></div>
+                    <a href="/2020/02/AFL初体验/" class="has-link-black-ter is-size-6">AFL初体验</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/二进制安全/">二进制安全</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
             <a href="/2019/11/攻防世界PWN高手进阶区/" class="media-left">
                 <p class="image is-64x64">
                     <img class="thumbnail" src="/gallery/thumbnails/wallhaven-6kegww.jpg" alt="攻防世界PWN高手进阶区">
@@ -1976,25 +2018,6 @@
             </div>
         </article>
         
-        <article class="media">
-            
-            <a href="/2019/07/CS1-6DLL注入外挂/" class="media-left">
-                <p class="image is-64x64">
-                    <img class="thumbnail" src="/gallery/thumbnails/cs.jpg" alt="CS1.6DLL注入外挂">
-                </p>
-            </a>
-            
-            <div class="media-content">
-                <div class="content">
-                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-07-11T15:01:47.000Z">2019-07-11</time></div>
-                    <a href="/2019/07/CS1-6DLL注入外挂/" class="has-link-black-ter is-size-6">CS1.6DLL注入外挂</a>
-                    <p class="is-size-7 is-uppercase">
-                        <a class="has-link-grey -link" href="/categories/反外挂/">反外挂</a>
-                    </p>
-                </div>
-            </div>
-        </article>
-        
     </div>
 </div>
 
@@ -2006,6 +2029,17 @@
             归档
         </h3>
         <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/02/">
+                <span class="level-start">
+                    <span class="level-item">二月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
         
         <li>
             <a class="level is-marginless" href="/archives/2019/11/">
@@ -2255,6 +2289,13 @@
                 </div>
                 
                 <div class="control">
+                    <a class="tags has-addons" href="/tags/IoT/">
+                        <span class="tag">IoT</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
                     <a class="tags has-addons" href="/tags/Kali-Linux/">
                         <span class="tag">Kali Linux</span>
                         <span class="tag is-grey">1</span>
@@ -2418,7 +2459,7 @@
                 <div class="control">
                     <a class="tags has-addons" href="/tags/二进制安全/">
                         <span class="tag">二进制安全</span>
-                        <span class="tag is-grey">5</span>
+                        <span class="tag is-grey">6</span>
                     </a>
                 </div>
                 
@@ -2598,6 +2639,13 @@
                 </div>
                 
                 <div class="control">
+                    <a class="tags has-addons" href="/tags/模糊测试/">
+                        <span class="tag">模糊测试</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
                     <a class="tags has-addons" href="/tags/汇编语言/">
                         <span class="tag">汇编语言</span>
                         <span class="tag is-grey">1</span>
@@ -2737,7 +2785,7 @@
                 
                 </a>
                 <p class="is-size-7">
-                &copy; 2019 Hvnt3r&nbsp;
+                &copy; 2020 Hvnt3r&nbsp;
                 Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
                 
                 </p>
