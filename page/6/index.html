@@ -425,7 +425,7 @@
       
         
           <p>先对文件有个大致的了解，是64位ELF文件</p>
-<figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">☁  csaw ctf 2016 quals-warmup  ls</span><br><span class="line">exp.py  flag.txt  readme.txt  warmup</span><br><span class="line">☁  csaw ctf 2016 quals-warmup  file warmup </span><br><span class="line">warmup: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, <span class="hljs-keyword">for</span> GNU/Linux 2.6.24, BuildID[sha1]=7b7d75c51503566eb1203781298d9f0355a66bd3, stripped</span><br><span class="line">☁  csaw ctf 2016 quals-warmup  chmod +x warmup </span><br><span class="line">☁  csaw ctf 2016 quals-warmup  ./warmup </span><br><span class="line">-Warm Up-</span><br><span class="line">WOW:0x40060d</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">☁  csaw ctf 2016 quals-warmup  ls</span><br><span class="line">exp.py  flag.txt  readme.txt  warmup</span><br><span class="line">☁  csaw ctf 2016 quals-warmup  file warmup </span><br><span class="line">warmup: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, <span class="keyword">for</span> GNU/Linux 2.6.24, BuildID[sha1]=7b7d75c51503566eb1203781298d9f0355a66bd3, stripped</span><br><span class="line">☁  csaw ctf 2016 quals-warmup  chmod +x warmup </span><br><span class="line">☁  csaw ctf 2016 quals-warmup  ./warmup </span><br><span class="line">-Warm Up-</span><br><span class="line">WOW:0x40060d</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/10/CSAW-CTF-2016-PWN-warmup/#more" rel="contents">
@@ -1498,9 +1498,9 @@
       
         
           <p>题面：</p>
-<figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Mommy, there was a shocking news about bash.</span><br><span class="line">I bet you already know, but lets just make it sure :)</span><br><span class="line"></span><br><span class="line">ssh shellshock@pwnable.kr -p2222 (pw:guest)</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Mommy, there was a shocking news about bash.</span><br><span class="line">I bet you already know, but lets just make it sure :)</span><br><span class="line"></span><br><span class="line">ssh shellshock@pwnable.kr -p2222 (pw:guest)</span><br></pre></td></tr></table></figure>
 <p>文件目录及权限：</p>
-<figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">shellshock@ubuntu:~$ ls -l</span><br><span class="line">total 960</span><br><span class="line">-r-xr-xr-x 1 root shellshock     959120 Oct 12  2014 bash</span><br><span class="line">-r--r----- 1 root shellshock_pwn     47 Oct 12  2014 flag</span><br><span class="line">-r-xr-sr-x 1 root shellshock_pwn   8547 Oct 12  2014 shellshock</span><br><span class="line">-r--r--r-- 1 root root              188 Oct 12  2014 shellshock.c</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">shellshock@ubuntu:~$ ls -l</span><br><span class="line">total 960</span><br><span class="line">-r-xr-xr-x 1 root shellshock     959120 Oct 12  2014 bash</span><br><span class="line">-r--r----- 1 root shellshock_pwn     47 Oct 12  2014 flag</span><br><span class="line">-r-xr-sr-x 1 root shellshock_pwn   8547 Oct 12  2014 shellshock</span><br><span class="line">-r--r--r-- 1 root root              188 Oct 12  2014 shellshock.c</span><br></pre></td></tr></table></figure>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/09/shellshock-writeup-pwnabble-kr-shell的漏洞/#more" rel="contents">
@@ -1680,7 +1680,7 @@
           <p>题目地址：<a href="https://www.vulnhub.com/entry/breach-301,177/" target="_blank" rel="noopener">https://www.vulnhub.com/entry/breach-301,177/</a></p>
 <p>下载好靶机文件之后需要先把文件后缀改为ova，把之前的“.”去掉，然后用Vmware打开此文件导入虚拟机，等待虚拟机导入完毕，将网络设置为NAT并设置DHCP服务器，使靶机能自动获取IP地址，然后开启虚拟机。</p>
 <p>虚拟机打开之后会显示自动配置网络设置，靶机系统是Ubuntu14.04，靶机成功启动之后查看虚拟机网卡的网段，然后使用nmap进行这一网段的ping扫描来确定存活主机：</p>
-<figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -sn 192.168.229.0/24</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -sn 192.168.229.0/24</span><br></pre></td></tr></table></figure>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/09/Breach3-0靶机渗透记录/#more" rel="contents">
@@ -1859,7 +1859,7 @@
         
           
             <p>一键搭建<code>ss</code>，只可意会不可言传，嘘~~</p>
-<figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget –no-check-certificate -O shadowsocks.sh https://raw.githubusercontent.com/teddysun/shadowsocks_install/master/shadowsocks.sh</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget –no-check-certificate -O shadowsocks.sh https://raw.githubusercontent.com/teddysun/shadowsocks_install/master/shadowsocks.sh</span><br></pre></td></tr></table></figure>
           
         
       

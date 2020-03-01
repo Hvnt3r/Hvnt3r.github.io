@@ -429,7 +429,7 @@
 <a id="more"></a>
 <p><strong>this指针：</strong>数据与函数是对象关联的。为了访问一块是数据，你需要使用<code>ObjectName.variableName</code>的形式。函数以<code>ObjectName.functionName</code>的形式被简单调用，除了使用对象名访问变量以外还可以使用变量名访问当前对象的变量。<code>this</code>指针在一个不指定对象的函数中对每个变量访问时都是隐含的；它对每个对象函数都是一个隐含的参数。在微软生成的汇编代码中，<code>this</code>指针通常被传递到<code>ECX</code>寄存器中，有时也会使用<code>ESI</code>寄存器。使用this指针的<code>C++</code>调用叫做<code>thiscall</code>。</p>
 <p><strong>重载与修饰：</strong><code>C++</code>支持一个被称为方法重载的编码结构，它能让多个函数使用同一个名字但接收不同的参数，编译器基于这个调用中的参数的个数与类型判断使用这个函数的哪个版本。C++使用名字修饰的字数来支持方法重载，为了支持重载，文件格式中的方法名经过了修改，这个名字中包含了参数信息，如一个名为Test的函数是<code>SimpleClass</code>的一部分，并且接受两个整数作为参数，那么这个方法名修饰之后就会叫：</p>
-<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?Test@SimpleClass@@QAEXHH@Z</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?Test@SimpleClass@@QAEXHH@Z</span><br></pre></td></tr></table></figure>
 <p>IDA会根据此函数的修饰进行反修饰显示出原始的函数名和参数，然而内部函数名只有在代码中拥有符号时才可见。</p>
 <p><strong>继承与函数重写：</strong>继承是一个面向对象编程的概念，在这个概念中父子关系在类之间建立。子类继承来自弗雷的函数和数据。一个子类会自动拥有所有父类的函数和数据，且经常定义额外的函数和数据。</p>
 <p><strong>虚函数与非虚函数：</strong>虚函数是一个可以被子类重写的函数，并且它的执行是在运行时判断的，如果一个函数在父类中被定义，且在子类中也有一个同样名字的函数，那么子类的函数将会重写父类的函数。而在非虚函数中，这个要被执行的函数在编译时就会被确定。如果这个对象是一个父类的实例则这个父类的函数将被调用，即时这个对象在运行时属于子类，当虚函数在一个子类对象上被调用时，如果对象的父类是一个实例类型那么这个函数的子类版本可能被调用。</p>

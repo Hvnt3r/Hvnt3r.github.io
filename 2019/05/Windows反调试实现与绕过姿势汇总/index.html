@@ -454,10 +454,10 @@
 <p>使用GetLastError( )可以得到程序运行过程中的出现的错误的原因，在程序出现错误时会改变此函数的返回值，而可以利用此原理首先使用SetLastError()设置LastError为某值，然后通过故意的与调试器相关的错误调用如OutputDebugString()使得程序中出现错误，如果当前程序被调试则OutputDebugString()成功调用因此LastError的值不会改变，但是如果没有被调试则LastError的值会因为OutputDebugString()没有成功调用而发生改变，通过前后LastError的值的对比来判断程序被调试。</p>
 <h2 id="干扰调试器"><a href="#干扰调试器" class="headerlink" title="干扰调试器"></a>干扰调试器</h2><h4 id="Drx寄存器清理"><a href="#Drx寄存器清理" class="headerlink" title="Drx寄存器清理"></a>Drx寄存器清理</h4><p>OllyDbg在捕获到一个异常时，会将Dr0~Dr7清零，但是如果设置SEH使用这些寄存器中的数据参与运算，通过对比运算结果是否正确可以判断这些寄存器是否被清空即可判断程序是否被OllyDbg调试。</p>
 <h4 id="OutputDebugStringA"><a href="#OutputDebugStringA" class="headerlink" title="OutputDebugStringA"></a>OutputDebugStringA</h4><p>此函数被用来向调试器发送一个格式化的串，但是OllyDbg1.1版本之前存在一个格式化字符串漏洞，使用类似如下的调用形式会触发此漏洞使OllyDbg崩溃：</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OutputDebugStringA(&quot;%s%s%s%s%s%s%s%s%s&quot;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OutputDebugStringA(&quot;%s%s%s%s%s%s%s%s%s&quot;);</span><br></pre></td></tr></table></figure>
 <h4 id="ThreadHideFromDebugger"><a href="#ThreadHideFromDebugger" class="headerlink" title="ThreadHideFromDebugger"></a>ThreadHideFromDebugger</h4><p>设置ThreadHideFromDebugger可以禁止为某个线程产生调试事件。</p>
 <h4 id="EnableWindow"><a href="#EnableWindow" class="headerlink" title="EnableWindow"></a>EnableWindow</h4><p>调用这个API可以暂时锁定前台的窗口：</p>
-<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">EnableWindow(GetForegrounfWindow(),FALSE);</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">EnableWindow(GetForegrounfWindow(),FALSE);</span><br></pre></td></tr></table></figure>
 <h4 id="BlockInput"><a href="#BlockInput" class="headerlink" title="BlockInput"></a>BlockInput</h4><p>调用<code>BlockInput(TRUE)</code>锁住窗口，完成工作之后使用<code>BlockWindow(FALSE)</code>恢复。锁住期间可以通过<code>Ctrl+Alt+Del</code>组合键强制解除输入锁。</p>
 <h4 id="防止被调试器附加"><a href="#防止被调试器附加" class="headerlink" title="防止被调试器附加"></a>防止被调试器附加</h4><p>Ring3调试器的附加使用的是DebugActiveProcess函数，在附加相关进程时，会首先执行到ntdll.dll下的ZwContinue函数，最后停留在ntdll.dll的DbgBreakPoint处。因此Hook一下ZwContinue函数可以实现防止进程被调试器附加的效果。</p>
 <p>参考资料：</p>

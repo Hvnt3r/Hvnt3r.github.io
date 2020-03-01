@@ -441,7 +441,7 @@
 <p><strong>在内存中找到kernel32.dll：</strong></p>
 <p><img src="https://i.loli.net/2019/04/29/5cc6a4711e07b.png" alt></p>
 <p>一旦找到了上图中kernel32.dll的基地址DllBase，通过跟踪内存中的几个结构体来解析kernel32.dll的符号。当定义一个文件内的位置时,PE文件使用RVA，导出数据被保存在IMAGE_EXPORT_DIRECTORY中，一个相对于IMAGE_EXPORT_DIRECTORY的RVA被保存在IMAGE_OPTIONAL_HEADER末尾部分的IMAGE_DATA_DIRECTORY结构体数组中。IMAGE_DATA_DIRECTORY数组的具体位置取决于这个PE文件是32位还是64位的。假设shellcode运行在32位平台上，所以在编译时从PE特征值域到IMAGE_DATA_DIRECTORY正确偏移的计算方式如下：</p>
-<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">sizeof</span>(PE_Signature)+<span class="hljs-keyword">sizeof</span>(IMAGE_FILE_HEADER)+<span class="hljs-keyword">sizeof</span>(IMAGE_OPTIONAL_HEADER)=<span class="hljs-number">120</span>字节</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">sizeof</span>(PE_Signature)+<span class="keyword">sizeof</span>(IMAGE_FILE_HEADER)+<span class="keyword">sizeof</span>(IMAGE_OPTIONAL_HEADER)=<span class="number">120</span>字节</span><br></pre></td></tr></table></figure>
 <p>下图是IMAGE_EXPORT_DIRCTORY结构体中的相对域，AddressOfFunctions是一个RVA的数组，指向实际导出的函数。</p>
 <p><img src="https://i.loli.net/2019/04/29/5cc6e2d794f96.png" alt></p>
 <p>按照如下步骤可以找到一个符号的导出地址：</p>

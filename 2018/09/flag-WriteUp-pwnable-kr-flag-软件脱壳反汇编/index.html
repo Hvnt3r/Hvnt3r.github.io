@@ -430,14 +430,14 @@
 <p><img src="https://i.loli.net/2018/09/29/5baedeb0387ef.png" alt></p>
 <p>这道题严格意义上考察的是软件查壳和脱壳</p>
 <a id="more"></a>
-<p>根据题目hint：<br><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Papa brought me a packed present! let&apos;s open it.</span><br><span class="line"></span><br><span class="line">Download : http://pwnable.kr/bin/flag</span><br><span class="line"></span><br><span class="line">This is reversing task. all you need is binary</span><br></pre></td></tr></table></figure></p>
+<p>根据题目hint：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Papa brought me a packed present! let&apos;s open it.</span><br><span class="line"></span><br><span class="line">Download : http://pwnable.kr/bin/flag</span><br><span class="line"></span><br><span class="line">This is reversing task. all you need is binary</span><br></pre></td></tr></table></figure></p>
 <p>题目提示我们需要二进制文件，但是他给的文件的不是二进制文件吗</p>
 <p>用xdd命令查看flag的16进制数据：</p>
-<figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">root@kali-linux:~/文档/PWN/pwnable.kr/4.flag<span class="hljs-comment"># xxd flag</span></span><br><span class="line">...</span><br><span class="line">$.....UPX!</span><br><span class="line">00051d90: 0000 0000 5550 5821 0d16 0807 19cc 204a  ....UPX!...... J</span><br><span class="line">00051da0: dbd8 21c5 3145 0100 5e70 0000 217c 0d00  ..!.1E..^p..!|..</span><br><span class="line">00051db0: 4919 0089 bc00 0000                      I.......</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">root@kali-linux:~/文档/PWN/pwnable.kr/4.flag<span class="comment"># xxd flag</span></span><br><span class="line">...</span><br><span class="line">$.....UPX!</span><br><span class="line">00051d90: 0000 0000 5550 5821 0d16 0807 19cc 204a  ....UPX!...... J</span><br><span class="line">00051da0: dbd8 21c5 3145 0100 5e70 0000 217c 0d00  ..!.1E..^p..!|..</span><br><span class="line">00051db0: 4919 0089 bc00 0000                      I.......</span><br></pre></td></tr></table></figure>
 <p>看到文件是upx的壳</p>
 <p>使用<code>upx -d flag</code>命令来去壳</p>
 <p>去壳后把文件丢到<code>IDA</code>里就可以看到flag了</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UPX...? sounds like a delivery service :)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UPX...? sounds like a delivery service :)</span><br></pre></td></tr></table></figure>
       
     </div>
     

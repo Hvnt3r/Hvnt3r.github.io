@@ -572,7 +572,7 @@
 </tbody>
 </table>
 <p><strong>注册表脚本：</strong>注册表脚本以<code>.reg</code>为文件后缀，当用户双击此文件时，他会自动恩据自身的内容来修改注册表，此类文件内容类似如下：</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Windows Registry Editer Version 5.00</span><br><span class="line"></span><br><span class="line">[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run]</span><br><span class="line">&quot;MaliciousValue&quot;=&quot;C:\Windows\evil.exe</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Windows Registry Editer Version 5.00</span><br><span class="line"></span><br><span class="line">[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run]</span><br><span class="line">&quot;MaliciousValue&quot;=&quot;C:\Windows\evil.exe</span><br></pre></td></tr></table></figure>
 <p><strong>伯克利兼容套接字：</strong>伯克利兼容套接字的网络功能是由Windows中的Winsock库实现的，主要在<code>ws2_32.dll</code>中。在所有的库函数中，<code>socket</code>、<code>connect</code>、<code>bind</code>、<code>listen</code>、<code>accept</code>、<code>send</code>和<code>recv</code>是最常用的，如下是这些函数的描述：</p>
 <table>
 <thead>
@@ -672,7 +672,7 @@
 <p><strong>问题</strong></p>
 <p><strong>1.当计算机重启后，这个程序如何确保他的继续运行（达到持久化驻留）？</strong></p>
 <p>通过分析恶意代码<code>main</code>函数看到如下代码：</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lea     eax, [esp+10h+ServiceStartTable]</span><br><span class="line">mov     [esp+10h+ServiceStartTable.lpServiceName], offset aMalservice ; &quot;MalService&quot;</span><br><span class="line">push    eax             ; lpServiceStartTable</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lea     eax, [esp+10h+ServiceStartTable]</span><br><span class="line">mov     [esp+10h+ServiceStartTable.lpServiceName], offset aMalservice ; &quot;MalService&quot;</span><br><span class="line">push    eax             ; lpServiceStartTable</span><br></pre></td></tr></table></figure>
 <p>可见这个程序通过创建一个名为<code>MalService</code>的服务来实现持久化驻留。</p>
 <p><strong>2.为什么这个程序会使用一个互斥量？</strong></p>
 <p>程序通过使用<code>HGL345</code>作为互斥量来防止程序对服务的重复创建。</p>
@@ -690,11 +690,11 @@
 <p><strong>1.这个程序如何完成持久化驻留？</strong></p>
 <p>本程序无持久化驻留措施。</p>
 <p><strong>2.这个程序的目的是什么？</strong></p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.data:00403010 psz:                                    ; DATA XREF: _main+3C↑o</span><br><span class="line">.data:00403010                 text &quot;UTF-16LE&quot;, &apos;http://www.malwareanalysisbook.com/ad.html&apos;,0</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.data:00403010 psz:                                    ; DATA XREF: _main+3C↑o</span><br><span class="line">.data:00403010                 text &quot;UTF-16LE&quot;, &apos;http://www.malwareanalysisbook.com/ad.html&apos;,0</span><br></pre></td></tr></table></figure>
 <p>通过查看函数参数 <code>CoCreateInstance(&amp;rclsid, 0, 4u, &amp;riid, &amp;ppv);</code>，<code>rclsid</code>为：</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">?? ?? ?? ?? 00 00 00 00  01 DF 02 00 00 00 00 00  ????............</span><br><span class="line">C0 00 00 00 00 00 00 46  61 16 0C D3 AF CD D0 11  .......Fa..盈 托 .</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">?? ?? ?? ?? 00 00 00 00  01 DF 02 00 00 00 00 00  ????............</span><br><span class="line">C0 00 00 00 00 00 00 46  61 16 0C D3 AF CD D0 11  .......Fa..盈 托 .</span><br></pre></td></tr></table></figure>
 <p>按照大端序的顺序可得<code>rclsid</code>为<code>0002DF01-0000-0000-C000-000000000046</code></p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">C0 00 00 00 00 00 00 46  61 16 0C D3 AF CD D0 11  .......Fa..盈 托 .</span><br><span class="line">8A 3E 00 C0 4F C9 E2 6E  FF FF FF FF 80 11 40 00  ...繭 赦 n....€.@.</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">C0 00 00 00 00 00 00 46  61 16 0C D3 AF CD D0 11  .......Fa..盈 托 .</span><br><span class="line">8A 3E 00 C0 4F C9 E2 6E  FF FF FF FF 80 11 40 00  ...繭 赦 n....€.@.</span><br></pre></td></tr></table></figure>
 <p>同理<code>riid</code>为<code>D30C1661-CDAF-11D0-8A3E-00C04FC9E26E</code></p>
 <p>在注册表中查询这两个值：</p>
 <p><img src="https://i.loli.net/2019/03/14/5c89b1669cc17.png" alt></p>
@@ -706,7 +706,7 @@
 <p><strong>这个实验可能比前面的那些有更大的挑战。你将需要使用静态额动态的方法的组合，并聚焦在全局视图上，避免陷入细节。</strong></p>
 <p><strong>问题</strong></p>
 <p><strong>1.这个程序如何完成持久化驻留，来确保在计算机重启后它能继续运行？</strong></p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.data:00403010 dword_403010    dd &apos;nrek&apos;               ; DATA XREF: sub_4010A0+EC↑o</span><br><span class="line">.data:00403010                                         ; _main+1A8↑r</span><br><span class="line">.data:00403014 dword_403014    dd &apos;231e&apos;               ; DATA XREF: _main+1B9↑r</span><br><span class="line">.data:00403018 dword_403018    dd &apos;lld.&apos;               ; DATA XREF: _main+1C2↑r</span><br><span class="line">.data:0040301C dword_40301C    dd 0</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.data:00403010 dword_403010    dd &apos;nrek&apos;               ; DATA XREF: sub_4010A0+EC↑o</span><br><span class="line">.data:00403010                                         ; _main+1A8↑r</span><br><span class="line">.data:00403014 dword_403014    dd &apos;231e&apos;               ; DATA XREF: _main+1B9↑r</span><br><span class="line">.data:00403018 dword_403018    dd &apos;lld.&apos;               ; DATA XREF: _main+1C2↑r</span><br><span class="line">.data:0040301C dword_40301C    dd 0</span><br></pre></td></tr></table></figure>
 <p>通过函数的调用，可以看到以上字符串拼接起来就是<code>kerne123.dll</code>，程序使用<code>CopyFile</code>函数创建<code>C:\\windows\\system32\\kerne132.dll</code></p>
 <p><strong>2.这个恶意代码的两个明显的基于主机的特征是什么？</strong></p>
 <ul>
