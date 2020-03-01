@@ -92,7 +92,7 @@
 <meta name="keywords" content="PWN,CTF,ROP">
 <meta property="og:type" content="article">
 <meta property="og:title" content="二进制安全之NX绕过方法--ROP">
-<meta property="og:url" content="https://hvnt3r.top/2018/10/二进制安全之ROP/index.html">
+<meta property="og:url" content="https://www.hvnt3r.top/2018/10/二进制安全之ROP/index.html">
 <meta property="og:site_name" content="Hvnt3r&#39;s Blog">
 <meta property="og:description" content="在之前的缓冲区溢出的实验中，溢出到栈中的shellcode可以直接被系统执行，给系统安全带来了极大的风险，因此NX技术应运而生，该技术是一种在CPU上实现的安全技术，将数据和命令进行了区分，被标记为数据的内存页没有执行权限，因此即使将恶意shellcode写入到执行流程中也会因缺少执行权限而利用失败，在一定程度上提高了系统的安全性，但是所有安全都是绝对的，一种名为ROP（Return-Orient">
 <meta property="og:locale" content="zh-CN">
@@ -144,7 +144,7 @@
 
 
 
-  <link rel="canonical" href="https://hvnt3r.top/2018/10/二进制安全之ROP/">
+  <link rel="canonical" href="https://www.hvnt3r.top/2018/10/二进制安全之ROP/">
 
 
 
@@ -299,7 +299,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2018/10/二进制安全之ROP/">
+    <link itemprop="mainEntityOfPage" href="https://www.hvnt3r.top/2018/10/二进制安全之ROP/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Hvnt3r">
@@ -427,7 +427,7 @@
 <p><img src="https://i.loli.net/2018/10/24/5bd04ad656935.png" alt></p>
 <p>放到IDA里可以很容易发现<code>Hello()</code>函数中存在溢出漏洞：</p>
 <p><img src="https://i.loli.net/2018/10/24/5bd04ba0a065f.png" alt></p>
-<p>现看一下溢出的情况，可以使用IDA的远程调试来看看再发生溢出后寄存器的数据，<a href="https://hvnt3r.top/2018/10/IDA-Pro%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/">IDA远程调试教程</a></p>
+<p>现看一下溢出的情况，可以使用IDA的远程调试来看看再发生溢出后寄存器的数据，<a href="https://hvnt3r.top/2018/10/IDA-Pro%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/" target="_blank" rel="noopener">IDA远程调试教程</a></p>
 <p>点击运行程序，向程序中输入如下字符串：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ pattern_creat 150</span><br><span class="line"><span class="string">'AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA'</span></span><br></pre></td></tr></table></figure>
 <p><img src="https://i.loli.net/2018/10/25/5bd12fec4d9a7.png" alt></p>
@@ -592,7 +592,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>Post link:</strong>
-    <a href="https://hvnt3r.top/2018/10/二进制安全之ROP/" title="二进制安全之NX绕过方法--ROP">https://hvnt3r.top/2018/10/二进制安全之ROP/</a>
+    <a href="https://www.hvnt3r.top/2018/10/二进制安全之ROP/" title="二进制安全之NX绕过方法--ROP">https://www.hvnt3r.top/2018/10/二进制安全之ROP/</a>
   </li>
   <li class="post-copyright-license">
     <strong>Copyright Notice: </strong>

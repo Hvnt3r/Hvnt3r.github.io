@@ -92,7 +92,7 @@
 <meta name="keywords" content="PWN,CTF,栈溢出">
 <meta property="og:type" content="article">
 <meta property="og:title" content="简单的栈溢出_hello_elf">
-<meta property="og:url" content="https://hvnt3r.top/2018/09/简单的栈溢出-hello-elf/index.html">
+<meta property="og:url" content="https://www.hvnt3r.top/2018/09/简单的栈溢出-hello-elf/index.html">
 <meta property="og:site_name" content="Hvnt3r&#39;s Blog">
 <meta property="og:description" content="最近哥们问了我一道PWN题，觉得比较有代表性而且难度较低，就记录下来以作栈溢出的示例，仅从新手角度分析，大牛绕过 题目地址：https://pan.baidu.com/s/1Gd6u_-pRWmPsRJdlnnNYKg 0x00 基本知识首先，要进行栈溢出的漏洞利用要理解栈的基础结构以及在计算机内的存储方式，之前就有很多大佬写过相关的文章，我也没必要造轮子，就把链接放在这里吧，我是链接，这个是百度">
 <meta property="og:locale" content="zh-CN">
@@ -136,7 +136,7 @@
 
 
 
-  <link rel="canonical" href="https://hvnt3r.top/2018/09/简单的栈溢出-hello-elf/">
+  <link rel="canonical" href="https://www.hvnt3r.top/2018/09/简单的栈溢出-hello-elf/">
 
 
 
@@ -291,7 +291,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://hvnt3r.top/2018/09/简单的栈溢出-hello-elf/">
+    <link itemprop="mainEntityOfPage" href="https://www.hvnt3r.top/2018/09/简单的栈溢出-hello-elf/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Hvnt3r">
@@ -427,7 +427,7 @@
 <p><img src="https://i.loli.net/2018/09/28/5bad9a4e28b52.png" alt></p>
 <p>内容很多，感兴趣的同学可以自己敲一下试试，而我们目前只需关注一下信息：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">NAME</span><br><span class="line">       read - read from a file descriptor</span><br><span class="line"></span><br><span class="line">SYNOPSIS</span><br><span class="line">       <span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line">       <span class="keyword">ssize_t</span> read(<span class="keyword">int</span> fd, <span class="keyword">void</span> *buf, <span class="keyword">size_t</span> count);</span><br></pre></td></tr></table></figure>
-<p>我们需要看一下此函数的相关参数，<code>fd</code>我在<a href="https://hvnt3r.top/2018/09/fd-WriteUp-pwnable-kr%E2%80%94%E2%80%94-fd-Linux%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6/">之前的文章中</a>介绍过了，这个是文件描述符，不同的值代表不同的文件读写状态，0代表标准输入，后面的<code>*buf</code>代表输入的内容的指针，再后面的<code>count</code>是输入的字节数，此时看之前IDA中的伪代码就可以知道此程序会从用户的标准输入中读取64个unsigned整型并将此内容print出来，但是为什么这道题有漏洞呢，因为他读取的是64字节的内容，但是再IDA中显示内容得知程序只为V1开辟了0x16的空间，如图：</p>
+<p>我们需要看一下此函数的相关参数，<code>fd</code>我在<a href="https://hvnt3r.top/2018/09/fd-WriteUp-pwnable-kr%E2%80%94%E2%80%94-fd-Linux%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6/" target="_blank" rel="noopener">之前的文章中</a>介绍过了，这个是文件描述符，不同的值代表不同的文件读写状态，0代表标准输入，后面的<code>*buf</code>代表输入的内容的指针，再后面的<code>count</code>是输入的字节数，此时看之前IDA中的伪代码就可以知道此程序会从用户的标准输入中读取64个unsigned整型并将此内容print出来，但是为什么这道题有漏洞呢，因为他读取的是64字节的内容，但是再IDA中显示内容得知程序只为V1开辟了0x16的空间，如图：</p>
 <p><img src="https://i.loli.net/2018/09/28/5bad9123b9fb2.png" alt> </p>
 <p>这显然是会造成栈溢出的，0x16转换为十进制为22，我们可以来验证一下，我个人比较喜欢用<code>gdb</code>来调试ELF文件，其中<code>gdb</code>中有一个十分好用的插件<code>peda</code>，具体的安装方式网上也有很多的教程，在这里我也不浪费时间了，话不多说，<code>gdb</code>启动：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">☁  1  gdb hello </span><br><span class="line">GNU gdb (Debian 8.1-4) 8.1</span><br><span class="line">......</span><br><span class="line">此处省略N个字</span><br><span class="line">......</span><br><span class="line">Reading symbols from hello...(no debugging symbols found)...<span class="keyword">done</span>.</span><br><span class="line">gdb-peda$ checksec </span><br><span class="line">CANARY    : disabled</span><br><span class="line">FORTIFY   : disabled</span><br><span class="line">NX        : ENABLED</span><br><span class="line">PIE       : disabled</span><br><span class="line">RELRO     : Partial</span><br></pre></td></tr></table></figure>
@@ -525,7 +525,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>Post link:</strong>
-    <a href="https://hvnt3r.top/2018/09/简单的栈溢出-hello-elf/" title="简单的栈溢出_hello_elf">https://hvnt3r.top/2018/09/简单的栈溢出-hello-elf/</a>
+    <a href="https://www.hvnt3r.top/2018/09/简单的栈溢出-hello-elf/" title="简单的栈溢出_hello_elf">https://www.hvnt3r.top/2018/09/简单的栈溢出-hello-elf/</a>
   </li>
   <li class="post-copyright-license">
     <strong>Copyright Notice: </strong>
