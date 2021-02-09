@@ -70,19 +70,6 @@
   </entry>
   
   <entry>
-    <title>使用抽象语法树混淆WebShell</title>
-    <link href="https://www.hvnt3r.top/2020/12/%E4%BD%BF%E7%94%A8%E6%8A%BD%E8%B1%A1%E8%AF%AD%E6%B3%95%E6%A0%91%E6%B7%B7%E6%B7%86WebShell/"/>
-    <id>https://www.hvnt3r.top/2020/12/%E4%BD%BF%E7%94%A8%E6%8A%BD%E8%B1%A1%E8%AF%AD%E6%B3%95%E6%A0%91%E6%B7%B7%E6%B7%86WebShell/</id>
-    <published>2020-12-30T15:06:46.000Z</published>
-    <updated>2020-12-30T15:06:46.868Z</updated>
-    
-    
-    
-    
-    
-  </entry>
-  
-  <entry>
     <title>身份认证逻辑缺陷漏洞挖掘思路</title>
     <link href="https://www.hvnt3r.top/2020/12/%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E9%80%BB%E8%BE%91%E7%BC%BA%E9%99%B7%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF/"/>
     <id>https://www.hvnt3r.top/2020/12/%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E9%80%BB%E8%BE%91%E7%BC%BA%E9%99%B7%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF/</id>
@@ -106,32 +93,16 @@
   </entry>
   
   <entry>
-    <title>安卓APP逆向分析与漏洞挖掘</title>
-    <link href="https://www.hvnt3r.top/2020/12/%E5%AE%89%E5%8D%93APP%E9%80%86%E5%90%91%E5%88%86%E6%9E%90%E4%B8%8E%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/"/>
-    <id>https://www.hvnt3r.top/2020/12/%E5%AE%89%E5%8D%93APP%E9%80%86%E5%90%91%E5%88%86%E6%9E%90%E4%B8%8E%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/</id>
-    <published>2020-12-30T15:04:22.000Z</published>
-    <updated>2020-12-30T15:05:03.341Z</updated>
-    
-    
-    
-    
-    
-  </entry>
-  
-  <entry>
     <title>安卓APP抓包教程</title>
     <link href="https://www.hvnt3r.top/2020/12/%E5%AE%89%E5%8D%93APP%E6%8A%93%E5%8C%85%E6%95%99%E7%A8%8B/"/>
     <id>https://www.hvnt3r.top/2020/12/%E5%AE%89%E5%8D%93APP%E6%8A%93%E5%8C%85%E6%95%99%E7%A8%8B/</id>
     <published>2020-12-30T14:28:09.000Z</published>
-    <updated>2021-02-09T13:09:57.655Z</updated>
+    <updated>2021-02-09T13:23:59.790Z</updated>
     
-    <content type="html"><![CDATA[<h3 id="安卓APP抓包"><a href="#安卓APP抓包" class="headerlink" title="安卓APP抓包"></a>安卓APP抓包</h3><h4 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h4><p>在渗透测试项目中，有很多目标单位有专属的APP，其中APP自身安全和APP对应的服务端接口也是渗透测试的攻击面，但是现有的APP安全防护措施不断提高，从APP本身发现安全问题的可能性降低，且服务器与客户端的通信过程也有较多的安全校验，下文将介绍安卓APP的抓包方法，方便渗透测试过程中的漏洞挖掘。</p><h4 id="证书校验"><a href="#证书校验" class="headerlink" title="证书校验"></a>证书校验</h4><p>现在很多APP的网络请求都使用HTTPS，HTTP报文可以很轻松的通过在手机上设置代理然后通过BurpSuite等报文嗅探、代理软件截获，便于后续分析，但是HTTPS报文传输过程需要证书认证，现有多数APP还有双向认证机制，即不仅服务器要校验请求是否来源于真正的客户端，客户端也会校验收到的信息是否来自于服务器，而且安卓7.0之后，APP只会识别系统级别的证书，而从BurpSuite和Charles中导出安装的证书是用户级证书，因此导致在转包软件中无法抓到相应APP的流量数据，因此有两种方法可以安装:</p><ul><li>获取Root权限，然后将抓包软件的证书安装为系统级证书</li></ul><p>使用ADB安装证书</p><figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># 1.从Charles取出证书</span></span><br><span class="line"></span><br><span class="line">charles-proxy-ssl-proxying-certificate.pem</span><br><span class="line"><span class="hljs-comment"># 2.获取证书hash，并修改证书文件名为hash+后缀&#x27;&#x27;.0&#x27;&#x27; 。本例为fc0dd2c8.0</span></span><br><span class="line"></span><br><span class="line">iMac:~ imac$ openssl x509 -<span class="hljs-keyword">in</span> ./charles-proxy-ssl-proxying-certificate.pem   -noout -subject_hash</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 执行结果：fc0dd2c8</span></span><br><span class="line"><span class="hljs-comment"># 3.连接测试机，adb shell 修改 /system权限，</span></span><br><span class="line">adb push fc0dd2c8.0 证书到 /system/etc/security/cacerts/</span><br><span class="line"></span><br><span class="line">mount -o rw,remount /system</span><br><span class="line"><span class="hljs-comment"># 4.修改证书权限为664，重启设备</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-built_in">cd</span> /system/etc/security/cacerts/</span><br><span class="line"></span><br><span class="line">chmod 664 ./fc0dd2c8.0</span><br><span class="line"></span><br><span class="line">reboot</span><br></pre></td></tr></table></figure><ul><li>修改APP包Androidmanifest，文件并将APP重新打包</li></ul><h4 id="APP校验证书"><a href="#APP校验证书" class="headerlink" title="APP校验证书"></a>APP校验证书</h4><p>有些APP会有SSL pinning通过APP自身代码校验证书和服务器的关系，这种情况下使用自己导出的证书无法通过此步认证，可以通过逆向APP将APP验证的证书提取出来，证书通常在/assets目录下，通过jeb等反编译工具全局搜索cer、p12、pem、ssl等关键字可以找到相应证书未知，将证书导出并导入到抓包程序内即可，如下如是某APP内证书存放位置：</p><p><img src="https://i.loli.net/2021/02/09/tHYfqAaXJS4uBZO.png" alt="JEB界面"></p><h4 id="模拟器抓包"><a href="#模拟器抓包" class="headerlink" title="模拟器抓包"></a>模拟器抓包</h4><p>可能为了更方便的实现模拟器自身的功能，目前市面上多款模拟器的安卓版本多为安卓6，因此在抓包就相对容易一些，首先在模拟器中安装Xposed框架，然后在框架中安装JustTrustMe模块，安装成功后界面如下：</p><p><img src="https://i.loli.net/2021/02/09/kPeD9Yjtqlf14cB.png" alt="JustTrustMe"></p><p>在模拟器中将系统代理地址设置为Charles地址，默认为本机IP＋8090端口</p><p><img src="https://i.loli.net/2021/02/09/fVQlYm8OJuwZpbq.png" alt="代理修改"></p><p>抓包成功示意图：</p><p><img src="https://i.loli.net/2021/02/09/2B3oEN6x9IbV1Cy.png" alt="抓包"></p><p>对于部分反分析功能比较完善的APP，以上分析方法可能就会失效，比如APP会校验自身运行环境是否已授权Root，如果已授权则禁止运行，或者检测是否安装Xposed这种通常在正常使用环境中不会出现的APP就会退出等，遇到这种APP还是要先通过逆向将检测逻辑给过掉才能继续分析。</p><h4 id="代理APP"><a href="#代理APP" class="headerlink" title="代理APP"></a>代理APP</h4><p>除了以上手机抓包方式，还有一个可以安装在目标安卓系统的一款APP：Packet Capture，此应用通过设置系统代理的方式截获其他APP的数据包，也可以对一些没有双向认证的APP进行简单地分析。</p><p>软件界面：</p><p><img src="https://i.loli.net/2021/02/09/bnjCSdK4y3kHthq.png" alt="抓包"></p><p>抓包界面：</p><p><img src="https://i.loli.net/2021/02/09/DGOM5CZ6du1mS2z.png" alt="数据包内容"></p><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>以上方法可以实现安卓客户端流量抓取，方便渗透测试过程中发现更多渗透入口。</p><p><a href="https://www.yuanrenxue.com/app-crawl/android-7-capture-data.html">参考文章</a></p>]]></content>
+    <content type="html"><![CDATA[<h3 id="安卓APP抓包"><a href="#安卓APP抓包" class="headerlink" title="安卓APP抓包"></a>安卓APP抓包</h3><h4 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h4><p>在渗透测试项目中，有很多目标单位有专属的APP，其中APP自身安全和APP对应的服务端接口也是渗透测试的攻击面，但是现有的APP安全防护措施不断提高，从APP本身发现安全问题的可能性降低，且服务器与客户端的通信过程也有较多的安全校验，下文将介绍安卓APP的抓包方法，方便渗透测试过程中的漏洞挖掘。</p><a id="more"></a><h4 id="证书校验"><a href="#证书校验" class="headerlink" title="证书校验"></a>证书校验</h4><p>现在很多APP的网络请求都使用HTTPS，HTTP报文可以很轻松的通过在手机上设置代理然后通过BurpSuite等报文嗅探、代理软件截获，便于后续分析，但是HTTPS报文传输过程需要证书认证，现有多数APP还有双向认证机制，即不仅服务器要校验请求是否来源于真正的客户端，客户端也会校验收到的信息是否来自于服务器，而且安卓7.0之后，APP只会识别系统级别的证书，而从BurpSuite和Charles中导出安装的证书是用户级证书，因此导致在转包软件中无法抓到相应APP的流量数据，因此有两种方法可以安装:</p><ul><li>获取Root权限，然后将抓包软件的证书安装为系统级证书</li></ul><p>使用ADB安装证书</p><figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment"># 1.从Charles取出证书</span></span><br><span class="line"></span><br><span class="line">charles-proxy-ssl-proxying-certificate.pem</span><br><span class="line"><span class="hljs-comment"># 2.获取证书hash，并修改证书文件名为hash+后缀&#x27;&#x27;.0&#x27;&#x27; 。本例为fc0dd2c8.0</span></span><br><span class="line"></span><br><span class="line">iMac:~ imac$ openssl x509 -<span class="hljs-keyword">in</span> ./charles-proxy-ssl-proxying-certificate.pem   -noout -subject_hash</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment"># 执行结果：fc0dd2c8</span></span><br><span class="line"><span class="hljs-comment"># 3.连接测试机，adb shell 修改 /system权限，</span></span><br><span class="line">adb push fc0dd2c8.0 证书到 /system/etc/security/cacerts/</span><br><span class="line"></span><br><span class="line">mount -o rw,remount /system</span><br><span class="line"><span class="hljs-comment"># 4.修改证书权限为664，重启设备</span></span><br><span class="line"></span><br><span class="line"><span class="hljs-built_in">cd</span> /system/etc/security/cacerts/</span><br><span class="line"></span><br><span class="line">chmod 664 ./fc0dd2c8.0</span><br><span class="line"></span><br><span class="line">reboot</span><br></pre></td></tr></table></figure><ul><li>修改APP包Androidmanifest，文件并将APP重新打包</li></ul><h4 id="APP校验证书"><a href="#APP校验证书" class="headerlink" title="APP校验证书"></a>APP校验证书</h4><p>有些APP会有SSL pinning通过APP自身代码校验证书和服务器的关系，这种情况下使用自己导出的证书无法通过此步认证，可以通过逆向APP将APP验证的证书提取出来，证书通常在/assets目录下，通过jeb等反编译工具全局搜索cer、p12、pem、ssl等关键字可以找到相应证书未知，将证书导出并导入到抓包程序内即可，如下如是某APP内证书存放位置：</p><p><img src="https://i.loli.net/2021/02/09/tHYfqAaXJS4uBZO.png" alt="JEB界面"></p><h4 id="模拟器抓包"><a href="#模拟器抓包" class="headerlink" title="模拟器抓包"></a>模拟器抓包</h4><p>可能为了更方便的实现模拟器自身的功能，目前市面上多款模拟器的安卓版本多为安卓6，因此在抓包就相对容易一些，首先在模拟器中安装Xposed框架，然后在框架中安装JustTrustMe模块，安装成功后界面如下：</p><p><img src="https://i.loli.net/2021/02/09/kPeD9Yjtqlf14cB.png" alt="JustTrustMe"></p><p>在模拟器中将系统代理地址设置为Charles地址，默认为本机IP＋8090端口</p><p><img src="https://i.loli.net/2021/02/09/fVQlYm8OJuwZpbq.png" alt="代理修改"></p><p>抓包成功示意图：</p><p><img src="https://i.loli.net/2021/02/09/2B3oEN6x9IbV1Cy.png" alt="抓包"></p><p>对于部分反分析功能比较完善的APP，以上分析方法可能就会失效，比如APP会校验自身运行环境是否已授权Root，如果已授权则禁止运行，或者检测是否安装Xposed这种通常在正常使用环境中不会出现的APP就会退出等，遇到这种APP还是要先通过逆向将检测逻辑给过掉才能继续分析。</p><h4 id="代理APP"><a href="#代理APP" class="headerlink" title="代理APP"></a>代理APP</h4><p>除了以上手机抓包方式，还有一个可以安装在目标安卓系统的一款APP：Packet Capture，此应用通过设置系统代理的方式截获其他APP的数据包，也可以对一些没有双向认证的APP进行简单地分析。</p><p>软件界面：</p><p><img src="https://i.loli.net/2021/02/09/bnjCSdK4y3kHthq.png" alt="抓包"></p><p>抓包界面：</p><p><img src="https://i.loli.net/2021/02/09/DGOM5CZ6du1mS2z.png" alt="数据包内容"></p><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>以上方法可以实现安卓客户端流量抓取，方便渗透测试过程中发现更多渗透入口。</p><p><a href="https://www.yuanrenxue.com/app-crawl/android-7-capture-data.html">参考文章</a></p>]]></content>
     
     
-      
-      
-    <summary type="html">&lt;h3 id=&quot;安卓APP抓包&quot;&gt;&lt;a href=&quot;#安卓APP抓包&quot; class=&quot;headerlink&quot; title=&quot;安卓APP抓包&quot;&gt;&lt;/a&gt;安卓APP抓包&lt;/h3&gt;&lt;h4 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背</summary>
-      
+    <summary type="html">&lt;h3 id=&quot;安卓APP抓包&quot;&gt;&lt;a href=&quot;#安卓APP抓包&quot; class=&quot;headerlink&quot; title=&quot;安卓APP抓包&quot;&gt;&lt;/a&gt;安卓APP抓包&lt;/h3&gt;&lt;h4 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h4&gt;&lt;p&gt;在渗透测试项目中，有很多目标单位有专属的APP，其中APP自身安全和APP对应的服务端接口也是渗透测试的攻击面，但是现有的APP安全防护措施不断提高，从APP本身发现安全问题的可能性降低，且服务器与客户端的通信过程也有较多的安全校验，下文将介绍安卓APP的抓包方法，方便渗透测试过程中的漏洞挖掘。&lt;/p&gt;</summary>
     
     
     
@@ -560,6 +531,60 @@
     <category term="逆向" scheme="https://www.hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
     
     <category term="恶意代码分析" scheme="https://www.hvnt3r.top/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>C++代码分析</title>
+    <link href="https://www.hvnt3r.top/2019/04/C-%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    <id>https://www.hvnt3r.top/2019/04/C-%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/</id>
+    <published>2019-04-27T02:58:22.000Z</published>
+    <updated>2020-12-16T12:16:54.212Z</updated>
+    
+    <content type="html"><![CDATA[<hr><h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p><strong>面向对象的编程语言：</strong>和C语言不同C++是一种面向对象的编程语言，采用使用对象的编程模型，将数据与操作数据的函数都封装到对象中，在面向对象中，代码以叫做类Class的用户自定义的数据类型进行组织，类与结构体比较类似，差别在于他们另外保存函数信息而不仅仅是数据，类是创建一个对象的模板，它指定内存中的一个对象的函数与数据布局。</p><a id="more"></a><p><strong>this指针：</strong>数据与函数是对象关联的。为了访问一块是数据，你需要使用<code>ObjectName.variableName</code>的形式。函数以<code>ObjectName.functionName</code>的形式被简单调用，除了使用对象名访问变量以外还可以使用变量名访问当前对象的变量。<code>this</code>指针在一个不指定对象的函数中对每个变量访问时都是隐含的；它对每个对象函数都是一个隐含的参数。在微软生成的汇编代码中，<code>this</code>指针通常被传递到<code>ECX</code>寄存器中，有时也会使用<code>ESI</code>寄存器。使用this指针的<code>C++</code>调用叫做<code>thiscall</code>。</p><p><strong>重载与修饰：</strong><code>C++</code>支持一个被称为方法重载的编码结构，它能让多个函数使用同一个名字但接收不同的参数，编译器基于这个调用中的参数的个数与类型判断使用这个函数的哪个版本。C++使用名字修饰的字数来支持方法重载，为了支持重载，文件格式中的方法名经过了修改，这个名字中包含了参数信息，如一个名为Test的函数是<code>SimpleClass</code>的一部分，并且接受两个整数作为参数，那么这个方法名修饰之后就会叫：</p><figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?Test@SimpleClass@@QAEXHH@Z</span><br></pre></td></tr></table></figure><p>IDA会根据此函数的修饰进行反修饰显示出原始的函数名和参数，然而内部函数名只有在代码中拥有符号时才可见。</p><p><strong>继承与函数重写：</strong>继承是一个面向对象编程的概念，在这个概念中父子关系在类之间建立。子类继承来自弗雷的函数和数据。一个子类会自动拥有所有父类的函数和数据，且经常定义额外的函数和数据。</p><p><strong>虚函数与非虚函数：</strong>虚函数是一个可以被子类重写的函数，并且它的执行是在运行时判断的，如果一个函数在父类中被定义，且在子类中也有一个同样名字的函数，那么子类的函数将会重写父类的函数。而在非虚函数中，这个要被执行的函数在编译时就会被确定。如果这个对象是一个父类的实例则这个父类的函数将被调用，即时这个对象在运行时属于子类，当虚函数在一个子类对象上被调用时，如果对象的父类是一个实例类型那么这个函数的子类版本可能被调用。</p><p><strong>虚函数表的使用：</strong>C++编译器会在编译代码时添加特殊的数据结构来支持虚函数，这些数据结构被称为虚函数表<code>vtables</code>，这些表时简单的函数指针的数组，每一个虚函数的类有它自己的虚函数表，且每一个类中的虚函数在虚函数表中都有一个项。</p><p><strong>识别虚函数表：</strong>虚函数表看起来向是函数指针的数组，当你看到一个虚函数表时，只有这个表中的第一个值有交叉引用。</p><p><strong>创建和销毁对象：</strong>C++类有两个特殊的函数构造函数和析构函数，构造函数在一个对象被创建的时候调用，析构函数在一个对象被销毁时调用，对象可以在栈上被创建也可以保存到堆上，对于在栈上创建的对象，没有必要位这个对象分配指定的内存，这个对象会简单地与其他局部变量一起保存在栈上。析构函数在对象离开作用于之后被自动调用，编译器可能要添加异常处理代码来保证对象的析构函数被调用。</p><h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab20-01"><a href="#Lab20-01" class="headerlink" title="Lab20-01"></a>Lab20-01</h3><p><strong>第一个实验的目的是演示this指针如何使用。</strong></p><p><strong>问题</strong></p><p><strong>1.在0x401040处的函数采用了什么参数？</strong></p><p><strong>2.哪个URL被用来调用URLDownloadToFile？</strong></p><p><strong>3.这个程序做了什么事情？</strong></p><h3 id="Lab20-02"><a href="#Lab20-02" class="headerlink" title="Lab20-02"></a>Lab20-02</h3><p><strong>第二个实验的目的是演示虚函数。</strong></p><p><strong>问题</strong></p><p><strong>1.在这个程序中，你可以从有趣的字符串中了解到什么？</strong></p><p><strong>2.导入函数表告诉你关于这个程序的什么信息？</strong></p><p><strong>3.在0x40011D9处创建对象的目的是什么？它有什么虚函数吗？</strong></p><p><strong>4.哪个函数可能被宰0x401349处的call [edx]指令调用？</strong></p><p><strong>5.如何简易的搭建这个恶意代码所预料的服务器，不用连接到互联网就能完整地分析这个恶意代码呢？</strong></p><p><strong>6.这个程序的目的是什么？</strong></p><p><strong>7.这个程序中实现虚函数调用的目的是什么？</strong></p><h3 id="Lab20-03"><a href="#Lab20-03" class="headerlink" title="Lab20-03"></a>Lab20-03</h3><p><strong>第三个实验是一个长度更长也更现实的恶意代码，这个实验附带一个名为config.dat的配置文件。</strong></p><p><strong>问题</strong></p><p><strong>1.你可以在这个程序中得到什么有意思的字符串？</strong></p><p><strong>2.导入函数表告诉你关于这个程序的什么信息？</strong></p><p><strong>3.在0x4036F0处，存在一个以字符串Config error作为输入的函数调用，其后跟着一些指令，然后是一个对CxxThrowException的调用，除了这个字符串以外，这个函数还用到其他的参数了吗，这个函数返回了什么？从这个函数被使用的上下文中，你可以得到哪些信息？</strong></p><p><strong>4.在0x4025C8出的switch表中的6个项都做了什么？</strong></p><p><strong>5.这个程序的目的是什么？</strong></p><hr><h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>]]></content>
+    
+    
+    <summary type="html">&lt;hr&gt;
+&lt;h2 id=&quot;知识点&quot;&gt;&lt;a href=&quot;#知识点&quot; class=&quot;headerlink&quot; title=&quot;知识点&quot;&gt;&lt;/a&gt;知识点&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;面向对象的编程语言：&lt;/strong&gt;和C语言不同C++是一种面向对象的编程语言，采用使用对象的编程模型，将数据与操作数据的函数都封装到对象中，在面向对象中，代码以叫做类Class的用户自定义的数据类型进行组织，类与结构体比较类似，差别在于他们另外保存函数信息而不仅仅是数据，类是创建一个对象的模板，它指定内存中的一个对象的函数与数据布局。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="二进制安全" scheme="https://www.hvnt3r.top/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/"/>
+    
+    
+    <category term="逆向" scheme="https://www.hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
+    
+    <category term="恶意代码分析" scheme="https://www.hvnt3r.top/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    
+    <category term="C++" scheme="https://www.hvnt3r.top/tags/C/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>ShellCode分析</title>
+    <link href="https://www.hvnt3r.top/2019/04/ShellCode%E5%88%86%E6%9E%90/"/>
+    <id>https://www.hvnt3r.top/2019/04/ShellCode%E5%88%86%E6%9E%90/</id>
+    <published>2019-04-27T02:58:09.000Z</published>
+    <updated>2020-12-16T12:19:22.605Z</updated>
+    
+    <content type="html"><![CDATA[<hr><h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p><strong>位置无关代码：</strong>PIC指不用硬编码地址来寻址指令或数据得代码，shellcode编写者应该使用位置无关代码来提高代码的兼容性。</p><p><strong>识别执行位置：</strong>Shellcode再以位置无关方式访问数据时需要引用一个基质指针，用这个基址指针加上或减去偏移值，将使它安全访问shellcode中包含的数据，因此一个通用寄存器应该首先载入当前EIP值，作为基址指针来使用，但是指令指针不能之别被软件访问，无法汇编<code>mov eax, eip</code>指令，但是可以使用<code>call/pop</code>指令和<code>fnstenv</code>指令。</p><p><strong>使用call/pop指令：</strong>当一个call指令被执行使，处理器将call后面的指令地址压倒栈上，然后请求转到被请求的位置执行，这个函数执行完成后会执行一个ret指令，将返回地址弹出到栈的顶部，并将它载入EIP寄存器中，这样的结果使执行刚好返回到call后面的指令。因此shellcode可以通过call后面紧跟一个pop的方法来得到call后指令指针的方法。</p><a id="more"></a><p><strong>使用fnstenv指令：</strong>x87浮点单元（FPU）再普通的x86架构中提供给了一个隔离的执行环境，它包含一个单独的专用寄存器集合，当一个进程正在使用FPU指令浮点运算时，这些寄存器需要由操作系统再上下文切换时保存，<code>fnstenv</code>使用一个28字节的结构体存储FPU状态到内存中，有一处字符偏移量为<code>12</code>的<code>fpu_instruction_pointer</code>会保存FPU使用的最后一条的CPU指令的地址，并为一场处理器标识哪条FPU指令可能导致错误上下文信息，需要这个域是因为FPU是与CPU并行运行的，如果FPU产生了一个异常，一场处理器不能简单地通过参照中断返回地址来标识这个错误的指令。</p><p><strong>手动符号解析：</strong>shellcode 不能使用Windows加载器来确保所有的库加载并可用，它必须自己解决外部符号依赖，因此它经常使用LoadLibrarayA和GetProcAddress函数。因此shellcode需要完成</p><ul><li>在内存中找到kernel32.dll</li><li>解析kernel32.dll文件，并搜索以上两个导出函数。</li></ul><p><strong>在内存中找到kernel32.dll：</strong></p><p><img src="https://i.loli.net/2019/04/29/5cc6a4711e07b.png"></p><p>一旦找到了上图中kernel32.dll的基地址DllBase，通过跟踪内存中的几个结构体来解析kernel32.dll的符号。当定义一个文件内的位置时,PE文件使用RVA，导出数据被保存在IMAGE_EXPORT_DIRECTORY中，一个相对于IMAGE_EXPORT_DIRECTORY的RVA被保存在IMAGE_OPTIONAL_HEADER末尾部分的IMAGE_DATA_DIRECTORY结构体数组中。IMAGE_DATA_DIRECTORY数组的具体位置取决于这个PE文件是32位还是64位的。假设shellcode运行在32位平台上，所以在编译时从PE特征值域到IMAGE_DATA_DIRECTORY正确偏移的计算方式如下：</p><figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">sizeof</span>(PE_Signature)+<span class="hljs-keyword">sizeof</span>(IMAGE_FILE_HEADER)+<span class="hljs-keyword">sizeof</span>(IMAGE_OPTIONAL_HEADER)=<span class="hljs-number">120</span>字节</span><br></pre></td></tr></table></figure><p>下图是IMAGE_EXPORT_DIRCTORY结构体中的相对域，AddressOfFunctions是一个RVA的数组，指向实际导出的函数。</p><p><img src="https://i.loli.net/2019/04/29/5cc6e2d794f96.png"></p><p>按照如下步骤可以找到一个符号的导出地址：</p><ul><li>迭代<code>AddressOfNames</code>数组查看每一个char *项，然后和需要的符执行一个字符串比较，直到找到一个匹配的项，我们将这个<code>AddressOfNames</code>的索引称为<code>AddressOfName iName</code>。</li><li>在<code>AddressOfNameOrdinals</code>数组中使用<code>iName</code>的索引，获取的值就是<code>iOrdinal</code>值。</li><li>使用<code>iOrdinal</code>索引到<code>Address OfFunctions</code>数组，获取到的值是被导出符号的RVA，最后将这个值返回给请求者。</li></ul><p><strong>使用散列过的导出符号名：</strong>当使用对每一个导出函数进行<code>strcmp</code>对比直到找出正确的函数名不适用<code>shellcode</code>大小受限的情况，shellcode大小受限时可以使用散列过的导出函数名来缩小<code>shellcode</code>大小。</p><p><strong>空指令雪橇：</strong>即<code>nop</code>指令<code>0x90</code>，但是有的编写者为了避免检测也会使用<code>0x40~0x4f</code>之间的值作为空指令。</p><p><strong>shellcode编码：</strong>有的程序可能会对<code>shellcode</code>的编码有一定的需求，不能出现坏字符如在字符串中出现<code>0x00</code>，或者要求所有字符都是可打印的（小于<code>0x80</code>）等，要绕过这些限制首先需要对<code>shellcode</code>进行编码，然后再<code>shellcode</code>中插入一个解码器，要保证解码器本身也能通过限制。下面时常用的编码技术：</p><ul><li>用常量字节掩码来<code>XOR</code>所有的载荷字节。</li><li>使用字母变换将一个字节分割成4个比特然后域一个可打印的ASCII字符相加等。</li></ul><h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab19-1"><a href="#Lab19-1" class="headerlink" title="Lab19-1"></a>Lab19-1</h3><p><strong>使用shellcode_launcher.exe，分析文件。</strong></p><p><strong>问题</strong></p><p><strong>1.这段shellcode时如何编码的？</strong></p><p><strong>2.这段shellcode手动导入了哪个函数？</strong></p><p><strong>3.这段shellcode和哪个网络主机通信？</strong></p><p><strong>4.这段shellcode再文件系统上留下了什么迹象？</strong></p><p><strong>5.这段shellcode做了什么？</strong></p><h3 id="Lab19-2"><a href="#Lab19-2" class="headerlink" title="Lab19-2"></a>Lab19-2</h3><p><strong>文件Lab19-02.exe中包含一段shellcode，这个shellcode会被注入到另外一个进程并运行，请分析这个文件</strong></p><p><strong>问题</strong></p><p><strong>1.这段shellcode被注入到什么进程中？</strong></p><p><strong>2.这段shellcode位于哪里？</strong></p><p><strong>3.这段shellcode时如何被编码的？</strong></p><p><strong>4.这段shellcode手动导入了哪个函数？</strong></p><p><strong>5.这段shellcode和什么网络主机进行通信？</strong></p><p><strong>6.这段shellcode做了什么？</strong></p><h3 id="Lab19-3"><a href="#Lab19-3" class="headerlink" title="Lab19-3"></a>Lab19-3</h3><p><strong>问题</strong></p><p><strong>1.这个PDF中使用了什么漏洞？</strong></p><p><strong>2.这段shellcode是如何编码的？</strong></p><p><strong>3.这段shellcode手动导入了哪个函数？</strong></p><p><strong>4.这段shellcode再文件系统上留下了什么迹象？</strong></p><p><strong>5.这段shellcode做了什么？</strong></p><hr><h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>]]></content>
+    
+    
+    <summary type="html">&lt;hr&gt;
+&lt;h2 id=&quot;知识点&quot;&gt;&lt;a href=&quot;#知识点&quot; class=&quot;headerlink&quot; title=&quot;知识点&quot;&gt;&lt;/a&gt;知识点&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;位置无关代码：&lt;/strong&gt;PIC指不用硬编码地址来寻址指令或数据得代码，shellcode编写者应该使用位置无关代码来提高代码的兼容性。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;识别执行位置：&lt;/strong&gt;Shellcode再以位置无关方式访问数据时需要引用一个基质指针，用这个基址指针加上或减去偏移值，将使它安全访问shellcode中包含的数据，因此一个通用寄存器应该首先载入当前EIP值，作为基址指针来使用，但是指令指针不能之别被软件访问，无法汇编&lt;code&gt;mov eax, eip&lt;/code&gt;指令，但是可以使用&lt;code&gt;call/pop&lt;/code&gt;指令和&lt;code&gt;fnstenv&lt;/code&gt;指令。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;使用call/pop指令：&lt;/strong&gt;当一个call指令被执行使，处理器将call后面的指令地址压倒栈上，然后请求转到被请求的位置执行，这个函数执行完成后会执行一个ret指令，将返回地址弹出到栈的顶部，并将它载入EIP寄存器中，这样的结果使执行刚好返回到call后面的指令。因此shellcode可以通过call后面紧跟一个pop的方法来得到call后指令指针的方法。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="二进制安全" scheme="https://www.hvnt3r.top/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/"/>
+    
+    
+    <category term="逆向" scheme="https://www.hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
+    
+    <category term="恶意代码分析" scheme="https://www.hvnt3r.top/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    
+    <category term="ShellCode" scheme="https://www.hvnt3r.top/tags/ShellCode/"/>
     
   </entry>
   

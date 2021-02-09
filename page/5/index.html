@@ -146,115 +146,6 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-01-21T00:42:31.000Z">2019-01-21</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    35 分钟 读完 (大约 5254 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2019/01/%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80%E6%8A%80%E6%9C%AF/">动态分析基础技术</a>
-            
-        </h1>
-        <div class="content">
-            <hr>
-<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>与静态分析不同，动态分析是将恶意代码加载运行之后观察代码运行状态的一个过程，一般来说，对恶意代码进行分析时先进行静态分析来大致了解软件的功能再进行动态分析以了解恶意代码运行时的更多细节，静态分析与动态分析都有各自的有点以及局限性，本章重点介绍了动态分析的一些手法和技巧。</p>
-<p><strong>用沙箱来分析恶意代码：</strong>沙箱是一种在安全环境下运行不信任的程序的安全机制，沙箱一般包含一个虚拟的环境，并可以定制虚拟网络等“欺骗”恶意代码让恶意代码认为自己所在的沙箱是一个正常的物理机的各种虚拟功能，但是运行在沙箱中的恶意代码并不会对物理机产生任何威胁，因此沙箱是一个很好的用来动态分析恶意代码的工具。</p>
-<p>前一段时间我使用过布谷鸟沙箱（<code>Cuckoo</code>），这一款沙箱的结构是首先开启一个安装有<code>Ubuntu14.04</code>的系统用于安装Cuckoo，然后再向这个虚拟机上安装所有<code>Cuckoo</code>依赖的插件，安装完成后再向<code>Ubuntu</code>中安装一个<code>Vmware</code>虚拟机来安装一个用于运行Windows等系统的虚拟机，整体相当于是一个虚拟机的嵌套结构，布谷鸟对这个在虚拟机中运行的虚拟机的运行状态的存储状态进行记录，并对比运行病毒前后的镜像区别来确定恶意代码对主机做了什么，并会生成一个十分详细的报告，总的来说这种杀向在我们对一个恶意代码进行静态分析遇到困难时还是很有帮助的，但是缺点是此系统十分难于安装，因为很多安装条件会产生冲突，而且此沙箱运行起来也是对电脑性能的极大挑战，除非你有一台安装了<code>Ubuntu14.04</code>的物理主机。</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/01/%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80%E6%8A%80%E6%9C%AF/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    <div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-01-20T07:00:00.000Z">2019-01-20</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    12 分钟 读完 (大约 1744 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2019/01/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%88%86%E6%9E%90%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/">在虚拟机中分析恶意代码</a>
-            
-        </h1>
-        <div class="content">
-            <hr>
-<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>很多恶意代码无疑会对运行环境造成不同程度的损害，在分析恶意代码功能的时候我们最好将恶意代码放在虚拟环境下进行分析，除了有一些无法通过虚拟化环境分析的恶意代码需要用安装了<code>Norton Ghost</code>等还原系统的物理机里进行分析。本章主要讲了如何在虚拟环境下分析恶意代码以及我们在虚拟环境下分析恶意代码可能造成的问题。</p>
-<p><strong>虚拟化环境：</strong>对我们而言，最容易创造的虚拟化环境就是用<code>Vmware</code>、<code>Hyper-v</code>或者<code>Virtual Box</code>创建一个虚拟机，另外还有一些用<code>Docker</code>容器作为虚拟化环境的恶意代码分析手段，但是我感觉这种方式暂时还不成熟，有很多技术<code>Vmware</code>可以做的更好，而且安全性方面<code>Vmware</code>隔离更彻底，更安全。因此我们可以用功能十分强大的<code>Vmware</code>创建一个属于自己的恶意代码分析环境，创建虚拟机以及虚拟机的使用方法网上已经有很多教程了，此处不再赘述，而着重介绍与恶意代码分析相关的虚拟机用法。</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/01/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%88%86%E6%9E%90%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    <div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
                 <time class="level-item has-text-grey" datetime="2019-01-17T09:00:58.000Z">2019-01-17</time>
                 
                 <div class="level-item">
@@ -688,6 +579,116 @@
 
 
 
+    <div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2018-10-24T00:57:39.000Z">2018-10-24</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    14 分钟 读完 (大约 2156 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2018/10/Shell-code%E7%9A%84%E7%BC%96%E5%86%99%E5%92%8C%E5%88%A9%E7%94%A8/">Shellcode的编写和利用</a>
+            
+        </h1>
+        <div class="content">
+            <p>在渗透测试和漏洞利用中，<code>Shellcode</code>是一个十分重要的部分，在二进制的安全研究中，<code>Shellcode</code>也充当着十分重要的角色，本文会记录我学习<code>Shellcode</code>的编写和利用原理。</p>
+<h2 id="在程序中嵌入Shellcode并执行"><a href="#在程序中嵌入Shellcode并执行" class="headerlink" title="在程序中嵌入Shellcode并执行"></a>在程序中嵌入Shellcode并执行</h2><p>首先拿一道十分简单的PWN题来演示程序是如何执行<code>Shellcode</code>的</p>
+<p><a href>文件下载</a></p>
+<p>首先，这是一个<code>32</code>位的程序，我把它放到了<code>32</code>位的<code>kali</code>虚拟机中</p>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2018/10/Shell-code%E7%9A%84%E7%BC%96%E5%86%99%E5%92%8C%E5%88%A9%E7%94%A8/#more">阅读更多</a>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    <div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2018-10-21T08:56:49.000Z">2018-10-21</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    3 分钟 读完 (大约 390 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2018/10/PwnTools%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95%E5%AD%A6%E4%B9%A0/">PwnTools使用方法学习</a>
+            
+        </h1>
+        <div class="content">
+            <blockquote>
+<p><code>pwntools</code>是一个CTF框架和漏洞利用开发库。它以Python编写，专为快速原型设计和开发而设计，旨在使漏洞利用编写尽可能简单。</p>
+</blockquote>
+<p>在CTF比赛中或者一些漏洞的利用过程中，使用pwntools这个优秀而便捷的库可以使原本复杂的脚本变得简单易读，本文会记录我个人在使用PwnTools过程中的一些技巧，长期更新</p>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2018/10/PwnTools%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95%E5%AD%A6%E4%B9%A0/#more">阅读更多</a>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
 
     
 <div class="card card-transparent">
@@ -710,9 +711,9 @@
             
             <li><a class="pagination-link has-text-black-ter" href="/page/6/">6</a></li>
             
-            <li><span class="pagination-ellipsis has-text-black-ter">&hellip;</span></li>
+            <li><a class="pagination-link has-text-black-ter" href="/page/7/">7</a></li>
             
-            <li><a class="pagination-link has-text-black-ter" href="/page/9/">9</a></li>
+            <li><a class="pagination-link has-text-black-ter" href="/page/8/">8</a></li>
             
         </ul>
     </nav>
@@ -760,7 +761,7 @@
                         文章
                     </p>
                     <p class="title has-text-weight-normal">
-                        81
+                        79
                     </p>
                 </div>
             </div>

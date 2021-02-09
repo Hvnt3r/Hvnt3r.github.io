@@ -146,117 +146,6 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-03-26T15:08:46.000Z">2019-03-26</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    27 分钟 读完 (大约 4027 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2019/03/%E9%98%B2%E5%8F%8D%E6%B1%87%E7%BC%96%E6%8A%80%E6%9C%AF/">防反汇编技术</a>
-            
-        </h1>
-        <div class="content">
-            <hr>
-<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>所谓对抗反汇编技术，就是在程序中使用一些特殊构造的代码或数据，让反汇编分析工具产生不正确的程序代码列表。这种技术由恶意代码编写者手工构造，在恶意代码编译和部署阶段使用一个单独的混淆工具，或是直接在源码中插入混淆代码。除了延缓或者防止人工分析以外，防反汇编技术也能在一定程度上阻碍特定的自动化分析技术。</p>
-<p><strong>线性反汇编：</strong>线性反汇编策略是遍历一个代码段，一次一条指令地线性反汇编，线性反汇编用已经反汇编地指令大小来决定下一个要反汇编的字节，而不考虑代码流的控制指令。</p>
-<p><strong>面向代码流的反汇编：</strong>面向代码流的反汇编算法是一种更先进的反汇编宣发，这种算法会根据后续代码的逻辑来选择汇编的字节流，因此结果一般情况下会更加准确。</p>
-<p><strong>相同目标的跳转指令：</strong>恶意代码中最常见的防反汇编技术是使用指向同一目标地址的两个连续条件跳转指令。例如<code>jz loc_512</code>之后是 <code>jnz loc_512</code>则这个指令就相当于无条件跳转指令<code>jmp</code>，另外程序可能会在代码中插入与指令相同额数据如用E8来冒充call指令，实际上使用的是E8后面的字节，E8并没有发挥作用。遇到这种情况可以使用快捷键D使代码变成数据。</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/03/%E9%98%B2%E5%8F%8D%E6%B1%87%E7%BC%96%E6%8A%80%E6%9C%AF/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    <div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-03-25T15:46:53.000Z">2019-03-25</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    20 分钟 读完 (大约 3017 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2019/03/%E9%9A%90%E8%94%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%90%AF%E5%8A%A8/">隐蔽的恶意代码启动</a>
-            
-        </h1>
-        <div class="content">
-            <hr>
-<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p><strong>启动器：</strong>启动器，也称为加载器，是一种设置自身或者其他恶意代码片段以到达即时或将来秘密运行的恶意代码。启动器经常回在资源节包含要加载的恶意代码。如果资源节被压缩或者加密，则恶意代码必须在加载前对资源节进行提取操作，因此可以在代码中看到<code>FindResource</code>、<code>LoadResource</code>、以及<code>SizeofResource</code>等API函数。恶意代码通常需要管理员权限才能进行下面介绍的操作。</p>
-<p><strong>进程注入：</strong>隐藏启动行为的最流行的技术是进程注入，这是一种将代码注入到另外一个正在运行的进程中，而被注入的进程会不知不觉地运行注入地代码。执行进程注入通常用到如下API：<code>VirtualAllocEx</code>用来分配一块内存空间、<code>WriteProcessMemory</code>用来想之前分配地地址空间内写入数据。</p>
-<p><strong>DLL注入：</strong>DLL注入是进程注入地一种形式，它强迫一个远程进程加载DLL程序，同时它也是最常使用地的隐秘加载技术。DLL注入将代码注入到一个远程进程并让远程进程调用<code>LoadLibrary</code>，从而强制远程进程加载一个DLL程序到它的进程上下文，一旦被感染的进程加载了恶意DLL，系统会自动调用<code>DLLMain</code>函数。注入的DLL与被注入DLL的进程拥有相同的权限。</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/03/%E9%9A%90%E8%94%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%90%AF%E5%8A%A8/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    <div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
                 <time class="level-item has-text-grey" datetime="2019-03-20T03:08:22.000Z">2019-03-20</time>
                 
                 <div class="level-item">
@@ -711,6 +600,115 @@
 
 
 
+    <div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-01-21T00:42:31.000Z">2019-01-21</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    35 分钟 读完 (大约 5254 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2019/01/%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80%E6%8A%80%E6%9C%AF/">动态分析基础技术</a>
+            
+        </h1>
+        <div class="content">
+            <hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>与静态分析不同，动态分析是将恶意代码加载运行之后观察代码运行状态的一个过程，一般来说，对恶意代码进行分析时先进行静态分析来大致了解软件的功能再进行动态分析以了解恶意代码运行时的更多细节，静态分析与动态分析都有各自的有点以及局限性，本章重点介绍了动态分析的一些手法和技巧。</p>
+<p><strong>用沙箱来分析恶意代码：</strong>沙箱是一种在安全环境下运行不信任的程序的安全机制，沙箱一般包含一个虚拟的环境，并可以定制虚拟网络等“欺骗”恶意代码让恶意代码认为自己所在的沙箱是一个正常的物理机的各种虚拟功能，但是运行在沙箱中的恶意代码并不会对物理机产生任何威胁，因此沙箱是一个很好的用来动态分析恶意代码的工具。</p>
+<p>前一段时间我使用过布谷鸟沙箱（<code>Cuckoo</code>），这一款沙箱的结构是首先开启一个安装有<code>Ubuntu14.04</code>的系统用于安装Cuckoo，然后再向这个虚拟机上安装所有<code>Cuckoo</code>依赖的插件，安装完成后再向<code>Ubuntu</code>中安装一个<code>Vmware</code>虚拟机来安装一个用于运行Windows等系统的虚拟机，整体相当于是一个虚拟机的嵌套结构，布谷鸟对这个在虚拟机中运行的虚拟机的运行状态的存储状态进行记录，并对比运行病毒前后的镜像区别来确定恶意代码对主机做了什么，并会生成一个十分详细的报告，总的来说这种杀向在我们对一个恶意代码进行静态分析遇到困难时还是很有帮助的，但是缺点是此系统十分难于安装，因为很多安装条件会产生冲突，而且此沙箱运行起来也是对电脑性能的极大挑战，除非你有一台安装了<code>Ubuntu14.04</code>的物理主机。</p>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/01/%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80%E6%8A%80%E6%9C%AF/#more">阅读更多</a>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    <div class="card">
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-01-20T07:00:00.000Z">2019-01-20</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    12 分钟 读完 (大约 1744 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2019/01/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%88%86%E6%9E%90%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/">在虚拟机中分析恶意代码</a>
+            
+        </h1>
+        <div class="content">
+            <hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>很多恶意代码无疑会对运行环境造成不同程度的损害，在分析恶意代码功能的时候我们最好将恶意代码放在虚拟环境下进行分析，除了有一些无法通过虚拟化环境分析的恶意代码需要用安装了<code>Norton Ghost</code>等还原系统的物理机里进行分析。本章主要讲了如何在虚拟环境下分析恶意代码以及我们在虚拟环境下分析恶意代码可能造成的问题。</p>
+<p><strong>虚拟化环境：</strong>对我们而言，最容易创造的虚拟化环境就是用<code>Vmware</code>、<code>Hyper-v</code>或者<code>Virtual Box</code>创建一个虚拟机，另外还有一些用<code>Docker</code>容器作为虚拟化环境的恶意代码分析手段，但是我感觉这种方式暂时还不成熟，有很多技术<code>Vmware</code>可以做的更好，而且安全性方面<code>Vmware</code>隔离更彻底，更安全。因此我们可以用功能十分强大的<code>Vmware</code>创建一个属于自己的恶意代码分析环境，创建虚拟机以及虚拟机的使用方法网上已经有很多教程了，此处不再赘述，而着重介绍与恶意代码分析相关的虚拟机用法。</p>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/01/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%88%86%E6%9E%90%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/#more">阅读更多</a>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
 
     
 <div class="card card-transparent">
@@ -735,7 +733,7 @@
             
             <li><span class="pagination-ellipsis has-text-black-ter">&hellip;</span></li>
             
-            <li><a class="pagination-link has-text-black-ter" href="/page/9/">9</a></li>
+            <li><a class="pagination-link has-text-black-ter" href="/page/8/">8</a></li>
             
         </ul>
     </nav>
@@ -783,7 +781,7 @@
                         文章
                     </p>
                     <p class="title has-text-weight-normal">
-                        81
+                        79
                     </p>
                 </div>
             </div>
