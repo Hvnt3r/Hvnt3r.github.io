@@ -16,7 +16,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://www.hvnt3r.top/gallery/thumbnails/image-20200902230615429.png">
 <meta property="article:published_time" content="2021-02-09T13:12:26.000Z">
-<meta property="article:modified_time" content="2021-02-09T13:18:29.552Z">
+<meta property="article:modified_time" content="2021-02-09T13:22:15.145Z">
 <meta property="article:author" content="Hvnt3r">
 <meta property="article:tag" content="漏洞挖掘">
 <meta property="article:tag" content="PHP代码注入">
@@ -166,7 +166,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    7 分钟 读完 (大约 1025 个字)
+                    7 分钟 读完 (大约 1026 个字)
                 </span>
                 
                 
@@ -183,6 +183,8 @@
 <p>最近在对某产品的漏洞进行复现与发散绕过，遇到了一个将escapeshellarg()与escapeshellcmd()一起使用导致命令执行的漏洞，因此就记录一下漏洞成因以及绕过手法。</p>
 </blockquote>
 <p>首先补充一下背景知识，在unix系统中，被单引号包裹的部分如果存在变量，则这个变量不会被解析，但是被双引号包裹的部分在执行时，bash会先将变量名解析为变量的值再使用。</p>
+<a id="more"></a>
+
 <p><img src="https://i.loli.net/2021/02/09/2xbfAnvMO6WZKqm.png" alt="命令示例"></p>
 <p>**escapeshellarg()**的定义：</p>
 <blockquote>

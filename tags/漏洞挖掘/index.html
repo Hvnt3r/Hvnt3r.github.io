@@ -172,7 +172,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    7 分钟 读完 (大约 1025 个字)
+                    7 分钟 读完 (大约 1026 个字)
                 </span>
                 
                 
@@ -189,56 +189,16 @@
 <p>最近在对某产品的漏洞进行复现与发散绕过，遇到了一个将escapeshellarg()与escapeshellcmd()一起使用导致命令执行的漏洞，因此就记录一下漏洞成因以及绕过手法。</p>
 </blockquote>
 <p>首先补充一下背景知识，在unix系统中，被单引号包裹的部分如果存在变量，则这个变量不会被解析，但是被双引号包裹的部分在执行时，bash会先将变量名解析为变量的值再使用。</p>
-<p><img src="https://i.loli.net/2021/02/09/2xbfAnvMO6WZKqm.png" alt="命令示例"></p>
-<p>**escapeshellarg()**的定义：</p>
-<blockquote>
-<p><strong>escapeshellarg</strong> — 把字符串转码为可以在 shell 命令里使用的参数 </p>
-<p><strong>功能</strong> ：escapeshellarg() 将给字符串增加一个单引号并且能引用或者转码任何已经存在的单引号，这样以确保能够直接将一个字符串传入 shell 函数，shell 函数包含 exec()，system() 执行运算符(反引号) </p>
-<p><strong>定义</strong> ：<code>string escapeshellarg ( string $arg )</code></p>
-</blockquote>
-<p><img src="https://i.loli.net/2021/02/09/TX8A3kLd2Zcx6z1.png" alt="转义结果"></p>
-<p>由上图可见<code>escapeshellarg()</code>会为参数加上单引号</p>
-<p>另外说一下与<code>escapeshellarg()</code>类似的php过滤函数<code>escapeshellcmd()</code>，以下是<code>escapeshellcmd()</code>的定义:</p>
-<p>**escapeshellcmd()**的定义：</p>
-<blockquote>
-<p><strong>escapeshellcmd</strong> — shell 元字符转义</p>
-<p>功能：<strong>escapeshellcmd()</strong> 对字符串中可能会欺骗 shell 命令执行任意命令的字符进行转义。 此函数保证用户输入的数据在传送到exec()或system()函数，或者执行操作符之前进行转义。</p>
-<p>反斜线（\）会在以下字符之前插入： <em>&amp;#;`|\</em>?~&lt;&gt;^()[]{}$<em>, <em>\x0A</em> 和 <em>\xFF\</em>。 \</em>’* 和 <em>“</em> 仅在不配对儿的时候被转义。 在 Windows 平台上，所有这些字符以及 <em>%</em> 和 <em>!</em> 字符都会被空格代替。</p>
-<p><strong>定义</strong> ：<code>string escapeshellcmd ( string $command)</code></p>
-</blockquote>
-<p><img src="https://i.loli.net/2021/02/09/oN4uKvrc1Zs3kdW.png" alt="转义结果"></p>
-<p>由上图可见escapeshellcmd()函数会将输入的命令中的特殊字符进行转义。</p>
-<hr>
-<p>以上两个函数都是PHP自带的过滤函数，这两个函数单独使用时并不会出现什么问题，但是当这两个函数结合使用时，并不会时应用变得更加安全，下面举个例子来证明一下:</p>
-<p>假如用户传入的数据为<code>192.168.64.2 -v -d a=1</code>：</p>
-<p><img src="https://i.loli.net/2021/02/09/fyV1s94PTiQDeJA.png" alt="漏洞示例"></p>
-<p>可以看到<code>192.168.64.2 -v -d a=1</code>经过escapeshellarg()函数处理之后加上了单引号：</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">192.168.64.2 -v -d a&#x3D;1</span><br><span class="line">			||</span><br><span class="line">			\&#x2F;</span><br><span class="line">&#39;192.168.64.2 -v -d a&#x3D;1&#39;</span><br></pre></td></tr></table></figure>
-
-<p>由于处理后的字符串中单引号可配对，且无满足escapeshellcmd()函数转义的其他特殊符号，所以处理后的结果不变：</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#39;192.168.64.2 -v -d a&#x3D;1&#39;</span><br><span class="line">			||</span><br><span class="line">			\&#x2F;</span><br><span class="line">&#39;192.168.64.2 -v -d a&#x3D;1&#39;</span><br></pre></td></tr></table></figure>
-
-<p>因此实际执行的命令为：</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl &#39;192.168.64.2 -v -d a&#x3D;1&#39;</span><br></pre></td></tr></table></figure>
-
-<p>结合上文内容，bash中被单引号包裹的变量不会被解析为值，所以<code>-v -d a=1</code>不会被解析为参数，因此没有参数逃逸的情况发生。</p>
-<p>但是如果用户输入的数据中加入了奇数个单引号，情况就不一样了，假如用户输入数据为<code> 192.168.64.2 &#39; -v -d a=1</code>，实际的处理过程如下：</p>
-<p>由于字符串中存在一个单引号，因此escapeshellarg()函数会转义其中的单引号并用成对的单引号将转义部分两侧的字符串连接起来：</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">192.168.64.2 &#39; -v -d a&#x3D;1</span><br><span class="line">          ||</span><br><span class="line">          \&#x2F;</span><br><span class="line">&#39;192.168.64.2 &#39;\&#39;&#39; -v -d a&#x3D;1&#39;</span><br></pre></td></tr></table></figure>
-
-<p>但是经过escapeshellcmd()函数时，escapeshellcmd()将特殊字符<code>\</code>进行转义变为了<code>\\</code>，同时识别到最后一个单引号未闭合，因此也为最后一个单引号添加转义符号成为<code>\&#39;</code></p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#39;192.168.64.2 &#39;\&#39;&#39; -v -d a&#x3D;1&#39;</span><br><span class="line">          ||</span><br><span class="line">          \&#x2F;</span><br><span class="line">&#39;192.168.64.2 &#39;\\&#39;&#39; -v -d a&#x3D;1\&#39;</span><br></pre></td></tr></table></figure>
-
-<p>因此经过escapeshellarg()与escapeshellcmd()函数处理之后实际执行的命令为：</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl &#39;192.168.64.2 &#39;\\&#39;&#39; -v -d a&#x3D;1\&#39;</span><br></pre></td></tr></table></figure>
-
-<p>闭合的双引号部分可以省略，<code>\\</code>被bash识别为<code>\</code>，因此这个命令可简化为如下形式：</p>
-<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">curl &#39;192.168.64.2 &#39;\\&#39;&#39; -v -d a&#x3D;1\&#39;</span><br><span class="line">          ||</span><br><span class="line">          \&#x2F;</span><br><span class="line">curl 192.168.64.2 \ -v -d a&#x3D;1\&#39;</span><br></pre></td></tr></table></figure>
-
-<p>本命令即为向<code>192.168.64.2 \</code>发起请求，请求的数据为POST的a=1，因此造成了参数逃逸。</p>
-
         </div>
         
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2021/02/%E4%B8%80%E4%B8%AAPHP%E4%BB%A3%E7%A0%81%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/#more">阅读更多</a>
+                </div>
+            </div>
+        </div>
         
         
     </div>
