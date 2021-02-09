@@ -6,7 +6,7 @@
   <link href="https://www.hvnt3r.top/atom.xml" rel="self"/>
   
   <link href="https://www.hvnt3r.top/"/>
-  <updated>2020-12-16T12:14:25.296Z</updated>
+  <updated>2020-12-30T15:06:46.868Z</updated>
   <id>https://www.hvnt3r.top/</id>
   
   <author>
@@ -15,6 +15,107 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>使用抽象语法树混淆WebShell</title>
+    <link href="https://www.hvnt3r.top/2020/12/%E4%BD%BF%E7%94%A8%E6%8A%BD%E8%B1%A1%E8%AF%AD%E6%B3%95%E6%A0%91%E6%B7%B7%E6%B7%86WebShell/"/>
+    <id>https://www.hvnt3r.top/2020/12/%E4%BD%BF%E7%94%A8%E6%8A%BD%E8%B1%A1%E8%AF%AD%E6%B3%95%E6%A0%91%E6%B7%B7%E6%B7%86WebShell/</id>
+    <published>2020-12-30T15:06:46.000Z</published>
+    <updated>2020-12-30T15:06:46.868Z</updated>
+    
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>身份认证逻辑缺陷漏洞挖掘思路</title>
+    <link href="https://www.hvnt3r.top/2020/12/%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E9%80%BB%E8%BE%91%E7%BC%BA%E9%99%B7%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF/"/>
+    <id>https://www.hvnt3r.top/2020/12/%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E9%80%BB%E8%BE%91%E7%BC%BA%E9%99%B7%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF/</id>
+    <published>2020-12-30T15:05:46.000Z</published>
+    <updated>2021-02-09T02:55:21.639Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>在渗透测试项目中，很多时候横在我们渗透路上的第一个拦路虎就是后台登录界面，有时可以通过找弱密码的方式直接获取登录后的权限，有时也可以通过钓鱼或者在其他业务系统中拿到的账户密码来登录目标系统获取更多权限，有时也可以通过未授权访问漏洞来获取本应登录后才能拿到的数据，但是如果没有以上渠道，想要获取一个靶标系统的访问权限就比较难了，因此下文总结身份认证逻辑缺陷相关漏洞挖掘思路。</p><a id="more"></a><h3 id="密码重置逻辑漏洞"><a href="#密码重置逻辑漏洞" class="headerlink" title="密码重置逻辑漏洞"></a>密码重置逻辑漏洞</h3><h4 id="1、任意验证码重置密码"><a href="#1、任意验证码重置密码" class="headerlink" title="1、任意验证码重置密码"></a>1、任意验证码重置密码</h4><ul><li>无验证码验证</li></ul><p>这种漏洞多出现于边缘业务系统（Bug较多，开发人员编码能力差），或者是新上线的系统（逻辑不完善），修改密码时可以不需要验证码或输入任意验证码，真实场景应该比较少见。</p><ul><li>验证码校验逻辑写在前端代码中</li></ul><p>有的业务系统可能将验证码验证的逻辑写在js中，这时找到返回的验证码信息，可能进行加加密，按照代码逻辑还原出原始验证码再输入对应验证码或者通过浏览器调试功能跳过验证逻辑即可。</p><h4 id="2、验证码验证逻辑错误"><a href="#2、验证码验证逻辑错误" class="headerlink" title="2、验证码验证逻辑错误"></a>2、验证码验证逻辑错误</h4><ul><li><strong>未校验验证码与用户的关系</strong></li></ul><p>这个例子比较简单，即攻击者向服务器提交修改密码的请求，服务器向攻击者返回用于修改密码的验证码，但攻击者在修改密码的包中将目标用户从攻击者改为受害者，而服务器并没有校验验证码是否属于目标用户，导致攻击者使用自己的验证码修改了受害者的密码。</p><p>此漏洞在实现较为完善的系统上应该不会出现，而且利用此漏洞需要攻击者拥有一个目标系统的普通账号，如果攻击者没有普通账号权限且无法进行用户注册则无法利用此漏洞。</p><ul><li><strong>修改密码的包可由用户控制且服务器未校验</strong></li></ul><p>对着某系统修改密码逻辑进行抓包时发现在找回密码时，系统会在第一个包中校验用户名与手机号是否匹配，不匹配就无法在浏览器中进行下一步，但是在BurpSuite中可以绕过页面本身的限制，在发送验证码时客户端向服务端发送了用户名和手机号，这一步服务器并没有根据用户ID直接根据存储的手机号信息发送验证码，因此我们可以篡改这一步的手机号信息，将受害者的手机号修改为自己指定的手机号：</p><blockquote><p>图中手机号为某在线短信接收网站中的手机号码</p></blockquote><p><img src="https://i.loli.net/2021/02/09/oCO8nAGhgyHkVPs.png" alt="image.png"></p><p>从自己指定的手机号中获取验证码之后下一步则是验证验证码是否有效，数据包如下，客户端向服务器发送了手机号与验证码，并没有发送用户ID信息，因此这一步并没有校验手机号与用户是否匹配，因为开发人员人为这一步在找回密码的第一步已经校验过了，下图为篡改的手机号与收到的验证码通过服务器认证的步骤：</p><p><img src="https://i.loli.net/2021/02/09/zsP9TV78ZiXuGIr.png" alt="image.png"></p><p>验证码验证成功之后就是修改密码的数据包，这一过程客户端发送的数据包含用户ID、用户手机号、手机验证码、修改的新密码，由于上一个包已经校验了验证码的有效性，因此可以大胆猜测这一步不会再校验验证码是否正确，且这一步需要正确填写受害者的手机号，验证码可以随意填写，密码填写为自己指定的密码，进行发包，果不其然，这一步服务器并没有检查验证码的有效性，密码修改成功。</p><p><img src="https://i.loli.net/2021/02/09/lOq47GyojC2R5Up.png" alt="image-20210106150254745.png"></p><p>导致此问题的根本原因是业务系统在实现的过程中为了降低耦合性或者是为了减少性能开销（如修改密码过程中一次性校验多组数据可能会耗费较多系统资源），将验证步骤进行了分解，正常用户在浏览器中进行操作时这些多步骤验证操作确实可以形成完整的校验逻辑，即用户有任何一步输入错误都会导致密码修改失败，但是攻击者通过BurpSuite等工具可以绕过这些验证逻辑的统一性导致密码认证逻辑漏洞。</p><p>将此攻击过程拓展到通用场景即为：当目标程序在修改密码时没有将所有需要绑定的数据进行一次性（单个数据包）绑定认证时，就有可能存在这样的漏洞。</p><h4 id="3、验证码爆破"><a href="#3、验证码爆破" class="headerlink" title="3、验证码爆破"></a>3、验证码爆破</h4><p>利用爆破的方式来完成任意用户密码重置的前提是验证码验证这一过程可以短时间内重复多次，如果重复几次服务器就限制访问的情况下显然无法采用爆破的方式来突破验证码，以下为验证码可爆破的利用场景。</p><ul><li><strong>验证码有效期较长</strong>（超过规定的有效期但实际还是可用）</li></ul><p>手机或短信的验证码一般情况下会存在有效期，多为5分钟或10分钟，在某些实现相对不完善的业务系统中，点击忘记密码获取验证码时验证码显示的有效时长为5分钟，但业务系统可能并没有及时清除超时的验证码，因此验证码真实有效时间比标注的有效时间更长，甚至多次点击忘记密码之后系统会生成较多有效验证码同时存在于系统验证逻辑中，可以大大增加验证码爆破成功的概率。</p><ul><li><strong>验证码长度短</strong></li></ul><p>验证码长度较短时，一般长度为4，当验证码为数字组成时则验证码生成区间为0000<del>9999共10000种可能性，假设验证码有效期为5分钟，则5分钟内爆破10000次平均每秒发10000 / 5 / 60 ~= <code>33</code>个包，对于服务器压力较大，尤其是在有代理存在的情况下网络延迟较高可能无法达到这样的发包速度，因此可以只爆破一半如爆破0000</del>4999的验证码，发包频率就是原来的一半，但是此时如果验证码生成的区间为5000~9999时则无法成功爆破出验证码，因此可以多爆破几轮，按照概率是可较快爆破出目标验证码完成密码篡改的。</p><h3 id="Cookie通用问题"><a href="#Cookie通用问题" class="headerlink" title="Cookie通用问题"></a>Cookie通用问题</h3><p>最近遇到的比较多的还有撞库问题，即A目标单位部署了某X业务系统，在B非目标单位中找到与A单位相同的X业务系统，B单位的X系统存在弱密码，因此可以直接获取access_token，将B单位X系统的Token用在A单位的X业务系统中可以直接登录A单位的X系统，这种情况是因为同一个业务系统的Token生成流程完全一致，举个例子，B单位的管理员账号名为admin，其access_token生成逻辑为md5(“username”)，当A单位的管理员用户名也为admin时则md5()函数的返回值与B单位业务系统代码的返回值完全一致，因此导致Cookie信息可以“一次获取，多系统登录”。</p><p>个人感觉这样的漏洞在认证环节复杂的系统上更容易出现，尤其是免密登录的SSO场景，其生成的Token为了保证减少服务器负担，可能只有一次校验逻辑，即校验用户名与Token是否匹配，而不会校验用户名和密码的组合与Token是否匹配，因为这里存在一个惯性逻辑问题即用户拿着Token来进行认证的时候服务器假定用户已经通过了用户名＋密码的验证逻辑，因此在SSO登录时就不校验密码了，导致Token生成算法一致的两个系统中存在相同用户名的用户认证信息完全一致的情况。</p><p>在实际攻击场景中，如果某业务系统迟迟拿不下来可以通过fofa搜索相同的系统，即使这个系统的Cookie无法复用也可以找一些未授权访问的接口来做进一步的信息收集，不过这种方法严格意义上不符合渗透规范，容易被请去喝茶，所以还是慎用。</p><h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>验证码发送过程中也有较大概率存在短信轰炸的问题，攻击者可以不断请求短信发送接口，受害者就会被短信轰炸。</p>]]></content>
+    
+    
+    <summary type="html">&lt;h3 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h3&gt;&lt;p&gt;在渗透测试项目中，很多时候横在我们渗透路上的第一个拦路虎就是后台登录界面，有时可以通过找弱密码的方式直接获取登录后的权限，有时也可以通过钓鱼或者在其他业务系统中拿到的账户密码来登录目标系统获取更多权限，有时也可以通过未授权访问漏洞来获取本应登录后才能拿到的数据，但是如果没有以上渠道，想要获取一个靶标系统的访问权限就比较难了，因此下文总结身份认证逻辑缺陷相关漏洞挖掘思路。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="渗透测试" scheme="https://www.hvnt3r.top/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
+    
+    
+    <category term="WEB安全" scheme="https://www.hvnt3r.top/tags/WEB%E5%AE%89%E5%85%A8/"/>
+    
+    <category term="逻辑漏洞" scheme="https://www.hvnt3r.top/tags/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>安卓APP逆向分析与漏洞挖掘</title>
+    <link href="https://www.hvnt3r.top/2020/12/%E5%AE%89%E5%8D%93APP%E9%80%86%E5%90%91%E5%88%86%E6%9E%90%E4%B8%8E%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/"/>
+    <id>https://www.hvnt3r.top/2020/12/%E5%AE%89%E5%8D%93APP%E9%80%86%E5%90%91%E5%88%86%E6%9E%90%E4%B8%8E%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/</id>
+    <published>2020-12-30T15:04:22.000Z</published>
+    <updated>2020-12-30T15:05:03.341Z</updated>
+    
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>安卓APP抓包教程</title>
+    <link href="https://www.hvnt3r.top/2020/12/%E5%AE%89%E5%8D%93APP%E6%8A%93%E5%8C%85%E6%95%99%E7%A8%8B/"/>
+    <id>https://www.hvnt3r.top/2020/12/%E5%AE%89%E5%8D%93APP%E6%8A%93%E5%8C%85%E6%95%99%E7%A8%8B/</id>
+    <published>2020-12-30T14:28:09.000Z</published>
+    <updated>2020-12-30T14:41:03.808Z</updated>
+    
+    <content type="html"><![CDATA[<p>在渗透测试项目中，有很多目标单位有专属的APP，其中APP自身安全和APP对应的服务端接口也是渗透测试的攻击面，但是现有的APP安全防护措施不断提高，从APP本身发现安全问题的可能性降低，且服务器与客户端的通信过程也有较多的安全校验，下文将介绍安卓APP的抓包方法，方便渗透测试过程中的漏洞挖掘。</p><p>现在很多APP的网络请求都使用HTTPS，HTTP报文可以很轻松的通过在手机上设置代理然后通过BurpSuite等报文嗅探、代理软件截获，便于后续分析，但是HTTPS报文传输</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;在渗透测试项目中，有很多目标单位有专属的APP，其中APP自身安全和APP对应的服务端接口也是渗透测试的攻击面，但是现有的APP安全防护措施不断提高，从APP本身发现安全问题的可能性降低，且服务器与客户端的通信过程也有较多的安全校验，下文将介绍安卓APP的抓包方法，方便渗透</summary>
+      
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Java反序列化漏洞原理</title>
+    <link href="https://www.hvnt3r.top/2020/12/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86/"/>
+    <id>https://www.hvnt3r.top/2020/12/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86/</id>
+    <published>2020-12-19T02:59:11.000Z</published>
+    <updated>2020-12-19T03:29:22.293Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="Java反序列化漏洞原理分析"><a href="#Java反序列化漏洞原理分析" class="headerlink" title="Java反序列化漏洞原理分析"></a>Java反序列化漏洞原理分析</h1><p>序列化与反序列化简介</p><blockquote><p>Java 提供了一种对象序列化的机制，该机制中，一个对象可以被表示为一个字节序列，该字节序列包括该对象的数据、有关对象的类型的信息和存储在对象中数据的类型。</p><p>将序列化对象写入文件之后，可以从文件中读取出来，并且对它进行反序列化，也就是说，对象的类型信息、对象的数据，还有对象中的数据类型可以用来在内存中新建对象。</p><p>整个过程都是 Java 虚拟机（JVM）独立的，也就是说，在一个平台上序列化的对象可以在另一个完全不同的平台上反序列化该对象。</p><p>类 ObjectInputStream 和 ObjectOutputStream 是高层次的数据流，它们包含反序列化和序列化对象的方法。</p><p>–<a href="https://www.runoob.com/java/java-serialization.html">https://www.runoob.com/java/java-serialization.html</a></p></blockquote><a id="more"></a><h2 id="序列化与反序列化代码示例"><a href="#序列化与反序列化代码示例" class="headerlink" title="序列化与反序列化代码示例"></a>序列化与反序列化代码示例</h2><p><strong>声明一个类</strong></p><p>下面做代码演示，首先我们声明一个类，一个类想要序列化成功，必须实现java.io.Serializeable接口。</p><figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Employee</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">java</span>.<span class="hljs-title">io</span>.<span class="hljs-title">Serializable</span></span>&#123;</span><br><span class="line">    <span class="hljs-keyword">public</span> String name;</span><br><span class="line">    <span class="hljs-keyword">public</span> String phoneNumber;</span><br><span class="line">    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">nameCheck</span><span class="hljs-params">()</span></span></span><br><span class="line"><span class="hljs-function">    </span>&#123;</span><br><span class="line">        System.out.println(<span class="hljs-string">&quot;name is &quot;</span> + name);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p><strong>序列化</strong></p><p>下面代码完成了类的实例化和序列化到文件的操作：</p><figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-comment">//类的实例化</span></span><br><span class="line">Employee e = <span class="hljs-keyword">new</span> Employee();</span><br><span class="line">e.name = <span class="hljs-string">&quot;Hvnt3r&quot;</span>;</span><br><span class="line">e.phoneNumber = <span class="hljs-string">&quot;144413141123&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">//类的序列化</span></span><br><span class="line">FileOutputStream fileOutputStream = <span class="hljs-keyword">new</span> FileOutputStream(<span class="hljs-string">&quot;./test.ser&quot;</span>);</span><br><span class="line">ObjectOutputStream outputStream = <span class="hljs-keyword">new</span> ObjectOutputStream(fileOutputStream);</span><br><span class="line">outputStream.writeObject(e);</span><br><span class="line">outputStream.close();</span><br><span class="line">fileOutputStream.close();</span><br></pre></td></tr></table></figure><p>运行此段代码即可生成一个名为test.ser的二进制文件，此时通过xxd查看test.ser内容如下：</p><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">00000000: aced 0005 7372 0013 636f 6d2e 6876 6e74  ....sr..com.hvnt</span><br><span class="line">00000010: 3372 2e45 6d70 6c6f 7965 6578 a396 1a12  3r.Employeex....</span><br><span class="line">00000020: a6d9 8602 0002 4c00 046e 616d 6574 0012  ......L..namet..</span><br><span class="line">00000030: 4c6a 6176 612f 6c61 6e67 2f53 7472 696e  Ljava&#x2F;lang&#x2F;Strin</span><br><span class="line">00000040: 673b 4c00 0b70 686f 6e65 4e75 6d62 6572  g;L..phoneNumber</span><br><span class="line">00000050: 7100 7e00 0178 7074 0006 4876 6e74 3372  q.~..xpt..Hvnt3r</span><br><span class="line">00000060: 7400 0c31 3434 3431 3331 3431 3132 33    t..144413141123</span><br></pre></td></tr></table></figure><p><strong>反序列化</strong></p><p>通过objectInputStream.readObject()方法将序列化的文件转化为Employee类的引用</p><figure class="highlight java hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">FileInputStream fileInputStream = <span class="hljs-keyword">new</span> FileInputStream(<span class="hljs-string">&quot;./test.ser&quot;</span>);</span><br><span class="line">ObjectInputStream objectInputStream = <span class="hljs-keyword">new</span> ObjectInputStream(fileInputStream);</span><br><span class="line">e = (Employee) objectInputStream.readObject();</span><br><span class="line">objectInputStream.close();</span><br><span class="line">fileInputStream.close();</span><br><span class="line"></span><br><span class="line">System.out.println(<span class="hljs-string">&quot;Deserialize Employee ...&quot;</span>);</span><br><span class="line">System.out.println(<span class="hljs-string">&quot;Name: &quot;</span> + e.name);</span><br><span class="line">System.out.println(<span class="hljs-string">&quot;Phone: &quot;</span> + e.phoneNumber);</span><br></pre></td></tr></table></figure><p>代码输出如下：</p><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Deserialize Employee ...</span><br><span class="line">Name: Hvnt3r</span><br><span class="line">Phone: 144413141123</span><br></pre></td></tr></table></figure><h2 id="漏洞产生与利用"><a href="#漏洞产生与利用" class="headerlink" title="漏洞产生与利用"></a>漏洞产生与利用</h2>]]></content>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;Java反序列化漏洞原理分析&quot;&gt;&lt;a href=&quot;#Java反序列化漏洞原理分析&quot; class=&quot;headerlink&quot; title=&quot;Java反序列化漏洞原理分析&quot;&gt;&lt;/a&gt;Java反序列化漏洞原理分析&lt;/h1&gt;&lt;p&gt;序列化与反序列化简介&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Java 提供了一种对象序列化的机制，该机制中，一个对象可以被表示为一个字节序列，该字节序列包括该对象的数据、有关对象的类型的信息和存储在对象中数据的类型。&lt;/p&gt;
+&lt;p&gt;将序列化对象写入文件之后，可以从文件中读取出来，并且对它进行反序列化，也就是说，对象的类型信息、对象的数据，还有对象中的数据类型可以用来在内存中新建对象。&lt;/p&gt;
+&lt;p&gt;整个过程都是 Java 虚拟机（JVM）独立的，也就是说，在一个平台上序列化的对象可以在另一个完全不同的平台上反序列化该对象。&lt;/p&gt;
+&lt;p&gt;类 ObjectInputStream 和 ObjectOutputStream 是高层次的数据流，它们包含反序列化和序列化对象的方法。&lt;/p&gt;
+&lt;p&gt;–&lt;a href=&quot;https://www.runoob.com/java/java-serialization.html&quot;&gt;https://www.runoob.com/java/java-serialization.html&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;</summary>
+    
+    
+    
+    <category term="WEB安全" scheme="https://www.hvnt3r.top/categories/WEB%E5%AE%89%E5%85%A8/"/>
+    
+    
+    <category term="WEB安全" scheme="https://www.hvnt3r.top/tags/WEB%E5%AE%89%E5%85%A8/"/>
+    
+    <category term="Java反序列化" scheme="https://www.hvnt3r.top/tags/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
+    
+    <category term="漏洞" scheme="https://www.hvnt3r.top/tags/%E6%BC%8F%E6%B4%9E/"/>
+    
+  </entry>
   
   <entry>
     <title>AFL初体验</title>
@@ -454,154 +555,6 @@
     <category term="恶意代码分析" scheme="https://www.hvnt3r.top/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"/>
     
     <category term="ShellCode" scheme="https://www.hvnt3r.top/tags/ShellCode/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>加壳与脱壳</title>
-    <link href="https://www.hvnt3r.top/2019/04/%E5%8A%A0%E5%A3%B3%E4%B8%8E%E8%84%B1%E5%A3%B3/"/>
-    <id>https://www.hvnt3r.top/2019/04/%E5%8A%A0%E5%A3%B3%E4%B8%8E%E8%84%B1%E5%A3%B3/</id>
-    <published>2019-04-26T01:55:30.000Z</published>
-    <updated>2020-12-16T12:22:16.711Z</updated>
-    
-    <content type="html"><![CDATA[<hr><h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p><strong>加壳原理：</strong>加壳器是将一个可执行文件作为输入，输出一个全新的可执行文件，被加壳的可执行文件经过压缩，加密或者其他转换。多数假客气采用压缩算法压缩原始文件，加壳器通过加密原始可执行文件并且实施一些反逆向技术的实现如防反汇编，反调试以及虚拟化等，加壳器既可以打包整个可执行文件，包括所有的数据与资源节，也可以仅打包代码和资源节。</p><p><strong>脱壳存根：</strong>可执行程序的入口点直线脱壳存根而不是原始代码，原始程序通常存储在杰克程序的一个或者多个附加的节中，脱壳存根负责脱壳源程序：</p><ul><li>将原始程序脱壳到内存中</li><li>解析原始可执行文件的所有导入函数</li><li>将可执行程序转移到原始的程序入口点</li></ul><a id="more"></a><p><strong>加载可执行文件：</strong></p><ul><li>读取PE头信息</li><li>根据头部信息为可执行文件的各个节分配内存/根据脱壳存根在内存中分配空间</li><li>加载这些节到所分配的内存中</li></ul><p><strong>解析导入函数表：</strong>脱壳存根使用LoadLibrary导入每个库和GetProcAddress函数获取每个函数的内存地址。</p><p><strong>尾部跳转：</strong>一旦脱壳存根完成脱壳，就必须转到OEP运行，一般使用jmp指令，或者使用ret或者call指令。有时恶意代码会使用操作系统转移控制的函数来掩盖尾部跳转NtContinue或者Nwcontinue。</p><p><strong>加壳程序的特点：</strong></p><ul><li>程序中导入函数很少，导入函数只有LoadLibrary、GetProcAddress</li><li>使用IDA分析时IDA仅能识别出少量的代码</li><li>使用OD打开程序时警告此程序可能被加壳</li><li>程序节中包含加壳器的标识如UPX0</li><li>程序拥有不正常的节大小</li><li>使用PEID等加壳探测程序</li></ul><p><strong>熵计算：</strong>熵值是一种测量系统中或程序中混乱程序的技术，压缩或者加密数据更接近于随机数据因此熵值更高。</p><p><strong>脱壳选项：</strong></p><ul><li>自动静态脱壳</li><li>自动动态脱壳</li><li>手动动态脱壳</li></ul><p><strong>手动脱壳：</strong></p><ul><li>找到加壳算法，编写程序逆向算法，缺点是效率较低</li><li>运行脱壳存根，等脱壳完成后修改PE头部</li></ul><p><strong>修复导入函数表：</strong>ImpRec可以用来修复一个加壳程序的导入表：</p><ul><li>打开要修复的文件</li><li>输入OEP地址的偏移</li><li>单击IAT autoresearch按钮</li><li>单击Import</li><li>导入成功则显示valid:yes</li></ul><p><strong>使用自动工具查找OEP：</strong>使用OD中的插件OllyDump，通过Section Hop调用Find OEP。通常吗脱壳存根存在一个节里，而可执行程序被打包到另一个节中，使用step-into或者step-over方法，当城市从一个节跳转到另一个节时，OD可以探测到这种转移并在转移的地方进行中断。</p><p><strong>手动查找OEP：</strong></p><ul><li>最简单的手动查找策略就是查找尾部跳转指令，通常情况下是jmp指令或者是ret。通常尾部跳转指令时一串无效字节指令前的最后一条有效指令，填充这些字节的目的是为了保证字节对齐。</li><li>尾部跳转指令的另一个显著特征是跳转地址的大小，一般跳转指令被用在条件分支中，因此跳转的距离较小，但是尾部跳转指令距离很大。</li><li>观察jmp指向的指令序列，在程序运行前jmp指向的地址并没有有意义的指令但是脱壳存根运行之后则会出现有意义的指令。</li><li>另一个查找尾部跳转的方式是在栈上设置读断点，要设置读断点必须使用硬件断点或者OD的内存断点，反汇编中的发不分寒暑都是以某种push指令开头的，在栈中记录第一个入栈的内存地址，然后在这个栈位置设置一个读断点，然后当脱壳存根运行完成之后会用pop指令再次命中这个栈位置，这个是ESP守恒定律</li><li>如果程序通过使用 call指令来跳转到OEP时，这个call并没有ret，因此在这个call上使用step-over会让你前功尽弃，因为无法命中下一个断点，需要重新寻找刚才的函数并替换为step-into。</li><li>在GetProcAddress函数设置断点，大多数脱壳器使用此函数来解析原始函数的导出表。</li><li>对于命令行知程，在进程中，壳很在就调用了GetVersion和GetCommandlineA函数，所以你可以尝试在这些函数被调用时中断程序。</li><li>在GUI程序中GetMoudleHandleA通常是第一个被调用的函数，程序中断后，检查前一个栈帧没查看何处调用了原始程序，调用GetMoudlehandleA和GetVersion函数的开始地址一般就是OEP。</li><li>使用OD的RunTrace选项，此选项提供一些额外的断点选项使你能在较大的的范围内设置断点，例如有很多壳都会留下原始文件的text节，通常硬盘上的text节没有任何东西，但是这个节被保留在PE头部使得加载器能够危他创建内存空间，OEP总是位于源文件的text节中，通常它是这个节中第一个被调用的指令，RunTrace可以实现无论何时执行text中的指令，都能触发RunTrace设置的断点，一旦断点触发就找到了OEP。</li></ul><p><strong>手动修复导入表：</strong>导入表在内存中实际上有两个表，第一个表时函数名称或者序列号表，起哄包含加载器或脱壳存根所需要的函数名称或者序号，第二个表时所有导入函数的地址列表，当代码运行时，只需要第二个表，所以加壳程序可以通过移除名字阻止分析，在这种情况下需要手动重构这个表。</p><p>常见壳：</p><ul><li>UPX：这是一款主要实现压缩可执行文件大小功能的壳，可以使用UPX的托克工具脱壳，遇到修改过的UPX可以查找OEP实现手动脱壳。</li><li>PECompact：这是一个商业壳，为性能和速度而设计，这个壳脱起来比较难，因为其中包含反调试异常与混淆代码，绕过异常的方式是将异常返还给程序处理，可以通过尾部跳转指令来查找OEP，step-over几个函数，然后会看到一个尾部跳转，它由一个jmp eax指令组成，之湖是多个0x00字节。</li><li>ASPack：此壳的目的是为了安全，使用了自我修改代码，使设置断点和分析变得困难，在用ASPack加过壳的程序上设置断点可能会立刻终止此程序，打开脱壳存根的代码会有一个PUSHA指令，确定用来存在寄存器的栈地址，然后再这些地址上设置硬件断点，调用POPAD指令时会触发硬件断点，OEP就在离尾部跳转的不远处。</li><li>Petite：与ASPack相似，有反调试机制，且为了干扰调试器使用了单步异常，同样需要将异常处理返还给程序，使用栈上的硬件断点使最佳策略来寻找OEP。</li><li>WinUpack：这是一个拥有GUI的壳，设计目的是优化压缩而不是安全，查找Upack的OEP最好方法是再GEtProcAddress上设置断点查找设置导入解析函数的循环。</li><li>Themida：这是一个非常复杂的壳，有反调试与反逆向分析的功能。同时阻止VMware、调试器以及ProcMon分析。除此之外Themida有一个内核模块。与多数壳不同Themida会在原始程序运行后一直运行，可以找到一些针对这个壳的自动脱壳工具，如果自动脱壳失败则需要用到ProcDump工具来将内存中的数据Dump下来。</li></ul><h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><p><strong>本章每一个实验都是前面章节实验的加壳版本，你的任务是脱壳这个文件并且识别这些文件在哪一章出现过。分析样本文件Lab18-01.exe到Lab18-05.exe。</strong></p><h3 id="Lab18-01"><a href="#Lab18-01" class="headerlink" title="Lab18-01"></a>Lab18-01</h3><h3 id="Lab18-02"><a href="#Lab18-02" class="headerlink" title="Lab18-02"></a>Lab18-02</h3><h3 id="Lab18-03"><a href="#Lab18-03" class="headerlink" title="Lab18-03"></a>Lab18-03</h3><h3 id="Lab18-04"><a href="#Lab18-04" class="headerlink" title="Lab18-04"></a>Lab18-04</h3><h3 id="Lab18-05"><a href="#Lab18-05" class="headerlink" title="Lab18-05"></a>Lab18-05</h3><hr><h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>]]></content>
-    
-    
-    <summary type="html">&lt;hr&gt;
-&lt;h2 id=&quot;知识点&quot;&gt;&lt;a href=&quot;#知识点&quot; class=&quot;headerlink&quot; title=&quot;知识点&quot;&gt;&lt;/a&gt;知识点&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;加壳原理：&lt;/strong&gt;加壳器是将一个可执行文件作为输入，输出一个全新的可执行文件，被加壳的可执行文件经过压缩，加密或者其他转换。多数假客气采用压缩算法压缩原始文件，加壳器通过加密原始可执行文件并且实施一些反逆向技术的实现如防反汇编，反调试以及虚拟化等，加壳器既可以打包整个可执行文件，包括所有的数据与资源节，也可以仅打包代码和资源节。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;脱壳存根：&lt;/strong&gt;可执行程序的入口点直线脱壳存根而不是原始代码，原始程序通常存储在杰克程序的一个或者多个附加的节中，脱壳存根负责脱壳源程序：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;将原始程序脱壳到内存中&lt;/li&gt;
-&lt;li&gt;解析原始可执行文件的所有导入函数&lt;/li&gt;
-&lt;li&gt;将可执行程序转移到原始的程序入口点&lt;/li&gt;
-&lt;/ul&gt;</summary>
-    
-    
-    
-    <category term="二进制安全" scheme="https://www.hvnt3r.top/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/"/>
-    
-    
-    <category term="逆向" scheme="https://www.hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
-    
-    <category term="恶意代码分析" scheme="https://www.hvnt3r.top/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"/>
-    
-    <category term="加壳与脱壳" scheme="https://www.hvnt3r.top/tags/%E5%8A%A0%E5%A3%B3%E4%B8%8E%E8%84%B1%E5%A3%B3/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>反虚拟机技术</title>
-    <link href="https://www.hvnt3r.top/2019/04/%E5%8F%8D%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%8A%80%E6%9C%AF/"/>
-    <id>https://www.hvnt3r.top/2019/04/%E5%8F%8D%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%8A%80%E6%9C%AF/</id>
-    <published>2019-04-25T02:33:01.000Z</published>
-    <updated>2020-12-16T12:21:37.891Z</updated>
-    
-    <content type="html"><![CDATA[<hr><h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>恶意代码编写者经常使用反虚拟机技术逃避分析，恶意代码可以使用这种技术探测自己是否运行在虚拟机中。</p><p><strong>VMware痕迹：</strong>VM虚拟环境在系统中遗留了很对痕迹，特别是在安装Vmtools之后，恶意代码可以通过存在于操作系统文件系统、注册表和进程列表中标记痕迹，探测VM虚拟环境的存在。</p><p>安装<code>VMtools</code>的主机上通常会运行三个相关进程：<code>VMwareService.exe</code>、<code>VMwareTray.exe</code>、<code>VmwareUser.exe</code>。恶意代码在进程列表中中搜索带有<code>VMware</code>字符串的进程，就能找到这些进程。</p><a id="more"></a><p><strong>绕过痕迹检测：</strong></p><ul><li>在调试过程中修补二进制代码，使某些位置的跳转永远不会执行</li><li>在十六进制编辑器中修改对比的字符串</li><li>卸载<code>VMwareTools</code></li></ul><p><strong>探测内存痕迹：</strong>搜索整个物理内存中存在的VMware字符串可能会搜索出上百个相关字符串。</p><p><strong>查找漏洞指令：</strong>虚拟机监视器VMM监视虚拟机的运行，它运行在宿主操作系统并未客户机操作系统提供一个完整的虚拟平台，但是与此同时，VMM也有一些可以被恶意代码探测到的虚拟化安全缺陷。</p><p>在内核模式下，VMware使用二进制翻译技术进行指令的模拟。运行在内核态的某些特权指令被解释和模拟，所以他们不在物理处理器上运行，相反，在用户模式下，代码直接在处理器运行，几乎所有与硬件交互的指令，要么使特权指令，要么使会产生内核态陷阱指令或中断指令。VMware解惑所有中断并处理他们，以便虚拟机认为这是一个正常的机器。</p><p>然而在x86体系结构中，一些指令在获取硬件相关的信息使并不产生异常，如<code>sidt</code>、<code>sgdt</code>、<code>sldt</code>、<code>cpuid</code>等，为了正确虚拟这些指令，VMware需要在所有指令上进行二进制翻译，因此造成巨大的性能损失，为了避免执行全指令模拟造成的巨大性能损失，VMware会允许一些特定的指令在没有正确虚拟化的前提下运行，这意味着某些指令序列在VMware而不是在物理机运行时返回不同的结果。处理器使用某些关键的结构与表，他们会被加载与真实系统不同的偏移量，而这正式未进行全虚拟化的副作用，中断描述表是CPU内部的一个数据结构，操作系统使用它来确保正确响应和中断、异常。所有内存的获取是通过全局描述表GDT获得，或是通过本地描述表LDT获得，这些表中包含段描述符，他们提供每一个段的详细存取信息，其中包含段基址的类型长度以及存取权限等。</p><p>有三条敏感指令可以读取这些表的位置：<code>sigt</code>、<code>sgdt</code>、<code>sldt</code>，并将相应的寄存器存入内存地址。虽然这些指令通常情况下由操作系统使用，但是在x86体系下可以在用户空间中执行，x86处理器中只有三个寄存器来存储这三个表的位置，因此这些寄存器的值必须对底层宿主操作系统有效，同时，他们派哪里了虚拟操作系统的与气质，因为这三个指令可以随时被用户态的代码调用，并且不会产生陷阱，也未被VMware正确虚拟化，因此这些异常都可以用来检测VMware的存在。</p><p><strong>使用Red Pill反虚拟机技术：</strong>通过运行<code>sidt</code>指令获取<code>IDTR</code>的值，虚拟机监视器必须重定位Guest系统的<code>IDTR</code>，来避免与HOST系统的<code>IDTR</code>冲突，因为在虚拟机中运行<code>sidt</code>指令时，虚拟机监视器不会被通知，所以返回虚拟机的<code>IDTR</code>。<code>Red Pill</code>技术通过检测这种差异性来检测是否处在虚拟环境中。</p><p>此方法一般只对单核处理器有效，因为每个处理器都有自己的<code>IDTR</code>。绕过此检测的方法是将<code>sidt</code>指令替换为<code>nop</code>。</p><p><strong>使用No Pill指令：</strong><code>sgdt</code>和<code>sldt</code>指令检测技术称为<code>No Pill</code>，此技术基于<code>LDT</code>结构是由处理器分配而不是由操作系统分配的这个事实，正常情况下Windows不会使用<code>LDT</code>结构，但是VMware为<code>LDT</code>提供了虚拟化支持，在物理集中LDT的值为<code>0</code>而在虚拟环境中为非零值，防止此检测方法的操作是禁用虚拟机加速。</p><p><strong>查询I/O通信接口：</strong>这是一种时下最流行的虚拟机检测技术，VMware使用虚拟化IO接口来完成宿主主机与虚拟机之间的通信，这个端口可以被查询，然后与一个神秘数进行比较，这个技术成功的关键在与in指令，他从一个源操作数指定的端口复制数据到目的操作数制定的内存地址，VMware会监视in指令的执行，并不会目的通信通道端口为<code>0x5668（VX）</code>的IO数据。VMware会检查第二个操作数是否为VX，如果是则EAX寄存器载入的值是<code>0x564D5868</code>（VMXh），ECX寄存器中必须载入你希望在端口上执行响应操作的值如<code>0xA</code>可以获得VMware的版本。绕过此检测的方法是将in指令替换为<code>nop</code>。</p><p><strong>使用str指令：</strong>str指令用来从任务寄存器中检索段选择子，段选择子之心昂当前运行任务的状态段（TSS），这条指令的返回值在虚拟机系统和物理机上不同（此技术对多处理器的硬件无效）。</p><p>在IDA中高亮显示反虚拟机代码：</p><figure class="highlight python hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">from</span> idautils <span class="hljs-keyword">import</span> *</span><br><span class="line"><span class="hljs-keyword">from</span> idc <span class="hljs-keyword">import</span> *</span><br><span class="line">heads = Heads(SegStart(ScreenEA()),SegEnd(ScreenEA()))</span><br><span class="line">antiVM = []</span><br><span class="line"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> heads:</span><br><span class="line">    <span class="hljs-keyword">if</span>(GetMnem(i) == <span class="hljs-string">&quot;sidt&quot;</span> <span class="hljs-keyword">or</span></span><br><span class="line">      GetMnem(i) == <span class="hljs-string">&quot;sgdt&quot;</span> <span class="hljs-keyword">or</span></span><br><span class="line">      GetMnem(i) == <span class="hljs-string">&quot;sldt&quot;</span> <span class="hljs-keyword">or</span></span><br><span class="line">      GetMnem(i) == <span class="hljs-string">&quot;smsw&quot;</span> <span class="hljs-keyword">or</span></span><br><span class="line">      GetMnem(i) == <span class="hljs-string">&quot;str&quot;</span> <span class="hljs-keyword">or</span></span><br><span class="line">      GetMnem(i) == <span class="hljs-string">&quot;in&quot;</span> <span class="hljs-keyword">or</span></span><br><span class="line">      GetMnem(i) == <span class="hljs-string">&quot;cpuid&quot;</span> <span class="hljs-keyword">or</span>):</span><br><span class="line">        antiVM.append()</span><br><span class="line">     <span class="hljs-built_in">print</span> <span class="hljs-string">&quot;Number of potential Anti_VM instructions:%d&quot;</span> % (<span class="hljs-built_in">len</span>(antiVM))</span><br><span class="line"><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> antiVM:</span><br><span class="line">SetColor(i,CIC_ITEM,<span class="hljs-number">0x0000ff</span>)</span><br><span class="line">    Message(<span class="hljs-string">&quot;Anti_VM:%08x\n&quot;</span> % i)</span><br></pre></td></tr></table></figure><p><strong>使用ScoopyNG：</strong>这是一款免费的VMware检测工具，它实现了对虚拟机的其中不同检测。</p><p><strong>虚拟机逃逸：</strong>VMware中存在一些安全漏洞，可以利用这些漏洞来世操作系统崩溃活在宿主系统中运行代码，共享文件夹功能或者共享工具中发现了很多公开的漏洞，禁用共享文件夹功能可阻止这类攻击。</p><h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab17-1"><a href="#Lab17-1" class="headerlink" title="Lab17-1"></a>Lab17-1</h3><hr><h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>]]></content>
-    
-    
-    <summary type="html">&lt;hr&gt;
-&lt;h2 id=&quot;知识点&quot;&gt;&lt;a href=&quot;#知识点&quot; class=&quot;headerlink&quot; title=&quot;知识点&quot;&gt;&lt;/a&gt;知识点&lt;/h2&gt;&lt;p&gt;恶意代码编写者经常使用反虚拟机技术逃避分析，恶意代码可以使用这种技术探测自己是否运行在虚拟机中。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;VMware痕迹：&lt;/strong&gt;VM虚拟环境在系统中遗留了很对痕迹，特别是在安装Vmtools之后，恶意代码可以通过存在于操作系统文件系统、注册表和进程列表中标记痕迹，探测VM虚拟环境的存在。&lt;/p&gt;
-&lt;p&gt;安装&lt;code&gt;VMtools&lt;/code&gt;的主机上通常会运行三个相关进程：&lt;code&gt;VMwareService.exe&lt;/code&gt;、&lt;code&gt;VMwareTray.exe&lt;/code&gt;、&lt;code&gt;VmwareUser.exe&lt;/code&gt;。恶意代码在进程列表中中搜索带有&lt;code&gt;VMware&lt;/code&gt;字符串的进程，就能找到这些进程。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="二进制安全" scheme="https://www.hvnt3r.top/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/"/>
-    
-    
-    <category term="逆向" scheme="https://www.hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
-    
-    <category term="恶意代码分析" scheme="https://www.hvnt3r.top/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"/>
-    
-    <category term="反虚拟机技术" scheme="https://www.hvnt3r.top/tags/%E5%8F%8D%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%8A%80%E6%9C%AF/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>恶意代码的网络特征</title>
-    <link href="https://www.hvnt3r.top/2019/04/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E7%9A%84%E7%BD%91%E7%BB%9C%E7%89%B9%E5%BE%81/"/>
-    <id>https://www.hvnt3r.top/2019/04/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E7%9A%84%E7%BD%91%E7%BB%9C%E7%89%B9%E5%BE%81/</id>
-    <published>2019-04-24T14:41:15.000Z</published>
-    <updated>2020-12-16T12:21:00.264Z</updated>
-    
-    <content type="html"><![CDATA[<hr><h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>OPSEC-操作安全性：攻击者可以通过多种方法来探测到是否有研究人员对恶意代码进行的测试：</p><ul><li>发送带有某个特定连接的针对性访问的网络钓鱼邮件，观察是否有从期望区域之外的IP地址的访问请求</li><li>设计一种利用方式，在博客篇评论中创建一个经过编码的链接，从而创建一个私人但是可以公开的感染审计记录</li><li>在恶意代码中嵌入一个未使用的域名，观察这个域名的解析记录</li></ul><p><strong>Snort检测：</strong><a href="https://www.snort.org/">https://www.snort.org/</a></p><a id="more"></a><p><strong>寻找网络操作代码：</strong>评估网络通信的第一步是找到用于执行通信的系统调用,Windows套接字中的部分API是最常见的底层函数。使用这个API接口的恶意代码通常会使用如下函数：WSAStartup、getaddrinfo、socket、connect send、recv和WSAGetLastError。恶意代码可能会使用名为InternetOpen、InternetConnect、InternetOpenURL、HTTPOpenRequest、HTTPQueryInfo、HTTPSendRequest、InternetReadFile、InternetWriteFile这些API。另一种用于网络通信的API组件对象模型接口（COM）接口。通过如URLDowownloadToFile等函数隐式使用COM的情况非常常见，但是显式使用COM的情况则非常少见，显式使用COM的恶意代码通常使用CoInitalize、CoCreateInstance和Navigate等函数，例如显示使用COM创建一个浏览器对象，可以让恶意代码混淆流量，因为这与浏览器的流量完全一直，同时也能在网络流量之有效掩盖恶意代码的行为和连接。</p><p><strong>了解网络内容的来源：</strong>下面是一些基本的数据源：</p><ul><li>随机数据（例如调用生成伪随机值函数所返回的数据）</li><li>来源于标准网络库的数据（例如调用HttpSendREquest创建的GET请求）</li><li>来源于恶意代码硬编码数据</li><li>关于主机及及其配置的数据</li><li>从其他来源接收的数据</li></ul><h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab14-1"><a href="#Lab14-1" class="headerlink" title="Lab14-1"></a>Lab14-1</h3><hr><h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>]]></content>
-    
-    
-    <summary type="html">&lt;hr&gt;
-&lt;h2 id=&quot;知识点&quot;&gt;&lt;a href=&quot;#知识点&quot; class=&quot;headerlink&quot; title=&quot;知识点&quot;&gt;&lt;/a&gt;知识点&lt;/h2&gt;&lt;p&gt;OPSEC-操作安全性：攻击者可以通过多种方法来探测到是否有研究人员对恶意代码进行的测试：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;发送带有某个特定连接的针对性访问的网络钓鱼邮件，观察是否有从期望区域之外的IP地址的访问请求&lt;/li&gt;
-&lt;li&gt;设计一种利用方式，在博客篇评论中创建一个经过编码的链接，从而创建一个私人但是可以公开的感染审计记录&lt;/li&gt;
-&lt;li&gt;在恶意代码中嵌入一个未使用的域名，观察这个域名的解析记录&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;Snort检测：&lt;/strong&gt;&lt;a href=&quot;https://www.snort.org/&quot;&gt;https://www.snort.org/&lt;/a&gt;&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="二进制安全" scheme="https://www.hvnt3r.top/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/"/>
-    
-    
-    <category term="逆向" scheme="https://www.hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
-    
-    <category term="恶意代码分析" scheme="https://www.hvnt3r.top/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"/>
-    
-    <category term="网络流量识别" scheme="https://www.hvnt3r.top/tags/%E7%BD%91%E7%BB%9C%E6%B5%81%E9%87%8F%E8%AF%86%E5%88%AB/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>数据加密</title>
-    <link href="https://www.hvnt3r.top/2019/04/%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86/"/>
-    <id>https://www.hvnt3r.top/2019/04/%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86/</id>
-    <published>2019-04-23T11:49:39.000Z</published>
-    <updated>2020-12-16T12:23:41.848Z</updated>
-    
-    <content type="html"><![CDATA[<hr><h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p><strong>分析加密算法的目的：</strong>恶意代码使用加密来达到各种各样的目的，最常见的是加密网络通信，同时，唯一代码也会用加密来隐藏它的内部工作：</p><ul><li>隐藏配置信息</li><li>窃取信息之前将它保存到一个临时文件</li><li>存储需要的字符串</li><li>将恶意代码伪装成一个合法的工具</li></ul><a id="more"></a><p><strong>简单的加密算法：</strong>简单算法的好处如下：</p><ul><li>体积小，可以存放在空间较小的代码环境中如shellcode</li><li>没有复杂算法那么显眼，不易被发现</li><li>开销低，几乎对性能没有影响</li></ul><p><strong>凯撒密码：</strong>凯撒密码使用字符串的移位来加密信息。</p><p><strong>XOR加密：</strong>用异或逻辑来实现加密，是一种单密钥加密方法。</p><p><strong>其他简单加密算法：</strong></p><ul><li>ADD，SUB：编码算法可以用与XOR相似的方式在单个字节上使用ADD和SUB。</li><li>ROL，ROR：他们旋转字节中左侧与右侧的比特位，同样不可逆，需要配合使用。</li><li>ROT：原始的凯撒密码，它通常使用字母字符或者ASCII中94个可打印字符。</li><li>Multibyte：与单字节不同，这个算法可能使用一个较常的密钥，通常是4个或者8个字符长度，为了方便，它通常异或每个块。</li><li>链或环：这个算法使用内容本身作为密钥，有多种实现，最常见的原始密钥用在明文的两端，开头或者结尾，编码过输出字符作为下一个字符的密钥。</li></ul><p><strong>Base64加密：</strong>Base64编码将二进制数据转换成64个字符的有限字符集。对于不同的base64加密有多种不同的策略或字母表。但是他们都是用一个额外的字符标识填充，通常是=。最常用的字符集是MIME字符集，他使用A<del>Z，a</del>z和0~9作为前62个值使用+和/作为最后的两个值。</p><p><strong>常见的标准加密算法特征（相对于恶意代码来说）：</strong></p><ul><li>加密库很大，所以恶意代码需要静态的继承或者链接到已有的代码中</li><li>链接主机上现有的代码可能降低可移植性</li><li>标准加密库比较容易探测</li><li>对称加密算法需要考虑如何隐藏密钥</li></ul><p><strong>识别字符串和导入：</strong>可以通过加密库中自带的字符串作为特征来识别恶意代码使用了哪些加密库。</p><p><strong>寻找加密常量：</strong>第三方检测加密的方法是使用可以搜索常见加密常量的工具：</p><ul><li>FindCrypt2：它会搜索程序中任何与加密算法相关的已知常量，因为大部分加密算法会使用与基本加密算法结构相关的一些固定位串。值得注意的是国际数据加密算法IDEA和RC4算法动态地创建他们地结构，因此他们无法通过这种方式识别。</li><li>Krypto ANALyzer：这个工具可以识别常见加密算法的特征，可以识别的算法很多但是误报率页比较高。</li></ul><p><strong>查找高熵值的内容：</strong>除了识别潜在的明显的加密常量或者加密密钥外，这种技术也可以识别加密内容本身，由于这种技术的影响广泛，可以适用于没有找到加密常量的地方如RC4。高熵内容技术相当迟钝，最好作为最后一种使用手段，多种类型的内容，如视频音频压缩数据也可能会显示高熵值，除了他们的头部特征以外，很难与加密数据区分。</p><h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab13-1"><a href="#Lab13-1" class="headerlink" title="Lab13-1"></a>Lab13-1</h3><p><strong>分析恶意代码文件Lab13-01.exe。</strong></p><p><strong>问题</strong></p><p><strong>1.比较恶意代码中的字符串（字符串命令的输出）域动态分析提供的有用信息，基于这些比较，哪些元素可能被加密？</strong></p><p>资源节中的一段数据、hostname、</p><p><strong>2.使用IDA Pro搜索恶意代码中字符串xor，以此来查找潜在的加密，你发现了哪些加密类型？</strong></p><p>循环加密</p><p><strong>3.恶意代码使用什么密钥加密。加密了什么内容？</strong></p><p>0x3B 、资源节中的一段数据</p><p><strong>4.使用静态工具FindCrypt2、Krypto ANALyzer（KANAL）以及IDA熵插件识别一些其他类型的加密机制，你发现了什么？</strong></p><p>网上的东西鱼龙混杂，不敢下，告辞！</p><p><strong>5.什么类型的加密被恶意代码用来发送部分网络流量？</strong></p><p>Base64</p><p><strong>6.Base64编码函数在反汇编的何处？</strong></p><p>函数<code>sub_4010B1</code></p><p>本人虚拟hostname是DESKTOP-KH4V经过base64加密之后生成了REVTS1RPUC1LSDRW</p><p><strong>7.恶意代码发送的Base64加密数据的最大长度是什么？加密了什么内容？</strong></p><p>最长12个字节的计算机名</p><p><strong>8.恶意代码中，你是否在Base64加密数据中看到了填充字符=或者==？</strong></p><p>如果主机名长度小于12个字节且不能被3整除则会使用填充字符。</p><p><strong>9.这个恶意代码做了什么？</strong></p><p>用加密的主机名向<a href="http://www.practicalmalwareanalysis.com发送消息./">www.practicalmalwareanalysis.com发送消息。</a></p><h3 id="Lab13-2"><a href="#Lab13-2" class="headerlink" title="Lab13-2"></a>Lab13-2</h3><p><strong>问题</strong></p><p><strong>1.使用动态分析，确定恶意代码创建了什么？</strong></p><p>在<code>WindowsXP</code>下运行代码发现程序不断在其所在目录不断创建新的文件类似名为<code>temp00087b24</code>的文件。</p><p><strong>2.使用静态工具FindCrypt2、Krypto ANALyzer（KANAL）以及IDA熵插件识别一些其他类型的加密机制，你发现了什么？</strong></p><p>略</p><p><strong>3.基于问题1的回答，哪些导入函数将是寻找加密函数比较好的一个证据？</strong></p><p><code>WriteFile</code></p><p><strong>4.加密函数在反汇编的何处？</strong></p><p><code>sub_401739</code></p><p><strong>5.从加密函数追溯原始的加密内容，原始加密内容是什么？</strong></p><p>其实只看API函数是一些与窗口，色深等相关的就可以差不多猜出这个可能是截图收集。</p><p>那么直接将加密函数的调用nop掉试一下：</p><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">0040187F  | 50                | push eax                     |</span><br><span class="line">00401880  | 90                | nop                          | 加密函数</span><br><span class="line">00401881  | 90                | nop                          |</span><br><span class="line">00401882  | 90                | nop                          |</span><br><span class="line">00401883  | 90                | nop                          |</span><br><span class="line">00401884  | 90                | nop                          |</span><br><span class="line">00401885  | 83C4 08           | add esp,8                    |</span><br><span class="line">00401888  | FF15 38604000     | call dword ptr ds:[&lt;&amp;GetTick |</span><br></pre></td></tr></table></figure><p>可以将生成的文件后缀修改为bmp打开就是屏幕截图。</p><p><strong>6.你是否能够找到加密算法？如果没有，你如何解密这些内容？</strong></p><p>在内存上将要加密的数据替换为加密后的数据即可。</p><p><strong>7.使用解密工具，你是否能够恢复加密文件中的一个文件到原始文件？</strong></p><p>略</p><h3 id="Lab13-3"><a href="#Lab13-3" class="headerlink" title="Lab13-3"></a>Lab13-3</h3><p><strong>分析恶意代码文件Lab13-03.exe。</strong></p><p><strong>问题</strong></p><p><strong>1.比较恶意代码的输出字符串和动态分析提供的信息，通过这些比较，你发现哪些元素可能被加密？</strong></p><p>字符串较乱，暂未找到有用信息</p><p><strong>2.使用静态分析搜索字符串xor来查找潜在的加密。通过这种方法，你是发现什么类型的加密？</strong></p><p>暂无</p><p><strong>3.使用静态工具FindCrypt2、Krypto ANALyzer（KANAL）以及IDA熵插件识别一些其他类型的加密机制，发现的结果与搜索字符XOR结果比较如何？</strong></p><p>略</p><p><strong>4.恶意代码使用哪两种加密技术？</strong></p><p>Base64和AES</p><p><strong>5.对于每一种加密技术，他们的密钥是什么？</strong></p><p>AES：ijklmnopqrstuvwx</p><p>Base64：CD……AB…….</p><p><strong>6.对于加密算法，它的密钥足够可靠吗？另外你必须知道什么？</strong></p><p>AES</p><p><strong>7.恶意代码做了什么？</strong></p><p>恶意代码使用自定义的Base64加密算法加密传入命令和AES加密的Shell命令来建立反连命令shell。</p><hr><h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>]]></content>
-    
-    
-    <summary type="html">&lt;hr&gt;
-&lt;h2 id=&quot;知识点&quot;&gt;&lt;a href=&quot;#知识点&quot; class=&quot;headerlink&quot; title=&quot;知识点&quot;&gt;&lt;/a&gt;知识点&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;分析加密算法的目的：&lt;/strong&gt;恶意代码使用加密来达到各种各样的目的，最常见的是加密网络通信，同时，唯一代码也会用加密来隐藏它的内部工作：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;隐藏配置信息&lt;/li&gt;
-&lt;li&gt;窃取信息之前将它保存到一个临时文件&lt;/li&gt;
-&lt;li&gt;存储需要的字符串&lt;/li&gt;
-&lt;li&gt;将恶意代码伪装成一个合法的工具&lt;/li&gt;
-&lt;/ul&gt;</summary>
-    
-    
-    
-    <category term="二进制安全" scheme="https://www.hvnt3r.top/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/"/>
-    
-    
-    <category term="逆向" scheme="https://www.hvnt3r.top/tags/%E9%80%86%E5%90%91/"/>
-    
-    <category term="恶意代码分析" scheme="https://www.hvnt3r.top/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"/>
-    
-    <category term="加密" scheme="https://www.hvnt3r.top/tags/%E5%8A%A0%E5%AF%86/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Windows10安装Linux子系统</title>
-    <link href="https://www.hvnt3r.top/2019/04/Windows10%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F/"/>
-    <id>https://www.hvnt3r.top/2019/04/Windows10%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F/</id>
-    <published>2019-04-19T13:47:36.000Z</published>
-    <updated>2020-12-16T12:19:54.686Z</updated>
-    
-    <content type="html"><![CDATA[<p>开启开发者模式：</p><p><img src="https://i.loli.net/2019/04/19/5cb9d1caac36b.png"></p><a id="more"></a><p>控制面板</p><p><img src="https://i.loli.net/2019/04/19/5cb9d25e414b5.png"></p><p>安装完成之后需要重启，重启之后在Windows应用商店中选择自己喜欢的Linux发行版本，我选择<del>Kali</del>，算了算了，看了评论都说Kali的更新源不可用甚至可能导致蓝屏，之前使用物理机Kali因为不稳定而系统损坏的我只想说：告辞！！！，还是用Ubuntu吧，可能会稳定一些：</p><p><img src="https://i.loli.net/2019/04/19/5cb9d2e9b88c7.png"></p><p>安装中：</p><p><img src="https://i.loli.net/2019/04/19/5cb9d4cf5676e.png"></p><p>。。。。。。</p><p><img src="https://i.loli.net/2019/04/19/5cb9d50b3d2d2.png"></p><p>🍃</p><p>百度了一下：</p><p>PowerShell管理员权限执行如下命令：</p><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux</span><br></pre></td></tr></table></figure><p><img src="https://i.loli.net/2019/04/19/5cb9d59cc3b81.png"></p><p>安装成功且不需要重启，很好</p><p>启动成功，注意这里输入的账户名和密码要记好，输入密码时屏幕不显示，但实际上已经输入了，给没用过Linux的小白提个醒：</p><p><img src="https://i.loli.net/2019/04/19/5cb9d6bda02fd.png"></p><p>大功告成！</p>]]></content>
-    
-    
-    <summary type="html">&lt;p&gt;开启开发者模式：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;https://i.loli.net/2019/04/19/5cb9d1caac36b.png&quot;&gt;&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="操作系统" scheme="https://www.hvnt3r.top/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/"/>
-    
-    
-    <category term="Windows" scheme="https://www.hvnt3r.top/tags/Windows/"/>
-    
-    <category term="Linux子系统" scheme="https://www.hvnt3r.top/tags/Linux%E5%AD%90%E7%B3%BB%E7%BB%9F/"/>
     
   </entry>
   
