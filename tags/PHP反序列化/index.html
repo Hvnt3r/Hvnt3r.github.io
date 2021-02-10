@@ -188,6 +188,7 @@
             <h2 id="0x01-PHP反序列化漏洞成因"><a href="#0x01-PHP反序列化漏洞成因" class="headerlink" title="0x01 PHP反序列化漏洞成因"></a>0x01 PHP反序列化漏洞成因</h2><h3 id="序列化与反序列化"><a href="#序列化与反序列化" class="headerlink" title="序列化与反序列化"></a>序列化与反序列化</h3><blockquote>
 <p>所有php里面的值都可以使用函数serialize()来返回一个包含字节流的字符串来表示。unserialize()函数能够重新把字符串变回php原来的值。 序列化一个对象将会保存对象的所有变量，但是不会保存对象的方法，只会保存类的名字。 –php官方文档</p>
 </blockquote>
+<hr>
 <p>**serialize() **：返回带有变量类型和值的字符串</p>
 <p><strong>unserialize()</strong> ：想要将已序列化的字符串变回 PHP 的值</p>
         </div>
