@@ -16,7 +16,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://www.hvnt3r.top/gallery/thumbnails/image-20200902230615429.png">
 <meta property="article:published_time" content="2021-02-09T13:12:26.000Z">
-<meta property="article:modified_time" content="2021-02-09T13:22:15.145Z">
+<meta property="article:modified_time" content="2021-02-10T03:26:18.307Z">
 <meta property="article:author" content="Hvnt3r">
 <meta property="article:tag" content="漏洞挖掘">
 <meta property="article:tag" content="PHP代码注入">
@@ -186,8 +186,7 @@
 <a id="more"></a>
 
 <p><img src="https://i.loli.net/2021/02/09/2xbfAnvMO6WZKqm.png" alt="命令示例"></p>
-<p>**escapeshellarg()**的定义：</p>
-<blockquote>
+<h4 id="escapeshellarg-的定义："><a href="#escapeshellarg-的定义：" class="headerlink" title="escapeshellarg()的定义："></a>escapeshellarg()的定义：</h4><blockquote>
 <p><strong>escapeshellarg</strong> — 把字符串转码为可以在 shell 命令里使用的参数 </p>
 <p><strong>功能</strong> ：escapeshellarg() 将给字符串增加一个单引号并且能引用或者转码任何已经存在的单引号，这样以确保能够直接将一个字符串传入 shell 函数，shell 函数包含 exec()，system() 执行运算符(反引号) </p>
 <p><strong>定义</strong> ：<code>string escapeshellarg ( string $arg )</code></p>
@@ -195,8 +194,7 @@
 <p><img src="https://i.loli.net/2021/02/09/TX8A3kLd2Zcx6z1.png" alt="转义结果"></p>
 <p>由上图可见<code>escapeshellarg()</code>会为参数加上单引号</p>
 <p>另外说一下与<code>escapeshellarg()</code>类似的php过滤函数<code>escapeshellcmd()</code>，以下是<code>escapeshellcmd()</code>的定义:</p>
-<p>**escapeshellcmd()**的定义：</p>
-<blockquote>
+<h4 id="escapeshellcmd-的定义："><a href="#escapeshellcmd-的定义：" class="headerlink" title="escapeshellcmd()的定义："></a>escapeshellcmd()的定义：</h4><blockquote>
 <p><strong>escapeshellcmd</strong> — shell 元字符转义</p>
 <p>功能：<strong>escapeshellcmd()</strong> 对字符串中可能会欺骗 shell 命令执行任意命令的字符进行转义。 此函数保证用户输入的数据在传送到exec()或system()函数，或者执行操作符之前进行转义。</p>
 <p>反斜线（\）会在以下字符之前插入： <em>&amp;#;`|\</em>?~&lt;&gt;^()[]{}$<em>, <em>\x0A</em> 和 <em>\xFF\</em>。 \</em>’* 和 <em>“</em> 仅在不配对儿的时候被转义。 在 Windows 平台上，所有这些字符以及 <em>%</em> 和 <em>!</em> 字符都会被空格代替。</p>
