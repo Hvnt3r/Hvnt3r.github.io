@@ -142,6 +142,48 @@
                 <div class="column is-8-tablet is-8-desktop is-8-widescreen has-order-2 column-main">
     <div class="card">
     
+    <div class="card-content article ">
+        
+        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
+            <div class="level-left">
+                <time class="level-item has-text-grey" datetime="2021-02-10T01:08:23.000Z">2021-02-10</time>
+                
+                
+                <span class="level-item has-text-grey">
+                    
+                    
+                    几秒 读完 (大约 19 个字)
+                </span>
+                
+                
+            </div>
+        </div>
+        
+        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
+            
+                <a class="has-link-black-ter" href="/2021/02/%E4%B8%AD%E5%9B%BD%E8%9A%81%E5%89%91/">中国蚁剑</a>
+            
+        </h1>
+        <div class="content">
+            <p><a target="_blank" rel="noopener" href="https://doc.u0u.us/zh-hans/getting_started/get_antsword.html">https://doc.u0u.us/zh-hans/getting_started/get_antsword.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/AntSwordProject/AntSword-Loader/releases">https://github.com/AntSwordProject/AntSword-Loader/releases</a></p>
+
+        </div>
+        
+        
+        
+    </div>
+</div>
+
+
+
+
+
+
+
+
+    <div class="card">
+    
     <div class="card-image">
         <a href="/2021/02/%E4%B8%80%E4%B8%AAPHP%E4%BB%A3%E7%A0%81%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/" class="image is-7by1">
             <img class="thumbnail" src="/gallery/thumbnails/image-20200902230615429.png" alt="一个PHP代码注入漏洞">
@@ -239,8 +281,8 @@
             <h2 id="0x01-PHP反序列化漏洞成因"><a href="#0x01-PHP反序列化漏洞成因" class="headerlink" title="0x01 PHP反序列化漏洞成因"></a>0x01 PHP反序列化漏洞成因</h2><h3 id="序列化与反序列化"><a href="#序列化与反序列化" class="headerlink" title="序列化与反序列化"></a>序列化与反序列化</h3><blockquote>
 <p>所有php里面的值都可以使用函数serialize()来返回一个包含字节流的字符串来表示。unserialize()函数能够重新把字符串变回php原来的值。 序列化一个对象将会保存对象的所有变量，但是不会保存对象的方法，只会保存类的名字。 –php官方文档</p>
 </blockquote>
-<p>**serialize()**：返回带有变量类型和值的字符串</p>
-<p>**unserialize()**：想要将已序列化的字符串变回 PHP 的值</p>
+<p>**serialize() **：返回带有变量类型和值的字符串</p>
+<p><strong>unserialize()</strong> ：想要将已序列化的字符串变回 PHP 的值</p>
         </div>
         
         
@@ -683,66 +725,6 @@
 
 
 
-    <div class="card">
-    
-    <div class="card-image">
-        <a href="/2019/08/Pwnable-kr-Part-1-15-21/" class="image is-7by1">
-            <img class="thumbnail" src="/gallery/thumbnails/pwnable_1.jpg" alt="Pwnable.kr_Part_1_15/21">
-        </a>
-    </div>
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-08-06T15:09:11.000Z">2019-08-06</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/CTF/">CTF</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    7 分钟 读完 (大约 1002 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2019/08/Pwnable-kr-Part-1-15-21/">Pwnable.kr_Part_1_15/21</a>
-            
-        </h1>
-        <div class="content">
-            <h2 id="Pwnable-kr-BlackJack-逻辑漏洞"><a href="#Pwnable-kr-BlackJack-逻辑漏洞" class="headerlink" title="Pwnable.kr-BlackJack-逻辑漏洞"></a>Pwnable.kr-BlackJack-逻辑漏洞</h2><p>游戏代码在这里:<a target="_blank" rel="noopener" href="https://cboard.cprogramming.com/c-programming/114023-simple-blackjack-program.html">https://cboard.cprogramming.com/c-programming/114023-simple-blackjack-program.html</a></p>
-<p>查看代码发现代码量很多，以为很复杂，但静下心看一下发现其实很简单，大部分代码用来实现游戏逻辑，获取flag的条件是成为百万富翁，就是使自己的余额大于一百万，游戏规则介绍中也说了，不要试着真去赌，因为每一把都是随机的，很可能一夜回到解放前，因此要寻找题目中的漏洞，按照经验，这种题出现漏洞可能是整数溢出或者是数据校验不严格，然后我发现题目中对用户输入赌注的地方缺乏负数校验：</p>
-<figure class="highlight c hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">betting</span><span class="hljs-params">()</span> <span class="hljs-comment">//Asks user amount to bet</span></span></span><br><span class="line"><span class="hljs-function"></span>&#123;</span><br><span class="line"> <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;\n\nEnter Bet: $&quot;</span>);</span><br><span class="line"> <span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%d&quot;</span>, &amp;bet);</span><br><span class="line"></span><br><span class="line"> <span class="hljs-keyword">if</span> (bet &gt; cash) <span class="hljs-comment">//If player tries to bet more money than player has</span></span><br><span class="line"> &#123;</span><br><span class="line">		<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;\nYou cannot bet more money than you have.&quot;</span>);</span><br><span class="line">		<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;\nEnter Bet: &quot;</span>);</span><br><span class="line">        <span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%d&quot;</span>, &amp;bet);</span><br><span class="line">        <span class="hljs-keyword">return</span> bet;</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="hljs-keyword">else</span> <span class="hljs-keyword">return</span> bet;</span><br><span class="line">&#125; <span class="hljs-comment">// End Function</span></span><br></pre></td></tr></table></figure>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/08/Pwnable-kr-Part-1-15-21/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
 
     
 <div class="card card-transparent">
@@ -809,7 +791,7 @@
                         文章
                     </p>
                     <p class="title has-text-weight-normal">
-                        79
+                        80
                     </p>
                 </div>
             </div>

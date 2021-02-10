@@ -2,14 +2,14 @@
 <html  lang="zh">
 <head>
     <meta charset="utf-8">
-<title>标签: ShellCode - Hvnt3r&#39;s Blog</title>
+<title>标签: Shellcode - Hvnt3r&#39;s Blog</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
 
 
     <meta property="og:type" content="website">
 <meta property="og:title" content="Hvnt3r&#39;s Blog">
-<meta property="og:url" content="https://www.hvnt3r.top/tags/ShellCode/index.html">
+<meta property="og:url" content="https://www.hvnt3r.top/tags/Shellcode/index.html">
 <meta property="og:site_name" content="Hvnt3r&#39;s Blog">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://www.hvnt3r.top/images/og_image.png">
@@ -144,7 +144,7 @@
         <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
             <li><a href="/tags">标签</a></li>
-            <li class="is-active"><a href="#" aria-current="page">ShellCode</a></li>
+            <li class="is-active"><a href="#" aria-current="page">Shellcode</a></li>
         </ul>
         </nav>
     </div>
@@ -156,7 +156,7 @@
         
         <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
             <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-04-27T02:58:09.000Z">2019-04-27</time>
+                <time class="level-item has-text-grey" datetime="2018-10-24T00:57:39.000Z">2018-10-24</time>
                 
                 <div class="level-item">
                 <a class="has-link-grey -link" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
@@ -166,7 +166,7 @@
                 <span class="level-item has-text-grey">
                     
                     
-                    10 分钟 读完 (大约 1570 个字)
+                    14 分钟 读完 (大约 2156 个字)
                 </span>
                 
                 
@@ -175,76 +175,21 @@
         
         <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
             
-                <a class="has-link-black-ter" href="/2019/04/ShellCode%E5%88%86%E6%9E%90/">ShellCode分析</a>
+                <a class="has-link-black-ter" href="/2018/10/Shell-code%E7%9A%84%E7%BC%96%E5%86%99%E5%92%8C%E5%88%A9%E7%94%A8/">Shellcode的编写和利用</a>
             
         </h1>
         <div class="content">
-            <hr>
-<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p><strong>位置无关代码：</strong>PIC指不用硬编码地址来寻址指令或数据得代码，shellcode编写者应该使用位置无关代码来提高代码的兼容性。</p>
-<p><strong>识别执行位置：</strong>Shellcode再以位置无关方式访问数据时需要引用一个基质指针，用这个基址指针加上或减去偏移值，将使它安全访问shellcode中包含的数据，因此一个通用寄存器应该首先载入当前EIP值，作为基址指针来使用，但是指令指针不能之别被软件访问，无法汇编<code>mov eax, eip</code>指令，但是可以使用<code>call/pop</code>指令和<code>fnstenv</code>指令。</p>
-<p><strong>使用call/pop指令：</strong>当一个call指令被执行使，处理器将call后面的指令地址压倒栈上，然后请求转到被请求的位置执行，这个函数执行完成后会执行一个ret指令，将返回地址弹出到栈的顶部，并将它载入EIP寄存器中，这样的结果使执行刚好返回到call后面的指令。因此shellcode可以通过call后面紧跟一个pop的方法来得到call后指令指针的方法。</p>
+            <p>在渗透测试和漏洞利用中，<code>Shellcode</code>是一个十分重要的部分，在二进制的安全研究中，<code>Shellcode</code>也充当着十分重要的角色，本文会记录我学习<code>Shellcode</code>的编写和利用原理。</p>
+<h2 id="在程序中嵌入Shellcode并执行"><a href="#在程序中嵌入Shellcode并执行" class="headerlink" title="在程序中嵌入Shellcode并执行"></a>在程序中嵌入Shellcode并执行</h2><p>首先拿一道十分简单的PWN题来演示程序是如何执行<code>Shellcode</code>的</p>
+<p><a href>文件下载</a></p>
+<p>首先，这是一个<code>32</code>位的程序，我把它放到了<code>32</code>位的<code>kali</code>虚拟机中</p>
         </div>
         
         
         <div class="level is-mobile">
             <div class="level-start">
                 <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/04/ShellCode%E5%88%86%E6%9E%90/#more">阅读更多</a>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
-</div>
-
-
-
-
-
-
-
-
-    <div class="card">
-    
-    <div class="card-content article ">
-        
-        <div class="level article-meta is-size-7 is-uppercase is-mobile is-overflow-x-auto">
-            <div class="level-left">
-                <time class="level-item has-text-grey" datetime="2019-03-20T03:08:22.000Z">2019-03-20</time>
-                
-                <div class="level-item">
-                <a class="has-link-grey -link" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
-                </div>
-                
-                
-                <span class="level-item has-text-grey">
-                    
-                    
-                    34 分钟 读完 (大约 5171 个字)
-                </span>
-                
-                
-            </div>
-        </div>
-        
-        <h1 class="title is-size-3 is-size-4-mobile has-text-weight-normal">
-            
-                <a class="has-link-black-ter" href="/2019/03/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E8%A1%8C%E4%B8%BA/">恶意代码行为</a>
-            
-        </h1>
-        <div class="content">
-            <hr>
-<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>本章中会介绍恶意代码常见的恶意行为，方便我们识别各种各样的恶意程序。</p>
-<p><strong>下载器和启动器：</strong>常见的两种恶意代码是下载器和启动器。下载器从互联网上下载其他的恶意代码，然后在本地系统中运行，通常使用<code>WindowsAPI</code>函数<code>URLDownloadtoFileA</code>和<code>WinExec</code>，来下载并运行新的恶意代码。启动器也成为加载器，是一类可执行文件，用来安装立即运行或者将来运行的恶意代码。</p>
-<p><strong>后门：</strong>后门可以让攻击者远程访问一个受害的机器。通常使用80端口的HTTP协议与控制机器进行通信。</p>
-        </div>
-        
-        
-        <div class="level is-mobile">
-            <div class="level-start">
-                <div class="level-item">
-                <a class="button is-size-7 is-light" href="/2019/03/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E8%A1%8C%E4%B8%BA/#more">阅读更多</a>
+                <a class="button is-size-7 is-light" href="/2018/10/Shell-code%E7%9A%84%E7%BC%96%E5%86%99%E5%92%8C%E5%88%A9%E7%94%A8/#more">阅读更多</a>
                 </div>
             </div>
         </div>
@@ -303,7 +248,7 @@
                         文章
                     </p>
                     <p class="title has-text-weight-normal">
-                        79
+                        80
                     </p>
                 </div>
             </div>
@@ -643,6 +588,106 @@
     <h6>Your browser is out-of-date!</h6>
     <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" target="_blank" rel="noopener" href="http://outdatedbrowser.com/">Update
             my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        });
+    });
+</script>
+
+
+    
+    
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    MathJax.Hub.Config({
+        'HTML-CSS': {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+});
+</script>
+
+    
+    
+
+<a id="back-to-top" title="回到顶端" href="javascript:;">
+    <i class="fas fa-chevron-up"></i>
+</a>
+<script src="/js/back-to-top.js" defer></script>
+
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<script src="/js/main.js" defer></script>
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="想要查找什么..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: '文章',
+                PAGES: '页面',
+                CATEGORIES: '分类',
+                TAGS: '标签',
+                UNTITLED: '(无标题)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+<script src="/js/insight.js" defer></script>
+<link rel="stylesheet" href="/css/search.css">
+<link rel="stylesheet" href="/css/insight.css">
+    
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>p>
     <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/outdatedbrowser@1.1.5/outdatedbrowser/outdatedbrowser.min.js" defer></script>
