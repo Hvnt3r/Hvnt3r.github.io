@@ -6,7 +6,7 @@
   <link href="https://www.hvnt3r.top/atom.xml" rel="self"/>
   
   <link href="https://www.hvnt3r.top/"/>
-  <updated>2021-02-10T09:10:41.924Z</updated>
+  <updated>2021-02-10T09:13:08.883Z</updated>
   <id>https://www.hvnt3r.top/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="https://www.hvnt3r.top/2021/02/%E4%B8%AD%E5%9B%BD%E8%9A%81%E5%89%91/"/>
     <id>https://www.hvnt3r.top/2021/02/%E4%B8%AD%E5%9B%BD%E8%9A%81%E5%89%91/</id>
     <published>2021-02-10T01:08:23.000Z</published>
-    <updated>2021-02-10T09:10:41.924Z</updated>
+    <updated>2021-02-10T09:13:08.883Z</updated>
     
     <content type="html"><![CDATA[<h3 id="相关链接"><a href="#相关链接" class="headerlink" title="相关链接"></a>相关链接</h3><p>文档地址：</p><p><a href="https://doc.u0u.us/zh-hans/getting_started/get_antsword.html">https://doc.u0u.us/zh-hans/getting_started/get_antsword.html</a></p><p>下载地址：</p><p><a href="https://github.com/AntSwordProject/AntSword-Loader/releases">https://github.com/AntSwordProject/AntSword-Loader/releases</a></p><a id="more"></a><h3 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h3><p>连接webshell</p><p><img src="https://i.loli.net/2021/02/10/yAOQGmlHo8dR9Cn.png" alt="webshell连接"></p><p>连接成功的界面:</p><p><img src="https://i.loli.net/2021/02/10/5RBCG1aSKvb8dsI.png" alt="image.png"></p><p>功能就是上图中的功能，跟中国菜刀类似。</p><h3 id="流量内容"><a href="#流量内容" class="headerlink" title="流量内容"></a>流量内容</h3><p><img src="https://i.loli.net/2021/02/10/ue67Q4HUSRPEk3F.png" alt="列出文件的相关流量"></p><p>在中国蚁剑中使用虚拟终端运行命令的数据包:</p><p><img src="https://i.loli.net/2021/02/10/zFp3fG4KEw2JXsn.png" alt="在中国蚁剑中使用虚拟终端运行命令的数据包"></p><p>可以看到蚁剑在Windows上通过调用COM打开WScript.shell进行命令执行的操作，每次执行命令都会发送此类数据包，且返回包如果不修改时会有[S]、[E]的符号，如果目标环境的流量审计环境中有此类规则的话触发检测的概率应该还是比较大的。</p><p>蚁剑的默认UA为:</p><figure class="highlight plain hljs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">User-Agent: antSword&#x2F;v2.1</span><br></pre></td></tr></table></figure><p>未完待续。。。</p>]]></content>
     
