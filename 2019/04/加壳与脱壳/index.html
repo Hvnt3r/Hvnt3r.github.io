@@ -1,0 +1,551 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="
+知识点加壳原理：加壳器是将一个可执行文件作为输入，输出一个全新的可执行文件，被加壳的可执行文件经过压缩，加密或者其他转换。多数假客气采用压缩算法压缩原始文件，加壳器通过加密原始可执行文件并且实施一些反逆向技术的实现如防反汇编，反调试以及虚拟化等，加壳器既可以打包整个可执行文件，包括所有的数据与资源节，也可以仅打包代码和资源节。
+脱壳存根：可执行程序的入口点直线脱壳存根而不是原始代码，原始程序通常">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>加壳与脱壳 - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="加壳与脱壳">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2019-04-26 09:55" pubdate>
+        2019年4月26日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.2k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      22
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">加壳与脱壳</h1>
+            
+            <div class="markdown-body">
+              <hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p><strong>加壳原理：</strong>加壳器是将一个可执行文件作为输入，输出一个全新的可执行文件，被加壳的可执行文件经过压缩，加密或者其他转换。多数假客气采用压缩算法压缩原始文件，加壳器通过加密原始可执行文件并且实施一些反逆向技术的实现如防反汇编，反调试以及虚拟化等，加壳器既可以打包整个可执行文件，包括所有的数据与资源节，也可以仅打包代码和资源节。</p>
+<p><strong>脱壳存根：</strong>可执行程序的入口点直线脱壳存根而不是原始代码，原始程序通常存储在杰克程序的一个或者多个附加的节中，脱壳存根负责脱壳源程序：</p>
+<ul>
+<li>将原始程序脱壳到内存中</li>
+<li>解析原始可执行文件的所有导入函数</li>
+<li>将可执行程序转移到原始的程序入口点</li>
+</ul>
+<span id="more"></span>
+
+<p><strong>加载可执行文件：</strong></p>
+<ul>
+<li>读取PE头信息</li>
+<li>根据头部信息为可执行文件的各个节分配内存&#x2F;根据脱壳存根在内存中分配空间</li>
+<li>加载这些节到所分配的内存中</li>
+</ul>
+<p><strong>解析导入函数表：</strong>脱壳存根使用LoadLibrary导入每个库和GetProcAddress函数获取每个函数的内存地址。</p>
+<p><strong>尾部跳转：</strong>一旦脱壳存根完成脱壳，就必须转到OEP运行，一般使用jmp指令，或者使用ret或者call指令。有时恶意代码会使用操作系统转移控制的函数来掩盖尾部跳转NtContinue或者Nwcontinue。</p>
+<p><strong>加壳程序的特点：</strong></p>
+<ul>
+<li>程序中导入函数很少，导入函数只有LoadLibrary、GetProcAddress</li>
+<li>使用IDA分析时IDA仅能识别出少量的代码</li>
+<li>使用OD打开程序时警告此程序可能被加壳</li>
+<li>程序节中包含加壳器的标识如UPX0</li>
+<li>程序拥有不正常的节大小</li>
+<li>使用PEID等加壳探测程序</li>
+</ul>
+<p><strong>熵计算：</strong>熵值是一种测量系统中或程序中混乱程序的技术，压缩或者加密数据更接近于随机数据因此熵值更高。</p>
+<p><strong>脱壳选项：</strong></p>
+<ul>
+<li>自动静态脱壳</li>
+<li>自动动态脱壳</li>
+<li>手动动态脱壳</li>
+</ul>
+<p><strong>手动脱壳：</strong></p>
+<ul>
+<li>找到加壳算法，编写程序逆向算法，缺点是效率较低</li>
+<li>运行脱壳存根，等脱壳完成后修改PE头部</li>
+</ul>
+<p><strong>修复导入函数表：</strong>ImpRec可以用来修复一个加壳程序的导入表：</p>
+<ul>
+<li>打开要修复的文件</li>
+<li>输入OEP地址的偏移</li>
+<li>单击IAT autoresearch按钮</li>
+<li>单击Import</li>
+<li>导入成功则显示valid:yes</li>
+</ul>
+<p><strong>使用自动工具查找OEP：</strong>使用OD中的插件OllyDump，通过Section Hop调用Find OEP。通常吗脱壳存根存在一个节里，而可执行程序被打包到另一个节中，使用step-into或者step-over方法，当城市从一个节跳转到另一个节时，OD可以探测到这种转移并在转移的地方进行中断。</p>
+<p><strong>手动查找OEP：</strong></p>
+<ul>
+<li>最简单的手动查找策略就是查找尾部跳转指令，通常情况下是jmp指令或者是ret。通常尾部跳转指令时一串无效字节指令前的最后一条有效指令，填充这些字节的目的是为了保证字节对齐。</li>
+<li>尾部跳转指令的另一个显著特征是跳转地址的大小，一般跳转指令被用在条件分支中，因此跳转的距离较小，但是尾部跳转指令距离很大。</li>
+<li>观察jmp指向的指令序列，在程序运行前jmp指向的地址并没有有意义的指令但是脱壳存根运行之后则会出现有意义的指令。</li>
+<li>另一个查找尾部跳转的方式是在栈上设置读断点，要设置读断点必须使用硬件断点或者OD的内存断点，反汇编中的发不分寒暑都是以某种push指令开头的，在栈中记录第一个入栈的内存地址，然后在这个栈位置设置一个读断点，然后当脱壳存根运行完成之后会用pop指令再次命中这个栈位置，这个是ESP守恒定律</li>
+<li>如果程序通过使用 call指令来跳转到OEP时，这个call并没有ret，因此在这个call上使用step-over会让你前功尽弃，因为无法命中下一个断点，需要重新寻找刚才的函数并替换为step-into。</li>
+<li>在GetProcAddress函数设置断点，大多数脱壳器使用此函数来解析原始函数的导出表。</li>
+<li>对于命令行知程，在进程中，壳很在就调用了GetVersion和GetCommandlineA函数，所以你可以尝试在这些函数被调用时中断程序。</li>
+<li>在GUI程序中GetMoudleHandleA通常是第一个被调用的函数，程序中断后，检查前一个栈帧没查看何处调用了原始程序，调用GetMoudlehandleA和GetVersion函数的开始地址一般就是OEP。</li>
+<li>使用OD的RunTrace选项，此选项提供一些额外的断点选项使你能在较大的的范围内设置断点，例如有很多壳都会留下原始文件的text节，通常硬盘上的text节没有任何东西，但是这个节被保留在PE头部使得加载器能够危他创建内存空间，OEP总是位于源文件的text节中，通常它是这个节中第一个被调用的指令，RunTrace可以实现无论何时执行text中的指令，都能触发RunTrace设置的断点，一旦断点触发就找到了OEP。</li>
+</ul>
+<p><strong>手动修复导入表：</strong>导入表在内存中实际上有两个表，第一个表时函数名称或者序列号表，起哄包含加载器或脱壳存根所需要的函数名称或者序号，第二个表时所有导入函数的地址列表，当代码运行时，只需要第二个表，所以加壳程序可以通过移除名字阻止分析，在这种情况下需要手动重构这个表。</p>
+<p>常见壳：</p>
+<ul>
+<li>UPX：这是一款主要实现压缩可执行文件大小功能的壳，可以使用UPX的托克工具脱壳，遇到修改过的UPX可以查找OEP实现手动脱壳。</li>
+<li>PECompact：这是一个商业壳，为性能和速度而设计，这个壳脱起来比较难，因为其中包含反调试异常与混淆代码，绕过异常的方式是将异常返还给程序处理，可以通过尾部跳转指令来查找OEP，step-over几个函数，然后会看到一个尾部跳转，它由一个jmp eax指令组成，之湖是多个0x00字节。</li>
+<li>ASPack：此壳的目的是为了安全，使用了自我修改代码，使设置断点和分析变得困难，在用ASPack加过壳的程序上设置断点可能会立刻终止此程序，打开脱壳存根的代码会有一个PUSHA指令，确定用来存在寄存器的栈地址，然后再这些地址上设置硬件断点，调用POPAD指令时会触发硬件断点，OEP就在离尾部跳转的不远处。</li>
+<li>Petite：与ASPack相似，有反调试机制，且为了干扰调试器使用了单步异常，同样需要将异常处理返还给程序，使用栈上的硬件断点使最佳策略来寻找OEP。</li>
+<li>WinUpack：这是一个拥有GUI的壳，设计目的是优化压缩而不是安全，查找Upack的OEP最好方法是再GEtProcAddress上设置断点查找设置导入解析函数的循环。</li>
+<li>Themida：这是一个非常复杂的壳，有反调试与反逆向分析的功能。同时阻止VMware、调试器以及ProcMon分析。除此之外Themida有一个内核模块。与多数壳不同Themida会在原始程序运行后一直运行，可以找到一些针对这个壳的自动脱壳工具，如果自动脱壳失败则需要用到ProcDump工具来将内存中的数据Dump下来。</li>
+</ul>
+<h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><p><strong>本章每一个实验都是前面章节实验的加壳版本，你的任务是脱壳这个文件并且识别这些文件在哪一章出现过。分析样本文件Lab18-01.exe到Lab18-05.exe。</strong></p>
+<h3 id="Lab18-01"><a href="#Lab18-01" class="headerlink" title="Lab18-01"></a>Lab18-01</h3><h3 id="Lab18-02"><a href="#Lab18-02" class="headerlink" title="Lab18-02"></a>Lab18-02</h3><h3 id="Lab18-03"><a href="#Lab18-03" class="headerlink" title="Lab18-03"></a>Lab18-03</h3><h3 id="Lab18-04"><a href="#Lab18-04" class="headerlink" title="Lab18-04"></a>Lab18-04</h3><h3 id="Lab18-05"><a href="#Lab18-05" class="headerlink" title="Lab18-05"></a>Lab18-05</h3><hr>
+<h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E9%80%86%E5%90%91/">逆向</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%8A%A0%E5%A3%B3%E4%B8%8E%E8%84%B1%E5%A3%B3/">加壳与脱壳</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/04/ShellCode%E5%88%86%E6%9E%90/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ShellCode分析</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/04/%E5%8F%8D%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%8A%80%E6%9C%AF/">
+                        <span class="hidden-mobile">反虚拟机技术</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

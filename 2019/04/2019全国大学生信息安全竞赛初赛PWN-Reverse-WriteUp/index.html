@@ -1,0 +1,495 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="Reverse0x01 easyGo">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2019-04-29 08:34" pubdate>
+        2019年4月29日 早上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      264 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      4
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp</h1>
+            
+            <div class="markdown-body">
+              <h1 id="Reverse"><a href="#Reverse" class="headerlink" title="Reverse"></a>Reverse</h1><h2 id="0x01-easyGo"><a href="#0x01-easyGo" class="headerlink" title="0x01 easyGo"></a>0x01 easyGo</h2><p><img src="https://i.loli.net/2019/04/29/5cc64745afb8d.png" srcset="/img/loading.gif" lazyload></p>
+<span id="more"></span>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">hvnt3r@LAPTOP-POUA9UHC:/mnt/e/linux$ file easygo<br>easygo: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, stripped<br>hvnt3r@LAPTOP-POUA9UHC:/mnt/e/linux$ ./easyGo<br>Please input you flag like flag&#123;123&#125; to judge:<br>flag&#123;1212121&#125;<br>Try again! Come on!<br></code></pre></td></tr></table></figure>
+
+<p>Go的逆向，先用<code>IDAGolangHelper</code>恢复函数名，在<code>main_main</code>函数中找到<code>base64</code>加密，在函数位置下断点，<code>gdb</code>中单步运行，执行完<code>encoding_base64__ptr_Encoding_DecodeString</code>之后可以在<code>RSI</code>中看到<code>flag</code>:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs bash">[----------------------------------registers-----------------------------------]<br>RAX: 0x2a (<span class="hljs-string">&#x27;*&#x27;</span>)<br>RBX: 0x2a (<span class="hljs-string">&#x27;*&#x27;</span>)<br>RCX: 0x0 <br>RDX: 0x0 <br>RSI: 0xc000098060 (<span class="hljs-string">&quot;flag&#123;92094daf-33c9-431e-a85a-8bfbd5df98ad&#125;&quot;</span>)<br>RDI: 0x38 (<span class="hljs-string">&#x27;8&#x27;</span>)<br>RBP: 0xc000092f88 --&gt; 0xc000092f90 --&gt; 0x429b1c (mov    eax,DWORD PTR [rip+0x16478e]        <span class="hljs-comment"># 0x58e2b0)</span><br>RSP: 0xc000092e90 --&gt; 0xc000096580 (<span class="hljs-string">&quot;6789_-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345&quot;</span>, <span class="hljs-string">&#x27;\377&#x27;</span> &lt;repeats 45 <span class="hljs-built_in">times</span>&gt;, <span class="hljs-string">&quot;\005\377\377:;&lt;=&gt;?&quot;</span>)<br>RIP: 0x4952f0 (mov    rax,QWORD PTR [rsp+0x38])<br>R8 : 0x0 <br>R9 : 0x0 <br>R10: 0x2a (<span class="hljs-string">&#x27;*&#x27;</span>)<br>R11: 0x2a (<span class="hljs-string">&#x27;*&#x27;</span>)<br>R12: 0xc000098060 (<span class="hljs-string">&quot;flag&#123;92094daf-33c9-431e-a85a-8bfbd5df98ad&#125;&quot;</span>)<br>R13: 0xc000096580 (<span class="hljs-string">&quot;6789_-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345&quot;</span>, <span class="hljs-string">&#x27;\377&#x27;</span> &lt;repeats 45 <span class="hljs-built_in">times</span>&gt;, <span class="hljs-string">&quot;\005\377\377:;&lt;=&gt;?&quot;</span>)<br>R14: 0x2a (<span class="hljs-string">&#x27;*&#x27;</span>)<br>R15: 0x40 (<span class="hljs-string">&#x27;@&#x27;</span>)<br>EFLAGS: 0x206 (carry PARITY adjust zero sign <span class="hljs-built_in">trap</span> INTERRUPT direction overflow)<br></code></pre></td></tr></table></figure>
+
+<p><strong>flag：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs flag">flag&#123;92094daf-33c9-431e-a85a-8bfbd5df98ad&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="0x02-bbvvmm"><a href="#0x02-bbvvmm" class="headerlink" title="0x02 bbvvmm"></a>0x02 bbvvmm</h2><p><img src="https://i.loli.net/2019/04/29/5cc647867d4e3.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="0x03-strange-int"><a href="#0x03-strange-int" class="headerlink" title="0x03 strange_int"></a>0x03 strange_int</h2><p><img src="https://i.loli.net/2019/04/29/5cc647ad8df45.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="0x04-计时挑战"><a href="#0x04-计时挑战" class="headerlink" title="0x04 计时挑战"></a>0x04 计时挑战</h2><p><img src="https://i.loli.net/2019/04/29/5cc647deb4d25.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="0x05-where-u-are"><a href="#0x05-where-u-are" class="headerlink" title="0x05 where_u_are"></a>0x05 where_u_are</h2><p><img src="https://i.loli.net/2019/04/29/5cc6480bf38ce.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="RWN"><a href="#RWN" class="headerlink" title="RWN"></a>RWN</h1><h2 id="0x01"><a href="#0x01" class="headerlink" title="0x01"></a>0x01</h2><p><img src="https://i.loli.net/2019/04/29/5cc6485e4323d.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="0x02-baby-pwn"><a href="#0x02-baby-pwn" class="headerlink" title="0x02 baby_pwn"></a>0x02 baby_pwn</h2><p><img src="https://i.loli.net/2019/04/29/5cc648783ae12.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="0x03-daily"><a href="#0x03-daily" class="headerlink" title="0x03 daily"></a>0x03 daily</h2><p><img src="https://i.loli.net/2019/04/29/5cc648980a41b.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="0x04-Double"><a href="#0x04-Double" class="headerlink" title="0x04 Double"></a>0x04 Double</h2><p><img src="https://i.loli.net/2019/04/29/5cc648b6da857.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="0x05-bms"><a href="#0x05-bms" class="headerlink" title="0x05 bms"></a>0x05 bms</h2><p><img src="https://i.loli.net/2019/04/29/5cc648d2564fc.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="0x06-Virtual"><a href="#0x06-Virtual" class="headerlink" title="0x06 Virtual"></a>0x06 Virtual</h2><p><img src="https://i.loli.net/2019/04/29/5cc648e6070a3.png" srcset="/img/loading.gif" lazyload></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E9%80%86%E5%90%91/">逆向</a>
+                    
+                      <a class="hover-with-bg" href="/tags/PWN/">PWN</a>
+                    
+                      <a class="hover-with-bg" href="/tags/CTF/">CTF</a>
+                    
+                      <a class="hover-with-bg" href="/tags/WriteUp/">WriteUp</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Reverse/">Reverse</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/05/Windows%E5%8F%8D%E8%B0%83%E8%AF%95%E5%AE%9E%E7%8E%B0%E4%B8%8E%E7%BB%95%E8%BF%87%E5%A7%BF%E5%8A%BF%E6%B1%87%E6%80%BB/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Windows反调试实现与绕过姿势汇总</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/04/64%E4%BD%8D%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/">
+                        <span class="hidden-mobile">64位恶意代码</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

@@ -1,0 +1,583 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="
+知识点分析加密算法的目的：恶意代码使用加密来达到各种各样的目的，最常见的是加密网络通信，同时，唯一代码也会用加密来隐藏它的内部工作：
+
+隐藏配置信息
+窃取信息之前将它保存到一个临时文件
+存储需要的字符串
+将恶意代码伪装成一个合法的工具
+">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>数据加密 - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="数据加密">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2019-04-23 19:49" pubdate>
+        2019年4月23日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.9k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      20
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">数据加密</h1>
+            
+            <div class="markdown-body">
+              <hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p><strong>分析加密算法的目的：</strong>恶意代码使用加密来达到各种各样的目的，最常见的是加密网络通信，同时，唯一代码也会用加密来隐藏它的内部工作：</p>
+<ul>
+<li>隐藏配置信息</li>
+<li>窃取信息之前将它保存到一个临时文件</li>
+<li>存储需要的字符串</li>
+<li>将恶意代码伪装成一个合法的工具</li>
+</ul>
+<span id="more"></span>
+
+<p><strong>简单的加密算法：</strong>简单算法的好处如下：</p>
+<ul>
+<li>体积小，可以存放在空间较小的代码环境中如shellcode</li>
+<li>没有复杂算法那么显眼，不易被发现</li>
+<li>开销低，几乎对性能没有影响</li>
+</ul>
+<p><strong>凯撒密码：</strong>凯撒密码使用字符串的移位来加密信息。</p>
+<p><strong>XOR加密：</strong>用异或逻辑来实现加密，是一种单密钥加密方法。</p>
+<p><strong>其他简单加密算法：</strong></p>
+<ul>
+<li>ADD，SUB：编码算法可以用与XOR相似的方式在单个字节上使用ADD和SUB。</li>
+<li>ROL，ROR：他们旋转字节中左侧与右侧的比特位，同样不可逆，需要配合使用。</li>
+<li>ROT：原始的凯撒密码，它通常使用字母字符或者ASCII中94个可打印字符。</li>
+<li>Multibyte：与单字节不同，这个算法可能使用一个较常的密钥，通常是4个或者8个字符长度，为了方便，它通常异或每个块。</li>
+<li>链或环：这个算法使用内容本身作为密钥，有多种实现，最常见的原始密钥用在明文的两端，开头或者结尾，编码过输出字符作为下一个字符的密钥。</li>
+</ul>
+<p><strong>Base64加密：</strong>Base64编码将二进制数据转换成64个字符的有限字符集。对于不同的base64加密有多种不同的策略或字母表。但是他们都是用一个额外的字符标识填充，通常是&#x3D;。最常用的字符集是MIME字符集，他使用A<del>Z，a</del>z和0~9作为前62个值使用+和&#x2F;作为最后的两个值。</p>
+<p><strong>常见的标准加密算法特征（相对于恶意代码来说）：</strong></p>
+<ul>
+<li>加密库很大，所以恶意代码需要静态的继承或者链接到已有的代码中</li>
+<li>链接主机上现有的代码可能降低可移植性</li>
+<li>标准加密库比较容易探测</li>
+<li>对称加密算法需要考虑如何隐藏密钥</li>
+</ul>
+<p><strong>识别字符串和导入：</strong>可以通过加密库中自带的字符串作为特征来识别恶意代码使用了哪些加密库。</p>
+<p><strong>寻找加密常量：</strong>第三方检测加密的方法是使用可以搜索常见加密常量的工具：</p>
+<ul>
+<li>FindCrypt2：它会搜索程序中任何与加密算法相关的已知常量，因为大部分加密算法会使用与基本加密算法结构相关的一些固定位串。值得注意的是国际数据加密算法IDEA和RC4算法动态地创建他们地结构，因此他们无法通过这种方式识别。</li>
+<li>Krypto ANALyzer：这个工具可以识别常见加密算法的特征，可以识别的算法很多但是误报率页比较高。</li>
+</ul>
+<p><strong>查找高熵值的内容：</strong>除了识别潜在的明显的加密常量或者加密密钥外，这种技术也可以识别加密内容本身，由于这种技术的影响广泛，可以适用于没有找到加密常量的地方如RC4。高熵内容技术相当迟钝，最好作为最后一种使用手段，多种类型的内容，如视频音频压缩数据也可能会显示高熵值，除了他们的头部特征以外，很难与加密数据区分。</p>
+<h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab13-1"><a href="#Lab13-1" class="headerlink" title="Lab13-1"></a>Lab13-1</h3><p><strong>分析恶意代码文件Lab13-01.exe。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.比较恶意代码中的字符串（字符串命令的输出）域动态分析提供的有用信息，基于这些比较，哪些元素可能被加密？</strong></p>
+<p>资源节中的一段数据、hostname、</p>
+<p><strong>2.使用IDA Pro搜索恶意代码中字符串xor，以此来查找潜在的加密，你发现了哪些加密类型？</strong></p>
+<p>循环加密</p>
+<p><strong>3.恶意代码使用什么密钥加密。加密了什么内容？</strong></p>
+<p>0x3B 、资源节中的一段数据</p>
+<p><strong>4.使用静态工具FindCrypt2、Krypto ANALyzer（KANAL）以及IDA熵插件识别一些其他类型的加密机制，你发现了什么？</strong></p>
+<p>网上的东西鱼龙混杂，不敢下，告辞！</p>
+<p><strong>5.什么类型的加密被恶意代码用来发送部分网络流量？</strong></p>
+<p>Base64</p>
+<p><strong>6.Base64编码函数在反汇编的何处？</strong></p>
+<p>函数<code>sub_4010B1</code></p>
+<p>本人虚拟hostname是DESKTOP-KH4V经过base64加密之后生成了REVTS1RPUC1LSDRW</p>
+<p><strong>7.恶意代码发送的Base64加密数据的最大长度是什么？加密了什么内容？</strong></p>
+<p>最长12个字节的计算机名</p>
+<p><strong>8.恶意代码中，你是否在Base64加密数据中看到了填充字符&#x3D;或者&#x3D;&#x3D;？</strong></p>
+<p>如果主机名长度小于12个字节且不能被3整除则会使用填充字符。</p>
+<p><strong>9.这个恶意代码做了什么？</strong></p>
+<p>用加密的主机名向<a target="_blank" rel="noopener" href="http://www.practicalmalwareanalysis.com发送消息./">www.practicalmalwareanalysis.com发送消息。</a></p>
+<h3 id="Lab13-2"><a href="#Lab13-2" class="headerlink" title="Lab13-2"></a>Lab13-2</h3><p><strong>问题</strong></p>
+<p><strong>1.使用动态分析，确定恶意代码创建了什么？</strong></p>
+<p>在<code>WindowsXP</code>下运行代码发现程序不断在其所在目录不断创建新的文件类似名为<code>temp00087b24</code>的文件。</p>
+<p><strong>2.使用静态工具FindCrypt2、Krypto ANALyzer（KANAL）以及IDA熵插件识别一些其他类型的加密机制，你发现了什么？</strong></p>
+<p>略</p>
+<p><strong>3.基于问题1的回答，哪些导入函数将是寻找加密函数比较好的一个证据？</strong></p>
+<p><code>WriteFile</code></p>
+<p><strong>4.加密函数在反汇编的何处？</strong></p>
+<p><code>sub_401739</code></p>
+<p><strong>5.从加密函数追溯原始的加密内容，原始加密内容是什么？</strong></p>
+<p>其实只看API函数是一些与窗口，色深等相关的就可以差不多猜出这个可能是截图收集。</p>
+<p>那么直接将加密函数的调用nop掉试一下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs asm">0040187F  | 50                | push eax                     |<br>00401880  | 90                | nop                          | 加密函数<br>00401881  | 90                | nop                          |<br>00401882  | 90                | nop                          |<br>00401883  | 90                | nop                          |<br>00401884  | 90                | nop                          |<br>00401885  | 83C4 08           | add esp,8                    |<br>00401888  | FF15 38604000     | call dword ptr ds:[&lt;&amp;GetTick |<br></code></pre></td></tr></table></figure>
+
+<p>可以将生成的文件后缀修改为bmp打开就是屏幕截图。</p>
+<p><strong>6.你是否能够找到加密算法？如果没有，你如何解密这些内容？</strong></p>
+<p>在内存上将要加密的数据替换为加密后的数据即可。</p>
+<p><strong>7.使用解密工具，你是否能够恢复加密文件中的一个文件到原始文件？</strong></p>
+<p>略</p>
+<h3 id="Lab13-3"><a href="#Lab13-3" class="headerlink" title="Lab13-3"></a>Lab13-3</h3><p><strong>分析恶意代码文件Lab13-03.exe。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.比较恶意代码的输出字符串和动态分析提供的信息，通过这些比较，你发现哪些元素可能被加密？</strong></p>
+<p>字符串较乱，暂未找到有用信息</p>
+<p><strong>2.使用静态分析搜索字符串xor来查找潜在的加密。通过这种方法，你是发现什么类型的加密？</strong></p>
+<p>暂无</p>
+<p><strong>3.使用静态工具FindCrypt2、Krypto ANALyzer（KANAL）以及IDA熵插件识别一些其他类型的加密机制，发现的结果与搜索字符XOR结果比较如何？</strong></p>
+<p>略</p>
+<p><strong>4.恶意代码使用哪两种加密技术？</strong></p>
+<p>Base64和AES</p>
+<p><strong>5.对于每一种加密技术，他们的密钥是什么？</strong></p>
+<p>AES：ijklmnopqrstuvwx</p>
+<p>Base64：CD……AB…….</p>
+<p><strong>6.对于加密算法，它的密钥足够可靠吗？另外你必须知道什么？</strong></p>
+<p>AES</p>
+<p><strong>7.恶意代码做了什么？</strong></p>
+<p>恶意代码使用自定义的Base64加密算法加密传入命令和AES加密的Shell命令来建立反连命令shell。</p>
+<hr>
+<h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E9%80%86%E5%90%91/">逆向</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%8A%A0%E5%AF%86/">加密</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/04/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E7%9A%84%E7%BD%91%E7%BB%9C%E7%89%B9%E5%BE%81/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">恶意代码的网络特征</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/04/Windows10%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F/">
+                        <span class="hidden-mobile">Windows10安装Linux子系统</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

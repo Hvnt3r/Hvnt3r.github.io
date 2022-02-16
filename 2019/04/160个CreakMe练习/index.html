@@ -1,0 +1,572 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="前言160个CrackMe题目量较大，而且有些CM逻辑重复度较高，因此挑选一些比较有价值的题目做一下以提高本🥦（菜）的逆向水平。
+0x01 Acid burn
+在x64dbg里查找字符串找到相关的错误提示，找到相关调用地址，在附近找到疑似关键跳转的部分下断：
+">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>160个CrackMe练习 - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="160个CrackMe练习">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2019-04-16 00:04" pubdate>
+        2019年4月16日 凌晨
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      50
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">160个CrackMe练习</h1>
+            
+            <div class="markdown-body">
+              <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>160个CrackMe题目量较大，而且有些CM逻辑重复度较高，因此挑选一些比较有价值的题目做一下以提高本🥦（菜）的逆向水平。</p>
+<h1 id="0x01-Acid-burn"><a href="#0x01-Acid-burn" class="headerlink" title="0x01 Acid burn"></a>0x01 Acid burn</h1><p><img src="https://i.loli.net/2019/04/16/5cb51ad1cb4b9.png" srcset="/img/loading.gif" lazyload></p>
+<p>在x64dbg里查找字符串找到相关的错误提示，找到相关调用地址，在附近找到疑似关键跳转的部分下断：</p>
+<p><img src="https://i.loli.net/2019/04/16/5cb52e684f522.png" srcset="/img/loading.gif" lazyload></p>
+<span id="more"></span>
+
+<p>在此处函数调用之后出现了序列号的关键部分：</p>
+<p><img src="https://i.loli.net/2019/04/16/5cb52f19b9e22.png" srcset="/img/loading.gif" lazyload></p>
+<p>序列号拼接之后得出name为<code>1234</code>，serial为<code>CW-4018-CRACKED</code></p>
+<p>跟踪一波算法：</p>
+<p><img src="https://i.loli.net/2019/04/16/5cb53c6ab502c.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://i.loli.net/2019/04/16/5cb53c48587d2.png" srcset="/img/loading.gif" lazyload></p>
+<p>总结一下就是：<code>CW-itoa((用户的name的第一个字符的ascii码)*0x29*2)-CRACKED</code></p>
+<p>第二部分直接检验serial的不必多说，找到判断函数，可以直接看到目标serial：</p>
+<p><img src="https://i.loli.net/2019/04/16/5cb53df1cab97.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://i.loli.net/2019/04/18/5cb85b7d7ed71.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="0x02-Afkayas-1"><a href="#0x02-Afkayas-1" class="headerlink" title="0x02 Afkayas_1"></a>0x02 Afkayas_1</h1><p>本来是写好了的但是这部分忘记保存导致丢失因此就简要写一下吧：</p>
+<p>首先根据字符串找到判断位置：</p>
+<p><img src="https://i.loli.net/2019/04/16/5cb54799706af.png" srcset="/img/loading.gif" lazyload></p>
+<p>单步运行可以找到对应<code>abcd</code>的serial:<code>AKA-390221</code></p>
+<p><img src="https://i.loli.net/2019/04/16/5cb5464b61d95.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://i.loli.net/2019/04/16/5cb54613bf1dd.png" srcset="/img/loading.gif" lazyload></p>
+<p>下面分析一下算法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs asm">004023F7   | 68 A0000000       | push A0                                      |<br>004023FC   | 68 5C1B4000       | push afkayas.1.401B5C                        |<br>00402401   | 53                | push ebx                                     |<br>00402402   | 50                | push eax                                     |<br>00402403   | FF15 04414000     | call dword ptr ds:[&lt;&amp;__vbaHresultCheckObj&gt;]  |<br>00402409   | 8B95 50FFFFFF     | mov edx,dword ptr ss:[ebp-B0]                |<br>0040240F   | 8B45 E4           | mov eax,dword ptr ss:[ebp-1C]                | [ebp-1C]:L&quot;abcd&quot;<br>00402412   | 50                | push eax                                     |<br>00402413   | 8B1A              | mov ebx,dword ptr ds:[edx]                   |<br>00402415   | FF15 E4404000     | call dword ptr ds:[&lt;&amp;__vbaLenBstr&gt;]          |<br>0040241B   | 8BF8              | mov edi,eax                                  |<br>0040241D   | 8B4D E8           | mov ecx,dword ptr ss:[ebp-18]                | [ebp-18]:L&quot;abcd&quot;<br>00402420   | 69FF FB7C0100     | imul edi,edi,17CFB                           |<br>00402426   | 51                | push ecx                                     |<br>00402427   | 0F80 91020000     | jo afkayas.1.4026BE                          |<br>0040242D   | FF15 F8404000     | call dword ptr ds:[&lt;&amp;rtcRightVar&gt;]           |<br>00402433   | 0FBFD0            | movsx edx,ax                                 |<br>00402436   | 03FA              | add edi,edx                                  |<br>00402438   | 0F80 80020000     | jo afkayas.1.4026BE                          |<br>0040243E   | 57                | push edi                                     |<br>0040243F   | FF15 E0404000     | call dword ptr ds:[&lt;&amp;__vbaStrI4&gt;]            |<br></code></pre></td></tr></table></figure>
+
+<p>总结一下就是</p>
+<figure class="highlight nsis"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs nsis">serial = hex2dec(<span class="hljs-keyword">strlen</span>(<span class="hljs-keyword">name</span>)*<span class="hljs-number">0</span>x17CFB + <span class="hljs-keyword">name</span>[<span class="hljs-number">0</span>])<br></code></pre></td></tr></table></figure>
+
+<h1 id="0x03-Afkayas-2"><a href="#0x03-Afkayas-2" class="headerlink" title="0x03 Afkayas_2"></a>0x03 Afkayas_2</h1><p>单步走找到对应name：<code>name</code>的serial：<code>1066990</code></p>
+<p><img src="https://i.loli.net/2019/04/17/5cb690c17ea11.png" srcset="/img/loading.gif" lazyload></p>
+<p>接下来写注册机，先看算法：</p>
+<p>第一步跟上一题一样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs asm">004081F2   | 50                | push eax                                     | eax:L&quot;355662&quot;<br>004081F3   | 8B1A              | mov ebx,dword ptr ds:[edx]                   | edx:L&quot;355662&quot;<br>004081F5   | FF15 F8B04000     | call dword ptr ds:[&lt;&amp;__vbaLenBstr&gt;]          | 获取name字段长度<br>004081FB   | 8BF8              | mov edi,eax                                  | edi:L&quot;-1-0&quot;, eax:L&quot;355662&quot;<br>004081FD   | 8B4D E8           | mov ecx,dword ptr ss:[ebp-18]                | [ebp-18]:L&quot;name&quot;<br>00408200   | 69FF 385B0100     | imul edi,edi,15B38                           | strlen(name)*0x15b38=0x56ce0<br>00408206   | 51                | push ecx                                     |<br>00408207   | 0F80 B7050000     | jo afkayas.2.4087C4                          |<br>0040820D   | FF15 0CB14000     | call dword ptr ds:[&lt;&amp;rtcRightVar&gt;]           |<br>00408213   | 0FBFD0            | movsx edx,ax                                 | edx:L&quot;355662&quot;<br>00408216   | 03FA              | add edi,edx                                  | (strlen(name)*0x15b38)+name[0]=0x56d4e<br>00408218   | 0F80 A6050000     | jo afkayas.2.4087C4                          |<br>0040821E   | 57                | push edi                                     | edi:L&quot;-1-0&quot;<br>0040821F   | FF15 F4B04000     | call dword ptr ds:[&lt;&amp;__vbaStrI4&gt;]            | hex2dec 355662<br>00408225   | 8BD0              | mov edx,eax                                  | edx:L&quot;355662&quot;, eax:L&quot;355662&quot;<br>00408227   | 8D4D E0           | lea ecx,dword ptr ss:[ebp-20]                |<br></code></pre></td></tr></table></figure>
+
+<p>第二部分：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs asm">0040832A   | DD1C24            | fstp qword ptr ss:[esp],st(0)                |<br>0040832D   | FF15 48B14000     | call dword ptr ds:[&lt;&amp;__vbaStrR8&gt;]            | serial+=(10.0/5.0) = 355664<br>00408333   | 8BD0              | mov edx,eax                                  | eax:L&quot;355664&quot;<br>00408335   | 8D4D E4           | lea ecx,dword ptr ss:[ebp-1C]                |<br>00408338   | FF15 94B14000     | call dword ptr ds:[&lt;&amp;__vbaStrMove&gt;]          |<br>0040833E   | 899D 34FFFFFF     | mov dword ptr ss:[ebp-CC],ebx                |<br>00408344   | 8B9D 58FFFFFF     | mov ebx,dword ptr ss:[ebp-A8]                |<br></code></pre></td></tr></table></figure>
+
+<p>第三部分：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs asm">004083F2   | 52                 | push edx                                     |<br>004083F3   | 8B19               | mov ebx,dword ptr ds:[ecx]                   |<br>004083F5   | FF15 74B14000      | call dword ptr ds:[&lt;&amp;__vbaR8Str&gt;]            |<br>004083FB   | DC0D 10104000      | fmul st(0),qword ptr ds:[401010]             |<br>00408401   | 83EC 08            | sub esp,8                                    |<br>00408404   | DC25 18104000      | fsub st(0),qword ptr ds:[401018]             |<br>0040840A   | DFE0               | fnstsw ax                                    |<br>0040840C   | A8 0D              | test al,D                                    |<br>0040840E   | 0F85 AB030000      | jne afkayas.2.4087BF                         |<br>00408414   | DD1C24             | fstp qword ptr ss:[esp],st(0)                |<br>00408417   | FF15 48B14000      | call dword ptr ds:[&lt;&amp;__vbaStrR8&gt;]            |<br>0040841D   | 8BD0               | mov edx,eax                                  | eax:L&quot;1066990&quot;<br>0040841F   | 8D4D E4            | lea ecx,dword ptr ss:[ebp-1C]                |<br>00408422   | FF15 94B14000      | call dword ptr ds:[&lt;&amp;__vbaStrMove&gt;]          |<br>00408428   | 899D 2CFFFFFF      | mov dword ptr ss:[ebp-D4],ebx                |<br>0040842E   | 8B9D 58FFFFFF      | mov ebx,dword ptr ss:[ebp-A8]                |<br>00408434   | 50                 | push eax                                     | eax:L&quot;1066990&quot;<br></code></pre></td></tr></table></figure>
+
+<p>总结算法：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">serial</span> = hex2dec((strlen(name)*<span class="hljs-number">0</span>x15b38 + name[<span class="hljs-number">0</span>]+<span class="hljs-number">2</span>)*<span class="hljs-number">3</span>-<span class="hljs-number">2</span>-(-<span class="hljs-number">15</span>))<br></code></pre></td></tr></table></figure>
+
+<h1 id="0x04-ajj-1"><a href="#0x04-ajj-1" class="headerlink" title="0x04 ajj_1"></a>0x04 ajj_1</h1><p>OD可以搜索到中文字符串，但是x64dbg搜不到，可能是x64dbg对中文字符串的搜索支持不是太好吧：</p>
+<p><img src="https://i.loli.net/2019/04/17/5cb6e3595adf0.png" srcset="/img/loading.gif" lazyload></p>
+<p>向上找到关键跳转：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs asm">0045802F   | 75 AB              | jne ckme.457FDC                              |<br>00458031   | 81BE 0C030000 8500 | cmp dword ptr ds:[esi+30C],85                |<br>0045803B   | 75 76              | jne ckme.4580B3                              |<br></code></pre></td></tr></table></figure>
+
+<p>直接修改ZF寄存器强制不跳转：</p>
+<p><img src="https://i.loli.net/2019/04/17/5cb6e7b91962f.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="0x05-ajj-2"><a href="#0x05-ajj-2" class="headerlink" title="0x05 ajj_2"></a>0x05 ajj_2</h1><p>发现加了UPX壳，先脱壳，脱壳后继续分析。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">D:\Tools\Security_Tools\010\upx-3.95-win64\upx-3.95-win64&gt;upx.exe -d CKme002.exe<br>                       Ultimate Packer <span class="hljs-keyword">for</span> eXecutables<br>                          Copyright (C) 1996 - 2018<br>UPX 3.95w       Markus Oberhumer, Laszlo Molnar &amp; John Reiser   Aug 26th 2018<br><br>        File size         Ratio      Format      Name<br>   --------------------   ------   -----------   -----------<br>    458752 &lt;-    146432   31.92%    win32/pe     CKme002.exe<br><br>Unpacked 1 file.<br></code></pre></td></tr></table></figure>
+
+<p>这道题好像看起来有点复杂，从看雪工具包中下载Delphi的反汇编工具：<a target="_blank" rel="noopener" href="https://tools.pediy.com/win/decompilers.htm">DeDe</a></p>
+<p>分析文件看到如下事件：</p>
+<p><img src="https://i.loli.net/2019/04/17/5cb73e873372b.png" srcset="/img/loading.gif" lazyload></p>
+<p>分别查看这些事件的代码，在Timer2Timer中看到如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs asm">004473E4   53                     push    ebx<br>004473E5   8BD8                   mov     ebx, eax<br>004473E7   81BB04030000340C0000   cmp     dword ptr [ebx+$0304], $00000C34<br>004473F1   0F8488000000           jz      0044747F<br>004473F7   81BB080300000D230000   cmp     dword ptr [ebx+$0308], $0000230D<br>00447401   747C                   jz      0044747F<br>00447403   81BB10030000940F0000   cmp     dword ptr [ebx+$0310], $00000F94<br>0044740D   7570                   jnz     0044747F<br>0044740F   8B8318030000           mov     eax, [ebx+$0318]<br>00447415   3B8314030000           cmp     eax, [ebx+$0314]<br>0044741B   7562                   jnz     0044747F<br>0044741D   81BB1C030000E7030000   cmp     dword ptr [ebx+$031C], $000003E7<br>00447427   7456                   jz      0044747F<br>00447429   33D2                   xor     edx, edx<br></code></pre></td></tr></table></figure>
+
+<p>修改跳转逻辑之后可以看到注册成功的界面：</p>
+<p><img src="https://i.loli.net/2019/04/17/5cb7408d5ab85.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="0x06-aLoNg3x-1"><a href="#0x06-aLoNg3x-1" class="headerlink" title="0x06 aLoNg3x_1"></a>0x06 aLoNg3x_1</h1><p>还是一个Delphi程序，DeDe看一下发现几个比较重要的事件，分别下断分析函数执行逻辑。</p>
+<p>在ResoucesHacker中可以看到窗口控件的信息：</p>
+<p><img src="https://i.loli.net/2019/04/18/5cb856c560034.png" srcset="/img/loading.gif" lazyload></p>
+<p>在<code>00442E22</code>处看到一个<code>cmp</code>，修改跳转路径之后发现ok按钮可用了：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs asm">00442E22   | 8078 47 00         | cmp byte ptr ds:[eax+47],0                   |<br>00442E26   | 75 0F              | jne along3x.1.442E37                         |<br>00442E28   | B2 01              | mov dl,1                                     |<br>00442E2A   | 8B83 CC020000      | mov eax,dword ptr ds:[ebx+2CC]               |<br>00442E30   | 8B08               | mov ecx,dword ptr ds:[eax]                   |<br>00442E32   | FF51 60            | call dword ptr ds:[ecx+60]                   |<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2019/04/18/5cb858892f748.png" srcset="/img/loading.gif" lazyload></p>
+<p>在Ok按钮的处理函数中爆破掉两个跳转指令之后按钮消失：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs asm">00442D80   | 8078 47 01         | cmp byte ptr ds:[eax+47],1                   |<br>00442D84   | 75 12              | jne along3x.1.442D98                         |<br>00442D86   | BA 002E4400        | mov edx,along3x.1.442E00                     |<br>00442D8B   | 8B83 E0020000      | mov eax,dword ptr ds:[ebx+2E0]               |<br>00442D91   | E8 5A05FEFF        | call along3x.1.4232F0                        |<br>00442D96   | EB 3F              | jmp along3x.1.442DD7                         |<br>00442D98   | 8D55 FC            | lea edx,dword ptr ss:[ebp-4]                 |<br>00442D9B   | 8B83 E0020000      | mov eax,dword ptr ds:[ebx+2E0]               |<br>00442DA1   | E8 1A05FEFF        | call along3x.1.4232C0                        |<br>00442DA6   | 8B45 FC            | mov eax,dword ptr ss:[ebp-4]                 |<br>00442DA9   | E8 C248FCFF        | call along3x.1.407670                        |<br>00442DAE   | 50                 | push eax                                     |<br>00442DAF   | 8D55 FC            | lea edx,dword ptr ss:[ebp-4]                 |<br>00442DB2   | 8B83 DC020000      | mov eax,dword ptr ds:[ebx+2DC]               |<br>00442DB8   | E8 0305FEFF        | call along3x.1.4232C0                        |<br>00442DBD   | 8B45 FC            | mov eax,dword ptr ss:[ebp-4]                 |<br>00442DC0   | 5A                 | pop edx                                      |<br>00442DC1   | E8 DAFDFFFF        | call along3x.1.442BA0                        |<br>00442DC6   | 84C0               | test al,al                                   |<br>00442DC8   | 74 0D              | je along3x.1.442DD7                          |<br>00442DCA   | 33D2               | xor edx,edx                                  |<br>00442DCC   | 8B83 CC020000      | mov eax,dword ptr ds:[ebx+2CC]               |<br>00442DD2   | E8 D903FEFF        | call along3x.1.4231B0                        |<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2019/04/18/5cb8596e45f33.png" srcset="/img/loading.gif" lazyload></p>
+<p>同样在<code>Cancella</code>按钮的处理函数中也有如下逻辑：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs asm">00442EE7   | E8 08FCFFFF        | call along3x.1.442AF4                        |<br>00442EEC   | 84C0               | test al,al                                   |<br>00442EEE   | 74 1C              | je along3x.1.442F0C                          |<br></code></pre></td></tr></table></figure>
+
+<p>爆破之后发现两个按钮都消失了，达到了题目效果：</p>
+<p><img src="https://i.loli.net/2019/04/18/5cb85a416cd54.png" srcset="/img/loading.gif" lazyload></p>
+<p>还是要看一下判断逻辑，找到<code>Cancella</code>按钮处理函数中关键的跳转前的判断函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs asm">00442ECF   | E8 9C47FCFF        | call along3x.1.407670                        | 获取密码<br>00442ED4   | 50                 | push eax                                     | eax:&quot;1234567890&quot;<br>00442ED5   | 8D55 FC            | lea edx,dword ptr ss:[ebp-4]                 | [ebp-4]:&quot;1234567890&quot;<br>00442ED8   | 8B83 DC020000      | mov eax,dword ptr ds:[ebx+2DC]               | eax:&quot;1234567890&quot;<br>00442EDE   | E8 DD03FEFF        | call along3x.1.4232C0                        | 获取用户名<br>00442EE3   | 8B45 FC            | mov eax,dword ptr ss:[ebp-4]                 | [ebp-4]:&quot;1234567890&quot;<br>00442EE6   | 5A                 | pop edx                                      |<br>00442EE7   | E8 08FCFFFF        | call along3x.1.442AF4                        |<br>00442EEC   | 84C0               | test al,al                                   |<br>00442EEE   | 74 1C              | je along3x.1.442F0C                          |<br></code></pre></td></tr></table></figure>
+
+<p>单步步进看一下，找到如下运算过程：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><code class="hljs asm">00442AF4   | 55                 | push ebp                                     |<br>00442AF5   | 8BEC               | mov ebp,esp                                  |<br>00442AF7   | 83C4 F8            | add esp,FFFFFFF8                             |<br>00442AFA   | 53                 | push ebx                                     | ebx:&quot;,(D&quot;<br>00442AFB   | 56                 | push esi                                     |<br>00442AFC   | 8955 F8            | mov dword ptr ss:[ebp-8],edx                 |<br>00442AFF   | 8945 FC            | mov dword ptr ss:[ebp-4],eax                 | [ebp-4]:&quot;ZZZZZZZZZZ&quot;<br>00442B02   | 8B45 FC            | mov eax,dword ptr ss:[ebp-4]                 | [ebp-4]:&quot;ZZZZZZZZZZ&quot;<br>00442B05   | E8 DE10FCFF        | call along3x.1.403BE8                        | 判断字符串是否为空<br>00442B0A   | 33C0               | xor eax,eax                                  | eax:&quot;ZZZZZZZZZZ&quot;<br>00442B0C   | 55                 | push ebp                                     |<br>00442B0D   | 68 902B4400        | push along3x.1.442B90                        |<br>00442B12   | 64:FF30            | push dword ptr fs:[eax]                      |<br>00442B15   | 64:8920            | mov dword ptr fs:[eax],esp                   |<br>00442B18   | 8B45 FC            | mov eax,dword ptr ss:[ebp-4]                 | [ebp-4]:&quot;ZZZZZZZZZZ&quot;<br>00442B1B   | E8 140FFCFF        | call along3x.1.403A34                        | 获取name字段长度<br>00442B20   | 83F8 05            | cmp eax,5                                    | 用户名长度是否大于5<br>00442B23   | 7E 53              | jle along3x.1.442B78                         |<br>00442B25   | 8B45 FC            | mov eax,dword ptr ss:[ebp-4]                 | [ebp-4]:&quot;ZZZZZZZZZZ&quot;<br>00442B28   | 0FB640 04          | movzx eax,byte ptr ds:[eax+4]                | 取用户名第5位字母的ASCII<br>00442B2C   | B9 07000000        | mov ecx,7                                    |<br>00442B31   | 33D2               | xor edx,edx                                  |<br>00442B33   | F7F1               | div ecx                                      |<br>00442B35   | 8BC2               | mov eax,edx                                  | 用户名第5位字母的ASCII值/7<br>00442B37   | 83C0 02            | add eax,2                                    | 取余+2<br>00442B3A   | E8 E1FEFFFF        | call along3x.1.442A20                        | 余数+2的阶乘<br>00442B3F   | 8BF0               | mov esi,eax                                  | eax:&quot;ZZZZZZZZZZ&quot;<br>00442B41   | 33DB               | xor ebx,ebx                                  | ebx:&quot;,(D&quot;<br>00442B43   | 8B45 FC            | mov eax,dword ptr ss:[ebp-4]                 | [ebp-4]:&quot;ZZZZZZZZZZ&quot;<br>00442B46   | E8 E90EFCFF        | call along3x.1.403A34                        | 判断用户名是否为空<br>00442B4B   | 85C0               | test eax,eax                                 | eax:&quot;ZZZZZZZZZZ&quot;<br>00442B4D   | 7E 16              | jle along3x.1.442B65                         |<br>00442B4F   | BA 01000000        | mov edx,1                                    |<br>00442B54   | 8B4D FC            | mov ecx,dword ptr ss:[ebp-4]                 | [ebp-4]:&quot;ZZZZZZZZZZ&quot;<br>00442B57   | 0FB64C11 FF        | movzx ecx,byte ptr ds:[ecx+edx-1]            | 对用户名循环取值<br>00442B5C   | 0FAFCE             | imul ecx,esi                                 | name[i]*(余数＋2的阶乘)<br>00442B5F   | 03D9               | add ebx,ecx                                  | 对上一步运算求和<br>00442B61   | 42                 | inc edx                                      |<br>00442B62   | 48                 | dec eax                                      | eax:&quot;ZZZZZZZZZZ&quot;<br>00442B63   | 75 EF              | jne along3x.1.442B54                         |<br>00442B65   | 2B5D F8            | sub ebx,dword ptr ss:[ebp-8]                 | 求和的结果-注册码                              |<br>00442B68   | 81FB 697A0000      | cmp ebx,7A69                                 | 判断差是否等于0x7A69<br>00442B6E   | 75 04              | jne along3x.1.442B74                         |<br>00442B70   | B3 01              | mov bl,1                                     |<br>00442B72   | EB 06              | jmp along3x.1.442B7A                         |<br>00442B74   | 33DB               | xor ebx,ebx                                  | ebx:&quot;,(D&quot;<br>00442B76   | EB 02              | jmp along3x.1.442B7A                         |<br>00442B78   | 33DB               | xor ebx,ebx                                  | ebx:&quot;,(D&quot;<br>00442B7A   | 33C0               | xor eax,eax                                  | eax:&quot;ZZZZZZZZZZ&quot;<br>00442B7C   | 5A                 | pop edx                                      |<br>00442B7D   | 59                 | pop ecx                                      |<br>00442B7E   | 59                 | pop ecx                                      |<br>00442B7F   | 64:8910            | mov dword ptr fs:[eax],edx                   |<br>00442B82   | 68 972B4400        | push along3x.1.442B97                        |<br>00442B87   | 8D45 FC            | lea eax,dword ptr ss:[ebp-4]                 | [ebp-4]:&quot;ZZZZZZZZZZ&quot;<br>00442B8A   | E8 290CFCFF        | call along3x.1.4037B8                        |<br>00442B8F   | C3                 | ret                                          |<br></code></pre></td></tr></table></figure>
+
+<p>可以分析出算法：用户名第5个字母的ASCII码处以7的余数加2为X，算出X的阶乘Y，Y乘用户名ASCII值的和得Z，Z-serial&#x3D;0x7A69时验证通过。</p>
+<p>公式：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">serial</span> = ((((name[<span class="hljs-number">4</span>]%<span class="hljs-number">7</span>) + <span class="hljs-number">2</span>)!)*(name[<span class="hljs-number">0</span>] + name[<span class="hljs-number">1</span>] + ... + name[i])) - <span class="hljs-number">0</span>x7A69<br></code></pre></td></tr></table></figure>
+
+<p>按照这个逻辑得出<code>ZZZZZZZZZZ</code>对应的注册码是<code>36256663</code>，输入之后发现<code>Cancella</code>按钮消失且Ok按钮状态改变：</p>
+<p><img src="https://i.loli.net/2019/04/18/5cb87a9fb944b.png" srcset="/img/loading.gif" lazyload></p>
+<p>但是此时点Ok按钮还是没有任何反应，因此猜测Ok按钮处也有验证算法，话不多说下断：</p>
+<p>Ok按钮的处理函数如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs asm">00442D64   | 55                 | push ebp                                     | OK_Click<br>00442D65   | 8BEC               | mov ebp,esp                                  |<br>00442D67   | 6A 00              | push 0                                       |<br>00442D69   | 53                 | push ebx                                     |<br>00442D6A   | 8BD8               | mov ebx,eax                                  | eax:&quot;,(D&quot;<br>00442D6C   | 33C0               | xor eax,eax                                  | eax:&quot;,(D&quot;<br>00442D6E   | 55                 | push ebp                                     |<br>00442D6F   | 68 ED2D4400        | push along3x.1.442DED                        |<br>00442D74   | 64:FF30            | push dword ptr fs:[eax]                      |<br>00442D77   | 64:8920            | mov dword ptr fs:[eax],esp                   |<br>00442D7A   | 8B83 D0020000      | mov eax,dword ptr ds:[ebx+2D0]               | eax:&quot;,(D&quot;<br>00442D80   | 8078 47 01         | cmp byte ptr ds:[eax+47],1                   |<br>00442D84   | 75 12              | jne along3x.1.442D98                         |<br>00442D86   | BA 002E4400        | mov edx,along3x.1.442E00                     |<br>00442D8B   | 8B83 E0020000      | mov eax,dword ptr ds:[ebx+2E0]               | eax:&quot;,(D&quot;<br>00442D91   | E8 5A05FEFF        | call along3x.1.4232F0                        |<br>00442D96   | EB 3F              | jmp along3x.1.442DD7                         |<br>00442D98   | 8D55 FC            | lea edx,dword ptr ss:[ebp-4]                 |<br>00442D9B   | 8B83 E0020000      | mov eax,dword ptr ds:[ebx+2E0]               | eax:&quot;,(D&quot;<br>00442DA1   | E8 1A05FEFF        | call along3x.1.4232C0                        |<br>00442DA6   | 8B45 FC            | mov eax,dword ptr ss:[ebp-4]                 |<br>00442DA9   | E8 C248FCFF        | call along3x.1.407670                        |<br>00442DAE   | 50                 | push eax                                     | eax:&quot;,(D&quot;<br>00442DAF   | 8D55 FC            | lea edx,dword ptr ss:[ebp-4]                 |<br>00442DB2   | 8B83 DC020000      | mov eax,dword ptr ds:[ebx+2DC]               | eax:&quot;,(D&quot;<br>00442DB8   | E8 0305FEFF        | call along3x.1.4232C0                        |<br>00442DBD   | 8B45 FC            | mov eax,dword ptr ss:[ebp-4]                 |<br>00442DC0   | 5A                 | pop edx                                      |<br>00442DC1   | E8 DAFDFFFF        | call along3x.1.442BA0                        | 隐藏Ok按钮的判断函数<br>00442DC6   | 84C0               | test al,al                                   |<br>00442DC8   | 74 0D              | je along3x.1.442DD7                          | Ok按钮隐藏<br>00442DCA   | 33D2               | xor edx,edx                                  |<br>00442DCC   | 8B83 CC020000      | mov eax,dword ptr ds:[ebx+2CC]               | eax:&quot;,(D&quot;<br>00442DD2   | E8 D903FEFF        | call along3x.1.4231B0                        |<br>00442DD7   | 33C0               | xor eax,eax                                  | eax:&quot;,(D&quot;<br>00442DD9   | 5A                 | pop edx                                      |<br>00442DDA   | 59                 | pop ecx                                      |<br>00442DDB   | 59                 | pop ecx                                      |<br>00442DDC   | 64:8910            | mov dword ptr fs:[eax],edx                   |<br>00442DDF   | 68 F42D4400        | push along3x.1.442DF4                        |<br>00442DE4   | 8D45 FC            | lea eax,dword ptr ss:[ebp-4]                 |<br>00442DE7   | E8 CC09FCFF        | call along3x.1.4037B8                        |<br>00442DEC   | C3                 | ret                                          |<br>00442DED   | E9 8604FCFF        | jmp along3x.1.403278                         |<br>00442DF2   | EB F0              | jmp along3x.1.442DE4                         |<br>00442DF4   | 5B                 | pop ebx                                      |<br>00442DF5   | 59                 | pop ecx                                      |<br>00442DF6   | 5D                 | pop ebp                                      |<br>00442DF7   | C3                 | ret                                          |<br></code></pre></td></tr></table></figure>
+
+<p>找到442BA0，进去看一下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs asm">00442BF9   | 8D45 F4            | lea eax,dword ptr ss:[ebp-C]                 | [ebp-C]:&quot;362566MI&quot;<br>00442BFC   | E8 0310FCFF        | call along3x.1.403C04                        |<br>00442C01   | 8D4430 FF          | lea eax,dword ptr ds:[eax+esi-1]             |<br>00442C05   | 50                 | push eax                                     |<br>00442C06   | 8B45 F8            | mov eax,dword ptr ss:[ebp-8]                 | [ebp-8]:&quot;36256663&quot;<br>00442C09   | 0FB64430 FF        | movzx eax,byte ptr ds:[eax+esi-1]            |<br>00442C0E   | F7E8               | imul eax                                     | 每个数字平方<br>00442C10   | 0FBFC0             | movsx eax,ax                                 |<br>00442C13   | F7EE               | imul esi                                     | *剩余注册码的长度<br>00442C15   | B9 19000000        | mov ecx,19                                   |<br>00442C1A   | 99                 | cdq                                          |<br>00442C1B   | F7F9               | idiv ecx                                     | /19<br>00442C1D   | 83C2 41            | add edx,41                                   | 余数+41<br>00442C20   | 58                 | pop eax                                      |<br>00442C21   | 8810               | mov byte ptr ds:[eax],dl                     |<br>00442C23   | 4E                 | dec esi                                      |<br>00442C24   | 85F6               | test esi,esi                                 |<br>00442C26   | 75 D1              | jne along3x.1.442BF9                         |<br></code></pre></td></tr></table></figure>
+
+<p>首先注册码长度要大于5，倒序对注册码中每个数字进行处理，第i个数字的平方乘以未处理注册码字符的长度再与19取余，结果加41后得出用户名的第i个字母。</p>
+<p>当注册码为<code>36256663</code>时运算得出的用户名为<code>BHALFVMI</code>，输入程序发现Ok按钮也消失了：</p>
+<p><img src="https://i.loli.net/2019/04/18/5cb88853a1afc.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="0x07-aLoNg3x-2"><a href="#0x07-aLoNg3x-2" class="headerlink" title="0x07 aLoNg3x_2"></a>0x07 aLoNg3x_2</h1>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/CrackMe/">CrackMe</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E9%80%86%E5%90%91/">逆向</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%A0%B4%E8%A7%A3/">破解</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/04/Windows10%E5%AE%89%E8%A3%85Linux%E5%AD%90%E7%B3%BB%E7%BB%9F/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Windows10安装Linux子系统</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/03/Cheat-Engine%E7%BB%83%E4%B9%A0/">
+                        <span class="hidden-mobile">Cheat Engine练习</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

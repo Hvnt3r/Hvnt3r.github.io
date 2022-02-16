@@ -1,0 +1,634 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="
+知识点与静态分析不同，动态分析是将恶意代码加载运行之后观察代码运行状态的一个过程，一般来说，对恶意代码进行分析时先进行静态分析来大致了解软件的功能再进行动态分析以了解恶意代码运行时的更多细节，静态分析与动态分析都有各自的有点以及局限性，本章重点介绍了动态分析的一些手法和技巧。
+用沙箱来分析恶意代码：沙箱是一种在安全环境下运行不信任的程序的安全机制，沙箱一般包含一个虚拟的环境，并可以定制虚拟网络等">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>动态分析基础技术 - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="动态分析基础技术">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2019-01-21 08:42" pubdate>
+        2019年1月21日 早上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      68
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">动态分析基础技术</h1>
+            
+            <div class="markdown-body">
+              <hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>与静态分析不同，动态分析是将恶意代码加载运行之后观察代码运行状态的一个过程，一般来说，对恶意代码进行分析时先进行静态分析来大致了解软件的功能再进行动态分析以了解恶意代码运行时的更多细节，静态分析与动态分析都有各自的有点以及局限性，本章重点介绍了动态分析的一些手法和技巧。</p>
+<p><strong>用沙箱来分析恶意代码：</strong>沙箱是一种在安全环境下运行不信任的程序的安全机制，沙箱一般包含一个虚拟的环境，并可以定制虚拟网络等“欺骗”恶意代码让恶意代码认为自己所在的沙箱是一个正常的物理机的各种虚拟功能，但是运行在沙箱中的恶意代码并不会对物理机产生任何威胁，因此沙箱是一个很好的用来动态分析恶意代码的工具。</p>
+<p>前一段时间我使用过布谷鸟沙箱（<code>Cuckoo</code>），这一款沙箱的结构是首先开启一个安装有<code>Ubuntu14.04</code>的系统用于安装Cuckoo，然后再向这个虚拟机上安装所有<code>Cuckoo</code>依赖的插件，安装完成后再向<code>Ubuntu</code>中安装一个<code>Vmware</code>虚拟机来安装一个用于运行Windows等系统的虚拟机，整体相当于是一个虚拟机的嵌套结构，布谷鸟对这个在虚拟机中运行的虚拟机的运行状态的存储状态进行记录，并对比运行病毒前后的镜像区别来确定恶意代码对主机做了什么，并会生成一个十分详细的报告，总的来说这种杀向在我们对一个恶意代码进行静态分析遇到困难时还是很有帮助的，但是缺点是此系统十分难于安装，因为很多安装条件会产生冲突，而且此沙箱运行起来也是对电脑性能的极大挑战，除非你有一台安装了<code>Ubuntu14.04</code>的物理主机。</p>
+<span id="more"></span>
+
+<p>类似于这样的沙箱还有<code>Norman</code>、<code>GFI</code>、<code>Anubis</code>、<code>Joe</code>、<code>ThreatExpert</code>、<code>BitBlaze</code>、<code>Comodo</code>等沙箱。</p>
+<p>沙箱的缺点：</p>
+<ul>
+<li>有些恶意代码会检测运行环境是否为虚拟环境，如果是虚拟环境，则恶意代码通常不会表现出真正的功能。</li>
+<li>恶意代码通常会连接C2服务器来执行特定的功能，如果恶意代码设定了一个潜伏期，则沙箱就难以探测到长时间以后恶意代码可能发生的行为。</li>
+<li>沙箱不能很方便的分析一个DLL恶意代码</li>
+</ul>
+<p><strong>运行DLL文件：</strong>如果碰到一个DLL恶意代码，Windows不知道如何运行DLL文件，因此我们需要使用rundll32.exe来运行DLL文件，使用命令格式如下:</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmd">rundll32.exe DLL_name, Export_arguments<br></code></pre></td></tr></table></figure>
+
+<p><code>Export_arguments</code>必须是DLL文件导出函数的函数名或者是函数序号，使用函数名可以直接将函数名作为<code>Export_arguments</code>参数的值，如果使用函数序号需要写为井号加数字的形式来表示序号如<code>#2</code></p>
+<p>比如使用命令<code>rundll32.exe shell32.dll,RestartDialog</code>可以使计算机弹出重新启动窗口</p>
+<p><strong>进程监视器：</strong>进程监视器是Windows下一款可以监视系统注册表和文件系统，进程和线程的软件，虽然此程序也可以监控网络流量，但是由于Windows不同版本可能存在不同程度的兼容问题，所以一般不采用进程管理器来监控网络行为。另外，进程监视器是使用内存来记录事件的，因此如果你在虚拟环境下调用此程序，每分钟超过5万次的调用行为可能很快就将内存耗尽，因此我们使用进程监视器来监控程序的系统调用时需要清空之前的调用记录并将监控时间缩短以避免内存空间被耗尽。</p>
+<p>可以用进程监视器来分析恶意文档如PDF文档和Word文档，当文档被加载后，可以在进程监视器中看到文档启动的进程并通过Image字段来找到恶意代码在磁盘上的位置。</p>
+<p><strong>RegShot：</strong>Regshot是一款注册表监视器，可以在运行恶意代码之前对注册表做一次快照，再在运行恶意代码之后做一次快照，然后通过对比运行恶意代码前后注册表内容的不同来得知恶意代码对注册表进行了哪些操作。</p>
+<p><strong>网络：</strong>以下是几款模拟网络响应或者监视网络事件的好用软件的软件：</p>
+<ul>
+<li>ApateDNS：此软件是一款免费软件，可以很方便的发现恶意代码进行的DNS请求。</li>
+<li>WireShark：不必多说，神器。</li>
+<li>NetCat：瑞士军刀，神器。</li>
+<li>INetSim：INetSim是一款基于Linux的模拟网络的免费软件他可以模拟多种服务如<code>Http</code>、 <code>Https</code>、<code>FTP</code>、<code>IRC</code>、<code>DNS</code>、<code>SMTP</code>等，而且可以根据恶意代码的请求做出尽量符合恶意代码要求的返回动作从而帮助我们研究恶意代码。</li>
+</ul>
+<p>关于动态分析过程中用的软件，嘶吼上有一篇文章介绍：<a target="_blank" rel="noopener" href="http://www.4hou.com/technology/3022.html">http://www.4hou.com/technology/3022.html</a></p>
+<h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab3-1"><a href="#Lab3-1" class="headerlink" title="Lab3-1"></a>Lab3-1</h3><p><strong>使用动态分析技术来分析在Lab03-01.exe文件中发现的恶意代码</strong></p>
+<p><strong>1.找出这个恶意代码的导入函数与字符串列表</strong>。</p>
+<p>这个恶意代码只有一个导入函数函数，因此判断此程序可能是加了壳的</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs asm">00400200		ExitProcess	   kernel32<br></code></pre></td></tr></table></figure>
+
+<p>用<code>PEiD</code>查壳发现此程序确实加了壳，壳为<code>PEncrypt 3.1 Final -&gt; junkcode</code>，但此题不需要脱壳。</p>
+<p>字符串列表：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs text">Address	Length	Type	String<br>.text:0040025A	0000000D	C	kernel32.dll<br>.data:00400EF7	00000005	C	\b1\a1G<br>.data:00401087	00000007	C	\n6I*h&lt;8<br>.data:004010A7	00000010	C	^-m-m&lt;|&lt;|&lt;|M\rM\r^<br>.data:00401247	00000006	C	ntdll<br>.data:0040125E	00000007	C	user32<br>.data:004014F7	00000008	C	advpack<br>.data:00401623	00000008	C	StubPath<br>.data:0040162F	00000029	C	SOFTWARE\\Classes\\http\\shell\\open\\commandV<br>.data:0040165B	00000035	C	Software\\Microsoft\\Active Setup\\Installed Components\\<br>.data:0040169C	00000022	C	www.practicalmalwareanalysis.com<br>.data:004016D4	00000007	C	admin\t\r<br>.data:004016E2	0000000B	C	VideoDriver<br>.data:004016F1	00000009	C	WinVMX32-<br>.data:004016FD	0000000D	C	vmx32to64.exe<br>.data:00401943	00000008	C	AppData<br></code></pre></td></tr></table></figure>
+
+<p><strong>2.这个恶意代码在主机上的感染迹象特征是什么？</strong></p>
+<p>此题主要考察的时对应用程序在运行时动态行为的捕捉，打开<code>Procmon</code>捕捉当前所有事件，设置过滤器使得程序显示出与Lab03-01.exe相关的进程活动记录：</p>
+<p><img src="https://i.loli.net/2019/02/01/5c544eafc0bec.png" srcset="/img/loading.gif" lazyload></p>
+<p>这样初步过滤后可以看到恶意代码的事件数量还是很大，我们可以通过其他过滤器来筛选出自己想看到的结果。</p>
+<p>运行<code>RegShot</code>进行注册表快照时我发现Win10的注册表项目十分庞大，拍摄快照时会有很多干扰项，因此我尝试下载<code>WindowsXP</code>进行实验，幸运的是，在我使用<code>WindowXP</code>作为病毒分析环境时，很快就用<code>RegShot</code>分析出了病毒对注册表的改动：</p>
+<p><img src="https://i.loli.net/2019/03/03/5c7b762d204ec.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>3.这个恶意代码是否存在一些有用的网络特征，如果存在，他们是什么？</strong></p>
+<p>在分分析恶意代码中包含的字符串的过程中我们就已经发现了一个敏感的字符串<code>www.practicalmalwareanalysis.com</code>，看到这个网址我们八成就能猜出这个恶意代码很可能会与此域名建立连接。</p>
+<p>使用<code>ApateDNS</code>，过程中发现此程序无法在我的虚拟机中正常启动，因为虚拟机的53端口被其他进程占用了，查看之后发现使<code>svchost</code>，kill掉此进程后<code>ApateDNS</code>即可正常启动</p>
+<p>我们需要运行<code>INetSim</code>来捕捉恶意代码的网络请求</p>
+<p>修改如下几处配置</p>
+<ul>
+<li>修改<code>service_bind_address</code>为安装了<code>INetSim</code>的虚拟机的IP地址：</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c">#########################################<br># service_bind_address<br>#<br># IP address to bind services to<br>#<br># Syntax: service_bind_address &lt;IP address&gt;<br>#<br># Default: <span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span><br>#<br>service_bind_address	<span class="hljs-number">192.168</span><span class="hljs-number">.60</span><span class="hljs-number">.129</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>修改<code>dns_default_ip</code>为安装了<code>INetSim</code>的虚拟机的IP地址，以接收DNS请求：</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c">#########################################<br># service_bind_address<br>#<br># IP address to bind services to<br>#<br># Syntax: service_bind_address &lt;IP address&gt;<br>#<br># Default: <span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span><br>#<br>service_bind_address	<span class="hljs-number">192.168</span><span class="hljs-number">.60</span><span class="hljs-number">.129</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>接着转到接近配置文件末尾的地方，开启重定向：</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c">#########################################<br># service_bind_address<br>#<br># IP address to bind services to<br>#<br># Syntax: service_bind_address &lt;IP address&gt;<br>#<br># Default: <span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span><br>#<br>service_bind_address	<span class="hljs-number">192.168</span><span class="hljs-number">.60</span><span class="hljs-number">.129</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>打开TCP端口用于连接：</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c">#########################################<br># redirect_exclude_port<br>#<br># Connections to &lt;service_bind_address&gt; on this port<br><span class="hljs-meta"># are not redirected</span><br>#<br># Syntax: redirect_exclude_port &lt;protocol:port&gt;<br>#<br># Default: none<br>#<br>redirect_exclude_port		tcp:<span class="hljs-number">22</span><br>#redirect_exclude_port		udp:<span class="hljs-number">111</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>重定向外部地址：</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs c">#########################################<br># redirect_external_address<br>#<br># IP address used as source address <span class="hljs-keyword">if</span> INetSim<br><span class="hljs-meta"># acts as a router for redirecting packets to</span><br><span class="hljs-meta"># external networks.</span><br># This option only takes effect <span class="hljs-keyword">if</span> <span class="hljs-type">static</span> rules<br><span class="hljs-meta"># for redirecting packets to external networks</span><br><span class="hljs-meta"># are defined (see <span class="hljs-string">&#x27;redirect_static_rule&#x27;</span> below).</span><br>#<br># Syntax: redirect_external_address &lt;IP address&gt;<br>#<br># Default: none<br>#<br>redirect_external_address	<span class="hljs-number">192.168</span><span class="hljs-number">.60</span><span class="hljs-number">.129</span><br></code></pre></td></tr></table></figure>
+
+<p>修改完以上内容后重新启动<code>INetSim</code>发现如下报错：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">* redirect - failed! Error: Sorry, this module requires the Perlipq library (IPTables::IPv4::IPQueue)!<br></code></pre></td></tr></table></figure>
+
+<p>后来得知<code>InetSim</code>弃用了这个库所以这个功能暂时无法使用，那么就先不用这个了。</p>
+<p>用WireShark抓包看一下发现了一个DNS请求的数据包：</p>
+<p><img src="https://i.loli.net/2019/03/03/5c7b7712d11fb.png" srcset="/img/loading.gif" lazyload></p>
+<p>恶意代码每30秒就会发送一次对此域名的DNS解析请求，而且会广播一个长度为256字节的随机数据：</p>
+<p><img src="https://i.loli.net/2019/03/03/5c7b78f0de32d.png" srcset="/img/loading.gif" lazyload></p>
+<p><code>WireShark</code>将此数据包识别为SSL流量，但是看数据包内容可得知这并不是一个SSL数据包，而只是占用了443端口。</p>
+<h3 id="Lab3-2"><a href="#Lab3-2" class="headerlink" title="Lab3-2"></a>Lab3-2</h3><p><strong>使用动态分析技术来分析在Lab03-02exe文件中发现的恶意代码</strong></p>
+<p><strong>1.您怎样才能让这个恶意代码自行安装？</strong></p>
+<p>这个恶意代码是一个DLL程序，因此我们需要用rundll32.exe工具来运行此DLL文件中的函数，先用IDA查看一下此DLL中的函数：</p>
+<p>此程序的导出函数列表：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c">Name				Address	Ordinal<br>Install				<span class="hljs-number">10004706</span>	<span class="hljs-number">1</span><br>ServiceMain			<span class="hljs-number">10003196</span>	<span class="hljs-number">2</span><br>UninstallService	<span class="hljs-number">10004B</span>18	<span class="hljs-number">3</span><br>installA			<span class="hljs-number">10004B</span>0B	<span class="hljs-number">4</span><br>uninstallA			<span class="hljs-number">10004</span>C2B	<span class="hljs-number">5</span><br>DllEntryPoint		<span class="hljs-number">10004E4</span>D	[main entry]<br></code></pre></td></tr></table></figure>
+
+<p>导入函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><code class="hljs asm">Address	Ordinal	Name	Library<br>10005000		OpenServiceA	ADVAPI32<br>10005004		DeleteService	ADVAPI32<br>10005008		RegOpenKeyExA	ADVAPI32<br>1000500C		RegQueryValueExA	ADVAPI32<br>10005010		RegCloseKey	ADVAPI32<br>10005014		OpenSCManagerA	ADVAPI32<br>10005018		CreateServiceA	ADVAPI32<br>1000501C		CloseServiceHandle	ADVAPI32<br>10005020		RegCreateKeyA	ADVAPI32<br>10005024		RegSetValueExA	ADVAPI32<br>10005028		RegisterServiceCtrlHandlerA	ADVAPI32<br>1000502C		SetServiceStatus	ADVAPI32<br>10005034		GetStartupInfoA	KERNEL32<br>10005038		CreatePipe	KERNEL32<br>1000503C		GetCurrentDirectoryA	KERNEL32<br>10005040		CreateProcessA	KERNEL32<br>10005044		lstrlenA	KERNEL32<br>10005048		SetLastError	KERNEL32<br>1000504C		OutputDebugStringA	KERNEL32<br>10005050		CloseHandle	KERNEL32<br>10005054		ReadFile	KERNEL32<br>10005058		GetTempPathA	KERNEL32<br>1000505C		GetLongPathNameA	KERNEL32<br>10005060		LoadLibraryA	KERNEL32<br>10005064		GetProcAddress	KERNEL32<br>10005068		CreateThread	KERNEL32<br>1000506C		GetSystemTime	KERNEL32<br>10005070		WaitForSingleObject	KERNEL32<br>10005074		TerminateThread	KERNEL32<br>10005078		Sleep	KERNEL32<br>1000507C		GetLastError	KERNEL32<br>10005080		GetModuleFileNameA	KERNEL32<br>10005088		_chdir	MSVCRT<br>1000508C		_strnicmp	MSVCRT<br>10005090		_adjust_fdiv	MSVCRT<br>10005094		malloc	MSVCRT<br>10005098		_initterm	MSVCRT<br>1000509C		free	MSVCRT<br>100050A0		type_info::~type_info(void)	MSVCRT<br>100050A4		_except_handler3	MSVCRT<br>100050A8		_CxxThrowException	MSVCRT<br>100050AC		_stricmp	MSVCRT<br>100050B0		_EH_prolog	MSVCRT<br>100050B4		__CxxFrameHandler	MSVCRT<br>100050B8		strchr	MSVCRT<br>100050BC		_itoa	MSVCRT<br>100050C0		strstr	MSVCRT<br>100050C4		strncat	MSVCRT<br>100050C8		strlen	MSVCRT<br>100050CC		sscanf	MSVCRT<br>100050D0		atol	MSVCRT<br>100050D4		operator new(uint)	MSVCRT<br>100050D8		memset	MSVCRT<br>100050DC		wcstombs	MSVCRT<br>100050E0		strncpy	MSVCRT<br>100050E4		strcat	MSVCRT<br>100050E8		strcpy	MSVCRT<br>100050EC		atoi	MSVCRT<br>100050F0		fclose	MSVCRT<br>100050F4		fflush	MSVCRT<br>100050F8		operator delete(void *)	MSVCRT<br>100050FC		fwrite	MSVCRT<br>10005100		fopen	MSVCRT<br>10005104		strrchr	MSVCRT<br>1000510C		InternetCloseHandle	WININET<br>10005110		InternetOpenA	WININET<br>10005114		InternetConnectA	WININET<br>10005118		HttpOpenRequestA	WININET<br>1000511C		HttpSendRequestA	WININET<br>10005120		HttpQueryInfoA	WININET<br>10005124		InternetReadFile	WININET<br>1000512C	11	inet_addr	WS2_32<br>10005130		WSASocketA	WS2_32<br>10005134	3	closesocket	WS2_32<br>10005138	4	connect	WS2_32<br>1000513C	10	ioctlsocket	WS2_32<br>10005140	19	send	WS2_32<br>10005144	18	select	WS2_32<br>10005148	151	__WSAFDIsSet	WS2_32<br>1000514C	16	recv	WS2_32<br>10005150	22	shutdown	WS2_32<br>10005154	115	WSAStartup	WS2_32<br>10005158	57	gethostname	WS2_32<br>1000515C	116	WSACleanup	WS2_32<br>10005160	9	htons	WS2_32<br></code></pre></td></tr></table></figure>
+
+<p>程序中的字符串：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><code class="hljs asm">Address	Length	Type	String<br>.rdata:100055C2	0000000D	C	KERNEL32.dll<br>.rdata:100056B0	0000000D	C	ADVAPI32.dll<br>.rdata:100056CC	0000000B	C	WS2_32.dll<br>.rdata:10005760	0000000C	C	WININET.dll<br>.rdata:10005886	0000000B	C	MSVCRT.dll<br>.rdata:1000595A	0000000D	C	Lab03-02.dll<br>.rdata:10005969	00000008	C	Install<br>.rdata:10005978	0000000C	C	ServiceMain<br>.rdata:10005984	00000011	C	UninstallService<br>.rdata:10005995	00000009	C	installA<br>.rdata:1000599E	0000000B	C	uninstallA<br>.data:10006010	0000000D	C	Y29ubmVjdA==<br>.data:10006028	0000001D	C	practicalmalwareanalysis.com<br>.data:10006068	0000000B	C	serve.html<br>.data:100060B8	0000000D	C	dW5zdXBwb3J0<br>.data:100060C8	00000009	C	c2xlZXA=<br>.data:100060D4	00000005	C	Y21k<br>.data:100060DC	00000009	C	cXVpdA==<br>.data:100060EC	00000011	C	 Windows XP 6.11<br>.data:10006104	0000000F	C	CreateProcessA<br>.data:10006114	0000000D	C	kernel32.dll<br>.data:10006128	00000005	C	.exe<br>.data:10006138	00000009	C	HTTP/1.1<br>.data:10006144	00000006	C	%s %s<br>.data:1000614C	00000011	C	1234567890123456<br>.data:10006164	00000005	C	quit<br>.data:1000616C	00000005	C	exit<br>.data:10006174	00000008	C	getfile<br>.data:1000617C	0000000C	C	cmd.exe /c <br>.data:1000618C	00000041	C	ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/<br>.data:100061D0	00000005	C	--!&gt;<br>.data:100061D8	00000005	C	&lt;!--<br>.data:100061E8	00000005	C	.PAX<br>.data:10006200	00000010	C	DependOnService<br>.data:10006210	00000006	C	RpcSs<br>.data:10006218	0000000B	C	ServiceDll<br>.data:10006224	00000021	C	GetModuleFileName() get dll path<br>.data:10006248	0000000B	C	Parameters<br>.data:10006254	00000005	C	Type<br>.data:1000625C	00000006	C	Start<br>.data:10006264	0000000B	C	ObjectName<br>.data:10006270	0000000C	C	LocalSystem<br>.data:1000627C	0000000D	C	ErrorControl<br>.data:1000628C	0000000C	C	DisplayName<br>.data:10006298	0000000C	C	Description<br>.data:100062A4	0000008B	C	Depends INA+, Collects and stores network configuration and location information, and notifies applications when this information changes.<br>.data:10006330	0000000A	C	ImagePath<br>.data:1000633C	00000026	C	%SystemRoot%\\System32\\svchost.exe -k <br>.data:10006364	00000023	C	SYSTEM\\CurrentControlSet\\Services\\<br>.data:10006388	0000001B	C	CreateService(%s) error %d<br>.data:100063A4	00000022	C	Intranet Network Awareness (INA+)<br>.data:100063C8	0000002D	C	%SystemRoot%\\System32\\svchost.exe -k netsvcs<br>.data:100063F8	00000010	C	OpenSCManager()<br>.data:10006408	0000004C	C	You specify service name not in Svchost//netsvcs, must be one of following:<br>.data:10006454	00000021	C	RegQueryValueEx(Svchost\\netsvcs)<br>.data:10006478	00000008	C	netsvcs<br>.data:10006480	0000002A	C	RegOpenKeyEx(%s) KEY_QUERY_VALUE success.<br>.data:100064AC	00000029	C	RegOpenKeyEx(%s) KEY_QUERY_VALUE error .<br>.data:100064D8	00000035	C	SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Svchost<br>.data:10006510	00000006	C	IPRIP<br>.data:10006518	00000012	C	uninstall success<br>.data:1000652C	00000018	C	OpenService(%s) error 2<br>.data:10006544	00000018	C	OpenService(%s) error 1<br>.data:1000655C	00000016	C	uninstall is starting<br>.data:10006588	00000010	C	.?AVtype_info@@<br></code></pre></td></tr></table></figure>
+
+<p>我们能从以上信息中发掘到很多重要的点，通过对程序的静态分析猜测此程序会根据导出函数向Windows中安装一个服务，因此我们试着用<code>rundll32.exe</code>来执行这个安装函数<code>Install</code>，还有一个函数时<code>installA</code>，实际上还是调用的<code>Install</code>，因此我们只需要运行<code>installA</code>函数即可，在运行此函数之前先打开<code>RegShot</code>和<code>ProcessMonitor</code>以防止漏掉重要信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">rundll32.exe Lab03-02.dll,installA<br></code></pre></td></tr></table></figure>
+
+<p>执行完成后可以在RegShot的对比结果中发现恶意代码对注册表的操作：</p>
+<figure class="highlight moonscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs moonscript">新添加键 (<span class="hljs-number">6</span>) 快照 B <br>[HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\IPRIP] <br>[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\IPRIP] <br></code></pre></td></tr></table></figure>
+
+<p>以上信息告诉我们恶意代码创建了一个名为<code>IPRIP</code>的服务，在注册表编辑器中找到相关条目可发现更多与此服务相关的信息：</p>
+<p><img src="https://i.loli.net/2019/03/03/5c7b916b253ff.png" srcset="/img/loading.gif" lazyload></p>
+<p>在<code>ImagePath</code>字段中可以得知此DLL会依赖<code>svchost.exe</code>来启动执行，上图中的一些信息可以作为此恶意代码的特殊指纹作为识别依据。</p>
+<p><strong>2.在安装之后，如何让这个恶意代码运行起来？</strong></p>
+<p>使用如下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">net strat IPRIP<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2019/03/03/5c7b9539c9a13.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>3.你怎么能找到这个恶意代码是在哪个进程下运行的？</strong></p>
+<p>使用Process Explorer并选择查找DLL可以在svchost.exe下找到Lab03-02.dll。</p>
+<p><img src="https://i.loli.net/2019/03/03/5c7b95ab77c28.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>4.你可以在procmon工具中设置什么样的过滤器，才能收集这个恶意代码的信息？</strong></p>
+<p>可以设置过滤器的PID为svchost.exe的PID或者进程名为svchost.exe。</p>
+<p><strong>5.这个恶意代码在主机上的感染迹象特征是什么？</strong></p>
+<p>此恶意代码会在主机上创建一个名为IPRIP的服务，且服务的描述与服务名称等信息也确定。</p>
+<p><strong>6.这个恶意代码是否存在一些有用的网络特征吗？</strong></p>
+<p>打开WireShark抓包可以发现此程序对<code>www.practicalmalwareanalysis.com</code>的DNS请求，而且程序会对此域名发起一个GET请求用来请求<code>serve.html</code>的文件，请求数据包中的<code>UserAgent</code>为<code>虚拟机的名称</code>＋<code>Windows XP 6.11</code>。</p>
+<p><img src="https://i.loli.net/2019/03/03/5c7b9dd3148de.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="Lab3-3"><a href="#Lab3-3" class="headerlink" title="Lab3-3"></a>Lab3-3</h3><p><strong>在一个安全的环境下执行Lab03-03.exe文件中发现的恶意代码，同时使用基础的动态行为分析工具监视他的行为。</strong></p>
+<p><strong>1.当你使用Process Explorer工具进行监视时，你注意到了什么？</strong></p>
+<p>通过对恶意代码的静态分析，程序的导入函数如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><code class="hljs asm">Address	Ordinal	Name	Library<br>00404000		CloseHandle	KERNEL32<br>00404004		VirtualFree	KERNEL32<br>00404008		ReadFile	KERNEL32<br>0040400C		VirtualAlloc	KERNEL32<br>00404010		GetFileSize	KERNEL32<br>00404014		CreateFileA	KERNEL32<br>00404018		ResumeThread	KERNEL32<br>0040401C		SetThreadContext	KERNEL32<br>00404020		WriteProcessMemory	KERNEL32<br>00404024		VirtualAllocEx	KERNEL32<br>00404028		GetProcAddress	KERNEL32<br>0040402C		GetModuleHandleA	KERNEL32<br>00404030		ReadProcessMemory	KERNEL32<br>00404034		GetThreadContext	KERNEL32<br>00404038		CreateProcessA	KERNEL32<br>0040403C		FreeResource	KERNEL32<br>00404040		SizeofResource	KERNEL32<br>00404044		LockResource	KERNEL32<br>00404048		LoadResource	KERNEL32<br>0040404C		FindResourceA	KERNEL32<br>00404050		GetSystemDirectoryA	KERNEL32<br>00404054		Sleep	KERNEL32<br>00404058		GetCommandLineA	KERNEL32<br>0040405C		GetVersion	KERNEL32<br>00404060		ExitProcess	KERNEL32<br>00404064		TerminateProcess	KERNEL32<br>00404068		GetCurrentProcess	KERNEL32<br>0040406C		UnhandledExceptionFilter	KERNEL32<br>00404070		GetModuleFileNameA	KERNEL32<br>00404074		FreeEnvironmentStringsA	KERNEL32<br>00404078		FreeEnvironmentStringsW	KERNEL32<br>0040407C		WideCharToMultiByte	KERNEL32<br>00404080		GetEnvironmentStrings	KERNEL32<br>00404084		GetEnvironmentStringsW	KERNEL32<br>00404088		SetHandleCount	KERNEL32<br>0040408C		GetStdHandle	KERNEL32<br>00404090		GetFileType	KERNEL32<br>00404094		GetStartupInfoA	KERNEL32<br>00404098		HeapDestroy	KERNEL32<br>0040409C		HeapCreate	KERNEL32<br>004040A0		HeapFree	KERNEL32<br>004040A4		RtlUnwind	KERNEL32<br>004040A8		WriteFile	KERNEL32<br>004040AC		HeapAlloc	KERNEL32<br>004040B0		GetCPInfo	KERNEL32<br>004040B4		GetACP	KERNEL32<br>004040B8		GetOEMCP	KERNEL32<br>004040BC		HeapReAlloc	KERNEL32<br>004040C0		LoadLibraryA	KERNEL32<br>004040C4		MultiByteToWideChar	KERNEL32<br>004040C8		LCMapStringA	KERNEL32<br>004040CC		LCMapStringW	KERNEL32<br>004040D0		GetStringTypeA	KERNEL32<br>004040D4		GetStringTypeW	KERNEL32<br></code></pre></td></tr></table></figure>
+
+<p>字符串列表：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs asm">Address	Length	Type	String<br>.rdata:004040EC	0000000F	C	runtime error <br>.rdata:00404100	0000000E	C	TLOSS error\r\n<br>.rdata:00404110	0000000D	C	SING error\r\n<br>.rdata:00404120	0000000F	C	DOMAIN error\r\n<br>.rdata:00404130	00000025	C	R6028\r\n- unable to initialize heap\r\n<br>.rdata:00404158	00000035	C	R6027\r\n- not enough space for lowio initialization\r\n<br>.rdata:00404190	00000035	C	R6026\r\n- not enough space for stdio initialization\r\n<br>.rdata:004041C8	00000026	C	R6025\r\n- pure virtual function call\r\n<br>.rdata:004041F0	00000035	C	R6024\r\n- not enough space for _onexit/atexit table\r\n<br>.rdata:00404228	00000029	C	R6019\r\n- unable to open console device\r\n<br>.rdata:00404254	00000021	C	R6018\r\n- unexpected heap error\r\n<br>.rdata:00404278	0000002D	C	R6017\r\n- unexpected multithread lock error\r\n<br>.rdata:004042A8	0000002C	C	R6016\r\n- not enough space for thread data\r\n<br>.rdata:004042D4	00000021	C	\r\nabnormal program termination\r\n<br>.rdata:004042F8	0000002C	C	R6009\r\n- not enough space for environment\r\n<br>.rdata:00404324	0000002A	C	R6008\r\n- not enough space for arguments\r\n<br>.rdata:00404350	00000025	C	R6002\r\n- floating point not loaded\r\n<br>.rdata:00404378	00000025	C	Microsoft Visual C++ Runtime Library<br>.rdata:004043A4	0000001A	C	Runtime Error!\n\nProgram: <br>.rdata:004043C4	00000017	C	&lt;program name unknown&gt;<br>.rdata:004043DC	00000013	C	GetLastActivePopup<br>.rdata:004043F0	00000010	C	GetActiveWindow<br>.rdata:00404400	0000000C	C	MessageBoxA<br>.rdata:0040440C	0000000B	C	user32.dll<br>.rdata:004046B8	0000000D	C	KERNEL32.dll<br>.data:00405030	0000000D	C	\\svchost.exe<br>.data:00405040	00000015	C	NtUnmapViewOfSection<br>.data:00405058	0000000A	C	ntdll.dll<br>.data:00405064	00000008	C	UNICODE<br>.data:0040506C	0000000D	C	LOCALIZATION<br></code></pre></td></tr></table></figure>
+
+<p>可以看到，导入函数中有很多涉及内存、文件、线程的操作，因此在动态分析时可以多多注意这些点的动态变化。</p>
+<p>在Process Monitor过滤器中选择进程名称为Lab03-03.exe并选择对应文件的操作，可以看到此恶意代码有对svchost.exe和conime.exe文件的操作，结合之前在导入表中看到的函数猜测恶意代码可能对这些文件进行了内存的修改，打开Process Explorer发现出现了一个svchost.exe作为父进程出现的进程，而正常情况下，svchost.exe通常在Windows中作为子进程出现，因此我们看一下此进程的属性，在字符串页中通过对比发现，此进程的字符串有与Lab03-03.exe的字符串，且内存中的字符串与其他svchost.exe进程的字符串不同，而磁盘映像却与其他正常进程相同，因此可以知道恶意代码确实对程序在内存中的数据进行了修改。</p>
+<p><img src="https://i.loli.net/2019/03/04/5c7c7b6d03cad.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>2.你可以找出任何的内存修改行为吗？</strong></p>
+<p>程序修改了svchost.exe程序运行时的内存。</p>
+<p><strong>3.这个恶意代码在主机上的感染迹象特征是什么？</strong></p>
+<p>在Process Monitor中可以看到<code>svchost.exe</code>大量的文件读写操作，目标文件是与<code>Lab03-03.exe</code>文件同一目录下的<code>practicalmalwareanalysis.log</code>。</p>
+<p><img src="https://i.loli.net/2019/03/04/5c7c852d5ab83.png" srcset="/img/loading.gif" lazyload></p>
+<p>打开此文件可以看到如下内容：</p>
+<p><img src="https://i.loli.net/2019/03/04/5c7c85f023607.png" srcset="/img/loading.gif" lazyload></p>
+<p>结合在内存中看到的类似于<code>[ENTER]</code>、<code>[SHIFT]</code>等字符串猜测这个文件用于记录键盘敲击，验证后发现确实如此。</p>
+<p><img src="https://i.loli.net/2019/03/04/5c7c849d1d099.png" srcset="/img/loading.gif" lazyload></p>
+<p>因此创建一个名为<code>practicalmalwareanalysis.log</code>的文件是此恶意代码的感染迹象特征。</p>
+<p><strong>4.这个恶意代码的目的是什么？</strong></p>
+<p>此程序使用进程替换技术来运行一个键盘记录器。</p>
+<h3 id="Lab3-4"><a href="#Lab3-4" class="headerlink" title="Lab3-4"></a>Lab3-4</h3><p><strong>使用基础的动态行为分析工具来分析在Lab03-04.exe文件中发现的恶意代码。</strong></p>
+<p><em>（这个程序还会再第九章的实验作业中进一步分析）</em></p>
+<p><strong>1.当你运行这个文件时会发生什么？</strong></p>
+<p>双击这个文件后在Process Monitor中发现程序通过调用cmd.exe来执行语句：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-string">&quot;C:\WINDOWS\system32\cmd.exe&quot;</span> /c del C:\DOCUME~1\ADMINI~1\桌面\BINARY~1\BINARY~1\CH9F95~1\Lab03-04.exe &gt;&gt; NUL<br></code></pre></td></tr></table></figure>
+
+<p>实现自我删除。</p>
+<p><strong>2.是什么原因造成动态分析无法有效实施？</strong></p>
+<p>通过静态分析发现，程序似乎对运行参数有一定的要求：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> __cdecl <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">const</span> <span class="hljs-type">char</span> **argv, <span class="hljs-type">const</span> <span class="hljs-type">char</span> **envp)</span><br>&#123;<br>  <span class="hljs-type">char</span> v4; <span class="hljs-comment">// [esp+10h] [ebp-181Ch]</span><br>  <span class="hljs-type">char</span> v5; <span class="hljs-comment">// [esp+410h] [ebp-141Ch]</span><br>  <span class="hljs-type">char</span> v6; <span class="hljs-comment">// [esp+810h] [ebp-101Ch]</span><br>  <span class="hljs-type">char</span> v7; <span class="hljs-comment">// [esp+C10h] [ebp-C1Ch]</span><br>  CHAR v8; <span class="hljs-comment">// [esp+1024h] [ebp-808h]</span><br>  CHAR ServiceName; <span class="hljs-comment">// [esp+1428h] [ebp-404h]</span><br>  <span class="hljs-type">const</span> <span class="hljs-type">char</span> *v10; <span class="hljs-comment">// [esp+1828h] [ebp-4h]</span><br><br>  <span class="hljs-keyword">if</span> ( argc == <span class="hljs-number">1</span> )<br>  &#123;<br>    <span class="hljs-keyword">if</span> ( !sub_401000() )<br>      sub_402410();<br>    sub_402360();<br>  &#125;<br>  <span class="hljs-keyword">else</span><br>  &#123;<br>    v10 = argv[argc - <span class="hljs-number">1</span>];<br>    <span class="hljs-keyword">if</span> ( !sub_402510((<span class="hljs-type">int</span>)v10) )<br>      sub_402410();<br>    <span class="hljs-keyword">if</span> ( _mbscmp((<span class="hljs-type">const</span> <span class="hljs-type">unsigned</span> __int8 *)argv[<span class="hljs-number">1</span>], &amp;byte_40C170) )<br>    &#123;<br>      <span class="hljs-keyword">if</span> ( _mbscmp((<span class="hljs-type">const</span> <span class="hljs-type">unsigned</span> __int8 *)argv[<span class="hljs-number">1</span>], &amp;byte_40C16C) )<br>      &#123;<br>        <span class="hljs-keyword">if</span> ( _mbscmp((<span class="hljs-type">const</span> <span class="hljs-type">unsigned</span> __int8 *)argv[<span class="hljs-number">1</span>], &amp;byte_40C168) )<br>        &#123;<br>          <span class="hljs-keyword">if</span> ( _mbscmp((<span class="hljs-type">const</span> <span class="hljs-type">unsigned</span> __int8 *)argv[<span class="hljs-number">1</span>], aCc) )<br>            sub_402410();<br>          <span class="hljs-keyword">if</span> ( argc != <span class="hljs-number">3</span> )<br>            sub_402410();<br>          <span class="hljs-keyword">if</span> ( !sub_401280(&amp;v5, <span class="hljs-number">1024</span>, &amp;v6, <span class="hljs-number">1024</span>, &amp;v4, <span class="hljs-number">1024</span>, &amp;v7) )<br>            sub_402E7E(aKSHSPSPerS, &amp;v5);<br>        &#125;<br>        <span class="hljs-keyword">else</span><br>        &#123;<br>          <span class="hljs-keyword">if</span> ( argc != <span class="hljs-number">7</span> )<br>            sub_402410();<br>          sub_401070(argv[<span class="hljs-number">2</span>], argv[<span class="hljs-number">3</span>], argv[<span class="hljs-number">4</span>], argv[<span class="hljs-number">5</span>]);<br>        &#125;<br>      &#125;<br>      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ( argc == <span class="hljs-number">3</span> )<br>      &#123;<br>        <span class="hljs-keyword">if</span> ( sub_4025B0(&amp;v8) )<br>          <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>        sub_402900(&amp;v8);<br>      &#125;<br>      <span class="hljs-keyword">else</span><br>      &#123;<br>        <span class="hljs-keyword">if</span> ( argc != <span class="hljs-number">4</span> )<br>          sub_402410();<br>        sub_402900(argv[<span class="hljs-number">2</span>]);<br>      &#125;<br>    &#125;<br>    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ( argc == <span class="hljs-number">3</span> )<br>    &#123;<br>      <span class="hljs-keyword">if</span> ( sub_4025B0(&amp;ServiceName) )<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>      sub_402600(&amp;ServiceName);<br>    &#125;<br>    <span class="hljs-keyword">else</span><br>    &#123;<br>      <span class="hljs-keyword">if</span> ( argc != <span class="hljs-number">4</span> )<br>        sub_402410();<br>      sub_402600(argv[<span class="hljs-number">2</span>]);<br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>但是由于本章不涉及静态分析，故本题留在第九章继续分析。</p>
+<p><strong>3.是否有其他方式来运行这个程序？</strong></p>
+<p>暂无。</p>
+<hr>
+<h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90/">动态分析</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/02/Windows%E6%8F%90%E6%9D%83%E5%AE%9E%E6%88%98/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Windows提权实战</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/01/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%88%86%E6%9E%90%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/">
+                        <span class="hidden-mobile">在虚拟机中分析恶意代码</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

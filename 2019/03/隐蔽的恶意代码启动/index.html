@@ -1,0 +1,587 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="
+知识点启动器：启动器，也称为加载器，是一种设置自身或者其他恶意代码片段以到达即时或将来秘密运行的恶意代码。启动器经常回在资源节包含要加载的恶意代码。如果资源节被压缩或者加密，则恶意代码必须在加载前对资源节进行提取操作，因此可以在代码中看到FindResource、LoadResource、以及SizeofResource等API函数。恶意代码通常需要管理员权限才能进行下面介绍的操作。
+进程注入：">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>隐蔽的恶意代码启动 - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="隐蔽的恶意代码启动">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2019-03-25 23:46" pubdate>
+        2019年3月25日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.8k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      33
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">隐蔽的恶意代码启动</h1>
+            
+            <div class="markdown-body">
+              <hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p><strong>启动器：</strong>启动器，也称为加载器，是一种设置自身或者其他恶意代码片段以到达即时或将来秘密运行的恶意代码。启动器经常回在资源节包含要加载的恶意代码。如果资源节被压缩或者加密，则恶意代码必须在加载前对资源节进行提取操作，因此可以在代码中看到<code>FindResource</code>、<code>LoadResource</code>、以及<code>SizeofResource</code>等API函数。恶意代码通常需要管理员权限才能进行下面介绍的操作。</p>
+<p><strong>进程注入：</strong>隐藏启动行为的最流行的技术是进程注入，这是一种将代码注入到另外一个正在运行的进程中，而被注入的进程会不知不觉地运行注入地代码。执行进程注入通常用到如下API：<code>VirtualAllocEx</code>用来分配一块内存空间、<code>WriteProcessMemory</code>用来想之前分配地地址空间内写入数据。</p>
+<p><strong>DLL注入：</strong>DLL注入是进程注入地一种形式，它强迫一个远程进程加载DLL程序，同时它也是最常使用地的隐秘加载技术。DLL注入将代码注入到一个远程进程并让远程进程调用<code>LoadLibrary</code>，从而强制远程进程加载一个DLL程序到它的进程上下文，一旦被感染的进程加载了恶意DLL，系统会自动调用<code>DLLMain</code>函数。注入的DLL与被注入DLL的进程拥有相同的权限。</p>
+<span id="more"></span>
+
+<p><strong>DLL注入流程：</strong></p>
+<ul>
+<li><code>CreateToolhelp32Snapshot</code>、<code>Process32First</code>和<code>Process32Next</code>来查找进程列表中的目标进程。</li>
+<li>启动器提取目标进程的PID并调用<code>OpenProcess</code>以获取进程的句柄。</li>
+<li><code>CreateRemoteThread</code>函数在远程进程中创建一个新的线程（<code>CreateRemoteThread</code>的三个参数：<code>hProcess</code>进程句柄、<code>lpStartAddress</code>注入线程的入口点、<code>hpparameter</code>线程的参数）。</li>
+<li><code>VirtualAllocEx</code>为恶意DLL名字字符创建内存空间，或者在远程进程中分配内存空间。</li>
+<li><code>WriteProcessMemory</code>将DLL的名字字符串写入到分配的内存空间中。</li>
+</ul>
+<p><strong>直接注入：</strong>直接注入在远程进程的内存空间中分配和插入代码，与DLL注入不同的是这些恶意代码不是在DLL文件中而是直接写入的。直接注入比DLL注入更为灵活，且一般用于注入编译过的代码如<code>ShellCode</code>。在应用直接注入技术的恶意代码中，尽成灰发现如下三个函数：<code>VirtualAllocEx</code>、<code>WriteProcessMemory</code>和<code>CreateRemoteThread</code>。通常会有两次<code>VirtualAllocEx</code>、<code>WriteProcessMemory</code>的调用，第一次是分配内存空间并写入远程线程使用的数据。第二次分配内存空间并写入远程新城代码。<code>CreateRemoteThread</code>调用远程线程代码的位置<code>lpStartAddress</code>和数据<code>lpParameter</code>。</p>
+<p><strong>进程替换：</strong>使用进程替换方法可以将一个可执行文件重写到一个运行进程的内存空间，当恶意代码编写者想要将恶意代码伪装成一个合法的进程，并不会产生DLL注入可能会让进程崩溃的危险时，他们呢会使用进程替换技术。进程替换技术的关键是以挂起状态创建一个线程，这个程序将不做任何事情，恢复主线程后才开始执行。几次呢很难过替换技术可以将一个进程载入内存并在入口点挂起它。</p>
+<p><strong>进程替换流程：</strong></p>
+<ul>
+<li>创建一个进程。</li>
+<li>用恶意的可执行文件替换受害者进程的内存空间，使用<code>ZwUnmapViewOfSection</code>来释放由参数指向的所有内存。</li>
+<li>使用<code>VirtualAllocEx</code>为恶意代码分配新的内存。</li>
+<li>调用<code>ResumeThread</code>函数初始化恶意代码并执行。</li>
+</ul>
+<p><strong>钩子（Hook）注入：</strong>Hook注入使用Windows Hook加载恶意代码，恶意代码用它拦截发往某个应用程序的消息，Hook注入一般有如下作用：</p>
+<ul>
+<li>保证无论如何拦截到一个特殊消息，恶意代码都会被运行。</li>
+<li>保证一个特殊的DLL被载入到受害进程的内存空间。</li>
+</ul>
+<p>本地Hook和远程Hook：</p>
+<ul>
+<li>本地Hook用来观察和操纵发往进程内部的消息。</li>
+<li>远程Hook用来观察和操纵一个发往远程进程的消息（系统中的另一个进程），有两种形式，上层和底层，上层的Hook要求Hook例程是DLL程序的一个导出函数，他被操作系统映射到被挂钩的线程或系统所有线程的进程地址空间。底层Hook则要求Hook例程被保护在安装Hook的进程中，这个例程在操作系统获得处理事件的机会前被通知。</li>
+</ul>
+<p><strong>Hook技术的击键记录器：</strong>Hook技术可以被用来记录按键。击键可以有WH_KEYBOARD和WH_KEYBOARD_LL的Hook例程类型来注册上层和底层Hook。</p>
+<p>使用SetWindowsHookEx：这是用来执行远程Windows Hook的主要函数，参数如下：</p>
+<ul>
+<li>idhook：指定要安装的Hook例程的类型。</li>
+<li>lpfn：Hook例程指针。</li>
+<li>hMod：对于上层的钩子，它用来标识包含lpfn定义的Hook例程的DLL句柄，对于底层Hook，他来标识包含lpfn历程的本地模块句柄。</li>
+<li>dwThreadId：指定与钩子例程关联的线程标识，如果这个参数为0则挂钩例程将绑定与调用线程同在一个桌面的所有线程。</li>
+</ul>
+<p><strong>Detours：</strong>Detours时微软开打的用于拓展已有操作系统和应用程序的减淡工具，但是恶意代码编写人员使用Detours库执行对导入表，挂在DLL到已有程序文件，并向运行的进程添加钩子函数等。恶意代码修改PE结构，并创建一个名为<code>.detour</code>的段，它通常位于导出表与调试符号之间。<code>.detour</code>段在新的导入地址中包含了原始的PE头部。使用Detours库提供的<code>setdll</code>工具，恶意代码编写者修改PE头部，并使其指向新的导出表。</p>
+<p><strong>APC注入：</strong>APC为Windows异步过程调用。通过创建线程来使用远程进程中函数的方法会增加系统开销，所以调用一个现有的线程会更加高效。APC可以让一个线程在它正常执行路径运行之前执行一些其他的代码，每一个线程都有一个附加的APC队列，他们在线程处于可警告的等待状态时被处理。例如<code>WaitForStriongObjectEx</code>、<code>WaitForMultipleObjectsEx</code>和<code>SleepEx</code>函数等，这些函数给了线程一个处理等待APC的机会。如果应用程序在线程可警告等待状态时（未运行之前）排入一个APC队列，name线程将从调用APC函数开始，线程诸葛调用APC队列中的所有APC，当PC队列完成时，线程才继续沿着它规定的路径执行，恶意代码编写者为了让他们的代码立即执行，他们用APC抢占可警告等待状态的线程。</p>
+<p><strong>用户模式的APC注入：</strong>用户模式下，一个线程可以使用API函数<code>QueueUserAPC</code>排入一个让远程调用的函数，运行用户模式的APC要求线程必须处于可警告等待状态，因此恶意代码会查看进程中是否有可能进入这个状态的目标线程，<code>WaitForSingleObjectEx</code>是常用的调用。</p>
+<p><strong>内核模式的APC注入：</strong>使用设备驱动进行APC注入需要使用函数<code>KeInitializeApc</code>和<code>KeInsertQueueApc</code>。</p>
+<h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab12-1"><a href="#Lab12-1" class="headerlink" title="Lab12-1"></a>Lab12-1</h3><p><strong>分析恶意代码确保这些文件在同一目录下</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.在你运恶意代码的可执行文件时会发生什么？</strong></p>
+<p>程序会每隔一分钟弹出一个<code>MessageBox</code>显示<code>Press OK to reboot</code>。</p>
+<p><strong>2.哪个进程会被注入？</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:00401095                 push    0Ch             ; size_t<br>.text:00401097                 push    offset explore_exe ; &quot;explorer.exe&quot;<br>.text:0040109C                 lea     ecx, [ebp+var_108]<br>.text:004010A2                 push    ecx             ; char *<br>.text:004010A3                 call    __strnicmp<br></code></pre></td></tr></table></figure>
+
+<p>代码会循环对比进程是否为<code>explorer.exe</code>，如果对比成功则进行注入。</p>
+<p><strong>3.你如何能够让恶意代码停止弹出窗口？</strong></p>
+<p>重新启动进程<code>explorer.exe</code>。</p>
+<p><strong>4.这些恶意代码样本是如何工作的？</strong></p>
+<p>略。</p>
+<h3 id="Lab12-2"><a href="#Lab12-2" class="headerlink" title="Lab12-2"></a><strong>Lab12-2</strong></h3><p><strong>问题</strong></p>
+<p><strong>1.这个程序的目的是什么？</strong></p>
+<p>隐蔽地启动另一个程序。</p>
+<p><strong>2.启动器代码是如何隐蔽执行的？</strong></p>
+<p>进程替换。</p>
+<p><strong>3.恶意代码的负载存储在哪里？</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs asm">push    offset Type     ; &quot;UNICODE&quot;<br>push    offset Name     ; &quot;LOCALIZATION&quot;<br>mov     eax, [ebp+hModule]<br>push    eax             ; hModule<br>call    ds:FindResourceA<br></code></pre></td></tr></table></figure>
+
+<p>程序将恶意负载存储在资源节<code>LOCALIZATION</code>中。</p>
+<p><img src="https://i.loli.net/2019/03/26/5c999194b3465.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>4.恶意负载是如何被保护的？</strong></p>
+<p>通过XOR编码加密。</p>
+<p><strong>5.字符串列表是如何被保护的？</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:00401016                 mov     ecx, [ebp+var_4]<br>.text:00401019                 cmp     ecx, [ebp+arg_4]<br>.text:0040101C                 jnb     short loc_401033<br>.text:0040101E                 mov     edx, [ebp+arg_0]<br>.text:00401021                 add     edx, [ebp+var_4]<br>.text:00401024                 mov     al, [edx]<br>.text:00401026                 xor     al, [ebp+arg_8]<br>.text:00401029                 mov     ecx, [ebp+arg_0]<br>.text:0040102C                 add     ecx, [ebp+var_4]<br>.text:0040102F                 mov     [ecx], al<br></code></pre></td></tr></table></figure>
+
+<p>通过XOR加密。</p>
+<h3 id="Lab12-3"><a href="#Lab12-3" class="headerlink" title="Lab12-3"></a>Lab12-3</h3><p><strong>问题</strong></p>
+<p><strong>1.这个恶意负载的目的是什么？</strong></p>
+<p>其实看到这些跟键盘相关的字符串就能差不多猜出这是一个键盘监听器：</p>
+<p><img src="https://i.loli.net/2019/03/26/5c9a1eefc03f9.png" srcset="/img/loading.gif" lazyload></p>
+<p>通过分析函数<code>sub_4010C7</code>也可以看出这是一个键盘窃听器。</p>
+<p><strong>2.恶意负载时如何注入自身的？</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> __cdecl <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">const</span> <span class="hljs-type">char</span> **argv, <span class="hljs-type">const</span> <span class="hljs-type">char</span> **envp)</span><br>&#123;<br>  HMODULE v3; <span class="hljs-comment">// eax</span><br>  HWND hWnd; <span class="hljs-comment">// [esp+0h] [ebp-8h]</span><br>  HHOOK hhk; <span class="hljs-comment">// [esp+4h] [ebp-4h]</span><br><br>  AllocConsole();<br>  hWnd = FindWindowA(ClassName, <span class="hljs-number">0</span>);<br>  <span class="hljs-keyword">if</span> ( hWnd )<br>    ShowWindow(hWnd, <span class="hljs-number">0</span>);<br>  <span class="hljs-built_in">memset</span>(byte_405350, <span class="hljs-number">1</span>, <span class="hljs-number">0x400</span>u);<br>  v3 = GetModuleHandleA(<span class="hljs-number">0</span>);<br>  hhk = SetWindowsHookExA(<span class="hljs-number">13</span>, fn, v3, <span class="hljs-number">0</span>);<br>  <span class="hljs-keyword">while</span> ( GetMessageA(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>) )<br>    ;<br>  <span class="hljs-keyword">return</span> UnhookWindowsHookEx(hhk);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>此程序通过设置挂钩注入来实现键盘监听。</p>
+<p><strong>3.这个程序还创建了哪些其他文件？</strong></p>
+<p><code>practicalmalwareanalysis.log</code></p>
+<h3 id="Lab12-4"><a href="#Lab12-4" class="headerlink" title="Lab12-4"></a>Lab12-4</h3><p><strong>问题</strong></p>
+<p><strong>1.位置0x401000的代码完成了什么功能？</strong></p>
+<p>这个代码跟上面分析的函数流程相似，在系统内搜索所有进程，验证进程名称是否为<code>winlogon.exe</code>。</p>
+<p><strong>2.代码注入了哪个进程？</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> __cdecl <span class="hljs-title function_">sub_401174</span><span class="hljs-params">(DWORD dwProcessId)</span><br>&#123;<br>  HMODULE v2; <span class="hljs-comment">// eax</span><br>  HANDLE hProcess; <span class="hljs-comment">// [esp+4h] [ebp-8h]</span><br><br>  <span class="hljs-keyword">if</span> ( sub_4010FC(aSedebugprivile) )            <span class="hljs-comment">// SeDebugPrivilege</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>  v2 = LoadLibraryA(LibFileName);               <span class="hljs-comment">// sfc_os.dll</span><br>  lpStartAddress = (LPTHREAD_START_ROUTINE)GetProcAddress(v2, (LPCSTR)<span class="hljs-number">2</span>);<br>  hProcess = OpenProcess(<span class="hljs-number">0x1F0FFF</span>u, <span class="hljs-number">0</span>, dwProcessId);<br>  <span class="hljs-keyword">if</span> ( !hProcess )<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>  CreateRemoteThread(hProcess, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, lpStartAddress, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>参数<code>dwProcessId</code>是<code>winlogon.exe</code>的<code>ProcessId</code>。</p>
+<p><code>winlogon.exe</code></p>
+<p><strong>3.使用LoadLibraryA装载了哪个DLL程序？</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:004011A3                 push    offset LibFileName ; &quot;sfc_os.dll&quot;<br>.text:004011A8                 call    ds:LoadLibraryA<br>.text:004011AE                 push    eax             ; hModule<br>.text:004011AF                 call    ds:GetProcAddress<br>.text:004011B5                 mov     lpStartAddress, eax<br>.text:004011BA                 mov     eax, [ebp+dwProcessId]<br>.text:004011BD                 push    eax             ; dwProcessId<br>.text:004011BE                 push    0               ; bInheritHandle<br>.text:004011C0                 push    1F0FFFh         ; dwDesiredAccess<br>.text:004011C5                 call    ds:OpenProcess<br></code></pre></td></tr></table></figure>
+
+<p><code>sfc_os.dll</code>。</p>
+<p><strong>4.传递个CreateRemoteThread调用的第四个参数是什么？</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:004011D8                 push    0               ; lpThreadId<br>.text:004011DA                 push    0               ; dwCreationFlags<br>.text:004011DC                 push    0               ; lpParameter<br>.text:004011DE                 mov     ecx, lpStartAddress<br>.text:004011E4                 push    ecx             ; lpStartAddress<br>.text:004011E5                 push    0               ; dwStackSize<br>.text:004011E7                 push    0               ; lpThreadAttributes<br>.text:004011E9                 mov     edx, [ebp+hProcess]<br>.text:004011EC                 push    edx             ; hProcess<br>.text:004011ED                 call    ds:CreateRemoteThread<br></code></pre></td></tr></table></figure>
+
+<p><code>sfc_os.dll</code>的地址。</p>
+<p><strong>5.二进制主程序释放出了哪个恶意代码？</strong></p>
+<p>在函数<code>sub_4011FC()</code>中可以看到如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:004012A7                 mov     [ebp+hModule], eax<br>.text:004012AA                 push    offset Type     ; &quot;BIN&quot;<br>.text:004012AF                 push    offset Name     ; &quot;#101&quot;<br>.text:004012B4                 mov     eax, [ebp+hModule]<br>.text:004012B7                 push    eax             ; hModule<br>.text:004012B8                 call    ds:FindResourceA<br></code></pre></td></tr></table></figure>
+
+<p>于是在<code>ResourceHacker</code>中看一下资源节发现确实有一个PE文件：</p>
+<p><img src="https://i.loli.net/2019/03/26/5c9a3c5f65a0a.png" srcset="/img/loading.gif" lazyload></p>
+<p>释放的文件名为<code>\system32\wupdmgr.exe</code>。</p>
+<p><strong>6.释放出恶意代码的目的是什么？</strong></p>
+<p>恶意代码使用这个程序进行自我更新。</p>
+<hr>
+<h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%90%AF%E5%8A%A8%E6%96%B9%E5%BC%8F/">恶意代码启动方式</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/03/%E9%98%B2%E5%8F%8D%E6%B1%87%E7%BC%96%E6%8A%80%E6%9C%AF/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">防反汇编技术</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/03/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E8%A1%8C%E4%B8%BA/">
+                        <span class="hidden-mobile">恶意代码行为</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

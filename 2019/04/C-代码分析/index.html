@@ -1,0 +1,514 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="
+知识点面向对象的编程语言：和C语言不同C++是一种面向对象的编程语言，采用使用对象的编程模型，将数据与操作数据的函数都封装到对象中，在面向对象中，代码以叫做类Class的用户自定义的数据类型进行组织，类与结构体比较类似，差别在于他们另外保存函数信息而不仅仅是数据，类是创建一个对象的模板，它指定内存中的一个对象的函数与数据布局。">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>C++代码分析 - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="C++代码分析">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2019-04-27 10:58" pubdate>
+        2019年4月27日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.6k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      16
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">C++代码分析</h1>
+            
+            <div class="markdown-body">
+              <hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p><strong>面向对象的编程语言：</strong>和C语言不同C++是一种面向对象的编程语言，采用使用对象的编程模型，将数据与操作数据的函数都封装到对象中，在面向对象中，代码以叫做类Class的用户自定义的数据类型进行组织，类与结构体比较类似，差别在于他们另外保存函数信息而不仅仅是数据，类是创建一个对象的模板，它指定内存中的一个对象的函数与数据布局。</p>
+<span id="more"></span>
+
+<p><strong>this指针：</strong>数据与函数是对象关联的。为了访问一块是数据，你需要使用<code>ObjectName.variableName</code>的形式。函数以<code>ObjectName.functionName</code>的形式被简单调用，除了使用对象名访问变量以外还可以使用变量名访问当前对象的变量。<code>this</code>指针在一个不指定对象的函数中对每个变量访问时都是隐含的；它对每个对象函数都是一个隐含的参数。在微软生成的汇编代码中，<code>this</code>指针通常被传递到<code>ECX</code>寄存器中，有时也会使用<code>ESI</code>寄存器。使用this指针的<code>C++</code>调用叫做<code>thiscall</code>。</p>
+<p><strong>重载与修饰：</strong><code>C++</code>支持一个被称为方法重载的编码结构，它能让多个函数使用同一个名字但接收不同的参数，编译器基于这个调用中的参数的个数与类型判断使用这个函数的哪个版本。C++使用名字修饰的字数来支持方法重载，为了支持重载，文件格式中的方法名经过了修改，这个名字中包含了参数信息，如一个名为Test的函数是<code>SimpleClass</code>的一部分，并且接受两个整数作为参数，那么这个方法名修饰之后就会叫：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c">?Test@SimpleClass@@QAEXHH@Z<br></code></pre></td></tr></table></figure>
+
+<p>IDA会根据此函数的修饰进行反修饰显示出原始的函数名和参数，然而内部函数名只有在代码中拥有符号时才可见。</p>
+<p><strong>继承与函数重写：</strong>继承是一个面向对象编程的概念，在这个概念中父子关系在类之间建立。子类继承来自弗雷的函数和数据。一个子类会自动拥有所有父类的函数和数据，且经常定义额外的函数和数据。</p>
+<p><strong>虚函数与非虚函数：</strong>虚函数是一个可以被子类重写的函数，并且它的执行是在运行时判断的，如果一个函数在父类中被定义，且在子类中也有一个同样名字的函数，那么子类的函数将会重写父类的函数。而在非虚函数中，这个要被执行的函数在编译时就会被确定。如果这个对象是一个父类的实例则这个父类的函数将被调用，即时这个对象在运行时属于子类，当虚函数在一个子类对象上被调用时，如果对象的父类是一个实例类型那么这个函数的子类版本可能被调用。</p>
+<p><strong>虚函数表的使用：</strong>C++编译器会在编译代码时添加特殊的数据结构来支持虚函数，这些数据结构被称为虚函数表<code>vtables</code>，这些表时简单的函数指针的数组，每一个虚函数的类有它自己的虚函数表，且每一个类中的虚函数在虚函数表中都有一个项。</p>
+<p><strong>识别虚函数表：</strong>虚函数表看起来向是函数指针的数组，当你看到一个虚函数表时，只有这个表中的第一个值有交叉引用。</p>
+<p><strong>创建和销毁对象：</strong>C++类有两个特殊的函数构造函数和析构函数，构造函数在一个对象被创建的时候调用，析构函数在一个对象被销毁时调用，对象可以在栈上被创建也可以保存到堆上，对于在栈上创建的对象，没有必要位这个对象分配指定的内存，这个对象会简单地与其他局部变量一起保存在栈上。析构函数在对象离开作用于之后被自动调用，编译器可能要添加异常处理代码来保证对象的析构函数被调用。</p>
+<h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab20-01"><a href="#Lab20-01" class="headerlink" title="Lab20-01"></a>Lab20-01</h3><p><strong>第一个实验的目的是演示this指针如何使用。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.在0x401040处的函数采用了什么参数？</strong></p>
+<p><strong>2.哪个URL被用来调用URLDownloadToFile？</strong></p>
+<p><strong>3.这个程序做了什么事情？</strong></p>
+<h3 id="Lab20-02"><a href="#Lab20-02" class="headerlink" title="Lab20-02"></a>Lab20-02</h3><p><strong>第二个实验的目的是演示虚函数。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.在这个程序中，你可以从有趣的字符串中了解到什么？</strong></p>
+<p><strong>2.导入函数表告诉你关于这个程序的什么信息？</strong></p>
+<p><strong>3.在0x40011D9处创建对象的目的是什么？它有什么虚函数吗？</strong></p>
+<p><strong>4.哪个函数可能被宰0x401349处的call [edx]指令调用？</strong></p>
+<p><strong>5.如何简易的搭建这个恶意代码所预料的服务器，不用连接到互联网就能完整地分析这个恶意代码呢？</strong></p>
+<p><strong>6.这个程序的目的是什么？</strong></p>
+<p><strong>7.这个程序中实现虚函数调用的目的是什么？</strong></p>
+<h3 id="Lab20-03"><a href="#Lab20-03" class="headerlink" title="Lab20-03"></a>Lab20-03</h3><p><strong>第三个实验是一个长度更长也更现实的恶意代码，这个实验附带一个名为config.dat的配置文件。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.你可以在这个程序中得到什么有意思的字符串？</strong></p>
+<p><strong>2.导入函数表告诉你关于这个程序的什么信息？</strong></p>
+<p><strong>3.在0x4036F0处，存在一个以字符串Config error作为输入的函数调用，其后跟着一些指令，然后是一个对CxxThrowException的调用，除了这个字符串以外，这个函数还用到其他的参数了吗，这个函数返回了什么？从这个函数被使用的上下文中，你可以得到哪些信息？</strong></p>
+<p><strong>4.在0x4025C8出的switch表中的6个项都做了什么？</strong></p>
+<p><strong>5.这个程序的目的是什么？</strong></p>
+<hr>
+<h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E9%80%86%E5%90%91/">逆向</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+                    
+                      <a class="hover-with-bg" href="/tags/C/">C++</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/04/64%E4%BD%8D%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">64位恶意代码</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/04/ShellCode%E5%88%86%E6%9E%90/">
+                        <span class="hidden-mobile">ShellCode分析</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

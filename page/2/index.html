@@ -1,0 +1,981 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 100vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Hvnt3r's Blog">
+              
+            </span>
+
+            
+          </div>
+
+          
+            <div class="scroll-down-bar">
+              <i class="iconfont icon-arrowdown"></i>
+            </div>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      <div class="container nopadding-x-md">
+        <div class="py-5" id="board"
+          style=margin-top:0>
+          
+          <div class="container">
+            <div class="row">
+              <div class="col-12 col-md-10 m-auto">
+                
+
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2019/08/Linux%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93-so%E7%9A%84%E7%94%9F%E6%88%90%E4%B8%8E%E4%BD%BF%E7%94%A8/" target="_self">
+          <img src="/gallery/thumbnails/default.jpg" srcset="/img/loading.gif" lazyload alt="Linux动态链接库.so的生成与使用">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/08/Linux%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93-so%E7%9A%84%E7%94%9F%E6%88%90%E4%B8%8E%E4%BD%BF%E7%94%A8/" target="_self">
+          Linux动态链接库.so的生成与使用
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/08/Linux%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93-so%E7%9A%84%E7%94%9F%E6%88%90%E4%B8%8E%E4%BD%BF%E7%94%A8/" target="_self">
+          
+          
+            
+          
+          用到以下三个文件，为以后展开相关攻击过程做铺垫。
+main.c
+1234567891011#include &lt;stdio.h&gt;#include &lt;unistd.h&gt;int print_test();int main()&#123;	while(1)&#123;				print_test();		sleep(5);	&#125;&#125;
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-08-07 20:56" pubdate>
+              2019-08-07
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/Linux/">Linux</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+            
+              <a href="/tags/Linux/">Linux</a>
+            
+              <a href="/tags/Linux%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93/">Linux动态链接库</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2019/08/Pwnable-kr-Part-1-15-21/" target="_self">
+          <img src="/gallery/thumbnails/default.jpg" srcset="/img/loading.gif" lazyload alt="Pwnable.kr_Part_1_15/21">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/08/Pwnable-kr-Part-1-15-21/" target="_self">
+          Pwnable.kr_Part_1_15/21
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/08/Pwnable-kr-Part-1-15-21/" target="_self">
+          
+          
+            
+          
+          Pwnable.kr-BlackJack-逻辑漏洞游戏代码在这里:https://cboard.cprogramming.com/c-programming/114023-simple-blackjack-program.html
+查看代码发现代码量很多，以为很复杂，但静下心看一下发现其实很简单，大部分代码用来实现游戏逻辑，获取flag的条件是成为百万富翁，就是使自己的余额大于一百万，游戏规则介绍
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-08-06 23:09" pubdate>
+              2019-08-06
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/CTF/">CTF</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/PWN/">PWN</a>
+            
+              <a href="/tags/Pwnable-kr/">Pwnable.kr</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2019/07/CS1-6DLL%E6%B3%A8%E5%85%A5%E5%A4%96%E6%8C%82/" target="_self">
+          <img src="/gallery/thumbnails/default.jpg" srcset="/img/loading.gif" lazyload alt="CS1.6DLL注入外挂">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/07/CS1-6DLL%E6%B3%A8%E5%85%A5%E5%A4%96%E6%8C%82/" target="_self">
+          CS1.6DLL注入外挂
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/07/CS1-6DLL%E6%B3%A8%E5%85%A5%E5%A4%96%E6%8C%82/" target="_self">
+          
+          
+            
+          
+          研究外挂只是想学一下r0,r3攻防对抗，不干坏事，乖巧.jpg
+这一次做一下锁血
+首先常规操作获取血量地址：
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-07-11 23:01" pubdate>
+              2019-07-11
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E5%8F%8D%E5%A4%96%E6%8C%82/">反外挂</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E6%B8%B8%E6%88%8F%E5%AE%89%E5%85%A8/">游戏安全</a>
+            
+              <a href="/tags/%E8%BF%9B%E7%A8%8B%E6%B3%A8%E5%85%A5/">进程注入</a>
+            
+              <a href="/tags/DLL%E6%B3%A8%E5%85%A5/">DLL注入</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2019/05/CVE-2019-0708/" target="_self">
+          <img src="/gallery/thumbnails/default.jpg" srcset="/img/loading.gif" lazyload alt="CVE-2019-0708">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/05/CVE-2019-0708/" target="_self">
+          CVE-2019-0708
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/05/CVE-2019-0708/" target="_self">
+          
+          
+            
+          
+          漏洞验证复现环境：
+
+攻击机：Kali Linux（Windows子系统）
+目标主机：Windows 7 SP1 64位
+
+准备环境|Poc下载&#x2F;编译
+123456789sudo apt install dh-autoreconfsudo apt install libssl-devsudo apt install libx11-devgit clone https://github.c
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-05-24 22:32" pubdate>
+              2019-05-24
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/CVE/">CVE</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Windows%E7%B3%BB%E7%BB%9F%E5%AE%89%E5%85%A8/">Windows系统安全</a>
+            
+              <a href="/tags/CVE/">CVE</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2019/05/%E5%BC%80%E6%BA%90%E7%BD%91%E7%BB%9C%E5%85%A5%E4%BE%B5%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F-Snort%E5%AE%9E%E6%88%98/" target="_self">
+          <img src="/gallery/thumbnails/default.jpg" srcset="/img/loading.gif" lazyload alt="开源网络入侵检测系统-Snort实战">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/05/%E5%BC%80%E6%BA%90%E7%BD%91%E7%BB%9C%E5%85%A5%E4%BE%B5%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F-Snort%E5%AE%9E%E6%88%98/" target="_self">
+          开源网络入侵检测系统-Snort实战
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/05/%E5%BC%80%E6%BA%90%E7%BD%91%E7%BB%9C%E5%85%A5%E4%BE%B5%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F-Snort%E5%AE%9E%E6%88%98/" target="_self">
+          
+          
+            
+          
+          Snort是一个开源的网络入侵检测系统，根据官方文档简单地学习了一下使用方法之后试一下实战应用，实战对象就是大名鼎鼎的meterpreter。
+安装Snort
+安装Snort的方法网上有教程，因此就不多说了，最简单的方法就是apt-get。
+Kali启动！
+用Kali Linux中的msfvenom生成一个后门程序：
+1msfvenom -p linux/x86/meterpreter/rever
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-05-19 09:08" pubdate>
+              2019-05-19
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E5%85%A5%E4%BE%B5%E6%A3%80%E6%B5%8B/">入侵检测</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Snort/">Snort</a>
+            
+              <a href="/tags/IDS/">IDS</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2019/05/%E6%9F%90%E8%BF%9C%E6%8E%A7%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A/" target="_self">
+          <img src="/gallery/thumbnails/default.jpg" srcset="/img/loading.gif" lazyload alt="远程控制木马分析报告">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/05/%E6%9F%90%E8%BF%9C%E6%8E%A7%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A/" target="_self">
+          远程控制木马分析报告
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/05/%E6%9F%90%E8%BF%9C%E6%8E%A7%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A/" target="_self">
+          
+          
+            
+          
+          样本主体分析18xxxxxxxxxxxxxxxxxxxxxxxxxxxxx.EXE样本基本信息：
+
+
+属性
+值
+
+
+
+Filename
+18xxxxxxxxxxxxxxxxxxxxxxxxxxxxx.EXE
+
+
+MD5
+b9b34748f958c31e12ae3741f728be99
+
+
+SHA-1
+a806386497e280612eadbe87e2104550c95ab617
+
+
+File T
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-05-17 16:51" pubdate>
+              2019-05-17
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/Windows%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/">Windows恶意代码</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Windows%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/">Windows恶意代码</a>
+            
+              <a href="/tags/%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6/">远程控制</a>
+            
+              <a href="/tags/%E6%9C%A8%E9%A9%AC/">木马</a>
+            
+              <a href="/tags/%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A/">分析报告</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2019/05/WallpaperEngine%E8%B5%84%E6%BA%90%E6%8F%90%E5%8F%96/" target="_self">
+          <img src="/gallery/thumbnails/wallpaperengine.jpg" srcset="/img/loading.gif" lazyload alt="WallpaperEngine资源提取">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/05/WallpaperEngine%E8%B5%84%E6%BA%90%E6%8F%90%E5%8F%96/" target="_self">
+          WallpaperEngine资源提取
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/05/WallpaperEngine%E8%B5%84%E6%BA%90%E6%8F%90%E5%8F%96/" target="_self">
+          
+          
+            
+          
+          有时在WallpaperEngine中发现自己喜欢的静态壁纸想将其中图片从包文件提取出来的话直接在Kali Linux中运行命令：
+1foremost 包文件
+
+在output文件夹中可以看到提取出来的内容。
+
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-05-17 13:09" pubdate>
+              2019-05-17
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E7%94%9F%E6%B4%BB/">生活</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E5%B0%8F%E7%AA%8D%E9%97%A8/">小窍门</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2019/05/Windows%E5%8F%8D%E8%B0%83%E8%AF%95%E5%AE%9E%E7%8E%B0%E4%B8%8E%E7%BB%95%E8%BF%87%E5%A7%BF%E5%8A%BF%E6%B1%87%E6%80%BB/" target="_self">
+          <img src="/gallery/thumbnails/windows-anti-debug.jpg" srcset="/img/loading.gif" lazyload alt="Windows反调试实现与绕过姿势汇总">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/05/Windows%E5%8F%8D%E8%B0%83%E8%AF%95%E5%AE%9E%E7%8E%B0%E4%B8%8E%E7%BB%95%E8%BF%87%E5%A7%BF%E5%8A%BF%E6%B1%87%E6%80%BB/" target="_self">
+          Windows反调试实现与绕过姿势汇总
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/05/Windows%E5%8F%8D%E8%B0%83%E8%AF%95%E5%AE%9E%E7%8E%B0%E4%B8%8E%E7%BB%95%E8%BF%87%E5%A7%BF%E5%8A%BF%E6%B1%87%E6%80%BB/" target="_self">
+          
+          
+            
+          
+          调试器检测PEB相关BeingDebuggedBeingDebugged是位于PEB（Process Environment Block，进程环境块）偏移0x2处的标志。
+IsDebuggerPresent()IsDebuggerPresent()是Windows的API，这个函数通过查询PEB中的BeingDebugged标志来判断当前进程是否处于被调试状态。
+NtGlobalFlagNtGlo
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-05-07 19:05" pubdate>
+              2019-05-07
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E5%8F%8D%E8%B0%83%E8%AF%95/">反调试</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2019/04/2019%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9B%E5%88%9D%E8%B5%9BPWN-Reverse-WriteUp/" target="_self">
+          <img src="/gallery/thumbnails/default.jpg" srcset="/img/loading.gif" lazyload alt="2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/04/2019%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9B%E5%88%9D%E8%B5%9BPWN-Reverse-WriteUp/" target="_self">
+          2019全国大学生信息安全竞赛初赛PWN-Reverse-WriteUp
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/04/2019%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9B%E5%88%9D%E8%B5%9BPWN-Reverse-WriteUp/" target="_self">
+          
+          
+            
+          
+          Reverse0x01 easyGo
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-04-29 08:34" pubdate>
+              2019-04-29
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E9%80%86%E5%90%91/">逆向</a>
+            
+              <a href="/tags/PWN/">PWN</a>
+            
+              <a href="/tags/CTF/">CTF</a>
+            
+              <a href="/tags/WriteUp/">WriteUp</a>
+            
+              <a href="/tags/Reverse/">Reverse</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2019/04/64%E4%BD%8D%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/" target="_self">
+          <img src="/gallery/thumbnails/default.jpg" srcset="/img/loading.gif" lazyload alt="64位恶意代码">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/04/64%E4%BD%8D%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/" target="_self">
+          64位恶意代码
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/04/64%E4%BD%8D%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/" target="_self">
+          
+          
+            
+          
+          
+知识点x64架构被设计成x86的升级，而指令集没有什么显著的区别，这本书年代久远，当时64位系统并没有普及，因此可能本章的内容并不是特别有价值。
+x64架构与x86的区别：
+
+所有的地址和指针都是64位的
+所有通用寄存器大小变大
+通用寄存器的数目增长，新的寄存器位R8-R15
+x64支持相对指令指针的数据寻址
+。。。
+
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-04-27 10:58" pubdate>
+              2019-04-27
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E9%80%86%E5%90%91/">逆向</a>
+            
+              <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+
+
+  <nav aria-label="navigation">
+    <span class="pagination" id="pagination">
+      <a class="extend prev" rel="prev" href="/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/#board">3</a><a class="page-number" href="/page/4/#board">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/#board">9</a><a class="extend next" rel="next" href="/page/3/#board"><i class="iconfont icon-arrowright"></i></a>
+    </span>
+  </nav>
+
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

@@ -1,0 +1,540 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="本文用到的代码地址：https://github.com/Levones/PHP_file_upload_vlun，好评请给小星星，谢谢各位大佬！
+0x00  漏洞描述在实际开发过程中文件上传的功能时十分常见的，比如博客系统用户需要文件上传功能来上传自己的头像，写博客时需要上传图片来丰富自己的文章，购物系统在识图搜索时也需要上传图片等，文件上传功能固然重要，但是如果在实现相应功能时没有注意安全保护">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>PHP文件上传漏洞原理以及防御姿势 - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="PHP文件上传漏洞原理以及防御姿势">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2018-09-18 10:29" pubdate>
+        2018年9月18日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.8k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      35
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">PHP文件上传漏洞原理以及防御姿势</h1>
+            
+            <div class="markdown-body">
+              <p>本文用到的代码地址：<a target="_blank" rel="noopener" href="https://github.com/Levones/PHP_file_upload_vlun%EF%BC%8C%E5%A5%BD%E8%AF%84%E8%AF%B7%E7%BB%99%E5%B0%8F%E6%98%9F%E6%98%9F%EF%BC%8C%E8%B0%A2%E8%B0%A2%E5%90%84%E4%BD%8D%E5%A4%A7%E4%BD%AC%EF%BC%81">https://github.com/Levones/PHP_file_upload_vlun，好评请给小星星，谢谢各位大佬！</a></p>
+<h2 id="0x00-漏洞描述"><a href="#0x00-漏洞描述" class="headerlink" title="0x00  漏洞描述"></a>0x00  漏洞描述</h2><p>在实际开发过程中文件上传的功能时十分常见的，比如博客系统用户需要文件上传功能来上传自己的头像，写博客时需要上传图片来丰富自己的文章，购物系统在识图搜索时也需要上传图片等，文件上传功能固然重要，但是如果在实现相应功能时没有注意安全保护措施，造成的损失可能十分巨大，为了学习和研究文件上传功能的安全实现方法，我将在下文分析一些常见的文件上传安全措施和一些绕过方法。</p>
+<p>我按照最常见的上传功能–上传图片来分析这个漏洞。为了使漏洞的危害性呈现的清晰明了，我将漏洞防御措施划分为几个不同的等级来作比较</p>
+<span id="more"></span>
+
+<h2 id="0x01-前端HTML页面代码"><a href="#0x01-前端HTML页面代码" class="headerlink" title="0x01  前端HTML页面代码"></a>0x01  前端HTML页面代码</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs php">&lt;!DOCTYPE html&gt;<br>&lt;html&gt;<br>&lt;meta charset=<span class="hljs-string">&quot;utf-8&quot;</span>&gt;<br>&lt;title&gt;<br>    file_upload_test<br>&lt;/title&gt;<br>&lt;body&gt;<br>&lt;form enctype=<span class="hljs-string">&quot;multipart/form-data&quot;</span> action=<span class="hljs-string">&quot;upload_1.php&quot;</span> method=<span class="hljs-string">&quot;POST&quot;</span> /&gt;<br>&lt;input type=<span class="hljs-string">&quot;hidden&quot;</span> name=<span class="hljs-string">&quot;MAX_FILE_SIZE&quot;</span> value=<span class="hljs-string">&quot;100000&quot;</span> /&gt;<br>选择你要上传的图片:<br>&lt;br /&gt;<br>&lt;input name=<span class="hljs-string">&quot;uploaded&quot;</span> type=<span class="hljs-string">&quot;file&quot;</span> /&gt;&lt;br /&gt;<br>&lt;br /&gt;<br>&lt;input type=<span class="hljs-string">&quot;submit&quot;</span> name=<span class="hljs-string">&quot;Upload&quot;</span> value=<span class="hljs-string">&quot;上传&quot;</span> /&gt;<br>&lt;/form&gt;<br>&lt;/body&gt;<br>&lt;/html&gt;<br></code></pre></td></tr></table></figure>
+
+<p>前端的实现代码均为以上。界面如下图：</p>
+<p><img src="https://s1.ax1x.com/2018/06/10/Cq0S4e.png" srcset="/img/loading.gif" lazyload alt="Cq0S4e.png"></p>
+<h2 id="0x01-零防御的PHP上传代码"><a href="#0x01-零防御的PHP上传代码" class="headerlink" title="0x01  零防御的PHP上传代码"></a>0x01  零防御的PHP上传代码</h2><p><strong>源代码 upload_0.php</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-keyword">if</span> (<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;Upload&#x27;</span>])) &#123;<br>    <span class="hljs-variable">$target_path</span> = <span class="hljs-string">&quot;uploads/&quot;</span>;<br>    <span class="hljs-variable">$target_path</span> = <span class="hljs-variable">$target_path</span> . <span class="hljs-title function_ invoke__">basename</span>( <span class="hljs-variable">$_FILES</span>[<span class="hljs-string">&#x27;uploaded&#x27;</span>][<span class="hljs-string">&#x27;name&#x27;</span>]);<br>    <span class="hljs-keyword">if</span>(!<span class="hljs-title function_ invoke__">move_uploaded_file</span>(<span class="hljs-variable">$_FILES</span>[<span class="hljs-string">&#x27;uploaded&#x27;</span>][<span class="hljs-string">&#x27;tmp_name&#x27;</span>], <span class="hljs-variable">$target_path</span>)) &#123;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;&lt;pre&gt;&#x27;</span>;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;您的图片上传失败.&#x27;</span>;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;&lt;/pre&gt;&#x27;</span>;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;&lt;pre&gt;&#x27;</span>;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-variable">$target_path</span> . <span class="hljs-string">&#x27;文件已经成功上传！&#x27;</span>;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;&lt;/pre&gt;&#x27;</span>;<br>    &#125;<br>&#125;<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>这段PHP代码对上传的文件没有任何的过滤，只是将上传的文件直接存储到了网站uploads文件夹下，此时如果我们上传一个一句话木马并通过浏览器访问加上参数的地址或者使用中国菜刀直接连接，就可以为所欲为了。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-comment">//一句话木马</span><br><span class="hljs-meta">&lt;?php</span> <span class="hljs-keyword">eval</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;cmd&#x27;</span>]);<span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="0x01-初级防护-验证文件类型"><a href="#0x01-初级防护-验证文件类型" class="headerlink" title="0x01  初级防护-验证文件类型"></a>0x01  初级防护-验证文件类型</h2><p><strong>源代码 upload_1.php</strong> </p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-keyword">if</span>( <span class="hljs-keyword">isset</span>( <span class="hljs-variable">$_POST</span>[ <span class="hljs-string">&#x27;Upload&#x27;</span> ] ) ) &#123;<br>	<span class="hljs-variable">$target_path</span>  = <span class="hljs-string">&quot;uploads/&quot;</span>;<br>	<span class="hljs-variable">$target_path</span> .= <span class="hljs-title function_ invoke__">basename</span>( <span class="hljs-variable">$_FILES</span>[ <span class="hljs-string">&#x27;uploaded&#x27;</span> ][ <span class="hljs-string">&#x27;name&#x27;</span> ] );<br>	<span class="hljs-comment">//识别文件类型</span><br>	<span class="hljs-variable">$uploaded_name</span> = <span class="hljs-variable">$_FILES</span>[ <span class="hljs-string">&#x27;uploaded&#x27;</span> ][ <span class="hljs-string">&#x27;name&#x27;</span> ];<br>	<span class="hljs-variable">$uploaded_type</span> = <span class="hljs-variable">$_FILES</span>[ <span class="hljs-string">&#x27;uploaded&#x27;</span> ][ <span class="hljs-string">&#x27;type&#x27;</span> ];<br>	<span class="hljs-variable">$uploaded_size</span> = <span class="hljs-variable">$_FILES</span>[ <span class="hljs-string">&#x27;uploaded&#x27;</span> ][ <span class="hljs-string">&#x27;size&#x27;</span> ];<br>	<span class="hljs-keyword">if</span>( ( <span class="hljs-variable">$uploaded_type</span> == <span class="hljs-string">&quot;image/jpeg&quot;</span> || <span class="hljs-variable">$uploaded_type</span> == <span class="hljs-string">&quot;image/png&quot;</span> ) &amp;&amp;<br>		( <span class="hljs-variable">$uploaded_size</span> &lt; <span class="hljs-number">100000</span> ) ) &#123;<br>		<span class="hljs-keyword">if</span>( !<span class="hljs-title function_ invoke__">move_uploaded_file</span>( <span class="hljs-variable">$_FILES</span>[ <span class="hljs-string">&#x27;uploaded&#x27;</span> ][ <span class="hljs-string">&#x27;tmp_name&#x27;</span> ], <span class="hljs-variable">$target_path</span> ) ) &#123;<br>			<span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;pre&gt;图片上传失败&lt;/pre&gt;&quot;</span>;<br>		&#125;<br>		<span class="hljs-keyword">else</span> &#123;<br>			<span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;pre&gt;<span class="hljs-subst">&#123;$target_path&#125;</span> 图片上传成功！&lt;/pre&gt;&quot;</span>;<br>		&#125;<br>	&#125;<br>	<span class="hljs-keyword">else</span> &#123;<br>		<span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;pre&gt;只允许上传jpg或者png格式的图片文件,且文件大小不能超过100k&lt;/pre&gt;&quot;</span>;<br>	&#125;<br>&#125;<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>防御方法</strong></p>
+<p>初级防御的代码在审查用户上传的文件时加入了“Content-Type”验证，代码会自动识别文件类型并将文件类型以表单的形式进行验证，如果“Content-Type”是image&#x2F;jpeg或者image&#x2F;png时文件可以上传 成功，算是初级防御。</p>
+<p><strong>绕过方法</strong></p>
+<p>用BurpSuite截断代理修改数据包的相关字段即可完成绕过，本例上传的文件时shell.php，代码会将此文件的Content-Type识别为application&#x2F;x-php，直接将application&#x2F;x-php改为mage&#x2F;jpeg即可绕过验证，而且对于文件大小的限制也是可以直接修改”MAX_FILE_SIZE”的方式突破限制从而上传更大的文件。</p>
+<p><strong>修改前</strong><img src="https://s1.ax1x.com/2018/06/10/Cq099H.png" srcset="/img/loading.gif" lazyload alt="Cq099H.png"></p>
+<p><strong>修改后</strong></p>
+<p><img src="https://s1.ax1x.com/2018/06/10/Cq0C3d.png" srcset="/img/loading.gif" lazyload alt="Cq0C3d.png"></p>
+<p><img src="https://s1.ax1x.com/2018/06/10/Cq03D0.png" srcset="/img/loading.gif" lazyload alt="Cq03D0.png"></p>
+<h2 id="0x02-一般防护-验证文件后缀"><a href="#0x02-一般防护-验证文件后缀" class="headerlink" title="0x02  一般防护-验证文件后缀"></a>0x02  一般防护-验证文件后缀</h2><p><strong>源代码 upoad_2.php</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-keyword">if</span>( <span class="hljs-keyword">isset</span>( <span class="hljs-variable">$_POST</span>[ <span class="hljs-string">&#x27;Upload&#x27;</span> ] ) ) &#123;<br>	<span class="hljs-variable">$target_path</span>  = <span class="hljs-string">&quot;uploads/&quot;</span>;<br>	<span class="hljs-variable">$target_path</span> .= <span class="hljs-title function_ invoke__">basename</span>( <span class="hljs-variable">$_FILES</span>[ <span class="hljs-string">&#x27;uploaded&#x27;</span> ][ <span class="hljs-string">&#x27;name&#x27;</span> ] );<br>	<span class="hljs-comment">//记录文件信息</span><br>	<span class="hljs-variable">$uploaded_name</span> = <span class="hljs-variable">$_FILES</span>[ <span class="hljs-string">&#x27;uploaded&#x27;</span> ][ <span class="hljs-string">&#x27;name&#x27;</span> ];<br>	<span class="hljs-variable">$uploaded_ext</span>  = <span class="hljs-title function_ invoke__">substr</span>( <span class="hljs-variable">$uploaded_name</span>, <span class="hljs-title function_ invoke__">strrpos</span>( <span class="hljs-variable">$uploaded_name</span>, <span class="hljs-string">&#x27;.&#x27;</span> ) + <span class="hljs-number">1</span>);<br>	<span class="hljs-variable">$uploaded_size</span> = <span class="hljs-variable">$_FILES</span>[ <span class="hljs-string">&#x27;uploaded&#x27;</span> ][ <span class="hljs-string">&#x27;size&#x27;</span> ];<br>	<span class="hljs-variable">$uploaded_tmp</span>  = <span class="hljs-variable">$_FILES</span>[ <span class="hljs-string">&#x27;uploaded&#x27;</span> ][ <span class="hljs-string">&#x27;tmp_name&#x27;</span> ];<br>	<span class="hljs-comment">//识别文件后缀</span><br>	<span class="hljs-keyword">if</span>( ( <span class="hljs-title function_ invoke__">strtolower</span>( <span class="hljs-variable">$uploaded_ext</span> ) == <span class="hljs-string">&quot;jpg&quot;</span> || <span class="hljs-title function_ invoke__">strtolower</span>( <span class="hljs-variable">$uploaded_ext</span> ) == <span class="hljs-string">&quot;jpeg&quot;</span> || <span class="hljs-title function_ invoke__">strtolower</span>( <span class="hljs-variable">$uploaded_ext</span> ) == <span class="hljs-string">&quot;png&quot;</span> ) &amp;&amp;<br>		( <span class="hljs-variable">$uploaded_size</span> &lt; <span class="hljs-number">100000</span> ) &amp;&amp;<br>		<span class="hljs-title function_ invoke__">getimagesize</span>( <span class="hljs-variable">$uploaded_tmp</span> ) ) &#123;<br>		<span class="hljs-keyword">if</span>( !<span class="hljs-title function_ invoke__">move_uploaded_file</span>( <span class="hljs-variable">$uploaded_tmp</span>, <span class="hljs-variable">$target_path</span> ) ) &#123;<br>			<span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;pre&gt;图片上传识别.&lt;/pre&gt;&quot;</span>;<br>		&#125;<br>		<span class="hljs-keyword">else</span> &#123;<br>			<span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;pre&gt;<span class="hljs-subst">&#123;$target_path&#125;</span> 图片上传成功!&lt;/pre&gt;&quot;</span>;<br>		&#125;<br>	&#125;<br>	<span class="hljs-keyword">else</span> &#123;<br>		<span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;pre&gt;只能上传格式为jpg和png的图片.&lt;/pre&gt;&quot;</span>;<br>	&#125;<br>&#125;<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>相比较于前一种比价简单的验证content-type的防护方式，一般级别的防护措施换成了验证文件后缀的方式，顺便多说一句，在为了安全性设置一些限制时，使用白名单永远比设置黑名单要安全的多，因为总会有&#x3D;各种方式绕过黑名单的方式或者是一些针对不同服务器系统或着服务器的特殊解析原理而造成的一些安全隐患。以下是获取文件后缀的代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-variable">$uploaded_ext</span>  = <span class="hljs-title function_ invoke__">substr</span>( <span class="hljs-variable">$uploaded_name</span>, <span class="hljs-title function_ invoke__">strrpos</span>( <span class="hljs-variable">$uploaded_name</span>, <span class="hljs-string">&#x27;.&#x27;</span> ) + <span class="hljs-number">1</span>)<br></code></pre></td></tr></table></figure>
+
+<p>通过本语句获取文件名中最后一个“.”后的字符识别上传的文件名的后缀，并将后缀存储在一个变量中。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-keyword">if</span>( ( <span class="hljs-title function_ invoke__">strtolower</span>( <span class="hljs-variable">$uploaded_ext</span> ) == <span class="hljs-string">&quot;jpg&quot;</span> || <span class="hljs-title function_ invoke__">strtolower</span>( <span class="hljs-variable">$uploaded_ext</span> ) == <span class="hljs-string">&quot;jpeg&quot;</span> || <span class="hljs-title function_ invoke__">strtolower</span>( <span class="hljs-variable">$uploaded_ext</span> ) == <span class="hljs-string">&quot;png&quot;</span> ) &amp;&amp;<br>		( <span class="hljs-variable">$uploaded_size</span> &lt; <span class="hljs-number">100000</span> ) &amp;&amp;<br>		<span class="hljs-title function_ invoke__">getimagesize</span>( <span class="hljs-variable">$uploaded_tmp</span> ) )<br></code></pre></td></tr></table></figure>
+
+<p>而在if的逻辑判断中，需要上一条语句截取到的文件后缀为“jpg”，“jpeg”或者“png”，切且上传的文件大小不得大于10000b，如果只有这个限制方法的话，可以直接使用burpsuite进行00截断，从而使得在文件后缀验证时通过但是在文件转储的时候忽略掉00之后的内容从而实现后缀欺骗，具体方式如下：</p>
+<ul>
+<li>假设网站只能上传图片文件并在后台欧了后缀的限制</li>
+<li>此时你要上传一个shell.php的一句话木马</li>
+<li>将”shell.php”改为”shell.php 1.png”</li>
+<li>使用burpsuite截断代理，拦截数据包</li>
+<li>将”shell.php 1.png”发送至decoder模块，从text模式转换为hex编辑模式，找到”shell.php 1.png”中空格对应的hex值“20”，将20改为00</li>
+<li>从hex模式恢复为text并将修改过的字符串替换原来报文中的”shell.php 1.png”</li>
+<li>发送报文，操作成功后会显示文件上传成功</li>
+</ul>
+<p>操作成功后会显示文件上传成功，在php版本小于5.3.4的版本中，当Magic_quote_gpc选项为off时，可以在文件名中使用%00截断，所以可以把上传文件命名a1.php%00.png进行绕过，我们用bp抓包检测一下文件类型。 可以发现文件类型是png成功绕过前端，并且到服务器文件会被解析成php文件，因为00后面的被截断了，服务器不解析。</p>
+<p>但是在本例中，00截断的方法不再有效，因为if条件中还有一个getimagesize()函数，此函数会自动识别上传的图片的文件头，长宽，mime类型等信息，因此如果上传的文件不是图片将无法上传。绕过这个限制的方法是制作图片马，我是在win环境下制作的，只需准备一个图片大小较小的jpg或者png格式的图片，打开cmd使用命令：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmd"><span class="hljs-built_in">copy</span> <span class="hljs-number">1</span>.jpg/b+shell.php <span class="hljs-number">2</span>.jpg<br></code></pre></td></tr></table></figure>
+
+<p>来合成一张图片马，如果用二进制编辑器打开此文件会发现一句话木马写到了文件的后面，把这样的文件上传时，由于文件头仍然是jpg的文件头，getimagesize()函数也会正确的返回图片的大小和文类型，因此通这种方式可以绕过getimagesize()函数的限制，再结合00截断即可上传木马并在服务器端将文件解析为php脚本，从而正确执行。</p>
+<p>但是如果服务器的PHP版本较高，则无法通过此方法进行漏洞的利用，需要结合文件包含漏洞进行利用。</p>
+<h2 id="0x03-无解的防护-全方面限制"><a href="#0x03-无解的防护-全方面限制" class="headerlink" title="0x03  无解的防护-全方面限制"></a>0x03  无解的防护-全方面限制</h2><p>当然安全只是相对的，没有绝对的安全，一下代码对输入的文件进行了多种方式的审查并进行了重新编码，是目前比较完善了安全防御措施。</p>
+<p><strong>源代码  upload_2.php</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-keyword">if</span>( <span class="hljs-keyword">isset</span>( <span class="hljs-variable">$_POST</span>[ <span class="hljs-string">&#x27;Upload&#x27;</span> ] ) ) &#123;<br>	<span class="hljs-comment">// 检查token</span><br>	<span class="hljs-title function_ invoke__">checkToken</span>( <span class="hljs-variable">$_REQUEST</span>[ <span class="hljs-string">&#x27;user_token&#x27;</span> ], <span class="hljs-variable">$_SESSION</span>[ <span class="hljs-string">&#x27;session_token&#x27;</span> ], <span class="hljs-string">&#x27;index.php&#x27;</span> );<br>	<span class="hljs-variable">$uploaded_name</span> = <span class="hljs-variable">$_FILES</span>[ <span class="hljs-string">&#x27;uploaded&#x27;</span> ][ <span class="hljs-string">&#x27;name&#x27;</span> ];<br>	<span class="hljs-variable">$uploaded_ext</span>  = <span class="hljs-title function_ invoke__">substr</span>( <span class="hljs-variable">$uploaded_name</span>, <span class="hljs-title function_ invoke__">strrpos</span>( <span class="hljs-variable">$uploaded_name</span>, <span class="hljs-string">&#x27;.&#x27;</span> ) + <span class="hljs-number">1</span>);<br>	<span class="hljs-variable">$uploaded_size</span> = <span class="hljs-variable">$_FILES</span>[ <span class="hljs-string">&#x27;uploaded&#x27;</span> ][ <span class="hljs-string">&#x27;size&#x27;</span> ];<br>	<span class="hljs-variable">$uploaded_type</span> = <span class="hljs-variable">$_FILES</span>[ <span class="hljs-string">&#x27;uploaded&#x27;</span> ][ <span class="hljs-string">&#x27;type&#x27;</span> ];<br>	<span class="hljs-variable">$uploaded_tmp</span>  = <span class="hljs-variable">$_FILES</span>[ <span class="hljs-string">&#x27;uploaded&#x27;</span> ][ <span class="hljs-string">&#x27;tmp_name&#x27;</span> ];<br>	<span class="hljs-variable">$target_path</span>   = <span class="hljs-string">&#x27;uploads/&#x27;</span>;<br>	<span class="hljs-variable">$target_file</span>   =  <span class="hljs-title function_ invoke__">md5</span>( <span class="hljs-title function_ invoke__">uniqid</span>() . <span class="hljs-variable">$uploaded_name</span> ) . <span class="hljs-string">&#x27;.&#x27;</span> . <span class="hljs-variable">$uploaded_ext</span>;<br>	<span class="hljs-variable">$temp_file</span>     = ( ( <span class="hljs-title function_ invoke__">ini_get</span>( <span class="hljs-string">&#x27;upload_tmp_dir&#x27;</span> ) == <span class="hljs-string">&#x27;&#x27;</span> ) ? ( <span class="hljs-title function_ invoke__">sys_get_temp_dir</span>() ) : ( <span class="hljs-title function_ invoke__">ini_get</span>( <span class="hljs-string">&#x27;upload_tmp_dir&#x27;</span> ) ) );<br>	<span class="hljs-variable">$temp_file</span>    .= DIRECTORY_SEPARATOR . <span class="hljs-title function_ invoke__">md5</span>( <span class="hljs-title function_ invoke__">uniqid</span>() . <span class="hljs-variable">$uploaded_name</span> ) . <span class="hljs-string">&#x27;.&#x27;</span> . <span class="hljs-variable">$uploaded_ext</span>;<br>	<span class="hljs-comment">//判断是否是一张图片</span><br>	<span class="hljs-keyword">if</span>( ( <span class="hljs-title function_ invoke__">strtolower</span>( <span class="hljs-variable">$uploaded_ext</span> ) == <span class="hljs-string">&#x27;jpg&#x27;</span> || <span class="hljs-title function_ invoke__">strtolower</span>( <span class="hljs-variable">$uploaded_ext</span> ) == <span class="hljs-string">&#x27;jpeg&#x27;</span> || <span class="hljs-title function_ invoke__">strtolower</span>( <span class="hljs-variable">$uploaded_ext</span> ) == <span class="hljs-string">&#x27;png&#x27;</span> ) &amp;&amp;<br>		( <span class="hljs-variable">$uploaded_size</span> &lt; <span class="hljs-number">100000</span> ) &amp;&amp;<br>		( <span class="hljs-variable">$uploaded_type</span> == <span class="hljs-string">&#x27;image/jpeg&#x27;</span> || <span class="hljs-variable">$uploaded_type</span> == <span class="hljs-string">&#x27;image/png&#x27;</span> ) &amp;&amp;<span class="hljs-title function_ invoke__">getimagesize</span>( <span class="hljs-variable">$uploaded_tmp</span> ) ) &#123;<br>		<span class="hljs-comment">//重新制作一张图片，抹去任何可能有危害的数据</span><br>		<span class="hljs-keyword">if</span>( <span class="hljs-variable">$uploaded_type</span> == <span class="hljs-string">&#x27;image/jpeg&#x27;</span> ) &#123;<br>			<span class="hljs-variable">$img</span> = <span class="hljs-title function_ invoke__">imagecreatefromjpeg</span>( <span class="hljs-variable">$uploaded_tmp</span> );<br>			<span class="hljs-title function_ invoke__">imagejpeg</span>( <span class="hljs-variable">$img</span>, <span class="hljs-variable">$temp_file</span>, <span class="hljs-number">100</span>);<br>		&#125;<br>		<span class="hljs-keyword">else</span> &#123;<br>			<span class="hljs-variable">$img</span> = <span class="hljs-title function_ invoke__">imagecreatefrompng</span>( <span class="hljs-variable">$uploaded_tmp</span> );<br>			<span class="hljs-title function_ invoke__">imagepng</span>( <span class="hljs-variable">$img</span>, <span class="hljs-variable">$temp_file</span>, <span class="hljs-number">9</span>);<br>		&#125;<br>		<span class="hljs-title function_ invoke__">imagedestroy</span>( <span class="hljs-variable">$img</span> );<br>		<span class="hljs-comment">//文件转储</span><br>		<span class="hljs-keyword">if</span>( <span class="hljs-title function_ invoke__">rename</span>( <span class="hljs-variable">$temp_file</span>, ( <span class="hljs-title function_ invoke__">getcwd</span>() . DIRECTORY_SEPARATOR . <span class="hljs-variable">$target_path</span> . <span class="hljs-variable">$target_file</span> ) ) ) &#123;<br>			<span class="hljs-variable">$html</span> .= <span class="hljs-string">&quot;&lt;pre&gt;&lt;a href=&#x27;$&#123;target_path&#125;$&#123;target_file&#125;&#x27;&gt;$&#123;target_file&#125;&lt;/a&gt; succesfully uploaded!&lt;/pre&gt;&quot;</span>;<br>		&#125;<br>		<span class="hljs-keyword">else</span> &#123;<br>			<span class="hljs-variable">$html</span> .= <span class="hljs-string">&#x27;&lt;pre&gt;Your image was not uploaded.&lt;/pre&gt;&#x27;</span>;<br>		&#125;<br>		<span class="hljs-comment">//删除所有暂时文件</span><br>		<span class="hljs-keyword">if</span>( <span class="hljs-title function_ invoke__">file_exists</span>( <span class="hljs-variable">$temp_file</span> ) )<br>			<span class="hljs-title function_ invoke__">unlink</span>( <span class="hljs-variable">$temp_file</span> );<br>	&#125;<br>	<span class="hljs-keyword">else</span> &#123;<br>		<span class="hljs-comment">//无效文件</span><br>		<span class="hljs-variable">$html</span> .= <span class="hljs-string">&#x27;&lt;pre&gt;Your image was not uploaded. We can only accept JPEG or PNG images.&lt;/pre&gt;&#x27;</span>;<br>	&#125;<br>&#125;<br><span class="hljs-comment">// 添加抗csrf验证</span><br><span class="hljs-title function_ invoke__">generateSessionToken</span>();<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>上述代码的安全措施：</strong></p>
+<ul>
+<li>添加了sessionToken，验证会话身份，用于防止csrf攻击</li>
+<li>使用md5( uniqid() . $uploaded_name )函数，uniqid()函数是根据当前的时间，生成一个唯一的id，跟大多数随机函数一样，基于时间的随机函数在一定条件下也是可以差生碰撞的，因此本例中采用了md5()函数来保证生成id的唯一性，而且由于md5()函数对上传的文件名进行了重命名，因此无法使用00截断的方式来上传php或者其他恶意脚本文件。</li>
+<li>以白名单的方式限制上传的文件后缀</li>
+<li>限定上传的文件大小不得超过10000</li>
+<li>通过imagecreatefromjpeg()和imagecreatefrompng()函数将上传的图片文件重新写入到一个新的图片文件中，这两个函数会自动将图片中的有害元数据抹除，因此即使黑客上传了一张图片马也会被这个函数过滤成一个纯正的图片。</li>
+<li>imagedestroy( $img )将用户上传的源文件删除</li>
+<li>unlink( $temp_file )删除过滤过程中产生的任何临时文件</li>
+</ul>
+<h2 id="0x04-个人总结"><a href="#0x04-个人总结" class="headerlink" title="0x04 个人总结"></a>0x04 个人总结</h2><p>web漏洞种类繁多，利用方法奇葩而有趣，值得研究和学习</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/WEB%E5%AE%89%E5%85%A8/">WEB安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/PHP/">PHP</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2018/09/col-WriteUp-panable-kr-col-hash%E7%A2%B0%E6%92%9E/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">col_WriteUp(panable.kr_col)hash碰撞</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2018/09/%E5%B0%86Kali-Linux%E4%BD%9C%E4%B8%BA%E4%B8%BB%E5%8A%9B%E7%B3%BB%E7%BB%9F%E6%98%AF%E4%B8%80%E7%A7%8D%E6%80%8E%E6%A0%B7%E7%9A%84%E4%BD%93%E9%AA%8C/">
+                        <span class="hidden-mobile">将Kali Linux作为主力系统是一种怎样的体验</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

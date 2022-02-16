@@ -1,0 +1,972 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 100vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Hvnt3r's Blog">
+              
+            </span>
+
+            
+          </div>
+
+          
+            <div class="scroll-down-bar">
+              <i class="iconfont icon-arrowdown"></i>
+            </div>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      <div class="container nopadding-x-md">
+        <div class="py-5" id="board"
+          style=margin-top:0>
+          
+          <div class="container">
+            <div class="row">
+              <div class="col-12 col-md-10 m-auto">
+                
+
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2019/03/%E9%98%B2%E5%8F%8D%E6%B1%87%E7%BC%96%E6%8A%80%E6%9C%AF/" target="_self">
+          <img src="/gallery/thumbnails/default.jpg" srcset="/img/loading.gif" lazyload alt="防反汇编技术">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/03/%E9%98%B2%E5%8F%8D%E6%B1%87%E7%BC%96%E6%8A%80%E6%9C%AF/" target="_self">
+          防反汇编技术
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/03/%E9%98%B2%E5%8F%8D%E6%B1%87%E7%BC%96%E6%8A%80%E6%9C%AF/" target="_self">
+          
+          
+            
+          
+          
+知识点所谓对抗反汇编技术，就是在程序中使用一些特殊构造的代码或数据，让反汇编分析工具产生不正确的程序代码列表。这种技术由恶意代码编写者手工构造，在恶意代码编译和部署阶段使用一个单独的混淆工具，或是直接在源码中插入混淆代码。除了延缓或者防止人工分析以外，防反汇编技术也能在一定程度上阻碍特定的自动化分析技术。
+线性反汇编：线性反汇编策略是遍历一个代码段，一次一条指令地线性反汇编，线性反汇编用已经反汇
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-03-26 23:08" pubdate>
+              2019-03-26
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+            
+              <a href="/tags/%E5%8F%8D%E6%B1%87%E7%BC%96/">反汇编</a>
+            
+              <a href="/tags/%E9%98%B2%E5%8F%8D%E6%B1%87%E7%BC%96%E6%8A%80%E6%9C%AF/">防反汇编技术</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2019/03/%E9%9A%90%E8%94%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%90%AF%E5%8A%A8/" target="_self">
+          <img src="/gallery/thumbnails/default.jpg" srcset="/img/loading.gif" lazyload alt="隐蔽的恶意代码启动">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/03/%E9%9A%90%E8%94%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%90%AF%E5%8A%A8/" target="_self">
+          隐蔽的恶意代码启动
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/03/%E9%9A%90%E8%94%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%90%AF%E5%8A%A8/" target="_self">
+          
+          
+            
+          
+          
+知识点启动器：启动器，也称为加载器，是一种设置自身或者其他恶意代码片段以到达即时或将来秘密运行的恶意代码。启动器经常回在资源节包含要加载的恶意代码。如果资源节被压缩或者加密，则恶意代码必须在加载前对资源节进行提取操作，因此可以在代码中看到FindResource、LoadResource、以及SizeofResource等API函数。恶意代码通常需要管理员权限才能进行下面介绍的操作。
+进程注入：
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-03-25 23:46" pubdate>
+              2019-03-25
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+            
+              <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%90%AF%E5%8A%A8%E6%96%B9%E5%BC%8F/">恶意代码启动方式</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2019/03/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E8%A1%8C%E4%B8%BA/" target="_self">
+          <img src="/gallery/thumbnails/default.jpg" srcset="/img/loading.gif" lazyload alt="恶意代码行为">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/03/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E8%A1%8C%E4%B8%BA/" target="_self">
+          恶意代码行为
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/03/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E8%A1%8C%E4%B8%BA/" target="_self">
+          
+          
+            
+          
+          
+知识点本章中会介绍恶意代码常见的恶意行为，方便我们识别各种各样的恶意程序。
+下载器和启动器：常见的两种恶意代码是下载器和启动器。下载器从互联网上下载其他的恶意代码，然后在本地系统中运行，通常使用WindowsAPI函数URLDownloadtoFileA和WinExec，来下载并运行新的恶意代码。启动器也成为加载器，是一类可执行文件，用来安装立即运行或者将来运行的恶意代码。
+后门：后门可以让攻击
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-03-20 11:08" pubdate>
+              2019-03-20
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+            
+              <a href="/tags/ShellCode/">ShellCode</a>
+            
+              <a href="/tags/%E6%81%B6%E6%84%8F%E8%A1%8C%E4%B8%BA%E5%88%86%E6%9E%90/">恶意行为分析</a>
+            
+              <a href="/tags/%E7%89%B9%E6%B4%9B%E4%BC%8A%E6%9C%A8%E9%A9%AC%E5%8C%96%E6%8A%80%E6%9C%AF/">特洛伊木马化技术</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2019/03/%E4%BD%BF%E7%94%A8WinDbg%E8%B0%83%E8%AF%95%E5%86%85%E6%A0%B8/" target="_self">
+          <img src="/gallery/thumbnails/default.jpg" srcset="/img/loading.gif" lazyload alt="使用WinDbg调试内核">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/03/%E4%BD%BF%E7%94%A8WinDbg%E8%B0%83%E8%AF%95%E5%86%85%E6%A0%B8/" target="_self">
+          使用WinDbg调试内核
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/03/%E4%BD%BF%E7%94%A8WinDbg%E8%B0%83%E8%AF%95%E5%86%85%E6%A0%B8/" target="_self">
+          
+          
+            
+          
+          
+知识点WinDbg是微软提供的一个免费调试器，支持内核调试，也具有监控Windows系统交互的功能。
+驱动与内核代码：Windows设备驱动简称为驱动，他让第三方开发商在Windows内核模式下运行代码。驱动程序常驻与内存，并且负责响应用户态程序的请求，而且应用程序不直接与驱动程序通信，而是直接访问设备对象，向具体的物理设备发送请求。设备对象由驱动程序创建和销毁，可以被用户态的程序直接访问，但他
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-03-18 09:16" pubdate>
+              2019-03-18
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+            
+              <a href="/tags/%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90/">动态分析</a>
+            
+              <a href="/tags/%E5%86%85%E6%A0%B8%E8%B0%83%E8%AF%95/">内核调试</a>
+            
+              <a href="/tags/WinDbg/">WinDbg</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2019/03/OllyDbg%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95/" target="_self">
+          <img src="/gallery/thumbnails/default.jpg" srcset="/img/loading.gif" lazyload alt="OllyDbg使用方法">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/03/OllyDbg%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95/" target="_self">
+          OllyDbg使用方法
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/03/OllyDbg%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95/" target="_self">
+          
+          
+            
+          
+          
+知识点加载恶意代码：OD可以直接加载可执行文件，也可以加载DLL文件，也可以将调试器附加在进程中，我们甚至可以用命令行运行恶意代码或者执行DLL中的某个函数。
+加载可执行文件：在加载可执行文件的时候OD会使用它的加载器来加载这个程序，并可在此过程选择运行的命令行参数。如果OD能确定程序的main函数就在main处中断，否则在程序PE头提供的程序入口点中断。
+附加调试器到一个程序：OD在附加到一个
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-03-15 09:48" pubdate>
+              2019-03-15
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+            
+              <a href="/tags/%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90/">动态分析</a>
+            
+              <a href="/tags/OllyDbg/">OllyDbg</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2019/03/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95%E6%8A%80%E6%9C%AF/" target="_self">
+          <img src="/gallery/thumbnails/default.jpg" srcset="/img/loading.gif" lazyload alt="动态调试技术">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/03/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95%E6%8A%80%E6%9C%AF/" target="_self">
+          动态调试技术
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/03/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95%E6%8A%80%E6%9C%AF/" target="_self">
+          
+          
+            
+          
+          
+知识点本章会重点介绍两个调试器：OllyDbg和WinDbg，调试器监控程序执行的能力在恶意代码分析的过程中十分重要，调试器允许我们查看任意内存地址的内容，寄存器的内容以及每个函数参数的值。调试器也允许我们在任意时刻改变运行中的程序中的值。
+源代码级调试器与汇编级调试器：源代码级调试器指在代码编写期间运行的调试器，汇编级调试器也成为底层调试器，他的操作对象使源代码而不是汇编代码。
+内核模式与用户
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-03-14 20:35" pubdate>
+              2019-03-14
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+            
+              <a href="/tags/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95/">动态调试</a>
+            
+              <a href="/tags/%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90%E6%8A%80%E6%9C%AF/">动态分析技术</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2019/03/%E5%88%86%E6%9E%90%E6%81%B6%E6%84%8FWindows%E7%A8%8B%E5%BA%8F/" target="_self">
+          <img src="/gallery/thumbnails/default.jpg" srcset="/img/loading.gif" lazyload alt="分析恶意Windows程序">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/03/%E5%88%86%E6%9E%90%E6%81%B6%E6%84%8FWindows%E7%A8%8B%E5%BA%8F/" target="_self">
+          分析恶意Windows程序
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/03/%E5%88%86%E6%9E%90%E6%81%B6%E6%84%8FWindows%E7%A8%8B%E5%BA%8F/" target="_self">
+          
+          
+            
+          
+          
+知识点多数恶意代码运行在Windows上，因此对Windows变成概念的深刻理解会帮助我们识别出恶意代码在主机上感染的迹象，本章会介绍一些恶意代码使用Windows功能的独特方式，并且会讨论恶意代码是如何使用内核模式来实现额外功能与自身隐藏的。
+Windows API：Windows API是一个广泛的功能集合，管理着恶意代码与微软程序库之间的交互方式，Windows  API使用他自己的名字。
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-03-10 14:53" pubdate>
+              2019-03-10
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+            
+              <a href="/tags/Windows%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/">Windows恶意代码</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2019/03/%E8%AF%86%E5%88%AB%E6%B1%87%E7%BC%96%E4%B8%AD%E7%9A%84C%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84/" target="_self">
+          <img src="/gallery/thumbnails/default.jpg" srcset="/img/loading.gif" lazyload alt="识别汇编中的C代码结构">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/03/%E8%AF%86%E5%88%AB%E6%B1%87%E7%BC%96%E4%B8%AD%E7%9A%84C%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84/" target="_self">
+          识别汇编中的C代码结构
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/03/%E8%AF%86%E5%88%AB%E6%B1%87%E7%BC%96%E4%B8%AD%E7%9A%84C%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84/" target="_self">
+          
+          
+            
+          
+          
+知识点本章将通过讨论超过十种的不同的C代码结构来分析不同的汇编代码，帮助我们快速的提升形成恶意代码功能的高级视图的能力
+全局变量|局部变量：全局变量可以被程序中任意函数访问和使用，局部变量只能在它被定义的函数中访问，在汇编代码中，全局变量通过内存地址引用，而局部变量通过栈地址引用。
+识别if语句：有if语句一定存在跳转，但是有跳转不一定是if语句，if语句前有一个cmp指令用于对比条件，之后会有
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-03-06 14:29" pubdate>
+              2019-03-06
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+            
+              <a href="/tags/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80/">汇编语言</a>
+            
+              <a href="/tags/C%E8%AF%AD%E8%A8%80/">C语言</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2019/03/IDA-Pro%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95/" target="_self">
+          <img src="/gallery/thumbnails/default.jpg" srcset="/img/loading.gif" lazyload alt="IDA Pro使用方法">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/03/IDA-Pro%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95/" target="_self">
+          IDA Pro使用方法
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/03/IDA-Pro%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95/" target="_self">
+          
+          
+            
+          
+          
+知识点IDA Pro（交互式反汇编器专业版）是一款极其强大的反汇编器，是许多恶意代码分析师、逆向工程师和漏洞分析师的首选。
+IDA Pro接口：
+图形接口：
+
+文本模式：文本模式左侧部分被称为箭头窗口，显示了程序的非线性流程，实线标记的是无条件跳转，虚线标记了条件跳转，向上的箭头表示一个循环。
+图形模式：图形模式中，箭头的颜色和方向显示程序的流程，红色表示一个条件跳转没有被采用，绿色表示这个条件
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-03-04 19:22" pubdate>
+              2019-03-04
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+            
+              <a href="/tags/IDA-Pro/">IDA Pro</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2019/03/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90%E9%AB%98%E7%BA%A7%E6%8A%80%E6%9C%AF/" target="_self">
+          <img src="/gallery/thumbnails/default.jpg" srcset="/img/loading.gif" lazyload alt="静态分析高级技术">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2019/03/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90%E9%AB%98%E7%BA%A7%E6%8A%80%E6%9C%AF/" target="_self">
+          静态分析高级技术
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2019/03/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90%E9%AB%98%E7%BA%A7%E6%8A%80%E6%9C%AF/" target="_self">
+          
+          
+            
+          
+          
+知识点本章内容为静态分析高级技术，知识点内容较多，很多知识点都是与x86体系结构下的指令等相关知识。
+微指令|机器码：微指令层又称为固件，微指令只能在特定的电路上执行，其通常由更高的机器码层翻译而来，提供了访问硬件的接口；机器码层由操作码组成，操作吗是一些十六进制的数字，机器码一般由多条微指令实现，用于告诉底层硬件如何执行实际的代码。
+逆向工程：逆向工程是将程序的二进制文件作为输入，由反汇编软件
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2019-03-01 16:00" pubdate>
+              2019-03-01
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+            
+              <a href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/">静态分析</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+
+
+  <nav aria-label="navigation">
+    <span class="pagination" id="pagination">
+      <a class="extend prev" rel="prev" href="/page/3/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/#board">2</a><a class="page-number" href="/page/3/#board">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/#board">5</a><a class="page-number" href="/page/6/#board">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/#board">9</a><a class="extend next" rel="next" href="/page/5/#board"><i class="iconfont icon-arrowright"></i></a>
+    </span>
+  </nav>
+
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

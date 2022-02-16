@@ -1,0 +1,506 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="每天回到寝室就是面对着这小小的工作台，因此我个人十分乐意打造一个美观实用的个性桌面，下面我来介绍一下我的桌面
+0x00显示器显示器📺是一台AOC的显示器，分辨率为2560x1440，尺寸为24寸，说实话这个分辨率和尺寸的显示器并不好找，一般来说市面上上了2K分辨率的显示器的尺寸都是27寸+，而这台显示器尺寸适中，2K的分辨率在这个高分辨率显示器普及缓慢的大背景下依然能在未来几年内保持在主流水平，">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>我的桌面 - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="我的桌面">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2018-10-16 23:04" pubdate>
+        2018年10月16日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      916 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      9
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">我的桌面</h1>
+            
+            <div class="markdown-body">
+              <p>每天回到寝室就是面对着这小小的工作台，因此我个人十分乐意打造一个美观实用的个性桌面，下面我来介绍一下我的桌面</p>
+<h2 id="0x00显示器"><a href="#0x00显示器" class="headerlink" title="0x00显示器"></a>0x00显示器</h2><p>显示器📺是一台AOC的显示器，分辨率为2560x1440，尺寸为24寸，说实话这个分辨率和尺寸的显示器并不好找，一般来说市面上上了2K分辨率的显示器的尺寸都是27寸+，而这台显示器尺寸适中，2K的分辨率在这个高分辨率显示器普及缓慢的大背景下依然能在未来几年内保持在主流水平，高DPI也着实带来了不错的观感，显示相比1080P的屏幕要细腻不少，高色域的显示效果也十分优秀，在正常的使用场景下，其显示效果甚至能带来类似Macbook的retina屏的显示效果，算是性价比挺高的一台显示器了。</p>
+<span id="more"></span>
+
+<p>为了减少夜晚熄灯后带来的显示器的高光对眼睛造成伤害，我买了一条灯带用于缓解显示器与背景墙的亮度差异，并围绕灯光氛围设计了几个不同的主题：</p>
+<p><strong>深空</strong>🌌</p>
+<p><img src="https://i.loli.net/2018/10/16/5bc603d713cdc.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><strong>败家之眼ROG</strong>🔥</p>
+<p><img src="https://i.loli.net/2018/10/16/5bc603d84cab5.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><strong>雷蛇</strong>🐍</p>
+<p><img src="https://i.loli.net/2018/10/16/5bc603da08e5e.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><strong>极光</strong>🌠</p>
+<p><img src="https://i.loli.net/2018/10/16/5bc603dc0d490.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><strong>粉色Nier</strong>💟</p>
+<p><img src="https://i.loli.net/2018/10/16/5bc603dd19d90.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>动态桌面采用<code>Wallpaper Engine</code>，以下为动态桌面显示效果，<code>Gif</code>格式下颜色有些失真(+_+)?</p>
+<p><strong>雷蛇RGB🌈</strong></p>
+<p><img src="https://raw.githubusercontent.com/Hvnt3r/My_Images/master/faceu_20181016220058.gif" srcset="/img/loading.gif" lazyload></p>
+<p><strong>冬雪💧</strong></p>
+<p><img src="https://raw.githubusercontent.com/Hvnt3r/My_Images/master/faceu_20181016215814.gif" srcset="/img/loading.gif" lazyload></p>
+<h2 id="0x01键盘⌨"><a href="#0x01键盘⌨" class="headerlink" title="0x01键盘⌨"></a>0x01键盘⌨</h2><p>目前有两个键盘</p>
+<p>1.<strong>狼蛛 茶轴 104键</strong></p>
+<p>这把键盘主要用来打游戏，用习惯青轴之后再用茶轴会觉得茶轴手感偏肉，但是响应还是不错的</p>
+<p><img src="https://i.loli.net/2018/10/17/5bc60c843e3a6.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>2.<strong>iQunix F60 青轴</strong></p>
+<p>这把键盘颜值在线，手感极佳，码字十分舒服</p>
+<p><img src="https://i.loli.net/2018/10/17/5bc60bc1ae91f.jpg" srcset="/img/loading.gif" lazyload></p>
+<h2 id="0x02鼠标🖱"><a href="#0x02鼠标🖱" class="headerlink" title="0x02鼠标🖱"></a>0x02鼠标🖱</h2><p>鼠标是罗技G402，此型号被同系列的G502和G902的光辉所淹没，很多人吐槽这个鼠标的光学传感器与产品定位不符，但是我这种不是太挑剔的用着这个号称是全球最快的鼠标也并没有感觉到这个鼠标真的跟大佬所说一样不好，反而形状很贴合手掌，重量适中相比G502多了一丝灵动飘逸的曲线，少了一些笨重的侧键，感觉还是十分不错的。🌊</p>
+<p><img src="https://i.loli.net/2018/10/17/5bc60c203a9d4.jpg" srcset="/img/loading.gif" lazyload></p>
+<h2 id="0x03耳机🎧"><a href="#0x03耳机🎧" class="headerlink" title="0x03耳机🎧"></a>0x03耳机🎧</h2><p>耳机是雷蛇的北海巨妖Pro v7.1，韦神、冯提莫、周淑怡等众多主播的同款，此耳机主打游戏特色，有专用的驱动营造虚拟7.1声道，实际体验下来效果确实不错，玩吃鸡或者CSGO的时候确实感觉声音的立体感挺足，经常就是跟着声音的方向一个猛然拉枪就瞄到了敌人的头上（低调低调），听音乐时效果还行，小伙伴试听之后说觉得我这个耳机的音质比他2000多的耳机的音质还好，可能是每个人对音色的喜好不同吧，这个耳机低频出色而不轰头，因此在欣赏电音的时候体验极佳，但是在听古典音乐或者纯净女声时声音并没有特别的清澈通透，总之我觉得这个耳机还不错。灯厂的RGB果然名不虚传，耳机两侧的logo亮起时颜色十分均匀，颜色过渡平和，灯效满分！👍</p>
+<p><img src="https://i.loli.net/2018/10/17/5bc60c606daae.jpg" srcset="/img/loading.gif" lazyload></p>
+<h2 id="0x04总结"><a href="#0x04总结" class="headerlink" title="0x04总结"></a>0x04总结</h2><p>其实我的桌面上还有好多小玩意，没有介绍是因为我的手机拍暗景时噪点多的吓人，因此就不展示了，希望将来可以打造一个更加Geek的桌面！</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E7%94%9F%E6%B4%BB/">生活</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%A1%8C%E9%9D%A2/">桌面</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2018/10/Windows%E7%B3%BB%E7%BB%9F%E5%AE%89%E5%85%A8%E4%B9%8BSLmail%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Windows系统安全之SLMail缓冲区溢出漏洞复现</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2018/10/2018%E6%8A%A4%E7%BD%91%E6%9D%AFPWN%E9%A2%98%E8%A7%A3/">
+                        <span class="hidden-mobile">2018护网杯PWN题解</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

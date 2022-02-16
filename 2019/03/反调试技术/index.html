@@ -1,0 +1,634 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="
+知识点反调试技术，恶意代码用它来识别自身是否被调试，或者让调试器失效，或者通过反调试技术盐城分析人员对代码的分析时间，为了组织调试器的分析，当恶意代码意识到自己被调试时，他们可能改变正常的执行路径或者修改自身程序让自己崩溃，从而增加调试时间和复杂度。
+探测Windows调试器：恶意代码会使用多种技术探测调试器调试它的痕迹，其中包括使用Windows API、手动检测调试器人工痕迹的内存结构，查询">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>反调试技术 - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="反调试技术">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2019-03-26 23:14" pubdate>
+        2019年3月26日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      68
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">反调试技术</h1>
+            
+            <div class="markdown-body">
+              <hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>反调试技术，恶意代码用它来识别自身是否被调试，或者让调试器失效，或者通过反调试技术盐城分析人员对代码的分析时间，为了组织调试器的分析，当恶意代码意识到自己被调试时，他们可能改变正常的执行路径或者修改自身程序让自己崩溃，从而增加调试时间和复杂度。</p>
+<p><strong>探测Windows调试器：</strong>恶意代码会使用多种技术探测调试器调试它的痕迹，其中包括使用Windows API、手动检测调试器人工痕迹的内存结构，查询调试器遗留在系统中的痕迹等。调试器探测时恶意代码常用的反调试技术。</p>
+<p><strong>使用Windows API函数：</strong>使用Windows API函数探测调试器是否存在时最简单的反调试技术，Windows提供了一些函数可以让应用程序调用这些API来探测自己是否被调试。这些API中有些时专门来探测调试器存在的，而另一些API时处于其他目的而设计的。通常方式恶意代码使用API函数进行反调试的最简单方法是在恶意代码运行期间修改恶意代码，使其不能调用探测调试器的API函数，或者修改这些函数的返回值，也可以通过挂钩这些函数，如使用rootkit技术，下列时恶意代码常用来探测调试器的API函数：</p>
+<ul>
+<li><code>IsDebuggerPresent</code>：这是探测调试器最简单的API函数。它查询进程环境块（PEB）中的<code>IsDebugged</code>标志。如果进程没有运行在调试环境中，则函数返回0，否侧返回一个非0值。</li>
+<li><code>CheckRemoteDebuggerPresent</code>：这个函数跟<code>IsDebuggerPresent</code>很类似，它也查询进程环境块（PEB）中的<code>IsDebugged</code>标志。它可以探测自身进程或者系统其它进程是被调试，这个函数将一个句柄作为参数，检查这个句柄对应的进程是否被其他调试器附加。</li>
+<li><code>NtQueryInformationProcess</code>：这个函数时<code>Ntdll.dll</code>中的一个原生态API，它用来提取一个进程的信息，他的第一个参数是进程句柄，第二个参数告诉我们它需要提取进程信息的类型，例如将该参数设置为哦<code>ProcessDebugPort</code>，将会告诉你这个句柄标识的进程是否被调试。如果进程正在被调试，则返回被调试的端口，否则返回0.</li>
+<li><code>OutputDebugString</code>：这个函数的作用是在调试器中显示一个字符串，先通过<code>SetLastError</code>函数为当前的错误码设置一个随机的值，然后调用<code>OutputDebugString</code>，如果当前进程没有被调试则<code>OutputDebugString</code>的调用不会影响错误码的值。</li>
+</ul>
+<span id="more"></span>
+
+<p><strong>手动检测数据结构：</strong>手动检测数据是恶意代码编写者最常用的方法。因为很多时候通过Windows API实现的反调试技术无效，例如这些函数被rootkit挂钩，并返回错误信息，因此，恶意代码编写者经常手动执行这些与API功能相同的操作:</p>
+<ul>
+<li>检测<code>BeingDebugged</code>属性：</li>
+</ul>
+<p>Windows操作系统维护者每个正在运行进程的PEB结构，它包含与这个进程相关的所有用户态参数，这些参数包括进程环境数据，环境数据包括环境变量、加载的模块列表、内存地址、调试器状态，例如如下的两种检测方法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs asm">//mov 方法<br>mov eax, dword ptr fs:[30h]<br>mov ebx, byte ptr [eax+2]<br>test ebx, ebx   //检测BeingDebugged属性<br>jz NoDebuggerDetected<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs asm">//push /pop 方法<br>push dword ptr fs:[30h]<br>pop edx<br>cmp byte ptr [edx+2], 1   //检测BeingDebugged属性<br>je DebuggerDetected<br></code></pre></td></tr></table></figure>
+
+<p>以上两种方法都是通过将PEB的基地址载入EAX寄存器中然后对比响应标志的值来判断，这种检查由多种形式，对于这种检测方法我们可以在执行跳转指令之前修改0标志，强制执行跳转或者不跳转，或者手动设置<code>BeingDebugged</code>属性值为0，另外OD中一些插件可以帮助我们修改<code>BeingDebugged</code>标志，其中流行的有<code>Hide</code> <code>Debugger</code>、<code>Hidedebuging</code>和<code>PhantOm</code>。</p>
+<ul>
+<li>检测<code>ProcessHeap</code>属性：</li>
+</ul>
+<p><code>Reserved4</code>数组中有一个未公开的位置叫做<code>ProcessHeap</code>，他被设置为加载器为进程分配的第一个堆的位置。<code>ProcessHeap</code>位于<code>PEB</code>结构的<code>0x18</code>处。第一个堆头部有一个属性字段，它告诉内核这个堆是否在调试器中创建，这些属性叫<code>ForceFlags</code>和<code>Flags</code>，如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs asm">mov eax, large fs:30h<br>mov eax, dword ptr [eax+18h]<br>cmp dword ptr ds:[eax+10h], 0<br>jne DebuggerDetected<br></code></pre></td></tr></table></figure>
+
+<p>对于这种反调试技术最贱的方法是使用手动修改<code>ProcessHeap</code>，或者使用调试器的隐藏调试插件，如果使用<code>WinDbg</code>来调试可以禁用调试堆栈来启动进程。</p>
+<ul>
+<li>检测<code>NTGlobalFlag</code>：</li>
+</ul>
+<p>对于调试器中启动进程与正常模式下启动进程的不同，所有它们创建内存堆的方式也不同，系统使用PEB结构偏移量<code>0x68</code>处的一个未公开位置来决定如何创建堆结构。如果这个位置的值为<code>0x70</code>，我们就知道进程正运行在调试器中。如果进程从调试器启动则进程的如下标志被设置：</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs coq">(FLG_HEAP_ENABLE_TAIL_CHECK|<span class="hljs-type">FLG_HEAP_ENABLE_FREE_CHECK</span>|<span class="hljs-type">FLG_HEAP_VALIDATE_PARAMETERS</span>)<br></code></pre></td></tr></table></figure>
+
+<p><code>NTGlobalFlag</code>检测代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs asm">mov eax,large fs:30h<br>cmp dword ptr ds:[eax+68h],70h<br>jz DebuggerDetected<br></code></pre></td></tr></table></figure>
+
+<p>对抗这种反调试措施的方法与上面一样。</p>
+<p><strong>系统痕迹检测：</strong>调试器工具回在系统中留下一些痕迹，如以下是调试器在注册表中的一个常用位置：</p>
+<figure class="highlight moonscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs moonscript">HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AeDebug<br></code></pre></td></tr></table></figure>
+
+<p>改注册表指定当应用程序发生错误时触发哪一个调试器，默认情况下，他被设置为<code>Dr.Watson</code>。如果注册表的键值被修改为<code>OllyDbg</code>则代表他可能正在被调试，恶意代码也可能会遍历文件系统来查找系统中是否存在调试器的可执行文件，或者查看当前进程列表，更普遍的做法是使用<code>FindWindow</code>来查找调试器：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">if</span>(FindWindow(<span class="hljs-string">&quot;OllyDbg&quot;</span>,<span class="hljs-number">0</span>) == <span class="hljs-literal">NULL</span>)<br>&#123;<br>    <span class="hljs-comment">//未发现调试器</span><br>&#125;<br><span class="hljs-keyword">else</span><br>&#123;<br>    <span class="hljs-comment">//发现调试器</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>识别调试器行为：</strong>在逆向工程中，为了帮助分析人员进行分析，可以使用调试器设置一个断点或者单步执行一个进程，但是在调试器执行这些操作是，会修改进程中的代码，这也为反调试的技术实现提供了一个思路。</p>
+<p><strong>INT扫描：</strong>调试器设置断点的基本机制是使用软件中断指令<code>INT 3</code>，临时替换运行程序中的一条指令，然后当程序运行到这条指令时，调用调试器异常处理例程。除了特定的断点指令<code>INT 3</code>以外 <code>INT immediate</code>指令可以设置任意中断。此指令使用两个操作码<code>0xCD value</code>但是调试器不常使用这种双字节的机器码，以下是扫描代码断点的汇编代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs asm">call $+5<br>pop edi<br>sub edi, 5<br>mov ecx, 400h<br>mov eax, 0CCh<br>repne scasb<br>jz DebuggerDetected<br></code></pre></td></tr></table></figure>
+
+<p>逐段代码首先执行一个函数调用，随后用pop指令将EIP的寄存器的值存入EDI，然后将EDI设为代码的开始位置。接下来扫描这段代码的<code>0xCC</code>字节。如果发现了<code>0xCC</code>字节则证明存在调试器。可使用硬件断点若不是软件断点来对抗这种措施。</p>
+<p><strong>执行代码校验和检查：</strong>恶意代码可以计算代码段的校验并实现与扫描INT中断相同的目的。与扫描<code>0xCC</code>不同，这种检查仅执行恶意代码中的机器码的CRC（循环冗余校验）或者MD5校验和检查，虽然这种技术不如<code>INT 3</code>扫描那么常见没但是他同样有效，可以通过硬件断点，或者在代码运行过程中用调试器手动修改执行路径来对抗这种反调试技术。</p>
+<p><strong>时钟检测：</strong>被调试时进程的运行速度大大降低，如下是使用时钟检测来探测调试器存在的方法：</p>
+<ul>
+<li>记录一段操作前后的时间戳，然后比较这两个时间戳，如果存在滞后则代表调试器存在。</li>
+<li>记录触发一个异常前后的时间戳。如果不调试进程，可以很快处理该异常，调试器处理异常会造成很大的时间延迟，尽管我们可以用调试器忽略异常，但是这样的操作依然存在很大的延迟。</li>
+</ul>
+<p><strong>使用rdstc指令：</strong>较常用的时钟检测方法是使用<code>rdstc</code>指令（操作码<code>0x0F31</code>）它返回至操作系统重新启动以来的时钟数，并且将其作为一个64位的值存储在<code>EDX:EAX</code>中，恶意代码运行两次<code>rdstc</code>指令并比较这两次读数之间的差值。</p>
+<p><strong>使用QueryPerFormanceCounter和GetTickCount：</strong>同<code>rdstc</code>一样，这两个Windows API函数也被用来执行一个反调试时钟检测，使用这种方法的前提是处理器有高分辨能力的计数器–寄存器，他能存储处理器活跃的时钟数，<code>GetTickCount</code>函数返回最近系统重启时间与当前时间的相差毫秒数。</p>
+<p>对抗以上时钟检测方法的是在时钟检测函数之后设置断点，或者强制修改时间的对比结果。</p>
+<p><strong>干扰调试器的功能：</strong>代码可鞥会使用一些技术来干扰调试器的正常运行，例如：线程本地存储（TLS）回调、异常、插入中断等。这些技术仅当程序处于调试器控制之下才视图扰乱程序的运行。</p>
+<p><strong>使用TLS回调：</strong>实际上并不是程序在加载到调试器后，会让第一条指令执行之前而暂停程序的运行，而是调试器从程序PE头部指定的入口点开始。TLS回调被用来在程序入口点执行之前运行代码，因为这些代码可以在调试器中秘密地执行。</p>
+<p>TLS是Windows的一个存储类，其中数据对象不是一个自动的堆栈变量，而是代码中运行的每个线程的一个本地变量，TLS允许每个线程维护一个用TLS声明的专有变量，在应用程序实现TLS的情况下，可执行程序的PE头部会包含一个<code>.tls</code>段。TLS提供了初始化和终止TLS对象的回调函数。使用<code>PEView</code>可以看到<code>.tls</code>段，正常程序不会使用这个段。可以使用调试器在TLS回调函数运行之前下断点来分析这些函数。</p>
+<p><strong>使用异常：</strong>调试器利用中断产生异常，来执行类似于断点的操作。修改SEH链可以应用在对抗反汇编和反调试的技术中。恶意代码可以使用异常来破坏或者探测调试器，调试器捕获异常后，并不会将处理权返回被调试的进程处理，大多数利用异常的反调试技术往往利用这一点来探测调试器，如果调试器不能将异常结果正确的返回到被调试的进程，呢么这种异常失效可以被进程内部的异常处理机制所探测。对抗这种反调试措施的方法是设置调试器将异常的处理权返还给应用程序。</p>
+<p><strong>插入中断：</strong></p>
+<ul>
+<li><p>插入INT 3：调试器使用<code>INT 3</code>来设置软件断点，所以一种反调试技术是在合法代码中插入<code>0xCC</code>欺骗调试器，使其一位这些<code>0xCC</code>是自己设置的断点，一些调试器使用跟踪自身设置的断点的方法来避免这种反调试技术。双字节操作码<code>0xCD03</code>也可以产生INT 3中断，这是代码干扰<code>WinDbg</code>调试器的有效方法，在调试器外，<code>0xCD03</code>指令产生一个<code>STATUS_BREAKPOINT</code>异常。</p>
+</li>
+<li><p>插入INT 2D断点：<code>INT 2D</code>反调试技术的功能与<code>INT 3</code>类似，但是<code>INT 0x2D</code>指令能够用来探测内核态的调试器。</p>
+</li>
+<li><p>插入ICE断点：片内仿真器（ICE）断点指令<code>icebp</code>（操作码<code>0xF1</code>）是Intel未公开的指令之一。由于ICE难以在任意位置设置断点，所以<code>icebp</code>指令被设计用来境地使用ICE设置断点的难度。运行<code>icebp</code>指令将会产生一个单步异常，如果通过单步调试跟踪程序，调试器会认为这是单步调试产生的异常，从而不中兴先前设置的异常处理例程，利用这一点，恶意代码使用异常处理例程作为它的正常执行流程，而在这种情况下，会被反调试技术干扰。为了防止这种反调试技术，指令<code>icebp</code>指令时不要使用单步调试。</p>
+</li>
+</ul>
+<p><strong>调试器漏洞：</strong>与所有软件一样，调试器也存在漏洞，有时恶意代码编写者为了防止被调试会攻击这些漏洞。</p>
+<p><strong>PE头漏洞：</strong>第一种技术使修改二进制可执行文件的PE头，当<code>OllyDbg</code>调试器加载修改后的二进制文件时会导致<code>OllyDbg</code>崩溃，结果是错误：<code>“Band or Unknown 32-bit Executable File”</code>，但是程序在调试器外运行时一切正常。</p>
+<p><strong>OutputDebugString漏洞：</strong>恶意代码尝试利用<code>OllyDbg 1.1</code>的格式化字符串漏洞，为<code>OutputDebugString</code>函数提供一个<code>%S</code>参数，让OD崩溃,如程序中出现如下调用：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c">OutputDebugString(<span class="hljs-string">&quot;%s%s%s%s%s%s%s%s%s%s%s&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+
+<h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab16-1"><a href="#Lab16-1" class="headerlink" title="Lab16-1"></a>Lab16-1</h3><p><strong>使用一款调试器分析Lab16-01.exe的恶意代码。Lab16-01.exe是与Lab09-01.exe相同的恶意代码，不同点在于Lab16-01.exe加入了反调试技术。</strong></p>
+<p><strong>问题</strong><br><strong>1.这个恶意代码使用了哪些反调试技术？</strong></p>
+<p>程序中有很多如下结构的汇编代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:00403554                 mov     eax, large fs:30h<br>.text:0040355A                 mov     bl, [eax+2]<br>.text:0040355D                 mov     [ebp+var_1820], bl<br>.text:00403563                 movsx   eax, [ebp+var_1820]<br>.text:0040356A                 test    eax, eax<br>.text:0040356C                 jz      short loc_403573<br>.text:0040356E                 call    Del_Self_sub_401000<br>.text:00403573 ; ------------------------------------------------------------------------<br>.text:00403573                 mov     eax, large fs:30h<br>.text:00403579                 mov     eax, [eax+18h]<br>.text:0040357C                 db      3Eh<br>.text:0040357C                 mov     eax, [eax+10h]<br>.text:00403580                 mov     [ebp+var_1824], eax<br>.text:00403586                 cmp     [ebp+var_1824], 0<br>.text:0040358D                 jz      short loc_403594<br>.text:0040358F                 call    Del_Self_sub_401000<br>.text:00403594 ; ------------------------------------------------------------------------<br>.text:00403594                 mov     eax, large fs:30h<br>.text:0040359A                 db      3Eh<br>.text:0040359A                 mov     eax, [eax+68h]<br>.text:0040359E                 sub     eax, 70h<br>.text:004035A1                 mov     [ebp+var_1828], eax<br>.text:004035A7                 cmp     [ebp+var_1828], 0<br>.text:004035AE                 jnz     short loc_4035B5<br>.text:004035B0                 call    Del_Self_sub_401000<br></code></pre></td></tr></table></figure>
+
+<p>恶意代码通过检测<code>BeingDebugged</code>、<code>ProcessHeap</code>、<code>NTGlobalFlag</code>的值来检测自身是否被调试。</p>
+<p><strong>2.当每种反调试技术成功执行时，有什么现象？</strong></p>
+<p>程序会执行自我删除。</p>
+<p><strong>3.如何应对这些反调试技术？</strong></p>
+<p>这些反调试措施是检测API中的数据结构的值，我们只要在对比之后修改标志寄存器的值使程序以为我们并没有调试它。</p>
+<p><strong>4.如何在调试过程中手动修改检测的数据结构？</strong></p>
+<p>单步步进修改这些数据结构的值。</p>
+<p><strong>5.哪一种OllyDbg插件可以帮你逃避恶意代码的反调试技术？</strong></p>
+<p><code>PhantOM</code>和<code>Immunity Pycommand hidedebug</code>。</p>
+<h3 id="Lab16-2"><a href="#Lab16-2" class="headerlink" title="Lab16-2"></a>Lab16-2</h3><p><strong>使用调试器分析恶意代码Lab16-02.exe.本实验的目的是找出正确的密码。另外，恶意代码不会放弃使用攻击负载（payload）。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.在命令行中运行Lab16-02.exe时会发生什么？</strong></p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">C</span>:&gt;Lab16-<span class="hljs-number">02</span>.exe<br><span class="hljs-attribute">usage</span>: Lab16-<span class="hljs-number">02</span>.exe &lt;<span class="hljs-number">4</span> character password&gt;<br></code></pre></td></tr></table></figure>
+
+<p><strong>2.当使用猜测的命令行参数运行Lab16-02.exe时会发生什么？</strong></p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">C</span>:&gt;Lab16-<span class="hljs-number">02</span>.exe <span class="hljs-number">1234</span><br><span class="hljs-attribute">Incorrect</span> password, Try again.<br></code></pre></td></tr></table></figure>
+
+<p><strong>3.命令行密码是什么？</strong></p>
+<p><code>byrr</code></p>
+<p><strong>4.使用IDA Pro加载Lab16-02.exe，在main函数的何处可以找到strncmp函数？</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs asm">.tls:0040122C                 push    4               ; size_t<br>.tls:0040122E                 push    offset aP       ; char *<br>.tls:00401233                 mov     eax, [ebp+argv]<br>.tls:00401236                 mov     ecx, [eax+4]<br>.tls:00401239                 push    ecx             ; char *<br>.tls:0040123A                 call    _strncmp<br></code></pre></td></tr></table></figure>
+
+<p><strong>5.在默认设置下，将这个恶意代码加载到OllyDbg中会发生什么？</strong></p>
+<p><img src="https://i.loli.net/2019/03/27/5c9b7845ac225.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>6.Lab16-02.exe中PE结构的独特之处是什么？</strong></p>
+<p>该程序有<code>.tls</code>段:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-string">Name</span>	<span class="hljs-string">Start</span>	<span class="hljs-string">End</span>	<span class="hljs-string">R</span>	<span class="hljs-string">W</span>	<span class="hljs-string">X</span>	<span class="hljs-string">D</span>	<span class="hljs-string">L</span>	<span class="hljs-string">Align</span>	<span class="hljs-string">Base</span>	<span class="hljs-string">Type</span>	<span class="hljs-string">Class</span>	<span class="hljs-string">AD</span>	<span class="hljs-string">es</span>	<span class="hljs-string">ss</span>	<span class="hljs-string">ds</span>	<span class="hljs-string">fs</span>	<span class="hljs-string">gs</span><br><span class="hljs-string">.tls</span>	<span class="hljs-number">00401000</span>	<span class="hljs-number">00402000</span>	<span class="hljs-string">R</span>	<span class="hljs-string">.</span>	<span class="hljs-string">X</span>	<span class="hljs-string">.</span>	<span class="hljs-string">L</span>	<span class="hljs-string">para</span>	<span class="hljs-number">0001	</span><span class="hljs-string">public</span>	<span class="hljs-string">CODE</span>	<span class="hljs-number">32</span>	<span class="hljs-number">0000	</span><span class="hljs-number">0000	</span><span class="hljs-number">0004	</span><span class="hljs-string">FFFFFFFF</span>	<span class="hljs-string">FFFFFFFF</span><br><span class="hljs-string">.text</span>	<span class="hljs-number">00402000</span>	<span class="hljs-number">00407000</span>	<span class="hljs-string">R</span>	<span class="hljs-string">.</span>	<span class="hljs-string">X</span>	<span class="hljs-string">.</span>	<span class="hljs-string">L</span>	<span class="hljs-string">para</span>	<span class="hljs-number">0002	</span><span class="hljs-string">public</span>	<span class="hljs-string">CODE</span>	<span class="hljs-number">32</span>	<span class="hljs-number">0000	</span><span class="hljs-number">0000	</span><span class="hljs-number">0004	</span><span class="hljs-string">FFFFFFFF</span>	<span class="hljs-string">FFFFFFFF</span><br><span class="hljs-string">.idata</span>	<span class="hljs-number">00407000</span>	<span class="hljs-string">004070C8</span>	<span class="hljs-string">R</span>	<span class="hljs-string">.</span>	<span class="hljs-string">.</span>	<span class="hljs-string">.</span>	<span class="hljs-string">L</span>	<span class="hljs-string">para</span>	<span class="hljs-number">0003	</span><span class="hljs-string">public</span>	<span class="hljs-string">DATA</span>	<span class="hljs-number">32</span>	<span class="hljs-number">0000	</span><span class="hljs-number">0000	</span><span class="hljs-number">0004	</span><span class="hljs-string">FFFFFFFF</span>	<span class="hljs-string">FFFFFFFF</span><br><span class="hljs-string">.rdata</span>	<span class="hljs-string">004070C8</span>	<span class="hljs-number">00408000</span>	<span class="hljs-string">R</span>	<span class="hljs-string">.</span>	<span class="hljs-string">.</span>	<span class="hljs-string">.</span>	<span class="hljs-string">L</span>	<span class="hljs-string">para</span>	<span class="hljs-number">0003	</span><span class="hljs-string">public</span>	<span class="hljs-string">DATA</span>	<span class="hljs-number">32</span>	<span class="hljs-number">0000	</span><span class="hljs-number">0000	</span><span class="hljs-number">0004	</span><span class="hljs-string">FFFFFFFF</span>	<span class="hljs-string">FFFFFFFF</span><br><span class="hljs-string">.data</span>	<span class="hljs-number">00408000</span>	<span class="hljs-string">0040C000</span>	<span class="hljs-string">R</span>	<span class="hljs-string">W</span>	<span class="hljs-string">.</span>	<span class="hljs-string">.</span>	<span class="hljs-string">L</span>	<span class="hljs-string">para</span>	<span class="hljs-number">0004	</span><span class="hljs-string">public</span>	<span class="hljs-string">DATA</span>	<span class="hljs-number">32</span>	<span class="hljs-number">0000	</span><span class="hljs-number">0000	</span><span class="hljs-number">0004	</span><span class="hljs-string">FFFFFFFF</span>	<span class="hljs-string">FFFFFFFF</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>7.回调（callback）发生在哪些位置？（提示：在IDA Pro中使用Ctrl+E组合键）</strong></p>
+<p><img src="https://i.loli.net/2019/03/27/5c9b7b198d3f6.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>8.恶意代码使用哪一种反调试技术使它在调试器中立即终止运行？如何避免这种检查？</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> __stdcall <span class="hljs-title function_">TlsCallback_0</span><span class="hljs-params">(<span class="hljs-type">int</span> a1, <span class="hljs-type">int</span> a2, <span class="hljs-type">int</span> a3)</span><br>&#123;<br>  <span class="hljs-keyword">if</span> ( a2 == <span class="hljs-number">1</span> &amp;&amp; FindWindowA(ClassName, <span class="hljs-number">0</span>) )   <span class="hljs-comment">// OLLYDBG</span><br>    <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>  <span class="hljs-keyword">if</span> ( a2 == <span class="hljs-number">2</span> )<br>    sub_401020();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在调试器中修改函数返回值，或者修改跳转逻辑。</p>
+<p><strong>9.当你禁用反调试技术后，你在调试器中看到的命令行密码是什么？</strong></p>
+<p>在我Win10虚拟机中的OD默认设置了在TLS调用前的断点：</p>
+<p><img src="https://i.loli.net/2019/03/27/5c9b7d6eb430a.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://i.loli.net/2019/03/27/5c9b7f9898c26.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>10.调试器中找到的密码在命令行中运行有效吗？</strong></p>
+<p>肯定是无效的，这里恶意代码采用了两个不同的执行流程。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs c">DWORD __stdcall <span class="hljs-title function_">StartAddress</span><span class="hljs-params">(LPVOID lpThreadParameter)</span><br>&#123;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> v1; <span class="hljs-comment">// ebx</span><br>  <span class="hljs-type">signed</span> <span class="hljs-type">int</span> i; <span class="hljs-comment">// ecx</span><br>  <span class="hljs-type">int</span> v3; <span class="hljs-comment">// ebx</span><br><br>  byte_408032 = <span class="hljs-number">4</span> * __ROL1__(<span class="hljs-number">7</span>, <span class="hljs-number">6</span>);<br>  byte_408032 ^= <span class="hljs-number">63u</span>;<br>  byte_408032 *= <span class="hljs-number">2</span>;<br>  aP[<span class="hljs-number">0</span>] = __ROL1__(<span class="hljs-number">-112</span>, <span class="hljs-number">2</span>);<br>  aP[<span class="hljs-number">1</span>] = byte_40A968 + __ROL1__(<span class="hljs-number">22</span>, <span class="hljs-number">6</span>);<br>  aP[<span class="hljs-number">1</span>] *= <span class="hljs-number">2</span>;<br>  byte_408033 = <span class="hljs-number">56</span>;<br>  byte_408032 = __ROR1__(byte_408032, <span class="hljs-number">7</span>);<br>  v1 = __readfsdword(<span class="hljs-number">0x30</span>u);<br>  aP[<span class="hljs-number">1</span>] = __ROL1__(aP[<span class="hljs-number">1</span>], <span class="hljs-number">4</span>);<br>  aP[<span class="hljs-number">0</span>] = __ROR1__(__ROL1__(<span class="hljs-number">-112</span>, <span class="hljs-number">2</span>), <span class="hljs-number">3</span>);<br>  aP[<span class="hljs-number">0</span>] ^= <span class="hljs-number">0xD</span>u;<br>  aP[<span class="hljs-number">1</span>] = __ROR1__(aP[<span class="hljs-number">1</span>], <span class="hljs-number">5</span>);<br>  byte_408032 ^= <span class="hljs-number">0xAB</span>u;<br>  byte_408033 = __ROR1__(__ROR1__(<span class="hljs-number">-3</span>, <span class="hljs-number">4</span>), <span class="hljs-number">1</span>);<br>  byte_408032 = __ROR1__(byte_408032, <span class="hljs-number">2</span>);<br>  aP[<span class="hljs-number">1</span>] = __ROR1__(aP[<span class="hljs-number">1</span>], <span class="hljs-number">1</span>);<br>  aP[<span class="hljs-number">1</span>] ^= <span class="hljs-number">0xFE</span>u;<br>  aP[<span class="hljs-number">0</span>] = __ROL1__(aP[<span class="hljs-number">0</span>], <span class="hljs-number">6</span>);<br>  aP[<span class="hljs-number">0</span>] ^= <span class="hljs-number">0x72</span>u;<br>  LOBYTE(v1) = *(_BYTE *)(v1 + <span class="hljs-number">2</span>);<br>  aP[<span class="hljs-number">1</span>] = __ROL1__(aP[<span class="hljs-number">1</span>], <span class="hljs-number">1</span>);<br>  byte_408033 ^= <span class="hljs-number">0x80</span>u;<br>  byte_408033 = __ROL1__(byte_408033, <span class="hljs-number">7</span>);<br>  byte_408032 += v1;<br>  <span class="hljs-keyword">for</span> ( i = <span class="hljs-number">4</span>; i; --i )<br>  &#123;<br>    v3 = i - <span class="hljs-number">1</span>;<br>    aP[v3] &amp;= <span class="hljs-number">0x19</span>u;<br>    aP[v3] += <span class="hljs-string">&#x27;a&#x27;</span>;<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>11.哪种反调试技术为调试器和命令行设置不同的密码？如何防御它们？</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c">DWORD <span class="hljs-title function_">sub_401020</span><span class="hljs-params">()</span><br>&#123;<br>  DWORD result; <span class="hljs-comment">// eax</span><br><br>  SetLastError(<span class="hljs-string">&#x27;09&#x27;</span>);<br>  OutputDebugStringA(OutputString);             <span class="hljs-comment">// b</span><br>  result = GetLastError();<br>  <span class="hljs-keyword">if</span> ( result == <span class="hljs-string">&#x27;09&#x27;</span> )<br>    ++byte_40A968;<br>  <span class="hljs-keyword">return</span> result;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>用<code>NOP</code>替换<code>ADD</code>指令。</p>
+<h3 id="Lab16-3"><a href="#Lab16-3" class="headerlink" title="Lab16-3"></a>Lab16-3</h3><p><strong>使用调试器分析Lab16-03.exe中的恶意代码.这个恶意代码与Lab09-02.exe中的相似，不同之处使做了一些修改，引入了反调试技术。如果你在分析的过程中被卡住，请查看Lab9-2.</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.当使用静态分析法分析这个二进制文件时，你看到了哪些字符串？</strong></p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs mathematica"><span class="hljs-variable">Address</span>	<span class="hljs-built_in">Length</span>	<span class="hljs-variable">Type</span>	<span class="hljs-built_in">String</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">004050</span><span class="hljs-variable">E4</span>	<span class="hljs-number">00000017</span>	<span class="hljs-built_in">C</span>	<span class="hljs-type">__GLOBAL</span><span class="hljs-type">_HEAP</span><span class="hljs-type">_SELECTED</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">004050</span><span class="hljs-variable">FC</span>	<span class="hljs-number">00000015</span>	<span class="hljs-built_in">C</span>	<span class="hljs-type">__MSVCRT</span><span class="hljs-type">_HEAP</span><span class="hljs-type">_SELECT</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">00405114</span>	<span class="hljs-number">0000000</span><span class="hljs-variable">F</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">runtime</span> <span class="hljs-variable">error</span> <br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">00405128</span>	<span class="hljs-number">0000000</span><span class="hljs-built_in">E</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">TLOSS</span> <span class="hljs-variable">error</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">00405138</span>	<span class="hljs-number">0000000</span><span class="hljs-built_in">D</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">SING</span> <span class="hljs-variable">error</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">00405148</span>	<span class="hljs-number">0000000</span><span class="hljs-variable">F</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">DOMAIN</span> <span class="hljs-variable">error</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">00405158</span>	<span class="hljs-number">00000025</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">R6028</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><span class="hljs-operator">-</span> <span class="hljs-variable">unable</span> <span class="hljs-variable">to</span> <span class="hljs-variable">initialize</span> <span class="hljs-variable">heap</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">00405180</span>	<span class="hljs-number">00000035</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">R6027</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><span class="hljs-operator">-</span> <span class="hljs-variable">not</span> <span class="hljs-variable">enough</span> <span class="hljs-variable">space</span> <span class="hljs-variable">for</span> <span class="hljs-variable">lowio</span> <span class="hljs-variable">initialization</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">004051</span><span class="hljs-variable">B8</span>	<span class="hljs-number">00000035</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">R6026</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><span class="hljs-operator">-</span> <span class="hljs-variable">not</span> <span class="hljs-variable">enough</span> <span class="hljs-variable">space</span> <span class="hljs-variable">for</span> <span class="hljs-variable">stdio</span> <span class="hljs-variable">initialization</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">004051</span><span class="hljs-variable">F0</span>	<span class="hljs-number">00000026</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">R6025</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><span class="hljs-operator">-</span> <span class="hljs-variable">pure</span> <span class="hljs-variable">virtual</span> <span class="hljs-variable">function</span> <span class="hljs-variable">call</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">00405218</span>	<span class="hljs-number">00000035</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">R6024</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><span class="hljs-operator">-</span> <span class="hljs-variable">not</span> <span class="hljs-variable">enough</span> <span class="hljs-variable">space</span> <span class="hljs-variable">for</span> <span class="hljs-type">_onexit</span><span class="hljs-operator">/</span><span class="hljs-variable">atexit</span> <span class="hljs-variable">table</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">00405250</span>	<span class="hljs-number">00000029</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">R6019</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><span class="hljs-operator">-</span> <span class="hljs-variable">unable</span> <span class="hljs-variable">to</span> <span class="hljs-variable">open</span> <span class="hljs-variable">console</span> <span class="hljs-variable">device</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">0040527</span><span class="hljs-built_in">C</span>	<span class="hljs-number">00000021</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">R6018</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><span class="hljs-operator">-</span> <span class="hljs-variable">unexpected</span> <span class="hljs-variable">heap</span> <span class="hljs-variable">error</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">004052</span><span class="hljs-variable">A0</span>	<span class="hljs-number">0000002</span><span class="hljs-built_in">D</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">R6017</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><span class="hljs-operator">-</span> <span class="hljs-variable">unexpected</span> <span class="hljs-variable">multithread</span> <span class="hljs-variable">lock</span> <span class="hljs-variable">error</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">004052</span><span class="hljs-variable">D0</span>	<span class="hljs-number">0000002</span><span class="hljs-built_in">C</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">R6016</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><span class="hljs-operator">-</span> <span class="hljs-variable">not</span> <span class="hljs-variable">enough</span> <span class="hljs-variable">space</span> <span class="hljs-variable">for</span> <span class="hljs-variable">thread</span> <span class="hljs-variable">data</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">004052</span><span class="hljs-variable">FC</span>	<span class="hljs-number">00000021</span>	<span class="hljs-built_in">C</span>	\<span class="hljs-variable">r</span>\<span class="hljs-variable">nabnormal</span> <span class="hljs-variable">program</span> <span class="hljs-variable">termination</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">00405320</span>	<span class="hljs-number">0000002</span><span class="hljs-built_in">C</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">R6009</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><span class="hljs-operator">-</span> <span class="hljs-variable">not</span> <span class="hljs-variable">enough</span> <span class="hljs-variable">space</span> <span class="hljs-variable">for</span> <span class="hljs-variable">environment</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">0040534</span><span class="hljs-built_in">C</span>	<span class="hljs-number">0000002</span><span class="hljs-variable">A</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">R6008</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><span class="hljs-operator">-</span> <span class="hljs-variable">not</span> <span class="hljs-variable">enough</span> <span class="hljs-variable">space</span> <span class="hljs-variable">for</span> <span class="hljs-variable">arguments</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">00405378</span>	<span class="hljs-number">00000025</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">R6002</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><span class="hljs-operator">-</span> <span class="hljs-variable">floating</span> <span class="hljs-variable">point</span> <span class="hljs-variable">not</span> <span class="hljs-variable">loaded</span>\<span class="hljs-variable">r</span>\<span class="hljs-variable">n</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">004053</span><span class="hljs-variable">A0</span>	<span class="hljs-number">00000025</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">Microsoft</span> <span class="hljs-variable">Visual</span> <span class="hljs-built_in">C</span><span class="hljs-operator">++</span> <span class="hljs-variable">Runtime</span> <span class="hljs-variable">Library</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">004053</span><span class="hljs-variable">CC</span>	<span class="hljs-number">0000001</span><span class="hljs-variable">A</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">Runtime</span> <span class="hljs-variable">Error</span><span class="hljs-operator">!</span>\<span class="hljs-variable">n</span>\<span class="hljs-variable">nProgram</span><span class="hljs-operator">:</span> <br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">004053</span><span class="hljs-variable">EC</span>	<span class="hljs-number">00000017</span>	<span class="hljs-built_in">C</span>	<span class="hljs-operator">&lt;</span><span class="hljs-variable">program</span> <span class="hljs-variable">name</span> <span class="hljs-variable">unknown</span><span class="hljs-operator">&gt;</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">00405404</span>	<span class="hljs-number">00000013</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">GetLastActivePopup</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">00405418</span>	<span class="hljs-number">00000010</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">GetActiveWindow</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">00405428</span>	<span class="hljs-number">0000000</span><span class="hljs-built_in">C</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">MessageBoxA</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">00405434</span>	<span class="hljs-number">0000000</span><span class="hljs-variable">B</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">user32</span><span class="hljs-operator">.</span><span class="hljs-variable">dll</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">00405614</span>	<span class="hljs-number">0000000</span><span class="hljs-built_in">D</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">KERNEL32</span><span class="hljs-operator">.</span><span class="hljs-variable">dll</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">00405632</span>	<span class="hljs-number">0000000</span><span class="hljs-built_in">C</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">SHELL32</span><span class="hljs-operator">.</span><span class="hljs-variable">dll</span><br><span class="hljs-operator">.</span><span class="hljs-variable">rdata</span><span class="hljs-operator">:</span><span class="hljs-number">0040564</span><span class="hljs-built_in">C</span>	<span class="hljs-number">0000000</span><span class="hljs-variable">B</span>	<span class="hljs-built_in">C</span>	<span class="hljs-type">WS2_</span><span class="hljs-number">32.</span><span class="hljs-variable">dll</span><br><span class="hljs-operator">.</span><span class="hljs-variable">data</span><span class="hljs-operator">:</span><span class="hljs-number">00406034</span>	<span class="hljs-number">00000008</span>	<span class="hljs-built_in">C</span>	<span class="hljs-variable">cmd</span><span class="hljs-operator">.</span><span class="hljs-variable">exe</span><br><span class="hljs-operator">.</span><span class="hljs-variable">data</span><span class="hljs-operator">:</span><span class="hljs-number">0040603</span><span class="hljs-built_in">C</span>	<span class="hljs-number">00000008</span>	<span class="hljs-built_in">C</span>	 <span class="hljs-operator">&gt;&gt;</span> <span class="hljs-variable">NUL</span><br><span class="hljs-operator">.</span><span class="hljs-variable">data</span><span class="hljs-operator">:</span><span class="hljs-number">00406044</span>	<span class="hljs-number">00000008</span>	<span class="hljs-built_in">C</span>	<span class="hljs-operator">/</span><span class="hljs-variable">c</span> <span class="hljs-variable">del</span> <br><span class="hljs-operator">.</span><span class="hljs-variable">data</span><span class="hljs-operator">:</span><span class="hljs-number">0040605</span><span class="hljs-variable">F</span>	<span class="hljs-number">00000005</span>	<span class="hljs-built_in">C</span>	\<span class="hljs-variable">vQ</span>\<span class="hljs-variable">n</span>\<span class="hljs-variable">v</span>\<span class="hljs-variable">b</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>2.当运行这个二进制文件时会发生什么？</strong></p>
+<p>黑框一闪，没有其他迹象了。</p>
+<p><strong>3.如何重命名它才能使这个二进制文件正常运行？</strong></p>
+<p>先进入调试器调试在<code>401518</code>处下断点发现如下字符串作为<code>_strncmp</code>的参数：<code>qgr.exe</code>，但是发现用这个字符串作为文件名还是不行，因此觉得代码可能判断程序自身是否被调试来进入不同的执行流程</p>
+<p><strong>4.这个恶意代码使用了哪些反调试技术？</strong></p>
+<p><code>rdtsc</code>技术：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> __cdecl <span class="hljs-title function_">sub_401300</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span> *a1, <span class="hljs-type">int</span> a2, <span class="hljs-type">int</span> a3)</span><br>&#123;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> v3; <span class="hljs-comment">// kr04_4</span><br>  <span class="hljs-type">unsigned</span> __int64 v4; <span class="hljs-comment">// rax</span><br>  __int64 v5; <span class="hljs-comment">// ST08_8</span><br>  <span class="hljs-type">unsigned</span> __int64 v6; <span class="hljs-comment">// rax</span><br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> v7; <span class="hljs-comment">// ST24_4</span><br>  <span class="hljs-type">int</span> result; <span class="hljs-comment">// eax</span><br>  <span class="hljs-type">signed</span> <span class="hljs-type">int</span> i; <span class="hljs-comment">// [esp+14h] [ebp-Ch]</span><br><br>  v3 = <span class="hljs-built_in">strlen</span>(a1) + <span class="hljs-number">1</span>;<br>  v4 = __rdtsc();<br>  v5 = v4;<br>  v6 = __rdtsc();<br>  v7 = v6 - v5;<br>  result = HIDWORD(v5);<br>  <span class="hljs-keyword">if</span> ( v7 &gt; <span class="hljs-number">01720440</span> )<br>    Del_self_sub_4010E0();<br>  <span class="hljs-keyword">for</span> ( i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">28</span>; ++i )<br>  &#123;<br>    *(i + a3) = a1[i % (v3 - <span class="hljs-number">1</span>)] ^ *(i + a2);<br>    result = i + <span class="hljs-number">1</span>;<br>  &#125;<br>  <span class="hljs-keyword">return</span> result;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>QueryPerformanceCounter</code>技术：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> __cdecl <span class="hljs-title function_">sub_4011E0</span><span class="hljs-params">(<span class="hljs-type">int</span> a1)</span><br>&#123;<br>  <span class="hljs-type">int</span> result; <span class="hljs-comment">// eax</span><br>  <span class="hljs-type">signed</span> <span class="hljs-type">int</span> i; <span class="hljs-comment">// [esp+Ch] [ebp-11Ch]</span><br>  <span class="hljs-type">char</span> v3; <span class="hljs-comment">// [esp+10h] [ebp-118h]</span><br>  LARGE_INTEGER v4; <span class="hljs-comment">// [esp+18h] [ebp-110h]</span><br>  <span class="hljs-type">char</span> v5; <span class="hljs-comment">// [esp+20h] [ebp-108h]</span><br>  <span class="hljs-type">char</span> v6; <span class="hljs-comment">// [esp+21h] [ebp-107h]</span><br>  __int16 v7; <span class="hljs-comment">// [esp+11Dh] [ebp-Bh]</span><br>  <span class="hljs-type">char</span> v8; <span class="hljs-comment">// [esp+11Fh] [ebp-9h]</span><br>  LARGE_INTEGER PerformanceCount; <span class="hljs-comment">// [esp+120h] [ebp-8h]</span><br><br>  v3 = <span class="hljs-number">1</span>;<br>  v5 = <span class="hljs-number">0</span>;<br>  <span class="hljs-built_in">memset</span>(&amp;v6, <span class="hljs-number">0</span>, <span class="hljs-number">0xFC</span>u);<br>  v7 = <span class="hljs-number">0</span>;<br>  v8 = <span class="hljs-number">0</span>;<br>  QueryPerformanceCounter(&amp;PerformanceCount);<br>  result = QueryPerformanceCounter(&amp;v4);<br>  <span class="hljs-keyword">if</span> ( (v4.LowPart - PerformanceCount.LowPart) &gt; <span class="hljs-number">1200</span> )<br>    v3 = <span class="hljs-number">2</span>;<br>  <span class="hljs-keyword">for</span> ( i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">3</span>; ++i )<br>  &#123;<br>    *(i + a1) += v3 * (i + <span class="hljs-number">1</span>);<br>    result = i + <span class="hljs-number">1</span>;<br>  &#125;<br>  <span class="hljs-keyword">return</span> result;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>GetTickCount</code>技术：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c">v14 = GetTickCount();<br>  sub_401000();<br>  v12 = GetTickCount();<br>  <span class="hljs-keyword">if</span> ( v12 - v14 &lt;= <span class="hljs-number">1</span> )<br>  &#123;<br>      <span class="hljs-comment">//......</span><br>  &#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>5.对每一种反调试技术而言，如果恶意代码确定它运行在调试器中，它将做什么？</strong></p>
+<p><code>rdtsc</code>技术：当两次<code>rdtsc()</code>调用之间的时间差大于500000时程序会删除自身。</p>
+<p><code>QueryPerformanceCounter</code>技术：会检测运行时间，如果运行时间过长则会改变运行结果的值。</p>
+<p><code>GetTickCount</code>技术：如果检测成功程序会返回一个异常。</p>
+<p><strong>6.为什么反调试技术能在这个恶意代码中成功？</strong></p>
+<p>程序修改了SEH链，在程序运行期间会产生异常，再判断异常处理的时间差从而判断是否处于调试状态。</p>
+<p><strong>7.恶意代码使用了什么域名？</strong></p>
+<p><code>adg.malwareanalysisbook.com</code></p>
+<hr>
+<h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%8F%8D%E8%B0%83%E8%AF%95/">反调试</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/03/Cheat-Engine%E7%BB%83%E4%B9%A0/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Cheat Engine练习</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/03/%E9%98%B2%E5%8F%8D%E6%B1%87%E7%BC%96%E6%8A%80%E6%9C%AF/">
+                        <span class="hidden-mobile">防反汇编技术</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

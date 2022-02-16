@@ -1,0 +1,523 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="相信每位程序员都写过如下代码：
+123456#include&amp;lt;stdio.h&amp;gt;int main()&amp;#123;    printf(&amp;quot;Hello world!&amp;quot;);    return 0;&amp;#125;
+
+是的，这应该是每个程序员写的第一个程序，其中printf()，也是一个在C语言中的较为脆弱的函数，我们今天就来探讨一下格式化字符串漏洞。有一点要说的是由于现在的很">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>二进制安全之格式化字符串漏洞 - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="二进制安全之格式化字符串漏洞">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2018-10-30 17:06" pubdate>
+        2018年10月30日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      21
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">二进制安全之格式化字符串漏洞</h1>
+            
+            <div class="markdown-body">
+              <p>相信每位程序员都写过如下代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span><br>&#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Hello world!&quot;</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>是的，这应该是每个程序员写的第一个程序，其中<code>printf()</code>，也是一个在C语言中的较为脆弱的函数，我们今天就来探讨一下格式化字符串漏洞。有一点要说的是由于现在的很多编译器都变得更加智能且更加注重安全性，格式化字符串等容易出现问题的函数都会由编译器自动为其添加相应的check函数从而保证函数的安全性，因此格式化字符串漏洞是由很小的可能性会出现在真实的生产环境中的，可能出现这个漏洞最多的情形就是大大小小形式各异的CTF赛题中了，但是由于此漏洞历史悠久并且较为有趣，如果产生此漏洞的话危害也不小，还是有必要学习一下的。</p>
+<span id="more"></span>
+
+<p>如果我们要实现让用户输入一段字符串并在屏幕上打印出用户输入的内容，我们可能会这样写：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-type">char</span> buf[<span class="hljs-number">20</span>];<br>    <span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%c&quot;</span>,buf);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%c&quot;</span>,buf);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>当然这样写是没有问题的，但是如果程序员偷懒写成了如下的形式：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-type">char</span> buf[<span class="hljs-number">20</span>];<br>    <span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%c&quot;</span>,buf);<br>    <span class="hljs-built_in">printf</span>(buf);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>程序仍然会正常运行，但是却留下了十分严重的漏洞，我们下来看一下<code>printf()</code>的原型：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">printf</span> <span class="hljs-params">( <span class="hljs-type">const</span> <span class="hljs-type">char</span> * format, ... )</span>;<br></code></pre></td></tr></table></figure>
+
+<p>我们可以通过一个程序来看一下此函数再处理参数时都干了些什么</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d%d%d%d%s&quot;</span>,<span class="hljs-number">0</span>,<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">0x16</span>,<span class="hljs-string">&quot;Hvnt3r&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>用gcc编译之后用gdb查看main()的汇编代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs asm">gdb-peda$ disass main<br>Dump of assembler code for function main:<br>   0x0000000000001135 &lt;+0&gt;:	push   rbp<br>   0x0000000000001136 &lt;+1&gt;:	mov    rbp,rsp<br>   0x0000000000001139 &lt;+4&gt;:	lea    r9,[rip+0xec4]        # 0x2004<br>   0x0000000000001140 &lt;+11&gt;:	mov    r8d,0x16<br>   0x0000000000001146 &lt;+17&gt;:	mov    ecx,0x2<br>   0x000000000000114b &lt;+22&gt;:	mov    edx,0x1<br>   0x0000000000001150 &lt;+27&gt;:	mov    esi,0x0<br>   0x0000000000001155 &lt;+32&gt;:	lea    rdi,[rip+0xeaf]        # 0x200b<br>   0x000000000000115c &lt;+39&gt;:	mov    eax,0x0<br>   0x0000000000001161 &lt;+44&gt;:	call   0x1030 &lt;printf@plt&gt;<br>   0x0000000000001166 &lt;+49&gt;:	mov    eax,0x0<br>   0x000000000000116b &lt;+54&gt;:	pop    rbp<br>   0x000000000000116c &lt;+55&gt;:	ret    <br>End of assembler dump.<br></code></pre></td></tr></table></figure>
+
+<p>将断点下在<code>call 0x1030</code>上：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs bash">[----------------------------------registers-----------------------------------]<br>RAX: 0x0 <br>RBX: 0x0 <br>RCX: 0x2 <br>RDX: 0x1 <br>RSI: 0x0 <br>RDI: 0x55555555600b (<span class="hljs-string">&quot;%d%d%d%d%s&quot;</span>)<br>RBP: 0x7fffffffe020 --&gt; 0x555555555170 (&lt;__libc_csu_init&gt;:	push   r15)<br>RSP: 0x7fffffffe020 --&gt; 0x555555555170 (&lt;__libc_csu_init&gt;:	push   r15)<br>RIP: 0x555555555161 (&lt;main+44&gt;:	call   0x555555555030 &lt;<span class="hljs-built_in">printf</span>@plt&gt;)<br>R8 : 0x16 <br>R9 : 0x555555556004 --&gt; 0x25007233746e7648 (<span class="hljs-string">&#x27;Hvnt3r&#x27;</span>)<br>R10: 0x0 <br>R11: 0x1 <br>R12: 0x555555555050 (&lt;_start&gt;:	xor    ebp,ebp)<br>R13: 0x7fffffffe100 --&gt; 0x1 <br>R14: 0x0 <br>R15: 0x0<br>EFLAGS: 0x246 (carry PARITY adjust ZERO sign <span class="hljs-built_in">trap</span> INTERRUPT direction overflow)<br>[-------------------------------------code-------------------------------------]<br>   0x555555555150 &lt;main+27&gt;:	mov    esi,0x0<br>   0x555555555155 &lt;main+32&gt;:	lea    rdi,[rip+0xeaf]        <span class="hljs-comment"># 0x55555555600b</span><br>   0x55555555515c &lt;main+39&gt;:	mov    eax,0x0<br>=&gt; 0x555555555161 &lt;main+44&gt;:	call   0x555555555030 &lt;<span class="hljs-built_in">printf</span>@plt&gt;<br>   0x555555555166 &lt;main+49&gt;:	mov    eax,0x0<br>   0x55555555516b &lt;main+54&gt;:	pop    rbp<br>   0x55555555516c &lt;main+55&gt;:	ret    <br>   0x55555555516d:	nop    DWORD PTR [rax]<br>Guessed arguments:<br>arg[0]: 0x55555555600b (<span class="hljs-string">&quot;%d%d%d%d%s&quot;</span>)<br>arg[1]: 0x0 <br>arg[2]: 0x1 <br>arg[3]: 0x2 <br>arg[4]: 0x16 <br>arg[5]: 0x555555556004 --&gt; 0x25007233746e7648 (<span class="hljs-string">&#x27;Hvnt3r&#x27;</span>)<br>[------------------------------------stack-------------------------------------]<br>0000| 0x7fffffffe020 --&gt; 0x555555555170 (&lt;__libc_csu_init&gt;:	push   r15)<br>0008| 0x7fffffffe028 --&gt; 0x7ffff7e0fb17 (&lt;__libc_start_main+231&gt;:	mov    edi,eax)<br>0016| 0x7fffffffe030 --&gt; 0x0 <br>0024| 0x7fffffffe038 --&gt; 0x7fffffffe108 --&gt; 0x7fffffffe421 (<span class="hljs-string">&quot;/root/0101/0x06/format_x86/a.out&quot;</span>)<br>0032| 0x7fffffffe040 --&gt; 0x100040000 <br>0040| 0x7fffffffe048 --&gt; 0x555555555135 (&lt;main&gt;:	push   rbp)<br>0048| 0x7fffffffe050 --&gt; 0x0 <br>0056| 0x7fffffffe058 --&gt; 0x7ed789accfb6e8e0 <br>[------------------------------------------------------------------------------]<br>Legend: code, data, rodata, value<br><br>Breakpoint 1, 0x0000555555555161 <span class="hljs-keyword">in</span> main ()<br>gdb-peda$ <br></code></pre></td></tr></table></figure>
+
+<p>在这里可以看到参数的信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">Guessed arguments:<br>arg[0]: 0x55555555600b (<span class="hljs-string">&quot;%d%d%d%d%s&quot;</span>)<br>arg[1]: 0x0 <br>arg[2]: 0x1 <br>arg[3]: 0x2 <br>arg[4]: 0x16 <br>arg[5]: 0x555555556004 --&gt; 0x25007233746e7648 (<span class="hljs-string">&#x27;Hvnt3r&#x27;</span>)<br></code></pre></td></tr></table></figure>
+
+<p><code>printf()</code>是C语言中少见的可以支持可变参数的库函数，当参数可变时，就没有严格的格式限制了，因此函数的调用者可以自由地向函数传递参数，但是作为被调用者的<code>printf()</code>，它并不知道在调用它之前有多少参数被压入了栈帧当中，也不知道这些参数的类型是什么，只会根据调用者输入的信息按部就班的执行，因此当我们输入一些非预期的参数时，就会产生漏洞。</p>
+<h2 id="通过格式化字符串漏洞泄露内存数据"><a href="#通过格式化字符串漏洞泄露内存数据" class="headerlink" title="通过格式化字符串漏洞泄露内存数据"></a>通过格式化字符串漏洞泄露内存数据</h2><p>举个例子，当我们要<code>printf()</code>打印出的变量的数量大于我们所给的变量的个数时，代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%08x,%08x,%08x,%08x,%08x,%08x,%08x,%08x,%08x,%08x,%08x,%08x&quot;</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>此代码运行结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">⚡ root@kali  ./a.out <br>f58be668,f58be678,ac13f718,ac140d80,ac140d80,02a43160,abfaab17,00000000,f58be668,00040000,02a43135,00000000<span class="hljs-comment">#</span><br></code></pre></td></tr></table></figure>
+
+<p>此程序打印出的这些字符串实际上是栈上的数据，这样就造成了一个内存的<code>leak</code>，另外，我们可以构造不同的参数来泄露指定位置的数据，如使用两个<code>%f</code>可以找到目标之前16个字节的位置，使用<code>%3$s</code>指的是第4个参数等，但是缓冲区溢出漏洞的危害不知是可以泄露内存上的数据，我们还可以利用此漏洞来修改栈上的数据</p>
+<h2 id="利用格式化字符串漏洞修改栈上的数据"><a href="#利用格式化字符串漏洞修改栈上的数据" class="headerlink" title="利用格式化字符串漏洞修改栈上的数据"></a>利用格式化字符串漏洞修改栈上的数据</h2><p>要想利用<code>printf()</code>对栈上的数据进行修改，我们需要用到一个很少见的参数：<code>%n</code>，<code>%n</code> 用于将当前字符串的长度打印到<code>var</code>中，例 <code>printf(&quot;test %hn&quot;,&amp;var)</code>其中<code>var</code>为两个字节，<code>printf(&quot;test %n&quot;,&amp;var)</code>其中<code>var</code>为一个字节。</p>
+<p>举个栗子：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>    <span class="hljs-type">int</span> a=<span class="hljs-number">0</span>;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Hvnt3r%n&quot;</span>,&amp;a);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%d&quot;</span>,a);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>运行结果为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">⚡ root@kali  ./a.out <br>Hvnt3r   <br>6<br></code></pre></td></tr></table></figure>
+
+<p>此时我们恶意发现我们通过<code>printf()</code>函数＋<code>%n</code>参数将<code>a</code>的值从<code>0</code>改为了<code>6</code>，因为<code>Hvnt3r</code>有6个字节，发现了这一特性配合上面的内存信息泄露，我们可以精心的改造有漏洞的<code>printf()</code>函数来达到修改程序逻辑的目的，话不多说，我们找几个例子来看一下。</p>
+<h2 id="32位系统环境下的漏洞利用"><a href="#32位系统环境下的漏洞利用" class="headerlink" title="32位系统环境下的漏洞利用"></a>32位系统环境下的漏洞利用</h2><h2 id="64位系统环境下的漏洞利用"><a href="#64位系统环境下的漏洞利用" class="headerlink" title="64位系统环境下的漏洞利用"></a>64位系统环境下的漏洞利用</h2>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/PWN/">PWN</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E/">格式化字符串漏洞</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2018/11/%E6%B5%85%E8%B0%88%E4%B8%AD%E5%9B%BD%E5%AE%89%E5%85%A8%E5%B1%80%E5%8A%BF/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">浅谈中国网络安全局势</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2018/10/IDA-Pro%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/">
+                        <span class="hidden-mobile">IDA Pro远程调试</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

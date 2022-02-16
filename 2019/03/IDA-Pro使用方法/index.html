@@ -1,0 +1,632 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="
+知识点IDA Pro（交互式反汇编器专业版）是一款极其强大的反汇编器，是许多恶意代码分析师、逆向工程师和漏洞分析师的首选。
+IDA Pro接口：
+图形接口：
+
+文本模式：文本模式左侧部分被称为箭头窗口，显示了程序的非线性流程，实线标记的是无条件跳转，虚线标记了条件跳转，向上的箭头表示一个循环。
+图形模式：图形模式中，箭头的颜色和方向显示程序的流程，红色表示一个条件跳转没有被采用，绿色表示这个条件">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>IDA Pro使用方法 - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="IDA Pro使用方法">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2019-03-04 19:22" pubdate>
+        2019年3月4日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.9k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      55
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">IDA Pro使用方法</h1>
+            
+            <div class="markdown-body">
+              <hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>IDA Pro（交互式反汇编器专业版）是一款极其强大的反汇编器，是许多恶意代码分析师、逆向工程师和漏洞分析师的首选。</p>
+<p><strong>IDA Pro接口：</strong></p>
+<p>图形接口：</p>
+<ul>
+<li>文本模式：文本模式左侧部分被称为箭头窗口，显示了程序的非线性流程，实线标记的是无条件跳转，虚线标记了条件跳转，向上的箭头表示一个循环。</li>
+<li>图形模式：图形模式中，箭头的颜色和方向显示程序的流程，红色表示一个条件跳转没有被采用，绿色表示这个条件跳转被采用，蓝色表示一个无条件跳转被采用，向上的箭头同样表示一个循环条件。</li>
+</ul>
+<p><strong>IDA窗口分布：</strong>函数窗口：列举可执行文件中的所有函数，并显示每个函数的长度。你可以根据函数长度进行排序来筛选出一些规模庞大而有趣的函数，这个窗口中每个函数关联了一些标志，如<code>L</code>代表此函数是库函数。</p>
+<ul>
+<li>名称窗口：列举每个地址的名字，包括函数、命名代码、命名数据、字符串。</li>
+<li>字符串窗口：显示所有字符串，默认显示长度超过5个字符的ASCII字符串，可以通过右键字符串窗口并选择Setup来修改此属性。</li>
+<li>导入表窗口：列举一个文件的所有导入函数。</li>
+<li>导出表窗口：列举一个文件的所有导出函数，一般多用于分析DLL文件。</li>
+<li>结构窗口：列举所有的活跃数据的结构布局。</li>
+</ul>
+<span id="more"></span>
+
+<p><strong>使用链接和交叉引用：</strong>IDA中有常见的几个链接类型：</p>
+<ul>
+<li>子链接：一根函数开始的链接，如<code>printf</code></li>
+<li>本地链接：跳转指令目的地址的链接，如<code>loc_40107E</code></li>
+<li>偏移链接：内存偏移的链接</li>
+</ul>
+<p><strong>导航栏：</strong>导航栏包括一个以颜色伪代号的被加载的二进制地址空间的线性视图，其对应关系可在下方图例中找到。</p>
+<p><img src="https://i.loli.net/2019/03/04/5c7d129402317.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>跳转到指定位置：</strong>在反汇编窗口中点击<code>G</code>键并在弹出的对话框中输入要跳转的虚拟内存地址或命名的位置即可跳转到目标地址。</p>
+<p><strong>使用交叉引用：</strong>交叉引用在IDA Pro中称为<code>xref</code>，可以告诉你一个函数在何处被调用，或者一个字符串在何处被使用，如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:1000D02E ; BOOL __stdcall DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)<br>.text:1000D02E _DllMain@12     proc near               ; CODE XREF: DllEntryPoint+4B↓p<br>.text:1000D02E                                         ; DATA XREF: sub_100110FF+2D↓o<br>.text:1000D02E<br>.text:1000D02E hinstDLL        = dword ptr  4<br>.text:1000D02E fdwReason       = dword ptr  8<br>.text:1000D02E lpvReserved     = dword ptr  0Ch<br></code></pre></td></tr></table></figure>
+
+<p>在默认情况下，IDA Pro只显示给定函数的少数交叉引用。要查看一个函数的多有交叉引用，单击函数名并按<code>X</code>键，弹出的窗口会列举这个函数所有被调用的位置。</p>
+<p><strong>函数重命名：</strong>IDA在自动命名虚拟地址和栈变量方面做的很好，但是用户也可以手动修改这些自动生成的名字来使得分析过程更加便捷。</p>
+<p><strong>注释：</strong>将光标放在反汇编的某行上，并按冒号键<code>:</code>便会弹出一个注释窗口。</p>
+<p><strong>重新定义代码和数据：</strong>有时候IDA可能会错误的识别字节，比如把数据识别为代码，这时你可以按<code>C</code>键定义原始字节为代码，并通过<code>D</code>键和<code>A</code>键将这些字节定义为数据或者ASCII字符串。</p>
+<p><strong>IDA插件：</strong>IDA支持IDC脚本和Python脚本：</p>
+<ul>
+<li>IDC脚本是IDA内置的脚本语言，其中所有的函数都被声明为静态函数，参数不需要指定类型，<code>auto</code>被用来定义全局变量。</li>
+<li>IDAPython提供三个模块来访问IDA API（<code>idaapi</code>）、IDC接口（<code>idc</code>）、以及IDAPython工具函数（<code>idautils</code>）。</li>
+</ul>
+<h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab5-1"><a href="#Lab5-1" class="headerlink" title="Lab5-1"></a>Lab5-1</h3><p><strong>只用IDA Pro分析在文件Lab05-01.dll中发现的恶意代码。这个实验的目标是给你一个用IDA Pro动手的经验。如果你已经用IDA Pro工作过，你可以选择忽略这些问题，而将精力集中在恶意代码上。</strong></p>
+<p><strong>问题</strong></p>
+<p><strong>1.DllMain的地址是什么</strong>。</p>
+<p>双击<code>DllMain</code>即可看到：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:1000D02E ; BOOL __stdcall DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)<br>.text:1000D02E _DllMain@12     proc near               ; CODE XREF: DllEntryPoint+4B↓p<br>.text:1000D02E                                         ; DATA XREF: sub_100110FF+2D↓o<br>.text:1000D02E<br>.text:1000D02E hinstDLL        = dword ptr  4<br>.text:1000D02E fdwReason       = dword ptr  8<br>.text:1000D02E lpvReserved     = dword ptr  0Ch<br></code></pre></td></tr></table></figure>
+
+<p><code>0x1000D02E</code></p>
+<p><strong>2.使用Imports窗口并浏览到gethostbyname，导入函数定位到什么地址？</strong></p>
+<p>在Imports窗口双击该函数即可</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs asm">.idata:100163CC ; struct hostent *__stdcall gethostbyname(const char *name)<br>.idata:100163CC                 extrn gethostbyname:dword<br>.idata:100163CC                                         ; CODE XREF: sub_10001074:loc_100011AF↑p<br>.idata:100163CC                                         ; sub_10001074+1D3↑p ...<br></code></pre></td></tr></table></figure>
+
+<p><code>0x100163CC</code> </p>
+<p><strong>3.有多少函数调用了gethostbyname？</strong></p>
+<p>通过查看调用关系能查出有5个函数调用了此函数</p>
+<p><img src="https://i.loli.net/2019/03/05/5c7dc36128a5d.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>4.将精力集中在位于0x10001757处的对gethostbyname的调用，你能找出哪个DNS请求将被触发吗？</strong></p>
+<p>在call指令之前找到参数入栈，双击<code>off_10019040</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:1000174E                 mov     eax, off_10019040<br>.text:10001753                 add     eax, 0Dh<br>.text:10001756                 push    eax             ; name<br>.text:10001757                 call    ds:gethostbyname<br></code></pre></td></tr></table></figure>
+
+<p>即可找到DNS请求的域名：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs asm">.data:10019040 off_10019040    dd offset aThisIsRdoPicsP<br>.data:10019040                                         ; DATA XREF: sub_10001656:loc_10001722↑r<br>.data:10019040                                         ; sub_10001656+F8↑r ...<br>.data:10019040                                         ; &quot;[This is RDO]pics.praticalmalwareanalys&quot;...<br></code></pre></td></tr></table></figure>
+
+<p><code>pics.praticalmalwareanalys.com</code></p>
+<p><strong>5.IDA Pro识别了在0x10001656处的子过程的多少个局部变量？</strong></p>
+<p>F5大法好，看到如下结果</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs c">.text:<span class="hljs-number">10001656</span> var_675         = byte ptr <span class="hljs-number">-675</span>h<br>.text:<span class="hljs-number">10001656</span> var_674         = dword ptr <span class="hljs-number">-674</span>h<br>.text:<span class="hljs-number">10001656</span> hModule         = dword ptr <span class="hljs-number">-670</span>h<br>.text:<span class="hljs-number">10001656</span> timeout         = timeval ptr <span class="hljs-number">-66</span>Ch<br>.text:<span class="hljs-number">10001656</span> name            = sockaddr ptr <span class="hljs-number">-664</span>h<br>.text:<span class="hljs-number">10001656</span> var_654         = word ptr <span class="hljs-number">-654</span>h<br>.text:<span class="hljs-number">10001656</span> Dst             = dword ptr <span class="hljs-number">-650</span>h<br>.text:<span class="hljs-number">10001656</span> Str1            = byte ptr <span class="hljs-number">-644</span>h<br>.text:<span class="hljs-number">10001656</span> var_640         = byte ptr <span class="hljs-number">-640</span>h<br>.text:<span class="hljs-number">10001656</span> CommandLine     = byte ptr <span class="hljs-number">-63F</span>h<br>.text:<span class="hljs-number">10001656</span> Str             = byte ptr <span class="hljs-number">-63</span>Dh<br>.text:<span class="hljs-number">10001656</span> var_638         = byte ptr <span class="hljs-number">-638</span>h<br>.text:<span class="hljs-number">10001656</span> var_637         = byte ptr <span class="hljs-number">-637</span>h<br>.text:<span class="hljs-number">10001656</span> var_544         = byte ptr <span class="hljs-number">-544</span>h<br>.text:<span class="hljs-number">10001656</span> var_50C         = dword ptr <span class="hljs-number">-50</span>Ch<br>.text:<span class="hljs-number">10001656</span> var_500         = byte ptr <span class="hljs-number">-500</span>h<br>.text:<span class="hljs-number">10001656</span> Buf2            = byte ptr <span class="hljs-number">-4F</span>Ch<br>.text:<span class="hljs-number">10001656</span> readfds         = fd_set ptr <span class="hljs-number">-4B</span>Ch<br>.text:<span class="hljs-number">10001656</span> buf             = byte ptr <span class="hljs-number">-3B</span>8h<br>.text:<span class="hljs-number">10001656</span> var_3B0         = dword ptr <span class="hljs-number">-3B</span>0h<br>.text:<span class="hljs-number">10001656</span> var_1A4         = dword ptr <span class="hljs-number">-1</span>A4h<br>.text:<span class="hljs-number">10001656</span> var_194         = dword ptr <span class="hljs-number">-194</span>h<br>.text:<span class="hljs-number">10001656</span> WSAData         = WSAData ptr <span class="hljs-number">-190</span>h<br>.text:<span class="hljs-number">10001656</span> lpThreadParameter= dword ptr  <span class="hljs-number">4</span><br></code></pre></td></tr></table></figure>
+
+<p>所以因该是23个局部变量。</p>
+<p><strong>6.IDA Pro识别了在0x10001656处的子过程的多少个参数？</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c">.text:<span class="hljs-number">10001656</span> lpThreadParameter= dword ptr  <span class="hljs-number">4</span><br></code></pre></td></tr></table></figure>
+
+<p>1个参数</p>
+<p><strong>7.使用string窗口，来在反汇编中定位字符串\cmd.exe &#x2F;c。它位于哪？</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c">xdoors_d:<span class="hljs-number">10095B</span>34 aCmdExeC        db <span class="hljs-string">&#x27;\cmd.exe /c &#x27;</span>,<span class="hljs-number">0</span>     ; DATA XREF: sub_1000FF58+<span class="hljs-number">278</span>↑o<br></code></pre></td></tr></table></figure>
+
+<p><code>0x10095B34</code></p>
+<p><strong>8.在引用\cmd.exe &#x2F;c的代码区域发生了什么？</strong></p>
+<p>先通过双击XREF找到引用位置可发现如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:100101C8                 cmp     dword_1008E5C4, ebx<br>.text:100101CE                 jz      short loc_100101D7<br>.text:100101D0                 push    offset aCmdExeC ; &quot;\\cmd.exe /c &quot;<br>.text:100101D5                 jmp     short loc_100101DC<br>.text:100101D7 loc_100101D7:                           ; CODE XREF: sub_1000FF58+276↑j<br>.text:100101D7                 push    offset aCommandExeC ; &quot;\\command.exe /c &quot;<br></code></pre></td></tr></table></figure>
+
+<p><code>cmd.exe /c</code>命令可以在执行完命令之后关闭CMD窗口，因此这应该是个命令执行，且父函数的参数是<code>SOCKET s</code>，且函数后半部分有大量的<code>cmp</code>指令来跟一系列的指令比较，因此猜测这个函数是一个实现远程命令执行的函数。</p>
+<p><strong>9.在同样的区域，在0x100101C8处，看起来好像dword_1008E5C4是一个全局变量，他帮助你决定走哪条路径。那恶意代码是如何设置dword_1008E5C4的呢？（提示：使用dword_1008E5C4的交叉引用）</strong></p>
+<p>通过查看<code>dword_1008E5C4</code>的交叉引用，发现如下信息</p>
+<p><img src="https://i.loli.net/2019/03/05/5c7ddf18a7061.png" srcset="/img/loading.gif" lazyload></p>
+<p>第一条数据显示了一个赋值操作，因此双击第一条，可以发现<code>dword_1008E5C4</code>的值为函数<code>sub_10003695()</code>的返回值：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">if</span> ( !sub_10001000() )<br>  &#123;<br>    v39 = <span class="hljs-number">0</span>;<br>    hModule = <span class="hljs-number">0</span>;<br>    dword_1008E5C4 = sub_10003695();<br>    dword_1008E5C8 = sub_100036C3();<br>    Sleep(<span class="hljs-number">0x3A98</span>u);<br>    sub_100110FF();<br></code></pre></td></tr></table></figure>
+
+<p>因此查看一下函数<code>sub_10003695()</code>的内容：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c">BOOL <span class="hljs-title function_">sub_10003695</span><span class="hljs-params">()</span><br>&#123;<br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">OSVERSIONINFOA</span> <span class="hljs-title">VersionInformation</span>;</span> <span class="hljs-comment">// [esp+0h] [ebp-94h]</span><br><br>  VersionInformation.dwOSVersionInfoSize = <span class="hljs-number">148</span>;<br>  GetVersionExA(&amp;VersionInformation);<br>  <span class="hljs-keyword">return</span> VersionInformation.dwPlatformId == <span class="hljs-number">2</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>因此<code>dword_1008E5C4</code>为<code>VersionInformation.dwPlatformId == 2</code>的值，1或0。</p>
+<p><strong>10.在位于0x1000FF58处的子过程的几百行指令中，一系列使用memcmp来比较字符串的比较。如果对robotwork的字符串比较是成功的（当memcmp返回0），会发生什么？</strong></p>
+<p>找到指定位置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:10010444 loc_10010444:                           ; CODE XREF: sub_1000FF58+4E0↑j<br>.text:10010444                 push    9               ; Size<br>.text:10010446                 lea     eax, [ebp+Dst]<br>.text:1001044C                 push    offset aRobotwork ; &quot;robotwork&quot;<br>.text:10010451                 push    eax             ; Buf1<br>.text:10010452                 call    memcmp<br>.text:10010457                 add     esp, 0Ch<br>.text:1001045A                 test    eax, eax<br>.text:1001045C                 jnz     short loc_10010468<br>.text:1001045E                 push    [ebp+s]         ; s<br>.text:10010461                 call    sub_100052A2<br>.text:10010466                 jmp     short loc_100103F6<br></code></pre></td></tr></table></figure>
+
+<p>如果<code>memecmp()</code>函数返回0，则<code>jnz</code>不执行，程序将执行函数<code>sub_100052A2</code>，函数<code>sub_100052A2</code>是一个数据库查询函数，查询了<code>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Worktime</code>和<code>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Worktimes</code>的值。然后再通过<code>sub_100038EE</code>函数将查询的结果发送出去。</p>
+<p><strong>11.PSLIST导出函数做了什么？</strong></p>
+<p>函数伪C代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> __userpurge PSLIST@&lt;eax&gt;(<span class="hljs-type">char</span> a1@&lt;sil&gt;, <span class="hljs-type">int</span> a2, <span class="hljs-type">int</span> a3, <span class="hljs-type">char</span> *Str, <span class="hljs-type">int</span> a5)<br>&#123;<br>  <span class="hljs-type">int</span> result; <span class="hljs-comment">// eax</span><br><br>  dword_1008E5BC = <span class="hljs-number">1</span>;<br>  result = sub_100036C3();<br>  <span class="hljs-keyword">if</span> ( result )<br>  &#123;<br>    <span class="hljs-keyword">if</span> ( <span class="hljs-built_in">strlen</span>(Str) )<br>      result = sub_1000664C(a1, <span class="hljs-number">0</span>, Str);<br>    <span class="hljs-keyword">else</span><br>      result = sub_10006518();<br>  &#125;<br>  dword_1008E5BC = <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">return</span> result;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>其中，函数<code>sub_100036C3()</code>用于判断操作系统和操作系统版本，当操作系统版本符合要求时，程序通过CreatToolhelp32Snapshot函数来获取当前正在运行的进程的列表，结合导出函数的名字我们可以得知这是一个获取计算机运行进程列表的函数。</p>
+<p><strong>12.使用图模式来绘制出对sub_10004E79的交叉引用图。当进入这个函数时，哪个API函数可能被调用？仅仅基于这些API函数，你会如何重命名这个函数？</strong></p>
+<p><img src="https://i.loli.net/2019/03/05/5c7dea0d9beb1.png" srcset="/img/loading.gif" lazyload></p>
+<p>API函数如图粉色方块内容。</p>
+<p><code>getSysLang</code></p>
+<p><strong>13.DllMain直接调用了多少个Windows API？多少个在深度为2时被调用？</strong></p>
+<p>本题。。。卒</p>
+<p><img src="https://i.loli.net/2019/03/05/5c7e67cfae8ea.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>14.在0x10001358处，有一个对Sleep（一个使用一个包含要睡眠的毫秒数的参数的API函数）的调用。顺着代码向后看，如果这段代码执行，这个程序会睡眠多久？</strong></p>
+<p>代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:10001341                 mov     eax, off_10019020<br>.text:10001346                 add     eax, 0Dh<br>.text:10001349                 push    eax             ; Str<br>.text:1000134A                 call    ds:atoi<br>.text:10001350                 imul    eax, 3E8h<br>.text:10001356                 pop     ecx<br>.text:10001357                 push    eax             ; dwMilliseconds<br>.text:10001358                 call    ds:Sleep<br>.text:1000135E                 xor     ebp, ebp<br>.text:10001360                 jmp     loc_100010B4<br>.text:10001360 sub_10001074    endp<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2019/03/06/5c7f3a8e45cd4.png" srcset="/img/loading.gif" lazyload></p>
+<p>因此指令<code>add eax, 0Dh</code>执行之后<code>EAX</code>的值为30，因此<code>Sleep</code>函数为<code>Sleep(30*1000)</code>，因此程序会睡眠30秒。</p>
+<p><strong>15.在0x10001701处是一个随socket的调用。它的三个参数是什么？</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:100016FB loc_100016FB:                           ; CODE XREF: sub_10001656+374↓j<br>.text:100016FB                                         ; sub_10001656+A09↓j<br>.text:100016FB                 push    6               ; protocol<br>.text:100016FD                 push    1               ; type<br>.text:100016FF                 push    2               ; af<br>.text:10001701                 call    ds:socket<br>.text:10001707                 mov     edi, eax<br>.text:10001709                 cmp     edi, 0FFFFFFFFh<br>.text:1000170C                 jnz     short loc_10001722<br>.text:1000170E                 call    ds:WSAGetLastError<br>.text:10001714                 push    eax<br>.text:10001715                 push    offset aSocketGetlaste ; &quot;socket() GetLastError reports %d\n&quot;<br>.text:1000171A                 call    ds:__imp_printf<br>.text:10001720                 pop     ecx<br>.text:10001721                 pop     ecx<br></code></pre></td></tr></table></figure>
+
+<p>IDA给出的参数名为<code>af</code>、<code>type</code>、<code>protocol</code>，值分别为<code>2</code>、<code>1</code>、<code>6</code>。</p>
+<p><strong>16.使用MSDN页面的socket和IDA Pro中的命名符号常量，你能使参数更加有意义吗？在你应用了修改以后，参数是什么？</strong></p>
+<p><code>AF_INET</code>、<code>SOCK_STREAM</code>、<code>IPPROTO_TCP</code></p>
+<p><strong>17.搜索in指令（opcode 0xED）的使用。这个指令和一个魔术字符串VMXh用来进行VMware检测。在这个恶意代码中被使用了吗？使用对执行in指令函数的交叉引用，能发现进一步检测VMware的证据吗？</strong></p>
+<p>再IDA中选择Search-&gt;sequence of bytes，输入ED然后选择搜索所有结果，再搜索结果中能找到一个in指令：</p>
+<p><img src="https://i.loli.net/2019/03/06/5c7f4f3de495a.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://i.loli.net/2019/03/06/5c7f4fc6da955.png" srcset="/img/loading.gif" lazyload></p>
+<p>右键选择<code>564D5868h</code>，可以看到此数据的ASCII码是<code>VMXh</code></p>
+<p><img src="https://i.loli.net/2019/03/06/5c7f4fea15186.png" srcset="/img/loading.gif" lazyload></p>
+<p>查看此函数的交叉引用可以看到如下几个相同的调用;</p>
+<p><img src="https://i.loli.net/2019/03/06/5c7f518b60a12.png" srcset="/img/loading.gif" lazyload></p>
+<p>查看后发现如下字符串：</p>
+<p><img src="https://i.loli.net/2019/03/06/5c7f51d7746b5.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>18.将你的光标跳转到0x1001D988处，你发现了什么？</strong></p>
+<p>发现了一些ASCII码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><code class="hljs asm">.data:1001D988                 db  2Dh ; -<br>.data:1001D989                 db  31h ; 1<br>.data:1001D98A                 db  3Ah ; :<br>.data:1001D98B                 db  3Ah ; :<br>.data:1001D98C                 db  27h ; &#x27;<br>.data:1001D98D                 db  75h ; u<br>.data:1001D98E                 db  3Ch ; &lt;<br>.data:1001D98F                 db  26h ; &amp;<br>.data:1001D990                 db  75h ; u<br>.data:1001D991                 db  21h ; !<br>.data:1001D992                 db  3Dh ; =<br>.data:1001D993                 db  3Ch ; &lt;<br>.data:1001D994                 db  26h ; &amp;<br>.data:1001D995                 db  75h ; u<br>.data:1001D996                 db  37h ; 7<br>.data:1001D997                 db  34h ; 4<br>.data:1001D998                 db  36h ; 6<br>.data:1001D999                 db  3Eh ; &gt;<br>.data:1001D99A                 db  31h ; 1<br>.data:1001D99B                 db  3Ah ; :<br>.data:1001D99C                 db  3Ah ; :<br>.data:1001D99D                 db  27h ; &#x27;<br>.data:1001D99E                 db  79h ; y<br>.data:1001D99F                 db  75h ; u<br>.data:1001D9A0                 db  26h ; &amp;<br>.data:1001D9A1                 db  21h ; !<br>.data:1001D9A2                 db  27h ; &#x27;<br>.data:1001D9A3                 db  3Ch ; &lt;<br>.data:1001D9A4                 db  3Bh ; ;<br>.data:1001D9A5                 db  32h ; 2<br>.data:1001D9A6                 db  75h ; u<br>.data:1001D9A7                 db  31h ; 1<br>.data:1001D9A8                 db  30h ; 0<br>.data:1001D9A9                 db  36h ; 6<br>.data:1001D9AA                 db  3Ah ; :<br>.data:1001D9AB                 db  31h ; 1<br>.data:1001D9AC                 db  30h ; 0<br>.data:1001D9AD                 db  31h ; 1<br>.data:1001D9AE                 db  75h ; u<br>.data:1001D9AF                 db  33h ; 3<br>.data:1001D9B0                 db  3Ah ; :<br>.data:1001D9B1                 db  27h ; &#x27;<br>.data:1001D9B2                 db  75h ; u<br>.data:1001D9B3                 db    5<br>.data:1001D9B4                 db  27h ; &#x27;<br>.data:1001D9B5                 db  34h ; 4<br>.data:1001D9B6                 db  36h ; 6<br>.data:1001D9B7                 db  21h ; !<br>.data:1001D9B8                 db  3Ch ; &lt;<br>.data:1001D9B9                 db  36h ; 6<br>.data:1001D9BA                 db  34h ; 4<br>.data:1001D9BB                 db  39h ; 9<br>.data:1001D9BC                 db  75h ; u<br>.data:1001D9BD                 db  18h<br>.data:1001D9BE                 db  34h ; 4<br>.data:1001D9BF                 db  39h ; 9<br>.data:1001D9C0                 db  22h ; &quot;<br>.data:1001D9C1                 db  34h ; 4<br>.data:1001D9C2                 db  27h ; &#x27;<br>.data:1001D9C3                 db  30h ; 0<br>.data:1001D9C4                 db  75h ; u<br>.data:1001D9C5                 db  14h<br>.data:1001D9C6                 db  3Bh ; ;<br>.data:1001D9C7                 db  34h ; 4<br>.data:1001D9C8                 db  39h ; 9<br>.data:1001D9C9                 db  2Ch ; ,<br>.data:1001D9CA                 db  26h ; &amp;<br>.data:1001D9CB                 db  3Ch ; &lt;<br>.data:1001D9CC                 db  26h ; &amp;<br>.data:1001D9CD                 db  75h ; u<br>.data:1001D9CE                 db  19h<br>.data:1001D9CF                 db  34h ; 4<br>.data:1001D9D0                 db  37h ; 7<br>.data:1001D9D1                 db  75h ; u<br>.data:1001D9D2                 db  6Fh ; o<br>.data:1001D9D3                 db  7Ch ; |<br>.data:1001D9D4                 db  64h ; d<br>.data:1001D9D5                 db  67h ; g<br>.data:1001D9D6                 db  66h ; f<br>.data:1001D9D7                 db  61h ; a<br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>19，如果你安装了IDA Python插件（包括IDA Pro的商业版本插件），运行Lab05-01.py，一个本书中随恶意代码提供的IDA Pro Python脚本，（确定光标是在0x1001D988处。）你运行这个脚本后发生了什么？</strong></p>
+<p>运行此脚本后发现同一位置的数据发生了变化：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><code class="hljs asm">.data:1001D988                 db  78h ; x<br>.data:1001D989                 db  64h ; d<br>.data:1001D98A                 db  6Fh ; o<br>.data:1001D98B                 db  6Fh ; o<br>.data:1001D98C                 db  72h ; r<br>.data:1001D98D                 db  20h<br>.data:1001D98E                 db  69h ; i<br>.data:1001D98F                 db  73h ; s<br>.data:1001D990                 db  20h<br>.data:1001D991                 db  74h ; t<br>.data:1001D992                 db  68h ; h<br>.data:1001D993                 db  69h ; i<br>.data:1001D994                 db  73h ; s<br>.data:1001D995                 db  20h<br>.data:1001D996                 db  62h ; b<br>.data:1001D997                 db  61h ; a<br>.data:1001D998                 db  63h ; c<br>.data:1001D999                 db  6Bh ; k<br>.data:1001D99A                 db  64h ; d<br>.data:1001D99B                 db  6Fh ; o<br>.data:1001D99C                 db  6Fh ; o<br>.data:1001D99D                 db  72h ; r<br>.data:1001D99E                 db  2Ch ; ,<br>.data:1001D99F                 db  20h<br>.data:1001D9A0                 db  73h ; s<br>.data:1001D9A1                 db  74h ; t<br>.data:1001D9A2                 db  72h ; r<br>.data:1001D9A3                 db  69h ; i<br>.data:1001D9A4                 db  6Eh ; n<br>.data:1001D9A5                 db  67h ; g<br>.data:1001D9A6                 db  20h<br>.data:1001D9A7                 db  64h ; d<br>.data:1001D9A8                 db  65h ; e<br>.data:1001D9A9                 db  63h ; c<br>.data:1001D9AA                 db  6Fh ; o<br>.data:1001D9AB                 db  64h ; d<br>.data:1001D9AC                 db  65h ; e<br>.data:1001D9AD                 db  64h ; d<br>.data:1001D9AE                 db  20h<br>.data:1001D9AF                 db  66h ; f<br>.data:1001D9B0                 db  6Fh ; o<br>.data:1001D9B1                 db  72h ; r<br>.data:1001D9B2                 db  20h<br>.data:1001D9B3                 db  50h ; P<br>.data:1001D9B4                 db  72h ; r<br>.data:1001D9B5                 db  61h ; a<br>.data:1001D9B6                 db  63h ; c<br>.data:1001D9B7                 db  74h ; t<br>.data:1001D9B8                 db  69h ; i<br>.data:1001D9B9                 db  63h ; c<br>.data:1001D9BA                 db  61h ; a<br>.data:1001D9BB                 db  6Ch ; l<br>.data:1001D9BC                 db  20h<br>.data:1001D9BD                 db  4Dh ; M<br>.data:1001D9BE                 db  61h ; a<br>.data:1001D9BF                 db  6Ch ; l<br>.data:1001D9C0                 db  77h ; w<br>.data:1001D9C1                 db  61h ; a<br>.data:1001D9C2                 db  72h ; r<br>.data:1001D9C3                 db  65h ; e<br>.data:1001D9C4                 db  20h<br>.data:1001D9C5                 db  41h ; A<br>.data:1001D9C6                 db  6Eh ; n<br>.data:1001D9C7                 db  61h ; a<br>.data:1001D9C8                 db  6Ch ; l<br>.data:1001D9C9                 db  79h ; y<br>.data:1001D9CA                 db  73h ; s<br>.data:1001D9CB                 db  69h ; i<br>.data:1001D9CC                 db  73h ; s<br>.data:1001D9CD                 db  20h<br>.data:1001D9CE                 db  4Ch ; L<br>.data:1001D9CF                 db  61h ; a<br>.data:1001D9D0                 db  62h ; b<br>.data:1001D9D1                 db  20h<br>.data:1001D9D2                 db  3Ah ; :<br>.data:1001D9D3                 db  29h ; )<br>.data:1001D9D4                 db  31h ; 1<br>.data:1001D9D5                 db  32h ; 2<br>.data:1001D9D6                 db  33h ; 3<br>.data:1001D9D7                 db  34h ; 4<br></code></pre></td></tr></table></figure>
+
+<p>以上字符串如下：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs angelscript">xdoor <span class="hljs-keyword">is</span> <span class="hljs-keyword">this</span> backdoor <span class="hljs-built_in">string</span> decoded <span class="hljs-keyword">for</span> Practical Malware Analysis Lab :)<span class="hljs-number">1234</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>20.将光标放在同一位置，你如何将这个数据转成一个单一的ASCII字符串？</strong></p>
+<p>在同一位置点击A键可以自动将这串字符串提取出来：</p>
+<p><img src="https://i.loli.net/2019/03/05/5c7e6d5578066.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>21.使用一个文本编辑器打开这个脚本，它是如何工作的？</strong></p>
+<p>Lab05-01.py内容如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python">sea = ScreenEA()<br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0x00</span>,<span class="hljs-number">0x50</span>):<br>        b = Byte(sea+i)<br>        decoded_byte = b ^ <span class="hljs-number">0x55</span><br>        PatchByte(sea+i,decoded_byte)<br></code></pre></td></tr></table></figure>
+
+<p>这个脚本先获取光标所在位置的第一个数据，将第一个数据后的50h的数据与0x55作与运算，再将运算结果替换掉原来的数据。</p>
+<hr>
+<h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+                    
+                      <a class="hover-with-bg" href="/tags/IDA-Pro/">IDA Pro</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/03/%E8%AF%86%E5%88%AB%E6%B1%87%E7%BC%96%E4%B8%AD%E7%9A%84C%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">识别汇编中的C代码结构</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/03/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90%E9%AB%98%E7%BA%A7%E6%8A%80%E6%9C%AF/">
+                        <span class="hidden-mobile">静态分析高级技术</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

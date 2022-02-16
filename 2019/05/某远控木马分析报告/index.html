@@ -1,0 +1,664 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="样本主体分析18xxxxxxxxxxxxxxxxxxxxxxxxxxxxx.EXE样本基本信息：
+
+
+属性
+值
+
+
+
+Filename
+18xxxxxxxxxxxxxxxxxxxxxxxxxxxxx.EXE
+
+
+MD5
+b9b34748f958c31e12ae3741f728be99
+
+
+SHA-1
+a806386497e280612eadbe87e2104550c95ab617
+
+
+File T">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>远程控制木马分析报告 - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="远程控制木马分析报告">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2019-05-17 16:51" pubdate>
+        2019年5月17日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      25
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">远程控制木马分析报告</h1>
+            
+            <div class="markdown-body">
+              <h2 id="样本主体分析18xxxxxxxxxxxxxxxxxxxxxxxxxxxxx-EXE"><a href="#样本主体分析18xxxxxxxxxxxxxxxxxxxxxxxxxxxxx-EXE" class="headerlink" title="样本主体分析18xxxxxxxxxxxxxxxxxxxxxxxxxxxxx.EXE"></a>样本主体分析18xxxxxxxxxxxxxxxxxxxxxxxxxxxxx.EXE</h2><h3 id="样本基本信息："><a href="#样本基本信息：" class="headerlink" title="样本基本信息："></a>样本基本信息：</h3><table>
+<thead>
+<tr>
+<th>属性</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Filename</td>
+<td>18xxxxxxxxxxxxxxxxxxxxxxxxxxxxx.EXE</td>
+</tr>
+<tr>
+<td>MD5</td>
+<td>b9b34748f958c31e12ae3741f728be99</td>
+</tr>
+<tr>
+<td>SHA-1</td>
+<td>a806386497e280612eadbe87e2104550c95ab617</td>
+</tr>
+<tr>
+<td>File Type</td>
+<td>Win32 EXE</td>
+</tr>
+<tr>
+<td>Magic</td>
+<td>MS-DOS executable PE  for MS Windows (GUI) Intel 80386 32-bit</td>
+</tr>
+<tr>
+<td>SSDeep</td>
+<td>12288:DKGk6+Tjk6PQEAEd0bpkRgNyPBODdgVRX6Tw:Dz+TwNE0NfcAT</td>
+</tr>
+<tr>
+<td>File Size</td>
+<td>467.39 KB</td>
+</tr>
+</tbody></table>
+<h3 id="静态分析"><a href="#静态分析" class="headerlink" title="静态分析"></a>静态分析</h3><p>18xxxxxxxxxxxxxxxxxxxxxxxxxxxxx.EXE</p>
+<span id="more"></span>
+
+<p>将文件载入到IDA中，分析start函数，找到了一些相对不重要的函数和一个负责主要逻辑的函数</p>
+<p><img src="https://i.loli.net/2019/05/15/5cdc158f0cb0278057.png" srcset="/img/loading.gif" lazyload></p>
+<p>找到关键函数sub_401A40()</p>
+<p><img src="https://i.loli.net/2019/05/15/5cdc15bc42cb211720.png" srcset="/img/loading.gif" lazyload></p>
+<p>通过查看函数调用图判断此函数的大致执行流：</p>
+<p><img src="https://i.loli.net/2019/05/15/5cdc169e9627667242.png" srcset="/img/loading.gif" lazyload></p>
+<p>通过API判断此函数的主要功能：文件读写，文件遍历，疑似反调试，创建进程。</p>
+<p>通过以上结论判断此文件为病毒Droper，载入OD对关键函数进一步分析：</p>
+<h3 id="动态分析"><a href="#动态分析" class="headerlink" title="动态分析"></a>动态分析</h3><p>此处省略沙箱中的执行结果，将沙箱的分析结果作为动态分析的辅助提示进行动态分析。</p>
+<p>获取当前程序的文件名和所在文件路径：</p>
+<p><img src="https://i.loli.net/2019/05/15/5cdc18fe3d31b90747.png" srcset="/img/loading.gif" lazyload></p>
+<p>进入子函数，获取当前文件路径</p>
+<p><img src="https://i.loli.net/2019/05/15/5cdc1a4f86aae86984.png" srcset="/img/loading.gif" lazyload></p>
+<p>获取自身文件指针，将文件读取到内存中：</p>
+<p><img src="https://i.loli.net/2019/05/15/5cdc1b0d97ac894126.png" srcset="/img/loading.gif" lazyload></p>
+<p>用GetWindowsDirectoryA()函数获取Windows目录：</p>
+<p><img src="https://i.loli.net/2019/05/15/5cdc1b66821d940005.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://i.loli.net/2019/05/15/5cdc1b81264f266481.png" srcset="/img/loading.gif" lazyload></p>
+<p>进行字符串拼接：</p>
+<p><img src="https://i.loli.net/2019/05/15/5cdc1bc33218874582.png" srcset="/img/loading.gif" lazyload></p>
+<p>拼接出新的路径：</p>
+<p><img src="https://i.loli.net/2019/05/15/5cdc1c16d21cb31371.png" srcset="/img/loading.gif" lazyload></p>
+<p>新的文件名：</p>
+<p><img src="https://i.loli.net/2019/05/15/5cdc1c550dae989048.png" srcset="/img/loading.gif" lazyload></p>
+<p>删除自身：</p>
+<p><img src="https://i.loli.net/2019/05/15/5cdc1ca3357e325075.png" srcset="/img/loading.gif" lazyload></p>
+<p>将内存中的数据写入到新的文件中：</p>
+<p><img src="https://i.loli.net/2019/05/15/5cdc1ccb120c867019.png" srcset="/img/loading.gif" lazyload></p>
+<p>创建目录18xxxxxxxxxxxxxxxxx</p>
+<p><img src="https://i.loli.net/2019/05/16/5cdd23b441d3c37779.png" srcset="/img/loading.gif" lazyload></p>
+<p>循环拼接出要写入的文件的文件名：</p>
+<p><img src="https://i.loli.net/2019/05/17/5cde78b69c1c975221.png" srcset="/img/loading.gif" lazyload></p>
+<p>整体流程如下：</p>
+<p>函数sub404260负责将图片写入，每存储一张照片就将.liz后缀的临时文件删除：</p>
+<p><img src="https://i.loli.net/2019/05/16/5cdd41c7c6fe925052.png" srcset="/img/loading.gif" lazyload></p>
+<p>除了色情图片，程序还释放了一个名为Thumbs.db的文件。</p>
+<p><img src="https://i.loli.net/2019/05/16/5cdd42826bc4a18095.png" srcset="/img/loading.gif" lazyload></p>
+<p>启动远控进程rat.EXE：</p>
+<p><img src="https://i.loli.net/2019/05/15/5cdc20083a95036171.png" srcset="/img/loading.gif" lazyload></p>
+<p>检测两个进程–熊猫卫士和趋势科技的杀软：</p>
+<p><img src="https://i.loli.net/2019/05/17/5cde1fe31442025832.png" srcset="/img/loading.gif" lazyload></p>
+<p>删除文件<code>C:\Users\Hvnt3r\AppData\Local\Temp\\byeyou.tmp</code>：</p>
+<p><img src="https://i.loli.net/2019/05/15/5cdc2134e3cbd96760.png" srcset="/img/loading.gif" lazyload></p>
+<p>文件复制：</p>
+<p><img src="https://i.loli.net/2019/05/17/5cde7891d1d4541153.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://i.loli.net/2019/05/16/5cdd177b5e8ca31906.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="分析结果"><a href="#分析结果" class="headerlink" title="分析结果"></a>分析结果</h3><p>得出此程序的功能：</p>
+<ul>
+<li>创建同名目录并在目录下释放文件</li>
+<li>杀毒软件检测</li>
+<li>在<code>C:\Users\Hvnt3r\AppData\Local\Temp\</code>目录创建byeyou.tmp备份文件</li>
+<li>在<code>C:\Users\Hvnt3r\AppData\Local\Temp\</code>目录创建rat.EXE后门程序并启动此程序</li>
+</ul>
+<p>此程序是一个Dropper，完成恶意文件的释放过程，接下来分析此文件释放出的文件rat.EXE。</p>
+<h2 id="子程序分析rat-EXE"><a href="#子程序分析rat-EXE" class="headerlink" title="子程序分析rat.EXE"></a>子程序分析rat.EXE</h2><p>从名字看这个应该是一个远程控制程序，但是为了避免恶意代码编写者故意使用特殊的文件名来误导分析者的思路，因此还是要重点分析一下。</p>
+<h3 id="静态分析-1"><a href="#静态分析-1" class="headerlink" title="静态分析"></a>静态分析</h3><p><img src="https://i.loli.net/2019/05/16/5cdd786a2baea45581.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://i.loli.net/2019/05/16/5cdd7881c271258701.png" srcset="/img/loading.gif" lazyload></p>
+<p>从函数的调用关系来看这个程序可能有如下作用：</p>
+<p>文件读写、注册表修改、从程序资源节释放文件、进程相关操作。</p>
+<p>既然看到了常见的程序资源节的相关函数，将程序载入到ResourceHacker中看一下，果然在资源节中发现了一个疑似的PE文件：</p>
+<p><img src="https://i.loli.net/2019/05/16/5cdd796f1749290138.png" srcset="/img/loading.gif" lazyload></p>
+<p>将文件提取出来存储为rsc.exe，稍后分析。</p>
+<p>程序的基本静态分析结果如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">if</span> ( ExpandEnvironmentStringsA(Src, &amp;Dst, <span class="hljs-number">0x104</span>u) )<br>  &#123;<br>    <span class="hljs-keyword">if</span> ( CreateDirectoryA(&amp;Dst, <span class="hljs-number">0</span>) == <span class="hljs-number">1</span> )<br>    &#123;<br>      SHGetSpecialFolderPathA(<span class="hljs-number">0</span>, &amp;pszPath, <span class="hljs-number">7</span>, <span class="hljs-number">0</span>);<span class="hljs-comment">// 获取某一文件的路径</span><br>      GetShortPathNameA(&amp;pszPath, &amp;szShortPath, <span class="hljs-number">0x104</span>u);<span class="hljs-comment">// 获取指定路径的短路径形式</span><br>      <span class="hljs-built_in">strcat</span>(&amp;szShortPath, asc_403234);         <span class="hljs-comment">// \*.*</span><br>      <span class="hljs-built_in">strcpy</span>(&amp;szLongPath, &amp;Dst);<br>      <span class="hljs-built_in">strcat</span>(&amp;szLongPath, asc_403230);          <span class="hljs-comment">// \</span><br><span class="hljs-comment">      GetShortPathNameA(&amp;szLongPath, &amp;v22, 0x104u);// 获取指定路径的短路径形式</span><br>      <span class="hljs-built_in">sprintf</span>(&amp;Dest, aCmdExeCCopySS, &amp;szShortPath, &amp;v22);<span class="hljs-comment">// cmd.exe /c copy %s %s</span><br>      <span class="hljs-built_in">memset</span>(&amp;StartupInfo, <span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(StartupInfo));<br>      StartupInfo.wShowWindow = <span class="hljs-number">0</span>;<br>      StartupInfo.cb = <span class="hljs-number">68</span>;<br>      StartupInfo.dwFlags = <span class="hljs-number">1</span>;<br>      CreateProcessA(<span class="hljs-number">0</span>, &amp;Dest, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, &amp;StartupInfo, &amp;ProcessInformation);<span class="hljs-comment">// 执行CMD命令，完成文件复制操作</span><br>      WaitForSingleObject(ProcessInformation.hProcess, <span class="hljs-number">0xFFFFFFFF</span>);<br>      <span class="hljs-keyword">if</span> ( !ExpandEnvironmentStringsA(aAllusersprofil_0, &amp;v23, <span class="hljs-number">0x104</span>u) )<span class="hljs-comment">// %ALLUSERSPROFILE%\Application Data\Microsoft</span><br>                                                <span class="hljs-comment">// 将环境变量补充维完整形式</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>      GetShortPathNameA(&amp;v23, &amp;v17, <span class="hljs-number">0x104</span>u);<br>      <span class="hljs-built_in">sprintf</span>(&amp;CommandLine, aRegeditExeSESB, &amp;v17);<span class="hljs-comment">// regedit.exe /s /e  %s\back1.reg &quot;HKEY_CURRENT_USER\Software\Micro</span><br>      <span class="hljs-built_in">memset</span>(&amp;StartupInfo, <span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(StartupInfo));<br>      StartupInfo.wShowWindow = <span class="hljs-number">0</span>;<br>      StartupInfo.cb = <span class="hljs-number">68</span>;<br>      StartupInfo.dwFlags = <span class="hljs-number">1</span>;<br>      CreateProcessA(<span class="hljs-number">0</span>, &amp;CommandLine, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, &amp;StartupInfo, &amp;ProcessInformation);<span class="hljs-comment">// 执行注册表备份</span><br>      <span class="hljs-built_in">sprintf</span>(&amp;CommandLine, aRegeditExeSESB_0, &amp;v17);<span class="hljs-comment">// cmd.exe /c copy %s %s</span><br>      WaitForSingleObject(ProcessInformation.hProcess, <span class="hljs-number">0xFFFFFFFF</span>);<br>      <span class="hljs-built_in">memset</span>(&amp;StartupInfo, <span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(StartupInfo));<br>      StartupInfo.wShowWindow = <span class="hljs-number">0</span>;<br>      StartupInfo.cb = <span class="hljs-number">68</span>;<br>      StartupInfo.dwFlags = <span class="hljs-number">1</span>;<br>      CreateProcessA(<span class="hljs-number">0</span>, &amp;CommandLine, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, &amp;StartupInfo, &amp;ProcessInformation);<span class="hljs-comment">// 执行文件复制</span><br>      WaitForSingleObject(ProcessInformation.hProcess, <span class="hljs-number">0xFFFFFFFF</span>);<br>      <span class="hljs-keyword">if</span> ( RegOpenKeyExA(HKEY_CURRENT_USER, SubKey, <span class="hljs-number">0</span>, <span class="hljs-number">0xF003F</span>u, &amp;phkResult) )<span class="hljs-comment">// Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>      RegSetValueExA(phkResult, ValueName, <span class="hljs-number">0</span>, <span class="hljs-number">1u</span>, &amp;Dst, <span class="hljs-built_in">strlen</span>(&amp;Dst) + <span class="hljs-number">1</span>);<span class="hljs-comment">// 添加自启动</span><br>      RegCloseKey(phkResult);<br>      <span class="hljs-keyword">if</span> ( RegOpenKeyExA(HKEY_CURRENT_USER, aSoftwareMicros_0, <span class="hljs-number">0</span>, <span class="hljs-number">0xF003F</span>u, &amp;phkResult) )<span class="hljs-comment">// Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Fol</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>      RegSetValueExA(phkResult, ValueName, <span class="hljs-number">0</span>, <span class="hljs-number">1u</span>, &amp;Dst, <span class="hljs-built_in">strlen</span>(&amp;Dst) + <span class="hljs-number">1</span>);<br>      RegCloseKey(phkResult);<br>    &#125;<br>    <span class="hljs-built_in">strcat</span>(&amp;Dst, aCtfmonExe);                   <span class="hljs-comment">// ctfmon.exe</span><br>    v4 = _p___argv(<span class="hljs-number">0</span>, &amp;Dst);<br>    CopyFileA(**v4, &amp;Dst, <span class="hljs-number">0</span>);                   <span class="hljs-comment">// 创建文件ctfmon.exe</span><br>    v5 = FindResourceA(<span class="hljs-number">0</span>, <span class="hljs-number">2</span>, <span class="hljs-number">0xA</span>);              <span class="hljs-comment">// 从资源节提取数据</span><br>    v6 = v5;<br>    <span class="hljs-keyword">if</span> ( v5 )<br>    &#123;<br>      v7 = SizeofResource(<span class="hljs-number">0</span>, v5);<br>      <span class="hljs-keyword">if</span> ( v7 )<br>      &#123;<br>        v8 = LoadResource(<span class="hljs-number">0</span>, v6);<br>        <span class="hljs-keyword">if</span> ( v8 )<br>        &#123;<br>          v9 = LockResource(v8);<br>          <span class="hljs-keyword">if</span> ( v9 )<br>          &#123;<br>            GetSystemDirectoryA(&amp;Buffer, <span class="hljs-number">0x104</span>u);<br>            <span class="hljs-built_in">strcat</span>(&amp;Buffer, aAlgExe);           <span class="hljs-comment">// alg.exe</span><br>            sub_4016D0(v9, &amp;unk_4032C0, v7, &amp;Buffer);<span class="hljs-comment">// 实现进程注入</span><br>          &#125;<br>        &#125;<br>      &#125;<br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br></code></pre></td></tr></table></figure>
+
+<p>其实经过静态分析之后此程序的执行逻辑已经比较完善了，但是有些细节还是要通过动态分析来进一步确定：</p>
+<h3 id="动态分析-1"><a href="#动态分析-1" class="headerlink" title="动态分析"></a>动态分析</h3><p>创建文件夹，如果目录已存在则跳过，如果不存在则执行下面的操作：</p>
+<p><img src="https://i.loli.net/2019/05/16/5cdd7d715871131390.png" srcset="/img/loading.gif" lazyload></p>
+<p>复制当前目录</p>
+<p><img src="https://i.loli.net/2019/05/16/5cdd7e5b4fc5457591.png" srcset="/img/loading.gif" lazyload></p>
+<p>执行注册表部分备份：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">regedit.exe <span class="hljs-regexp">/s /</span>e  %s\back1.reg <span class="hljs-string">&quot;HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>设置开机启动</p>
+<p><img src="https://i.loli.net/2019/05/16/5cdd81f35b2d898013.png" srcset="/img/loading.gif" lazyload></p>
+<p>将自身复制为ctfmon.exe</p>
+<p><img src="https://i.loli.net/2019/05/16/5cdd85f2dbbe266549.png" srcset="/img/loading.gif" lazyload></p>
+<p>将从资源节中提取的PE数据注入到alg.exe中</p>
+<p><img src="https://i.loli.net/2019/05/17/5cde781a2488714506.png" srcset="/img/loading.gif" lazyload></p>
+<p>获取函数ZwUnmapViewOfSection的地址</p>
+<p><img src="https://i.loli.net/2019/05/16/5cdd87275e2c878052.png" srcset="/img/loading.gif" lazyload></p>
+<p>实现进程注入</p>
+<p><img src="https://i.loli.net/2019/05/16/5cdd87a1bd17a11683.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://i.loli.net/2019/05/16/5cdd889e40da963845.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="分析结果-1"><a href="#分析结果-1" class="headerlink" title="分析结果"></a>分析结果</h3><p>此程序实现的功能如下：</p>
+<ul>
+<li>设置开机启动，实现长期驻留</li>
+<li>文件备份</li>
+<li>进程注入</li>
+<li>唤醒注入的程序</li>
+</ul>
+<h2 id="子程序分析rsc-exe"><a href="#子程序分析rsc-exe" class="headerlink" title="子程序分析rsc.exe"></a>子程序分析rsc.exe</h2><h3 id="静态分析-2"><a href="#静态分析-2" class="headerlink" title="静态分析"></a>静态分析</h3><p>此木马使用GetProcAddress函数来获取所需函数的地址</p>
+<p><img src="https://i.loli.net/2019/05/17/5cde0daa3bf5153751.png" srcset="/img/loading.gif" lazyload></p>
+<p>程序中有很多地方都用到了这种方法来降低自身被安全人员发现的概率。</p>
+<p><img src="https://i.loli.net/2019/05/17/5cde6caf4f75939607.png" srcset="/img/loading.gif" lazyload></p>
+<p>SeDebugPrivilege提权：</p>
+<p><img src="https://i.loli.net/2019/05/17/5cde755d140c587246.png" srcset="/img/loading.gif" lazyload></p>
+<p>主要函数</p>
+<p><img src="https://i.loli.net/2019/05/17/5cde6ccfccb9659041.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="动态分析-2"><a href="#动态分析-2" class="headerlink" title="动态分析"></a>动态分析</h3><p>打开网址<code>http[:]//www[.]softover[.]net/chendog/rat[.]gif</code></p>
+<p><img src="https://i.loli.net/2019/05/17/5cde1b617ca4982366.png" srcset="/img/loading.gif" lazyload></p>
+<p>下载此文件</p>
+<p><img src="https://i.loli.net/2019/05/17/5cde1c081944710175.png" srcset="/img/loading.gif" lazyload></p>
+<p>其他相关DNS查询</p>
+<p><img src="https://i.loli.net/2019/05/17/5cde1f92caa9384845.png" srcset="/img/loading.gif" lazyload></p>
+<p>对比代码发现此程序可能是远程控制软件psyrat2的变种。</p>
+<p>后门功能实现的主要函数为sub_403190，代码量较大，这里就不一一说明分析过程了，下面直接给出分析结果。</p>
+<h3 id="分析结果-2"><a href="#分析结果-2" class="headerlink" title="分析结果"></a>分析结果</h3><p>根据以上分析得出此程序的主要功能：</p>
+<ul>
+<li>受害主机环境识别（CPU信息，系统版本）</li>
+<li>隐藏自身</li>
+<li>重启|关闭计算机</li>
+<li>通过网络传送文件</li>
+<li>常见的文件读写与目录操作</li>
+<li>屏幕截取</li>
+<li>进程遍历|终止某一进程</li>
+<li>操作可移动设备</li>
+<li>远程执行命令</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h3 id="建议"><a href="#建议" class="headerlink" title="建议"></a>建议</h3><ul>
+<li>不要浏览不良网站</li>
+<li>及时更新计算机的杀毒程序，但是不要觉得有了杀软保护就可以放松警惕比如此恶意软件的检出率较低</li>
+<li>在计算机控制面板中设置显示文件后缀名，此案例中恶意代码就是将可执行程序伪装成存储有色情图片的文件夹引诱用户点击，因此如果设置显示文件后缀名可以发现此文件后缀是EXE，能在一定程度上看破这种伪装</li>
+</ul>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>有趣的是在我分析这个样本时曾将样本上传到VT和微步在线分析过，第一次上传到微步在线的时候只有两个反病毒引擎检测出，但是过了没几分钟刷新了一下页面就发现又多出了两个反病毒引擎识别出了此恶意软件，而且根据腾讯反病毒引擎的识别结果，貌似将这个恶意软件识别为了DNF的木马，（并没有查到腾讯对病毒的命名标准，只是猜测）。</p>
+<p><img src="https://i.loli.net/2019/05/17/5cde2637864b772954.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><h3 id="IOC"><a href="#IOC" class="headerlink" title="IOC"></a>IOC</h3><figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs coq">C2--------------------------------------------------------------<br>         | <span class="hljs-type">http</span>[:]//www[.]softover[.]net/chendog/rat[.]gif<br>         | <span class="hljs-type">cn</span>[.]fetftp[.]nu<br>         | <span class="hljs-type">rt</span>[.]softseek[.]org<br><span class="hljs-keyword">Path</span>-------------------------------------------------------------<br>         | <span class="hljs-type">18xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>\<span class="hljs-number">1.</span>jpg<br>         | <span class="hljs-type">18xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>\<span class="hljs-number">2.</span>jpg<br>         | <span class="hljs-type">18xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>\<span class="hljs-number">3.</span>jpg<br>         | <span class="hljs-type">18xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>\<span class="hljs-number">4.</span>jpg<br>         | <span class="hljs-type">18xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>\<span class="hljs-number">5.</span>jpg<br>         | <span class="hljs-type">18xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>\<span class="hljs-number">6.</span>jpg<br>         | <span class="hljs-type">18xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>\<span class="hljs-number">7.</span>jpg<br>         | <span class="hljs-type">18xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>\Thumbs.db<br>         | <span class="hljs-type">C</span>:\Users\[xxxx]\AppData\<span class="hljs-keyword">Local</span>\Temp\byeyou.tmp<br>         | <span class="hljs-type">C</span>:\Users\[xxxx]\AppData\<span class="hljs-keyword">Local</span>\Temp\rat.EXE<br>         | <span class="hljs-type">C</span>:\ProgramData\Microsoft\Comon\ctfmon.exe<br>String-----------------------------------------------------------<br>         | <span class="hljs-type">sfctlcom</span>.exe<br>         | <span class="hljs-type">pavfnsvr</span>.exe<br>         | <span class="hljs-type">regedit</span>.exe /s /e  %s\back1.reg <span class="hljs-string">&quot;HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders&quot;</span><br>Filename---------------------------------------------------------<br>         | <span class="hljs-type">18xxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>.EXE<br>         | <span class="hljs-type">ctfmon</span>.exe<br>         | <span class="hljs-type">rat</span>.EXE<br>         | <span class="hljs-type">byeyou</span>.tmp<br>         | <span class="hljs-type">Thumbs</span>.db<br></code></pre></td></tr></table></figure>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Windows%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/">Windows恶意代码</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Windows%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/">Windows恶意代码</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6/">远程控制</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%9C%A8%E9%A9%AC/">木马</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A/">分析报告</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/05/%E5%BC%80%E6%BA%90%E7%BD%91%E7%BB%9C%E5%85%A5%E4%BE%B5%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F-Snort%E5%AE%9E%E6%88%98/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">开源网络入侵检测系统-Snort实战</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/05/WallpaperEngine%E8%B5%84%E6%BA%90%E6%8F%90%E5%8F%96/">
+                        <span class="hidden-mobile">WallpaperEngine资源提取</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

