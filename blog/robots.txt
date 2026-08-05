@@ -1,0 +1,25 @@
+User-agent: *
+
+Allow: /
+
+Allow: /blog/
+
+Allow: /blog/archives/
+
+Allow: /blog/categories/
+
+Allow: /blog/tags/
+
+Disallow: /blog/vendors/
+
+Disallow: /blog/js/
+
+Disallow: /blog/css/
+
+Disallow: /blog/fonts/
+
+Disallow: /blog/vendors/
+
+Disallow: /blog/fancybox/
+Sitemap: https://hvnt3r.github.io/blog/sitemap.xml
+Sitemap: https://hvnt3r.github.io/blog/baidusitemap.xml
