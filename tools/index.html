@@ -3,39 +3,169 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tools · Hvnt3r</title>
-  <style>
-    :root { color-scheme: dark; --bg: #0b1020; --panel: #131c34; --text: #edf2ff; --muted: #9da9c7; --line: #2c395e; --accent: #8aa4ff; }
-    * { box-sizing: border-box; }
-    body { min-height: 100vh; margin: 0; color: var(--text); background: var(--bg); font: 16px/1.7 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    .shell { width: min(820px, calc(100% - 40px)); margin: 0 auto; }
-    nav { display: flex; justify-content: space-between; padding: 28px 0; }
-    a { color: var(--muted); text-decoration: none; }
-    a:hover { color: var(--text); }
-    .brand { color: var(--text); font-weight: 700; letter-spacing: .08em; }
-    .links { display: flex; gap: 22px; }
-    main { padding: 13vh 0 20vh; }
-    h1 { margin: 0 0 12px; font-size: clamp(2.4rem, 7vw, 4.8rem); letter-spacing: -.05em; }
-    p { color: var(--muted); }
-    .card { margin-top: 36px; padding: 28px; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); }
-    .card strong { display: block; margin-bottom: 6px; color: var(--accent); }
-    @media (max-width: 560px) { .shell { width: min(100% - 28px, 820px); } }
-  </style>
+  <meta name="theme-color" content="#0d1018">
+  <meta name="description" content="Storeframe — 在浏览器本地生成 App Store 应用截图。">
+  <title>Storeframe · App Store screenshots</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
 </head>
 <body>
-  <div class="shell">
-    <nav>
-      <a class="brand" href="/">HVNT3R</a>
-      <div class="links"><a href="/blog/">Blog</a><a href="/tools/">Tools</a></div>
-    </nav>
-    <main>
-      <h1>Tools</h1>
-      <p>这里将放置一些由静态页面实现的简单工具。</p>
-      <section class="card">
-        <strong>Coming soon</strong>
-        <span>工具区已预留，后续可以直接在此目录下添加独立的静态工具页面。</span>
+  <div class="app-shell" id="app">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Hvnt3r home">
+        <span class="brand-mark">H</span>
+        <span class="brand-copy">
+          <strong>STORE<span>FRAME</span></strong>
+          <small data-i18n="brandTagline">App Store 截图工作台</small>
+        </span>
+      </a>
+      <div class="topbar-actions">
+        <span class="privacy-badge"><span class="status-dot"></span><span data-i18n="localOnly">本地处理</span></span>
+        <div class="language-switch" role="group" aria-label="Interface language">
+          <button type="button" class="language-button is-active" data-ui-lang="zh-CN">中</button>
+          <button type="button" class="language-button" data-ui-lang="en-US">EN</button>
+        </div>
+        <a class="top-link" href="/" data-i18n="backToSite">返回站点</a>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="panel sidebar-left">
+        <section class="panel-section intro-section">
+          <div class="section-kicker" data-i18n="canvasKicker">CANVAS / 01</div>
+          <h1 data-i18n="pageTitle">应用截图生成器</h1>
+          <p data-i18n="pageIntro">上传你的产品画面，选择一套有秩序的视觉语言，快速导出可上架的截图。</p>
+        </section>
+
+        <section class="panel-section">
+          <div class="section-heading">
+            <span data-i18n="targetLabel">目标设备</span>
+            <span class="section-count" id="targetCount">01</span>
+          </div>
+          <div class="target-switch" id="targetSwitch" role="group" aria-label="Target device"></div>
+          <div class="select-field">
+            <label for="orientationSelect" data-i18n="orientationLabel">画面方向</label>
+            <select id="orientationSelect"></select>
+          </div>
+          <div class="spec-note" id="specNote"></div>
+        </section>
+
+        <section class="panel-section template-section">
+          <div class="section-heading">
+            <span data-i18n="templateLabel">视觉模板</span>
+            <span class="section-count" id="templateCount">06</span>
+          </div>
+          <div class="template-grid" id="templateGrid"></div>
+        </section>
+
+        <section class="panel-section theme-section">
+          <div class="section-heading">
+            <span data-i18n="surfaceLabel">背景素材</span>
+            <span class="section-count" data-i18n="surfaceOptional">OPTIONAL</span>
+          </div>
+          <select id="assetSelect" class="full-select"></select>
+          <p class="microcopy" data-i18n="surfaceHint">每张素材都来自原创生成，文字由 Canvas 绘制，方便精确多语言适配。</p>
+        </section>
+      </aside>
+
+      <section class="stage-column">
+        <div class="stage-header">
+          <div>
+            <div class="section-kicker" data-i18n="previewKicker">LIVE PREVIEW</div>
+            <h2 id="previewTitle">iPhone 6.9″</h2>
+            <p id="previewMeta">1320 × 2868 · portrait</p>
+          </div>
+          <div class="stage-actions">
+            <button class="icon-button" type="button" id="zoomOutButton" aria-label="Zoom out">−</button>
+            <span id="zoomValue">Fit</span>
+            <button class="icon-button" type="button" id="zoomInButton" aria-label="Zoom in">+</button>
+          </div>
+        </div>
+
+        <div class="stage-frame">
+          <div class="stage-ruler ruler-top"><span>0</span><span id="rulerTopLabel">1320 px</span></div>
+          <div class="stage-ruler ruler-side"><span>0</span><span id="rulerSideLabel">2868 px</span></div>
+          <div class="canvas-wrap" id="canvasWrap">
+            <canvas id="previewCanvas" width="1320" height="2868" aria-label="Screenshot preview"></canvas>
+            <div class="canvas-empty" id="canvasEmpty">
+              <span class="empty-glyph">↗</span>
+              <strong data-i18n="canvasEmptyTitle">先放入一张产品截图</strong>
+              <span data-i18n="canvasEmptyBody">右侧支持拖拽上传，也可以点击选择文件</span>
+            </div>
+          </div>
+          <div class="stage-caption">
+            <span><span class="live-dot"></span><span data-i18n="renderCaption">Canvas 实时渲染</span></span>
+            <span id="safeAreaCaption" data-i18n="safeAreaCaption">安全边距 7.5%</span>
+          </div>
+        </div>
+
+        <div class="slide-toolbar">
+          <button class="secondary-button compact" type="button" id="previousSlide">← <span data-i18n="previous">上一张</span></button>
+          <div class="slide-strip" id="slideStrip" aria-label="Slides"></div>
+          <button class="secondary-button compact" type="button" id="nextSlide"><span data-i18n="next">下一张</span> →</button>
+        </div>
+        <p class="stage-footnote" data-i18n="stageFootnote">预览会自动缩放；导出时按 Apple 目标规格重新渲染，保持像素级尺寸。</p>
       </section>
+
+      <aside class="panel sidebar-right">
+        <section class="panel-section upload-section">
+          <div class="section-heading">
+            <span data-i18n="sourceLabel">产品画面</span>
+            <span class="section-count" id="sourceCount">00 / 10</span>
+          </div>
+          <label class="dropzone" id="dropzone" for="fileInput">
+            <input id="fileInput" type="file" accept="image/png,image/jpeg,image/webp" multiple>
+            <span class="dropzone-icon">＋</span>
+            <strong data-i18n="dropzoneTitle">拖入截图</strong>
+            <span data-i18n="dropzoneBody">PNG / JPG / WebP · 最多 10 张</span>
+          </label>
+          <div class="paste-hint"><span class="keycap">⌘V</span><span data-i18n="pasteHint">也可以直接粘贴图片</span></div>
+          <div class="screen-list" id="screenList"></div>
+        </section>
+
+        <section class="panel-section copy-section">
+          <div class="section-heading">
+            <span data-i18n="copyLabel">截图文案</span>
+            <span class="section-count" id="copyCount">01 / 06</span>
+          </div>
+          <div class="locale-pills" id="localePills"></div>
+          <div class="current-slide-label" id="currentSlideLabel">Slide 01</div>
+          <label class="field-label" for="titleInput" data-i18n="headlineLabel">主标题</label>
+          <input class="text-input headline-input" id="titleInput" type="text" maxlength="80" placeholder="让每一步，都更清晰">
+          <label class="field-label" for="subtitleInput" data-i18n="subtitleLabel">副标题</label>
+          <textarea class="text-input subtitle-input" id="subtitleInput" rows="3" maxlength="160" placeholder="把重要的事情，留在你的视线里。"></textarea>
+          <div class="input-meta"><span data-i18n="copyHint">标题会根据模板自动换行与缩放</span><span id="characterCount">0 / 240</span></div>
+        </section>
+
+        <section class="panel-section locales-section">
+          <div class="section-heading">
+            <span data-i18n="localeLabel">本地化版本</span>
+            <span class="section-count" id="localeCount">06</span>
+          </div>
+          <div class="locale-list" id="localeList"></div>
+          <button type="button" class="secondary-button add-locale" id="addLocaleButton">＋ <span data-i18n="addLocale">添加语言</span></button>
+        </section>
+
+        <section class="panel-section export-section">
+          <div class="section-heading">
+            <span data-i18n="exportLabel">批量导出</span>
+            <span class="section-count" data-i18n="jpegLabel">JPEG</span>
+          </div>
+          <div class="export-targets" id="exportTargets"></div>
+          <button class="primary-button export-button" type="button" id="exportButton">
+            <span data-i18n="exportButton">导出截图 ZIP</span><span class="button-arrow">↗</span>
+          </button>
+          <div class="export-progress" id="exportProgress" aria-live="polite"></div>
+          <button type="button" class="text-button reset-button" id="resetButton" data-i18n="resetButton">清空当前项目</button>
+        </section>
+      </aside>
     </main>
+
+    <footer class="app-footer">
+      <span>STORE/FRAME · <span data-i18n="footerCopy">为发布准备好每一个画面。</span></span>
+      <span><span class="status-dot"></span> <span data-i18n="noUpload">你的素材不会离开浏览器</span></span>
+    </footer>
   </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
