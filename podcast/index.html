@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Hvnt3r 的 Podcast 声档馆：可播放、可跳转的播客速览与逐字稿。">
+  <meta name="theme-color" content="#11120d">
+  <title>Podcast 声档馆 · Hvnt3r</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="site-shell">
+    <header class="masthead">
+      <a class="wordmark" href="/" aria-label="返回 Hvnt3r 首页">HVNT3R</a>
+      <nav class="site-nav" aria-label="站点导航">
+        <a href="/blog/">Blog</a>
+        <a class="is-current" href="/podcast/" aria-current="page">Podcast</a>
+        <a href="/tools/">Tools</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero-copy">
+          <p class="kicker">HVNT3R / SOUND ARCHIVE / 2026</p>
+          <h1 id="page-title">声档馆</h1>
+          <p class="hero-intro">把长播客压缩成可回看、可定位、可续听的个人收听档案。</p>
+          <div class="hero-badges" aria-label="页面功能">
+            <span>11 EPISODES</span>
+            <span>TIME-SYNC TEXT</span>
+            <span>QUOTE SIGNALS</span>
+          </div>
+        </div>
+        <p class="hero-caption">Signal acquired. Select a transmission below.</p>
+      </section>
+
+      <section class="archive" aria-label="播客声档">
+        <aside class="library panel" aria-labelledby="library-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">CHANNEL SELECTOR</p>
+              <h2 id="library-title">节目库</h2>
+            </div>
+            <span id="episodeCount" class="count" aria-live="polite"></span>
+          </div>
+          <div id="showFilters" class="show-filters" role="group" aria-label="节目筛选"></div>
+          <div id="episodeList" class="episode-list" aria-live="polite">
+            <p class="loading">正在校准声档信号…</p>
+          </div>
+        </aside>
+
+        <section id="episodePane" class="episode-pane panel" aria-live="polite" aria-busy="true">
+          <div class="loading-state">
+            <span class="status-led" aria-hidden="true"></span>
+            <p>正在读取选集与字幕索引…</p>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>个人声档整理。音频、封面与节目内容的权利归原节目及其权利人所有；自动转录可能存在识别偏差，请以原节目为准。</p>
+      <a href="/">RETURN TO BASE</a>
+    </footer>
+  </div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
