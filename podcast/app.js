@@ -3,7 +3,6 @@ const appState = {
   episode: null,
   show: "all",
   transcriptMode: "all",
-  activeSegmentId: null,
 };
 
 const dom = {
@@ -12,8 +11,6 @@ const dom = {
   episodeList: document.querySelector("#episodeList"),
   episodePane: document.querySelector("#episodePane"),
 };
-
-const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 function escapeHTML(value = "") {
   return String(value)
@@ -113,7 +110,7 @@ function renderTranscript() {
     <section class="transcript-section" aria-labelledby="transcript-title">
       <div class="transcript-topline">
         <div>
-          <p class="section-label">TIME-SYNC TRANSCRIPT</p>
+          <p class="section-label">TRANSCRIPT ARCHIVE</p>
           <h2 id="transcript-title">${escapeHTML(transcriptStatus(episode))}</h2>
         </div>
         <div class="mode-switcher" role="group" aria-label="逐字稿显示模式">
@@ -126,28 +123,28 @@ function renderTranscript() {
       </div>
       <p class="transcript-status"><strong>${escapeHTML(episode.transcriptNotice || "")}</strong> ${escapeHTML(episode.transcriptDetail || "")} ${episode.transcriptSourceUrl ? `<a class="text-link" href="${escapeHTML(episode.transcriptSourceUrl)}" target="_blank" rel="noreferrer">查看文字来源 ↗</a>` : ""}</p>
       ${showQuotes ? `
-        <div class="quote-rack" aria-label="金句导航">
+        <div class="quote-rack" aria-label="金句摘录">
           ${quotes.map((segment) => `
-            <button class="quote-button" type="button" data-seek="${segment.start}" data-segment-id="${escapeHTML(segment.id)}">
+            <article class="quote-button">
               <span class="quote-time">${formatTime(segment.start)} · 金句</span>
               <span class="quote-text">${escapeHTML(segment.text)}</span>
-            </button>
+            </article>
           `).join("")}
         </div>
       ` : ""}
       ${hasTranscript ? `
-        <div id="transcriptList" class="transcript-list" aria-label="可点击逐字稿">
+        <div id="transcriptList" class="transcript-list" aria-label="逐字稿">
           ${visibleSegments.map((segment) => `
-            <button id="${escapeHTML(segment.id)}" class="transcript-segment ${segment.isQuote ? "is-quote" : ""}" type="button" data-seek="${segment.start}" data-segment-id="${escapeHTML(segment.id)}">
+            <article id="${escapeHTML(segment.id)}" class="transcript-segment ${segment.isQuote ? "is-quote" : ""}">
               <span class="segment-time">${formatTime(segment.start)}</span>
               <span class="segment-speaker">${escapeHTML(segment.speaker)}</span>
               <span class="segment-text">${segment.isQuote ? `<mark>${escapeHTML(segment.text)}</mark>` : escapeHTML(segment.text)}</span>
-            </button>
+            </article>
           `).join("")}
         </div>
       ` : `
         <div class="empty-state">
-          这期尚未归档可公开展示的逐字稿。你仍可从上方的音频与原节目入口继续收听；本站不会用摘要补造对话内容。
+          这期尚未归档可公开展示的逐字稿。你仍可通过原节目入口继续收听；本站不会用摘要补造对话内容。
         </div>
       `}
     </section>
@@ -158,18 +155,6 @@ function renderEpisode() {
   const episode = appState.episode;
   const meta = currentMeta();
   if (!episode || !meta) return;
-  const hasAudio = Boolean(meta.audio);
-  const audioBlock = hasAudio ? `
-    <div class="player-stack">
-      <audio id="episodeAudio" controls preload="metadata" aria-label="${escapeHTML(meta.title)} 音频播放器">
-        <source src="${escapeHTML(meta.audio)}" type="audio/mp4">
-        当前浏览器不支持内嵌音频播放。
-      </audio>
-    </div>
-    <p class="audio-status"><strong>压缩归档：</strong>16 kbps · 单声道 AAC / M4A。点击时间点或字幕可定位播放。</p>
-  ` : `
-    <div class="empty-state"><strong>未归档本站音频。</strong> 此条仅保留公开试听稿与信息提要；不会绕过原节目的付费或分发边界。</div>
-  `;
 
   dom.episodePane.setAttribute("aria-busy", "false");
   dom.episodePane.innerHTML = `
@@ -182,17 +167,12 @@ function renderEpisode() {
           <div class="episode-meta">
             <span>${escapeHTML(meta.durationLabel)}</span>
             <span>${escapeHTML(meta.transcriptShortLabel)}</span>
-            <span>${hasAudio ? "AUDIO ARCHIVED" : "TEXT ONLY"}</span>
+            <span>TEXT ARCHIVE</span>
           </div>
           <p class="episode-summary">${escapeHTML(episode.summary)}</p>
           <a class="source-link" href="${escapeHTML(meta.sourceUrl)}" target="_blank" rel="noreferrer">打开 ${escapeHTML(meta.sourceName || "原节目")}</a>
         </div>
       </header>
-
-      <section class="player-section" aria-labelledby="player-title">
-        <p class="section-label" id="player-title">LISTENING DECK</p>
-        ${audioBlock}
-      </section>
 
       <section class="overview-grid" aria-label="本期速览">
         <div>
@@ -203,85 +183,34 @@ function renderEpisode() {
           <p class="section-label">KEY MOMENTS</p>
           <div class="moment-list">
             ${episode.keyMoments.map((moment) => `
-              <button class="moment-button" type="button" data-seek="${moment.start}" data-segment-id="${escapeHTML(moment.segmentId || "")}">
+              <article class="moment-item">
                 <span class="moment-time">${formatTime(moment.start)}</span>
                 <span class="moment-title">${escapeHTML(moment.title)}</span>
-              </button>
+              </article>
             `).join("")}
           </div>
         </div>
       </section>
 
       ${renderTranscript()}
-      <p class="source-note">来源边界：${escapeHTML(episode.sourceNote || "音频与文本为原节目公开内容的个人整理。")}</p>
+      <p class="source-note">来源边界：${escapeHTML(episode.sourceNote || "文本与节目资料为原节目公开内容的个人整理。")}</p>
     </article>
   `;
   bindEpisodeInteractions();
-}
-
-function segmentForTime(seconds) {
-  const transcript = appState.episode?.transcript || [];
-  if (!transcript.length) return null;
-  const current = transcript.find((segment) => seconds >= segment.start && seconds < segment.end);
-  if (current) return current;
-  const prior = transcript.filter((segment) => segment.start <= seconds).at(-1);
-  return prior || transcript[0];
-}
-
-function setActiveSegment(id, { scroll = false } = {}) {
-  if (!id || appState.activeSegmentId === id) return;
-  document.querySelectorAll(".transcript-segment.is-active").forEach((node) => node.classList.remove("is-active"));
-  const node = document.getElementById(id);
-  if (!node) {
-    appState.activeSegmentId = null;
-    return;
-  }
-  node.classList.add("is-active");
-  appState.activeSegmentId = id;
-  if (scroll) node.scrollIntoView({ block: "nearest", behavior: reduceMotion ? "auto" : "smooth" });
-}
-
-function seekTo(seconds, segmentId = "", { play = true } = {}) {
-  const audio = document.querySelector("#episodeAudio");
-  const target = Number(seconds);
-  const segment = segmentId ? { id: segmentId } : segmentForTime(target);
-  if (segment?.id) setActiveSegment(segment.id, { scroll: true });
-  if (!audio) return;
-  const applySeek = () => {
-    audio.currentTime = Math.min(Math.max(target, 0), Number.isFinite(audio.duration) ? Math.max(audio.duration - .1, 0) : target);
-    if (play) {
-      const playPromise = audio.play();
-      if (playPromise) playPromise.catch(() => undefined);
-    }
-  };
-  if (audio.readyState >= 1) applySeek();
-  else audio.addEventListener("loadedmetadata", applySeek, { once: true });
 }
 
 function bindEpisodeInteractions() {
   dom.episodePane.querySelectorAll("[data-mode]").forEach((button) => {
     button.addEventListener("click", () => {
       appState.transcriptMode = button.dataset.mode;
-      appState.activeSegmentId = null;
       renderEpisode();
     });
-  });
-  dom.episodePane.querySelectorAll("[data-seek]").forEach((button) => {
-    button.addEventListener("click", () => seekTo(button.dataset.seek, button.dataset.segmentId));
-  });
-  const audio = document.querySelector("#episodeAudio");
-  if (!audio) return;
-  audio.addEventListener("timeupdate", () => {
-    const segment = segmentForTime(audio.currentTime);
-    if (segment?.id) setActiveSegment(segment.id, { scroll: true });
   });
 }
 
 async function selectEpisode(id, { updateHistory = true } = {}) {
   const meta = appState.archive.episodes.find((episode) => episode.id === id);
   if (!meta) return;
-  const existingAudio = document.querySelector("#episodeAudio");
-  if (existingAudio) existingAudio.pause();
   dom.episodePane.setAttribute("aria-busy", "true");
   dom.episodePane.innerHTML = `<div class="loading-state"><span class="status-led" aria-hidden="true"></span><p>正在调谐 ${escapeHTML(meta.title)}…</p></div>`;
   try {
@@ -289,7 +218,6 @@ async function selectEpisode(id, { updateHistory = true } = {}) {
     if (!response.ok) throw new Error(`无法读取选集数据 (${response.status})`);
     appState.episode = await response.json();
     appState.transcriptMode = "all";
-    appState.activeSegmentId = null;
     renderShowFilters();
     renderEpisodeList();
     renderEpisode();

@@ -32,7 +32,7 @@ body {
   line-height: 1.6;
 }
 
-button, input, audio { font: inherit; }
+button, input { font: inherit; }
 
 button { cursor: pointer; }
 
@@ -352,20 +352,15 @@ a { color: inherit; }
 .source-link:hover { color: var(--acid); }
 .source-link::after { content: "↗"; font-size: .88rem; }
 
-.player-section { padding: 25px 0; border-bottom: 1px solid var(--line); }
 .section-label { margin: 0 0 9px; color: var(--green); font-size: .67rem; font-weight: 700; letter-spacing: .13em; }
 
-.player-stack { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 15px; align-items: center; }
-
-audio { width: 100%; height: 38px; accent-color: var(--amber); }
-
-.audio-status, .source-note, .transcript-status {
+.source-note, .transcript-status {
   margin: 10px 0 0;
   color: var(--paper-dim);
   font-size: .73rem;
 }
 
-.audio-status strong, .transcript-status strong { color: var(--amber); font-weight: 600; }
+.transcript-status strong { color: var(--amber); font-weight: 600; }
 
 .text-link { color: var(--amber); }
 .text-link:hover { color: var(--acid); }
@@ -377,7 +372,7 @@ audio { width: 100%; height: 38px; accent-color: var(--amber); }
 .insight-list li::before { position: absolute; top: .72em; left: 0; width: 7px; height: 1px; background: var(--acid); content: ""; }
 
 .moment-list { display: grid; gap: 7px; }
-.moment-button {
+.moment-item {
   display: grid;
   grid-template-columns: 55px minmax(0, 1fr);
   width: 100%;
@@ -387,7 +382,6 @@ audio { width: 100%; height: 38px; accent-color: var(--amber); }
   text-align: left;
   background: rgba(8, 9, 5, .28);
 }
-.moment-button:hover { border-color: var(--amber); background: rgba(245, 184, 90, .09); }
 .moment-time { color: var(--acid); font-size: .73rem; }
 .moment-title { overflow: hidden; font-size: .75rem; text-overflow: ellipsis; white-space: nowrap; }
 
@@ -414,7 +408,6 @@ audio { width: 100%; height: 38px; accent-color: var(--amber); }
   text-align: left;
   background: linear-gradient(135deg, rgba(118, 74, 15, .25), rgba(55, 43, 16, .34));
 }
-.quote-button:hover { border-color: var(--acid); }
 .quote-time { display: block; margin-bottom: 5px; color: var(--amber); font-size: .66rem; }
 .quote-text { display: -webkit-box; overflow: hidden; font-family: Georgia, "Noto Serif SC", serif; font-size: .78rem; line-height: 1.5; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
 
@@ -429,12 +422,8 @@ audio { width: 100%; height: 38px; accent-color: var(--amber); }
   color: var(--paper-dim);
   text-align: left;
   background: rgba(7, 8, 5, .28);
-  transition: border-color .14s ease, background .14s ease, color .14s ease;
 }
-.transcript-segment:hover { border-color: rgba(226, 211, 173, .38); color: var(--paper); }
-.transcript-segment.is-active { border-color: var(--acid); color: #fcf4d8; background: rgba(158, 207, 129, .13); box-shadow: inset 3px 0 0 var(--acid); }
 .transcript-segment.is-quote { border-color: rgba(245, 184, 90, .52); background: rgba(245, 184, 90, .08); }
-.transcript-segment.is-active.is-quote { border-color: var(--acid); }
 
 .segment-time { color: var(--amber); font-size: .72rem; }
 .segment-speaker { color: var(--green); font-size: .73rem; }
@@ -487,7 +476,6 @@ audio { width: 100%; height: 38px; accent-color: var(--amber); }
   .episode-head { grid-template-columns: 76px minmax(0, 1fr); gap: 13px; }
   .episode-label { font-size: .61rem; }
   .episode-meta { font-size: .63rem; }
-  .player-stack { grid-template-columns: 1fr; }
   .transcript-segment { grid-template-columns: 46px 1fr; }
   .segment-speaker { grid-column: 2; grid-row: 1; }
   .segment-text { grid-column: 1 / -1; }
