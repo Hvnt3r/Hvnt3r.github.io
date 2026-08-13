@@ -142,7 +142,7 @@ const IOS_SLOTS = [
 const state = {
   uiLocale: "zh-CN",
   platform: "macos",
-  scale: 100,
+  scale: 75,
   source: null
 };
 
@@ -431,8 +431,8 @@ function bindEvents() {
     renderPlatform();
   });
   document.querySelector("#scaleRange").addEventListener("input", event => changeScale(event.target.value));
-  document.querySelector("#scaleDown").addEventListener("click", () => changeScale(state.scale - 5));
-  document.querySelector("#scaleUp").addEventListener("click", () => changeScale(state.scale + 5));
+  document.querySelector("#scaleDown").addEventListener("click", () => changeScale(state.scale - 1));
+  document.querySelector("#scaleUp").addEventListener("click", () => changeScale(state.scale + 1));
   document.querySelector("#fileInput").addEventListener("change", event => {
     loadFile(event.target.files?.[0]);
     event.target.value = "";
