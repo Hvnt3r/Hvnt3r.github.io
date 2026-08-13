@@ -158,12 +158,18 @@
     .tool-card::before { position: absolute; top: -90px; right: -70px; width: 220px; height: 220px; border: 1px solid rgba(118, 169, 255, .1); border-radius: 50%; box-shadow: 0 0 0 26px rgba(118, 169, 255, .025), 0 0 0 52px rgba(118, 169, 255, .018); content: ""; pointer-events: none; }
     .tool-card:hover, .tool-card:focus-visible { border-color: rgba(118, 169, 255, .52); box-shadow: 0 22px 60px rgba(0, 0, 0, .28); transform: translateY(-4px); }
     .tool-card:nth-child(2)::before { border-color: rgba(255, 157, 124, .12); }
+    .tool-card:nth-child(3)::before { border-color: rgba(200, 243, 109, .11); }
     .card-top, .card-footer { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
     .tool-index { color: var(--quiet); font-size: 10px; font-weight: 700; letter-spacing: .14em; }
     .card-arrow { color: var(--blue); font-size: 20px; line-height: 1; transition: transform .2s ease; }
     .tool-card:hover .card-arrow { transform: translate(2px, -2px); }
     .tool-icon { position: relative; z-index: 1; display: grid; width: 52px; height: 52px; place-items: center; margin: 38px 0 21px; border: 1px solid rgba(118, 169, 255, .34); border-radius: 15px; color: var(--blue); background: rgba(118, 169, 255, .1); }
     .tool-card:nth-child(2) .tool-icon { border-color: rgba(255, 157, 124, .36); color: var(--coral); background: rgba(255, 157, 124, .09); }
+    .tool-card:nth-child(3) .tool-icon { border-color: rgba(200, 243, 109, .32); color: var(--lime); background: rgba(200, 243, 109, .08); }
+    .icon-stack { position: relative; display: block; width: 25px; height: 25px; }
+    .icon-stack::before, .icon-stack::after { position: absolute; width: 15px; height: 15px; border: 1.5px solid currentColor; border-radius: 4px; content: ""; }
+    .icon-stack::before { top: 2px; left: 2px; }
+    .icon-stack::after { right: 2px; bottom: 2px; background: rgba(13, 17, 28, .72); }
     .tool-card h3 { position: relative; z-index: 1; margin: 0; font-size: 25px; letter-spacing: -.06em; }
     .tool-card p { position: relative; z-index: 1; max-width: 420px; margin: 9px 0 20px; color: var(--muted); font-size: 13px; line-height: 1.65; }
     .tool-tags { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: auto; }
@@ -235,7 +241,7 @@
             <a class="button" href="/blog/">阅读 Blog <span class="button-arrow">↗</span></a>
           </div>
           <div class="hero-stats" aria-label="Site summary">
-            <div class="stat"><strong>02</strong><span>browser tools</span></div>
+            <div class="stat"><strong>03</strong><span>browser tools</span></div>
             <div class="stat"><strong>03</strong><span>spaces to explore</span></div>
             <div class="stat"><strong>100%</strong><span>静态 · 轻量</span></div>
           </div>
@@ -254,14 +260,14 @@
             <p class="section-kicker">TOOLS / 01</p>
             <h2>工具目录</h2>
           </div>
-          <p>两个已经可以直接使用的入口。每个工具都保持独立，打开后就能开始工作。</p>
+          <p>三个已经可以直接使用的入口。每个工具都保持独立，打开后就能开始工作。</p>
         </div>
 
         <div class="directory-bar">
-          <span class="directory-count"><strong id="toolCount">02</strong> 个工具 · 按关键词筛选</span>
+          <span class="directory-count"><strong id="toolCount">03</strong> 个工具 · 按关键词筛选</span>
           <label class="search" for="toolSearch">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.7"></circle><path d="m16 16 5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path></svg>
-            <input id="toolSearch" type="search" placeholder="搜索 Storeframe / TeslaLink" autocomplete="off">
+            <input id="toolSearch" type="search" placeholder="搜索 Storeframe / TeslaLink / Iconforge" autocomplete="off">
           </label>
         </div>
 
@@ -286,6 +292,15 @@
             <p>把 iPhone 上的实时画面通过局域网共享到电脑浏览器，适合车载、桌面和远程显示等场景。</p>
             <div class="tool-tags"><span class="tool-tag">iPhone</span><span class="tool-tag">局域网</span><span class="tool-tag">浏览器共享</span></div>
             <div class="card-footer"><span>打开工具</span><span>PHONE → BROWSER</span></div>
+          </a>
+
+          <a class="tool-card" href="/tools/iconforge/" data-tool-card data-search="iconforge macos ios app icon xcode composer png resize scale transparent zip 图标 生成器 缩放 透明 批量导出">
+            <div class="card-top"><span class="tool-index">03 / CREATIVE</span><span class="card-arrow">↗</span></div>
+            <div class="tool-icon" aria-hidden="true"><span class="icon-stack"></span></div>
+            <h3>Iconforge</h3>
+            <p>把一枚 Icon Composer PNG 中心缩放，生成带透明边缘的 macOS 或 iOS 全套 AppIcon，并批量打包导出。</p>
+            <div class="tool-tags"><span class="tool-tag">macOS / iOS</span><span class="tool-tag">透明 PNG</span><span class="tool-tag">Xcode Ready</span></div>
+            <div class="card-footer"><span>打开工具</span><span>PNG → APPICONSET</span></div>
           </a>
         </div>
         <p class="empty-state" id="emptyState">没有匹配的工具，试试 “local” 或 “截图”。</p>

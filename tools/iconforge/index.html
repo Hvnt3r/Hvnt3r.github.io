@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d1018">
+  <meta name="description" content="Iconforge — 在浏览器本地缩放并批量导出 macOS 与 iOS AppIcon。">
+  <title>Iconforge · macOS &amp; iOS AppIcon generator</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell" id="app">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Hvnt3r home">
+        <span class="brand-mark">H</span>
+        <span class="brand-copy">
+          <strong>ICON<span>FORGE</span></strong>
+          <small data-i18n="brandTagline">Apple 图标批量工作台</small>
+        </span>
+      </a>
+      <div class="topbar-actions">
+        <span class="privacy-badge"><span class="status-dot"></span><span data-i18n="localOnly">本地处理</span></span>
+        <div class="language-switch" role="group" aria-label="Interface language">
+          <button type="button" class="language-button is-active" data-ui-lang="zh-CN">中</button>
+          <button type="button" class="language-button" data-ui-lang="en-US">EN</button>
+        </div>
+        <a class="top-link" href="/" data-i18n="backToSite">返回站点</a>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="panel sidebar-left">
+        <section class="panel-section intro-section">
+          <div class="section-kicker" data-i18n="sourceKicker">SOURCE / 01</div>
+          <h1 data-i18n="pageTitle">应用图标生成器</h1>
+          <p data-i18n="pageIntro">上传 Icon Composer 导出的 PNG，中心缩放并生成完整的 Xcode AppIcon 资源。</p>
+        </section>
+
+        <section class="panel-section upload-section">
+          <div class="section-heading">
+            <span data-i18n="sourceLabel">源图标</span>
+            <span class="section-count" id="sourceStatus">PNG</span>
+          </div>
+          <label class="dropzone" id="dropzone" for="fileInput">
+            <input id="fileInput" type="file" accept="image/png">
+            <span class="dropzone-icon">＋</span>
+            <strong data-i18n="dropzoneTitle">拖入 1024 × 1024 PNG</strong>
+            <span data-i18n="dropzoneBody">透明 PNG · 推荐至少 1024 px</span>
+          </label>
+          <div class="source-card" id="sourceCard" hidden>
+            <div class="source-thumb checkerboard"><img id="sourceThumb" alt=""></div>
+            <div class="source-info">
+              <strong id="sourceName">icon.png</strong>
+              <span id="sourceMeta">1024 × 1024 · PNG</span>
+            </div>
+            <button class="mini-button" type="button" id="removeButton" aria-label="Remove image">×</button>
+          </div>
+          <div class="paste-hint"><span class="keycap">⌘V</span><span data-i18n="pasteHint">也可以直接粘贴 PNG</span></div>
+        </section>
+
+        <section class="panel-section">
+          <div class="section-heading">
+            <span data-i18n="platformLabel">目标平台</span>
+            <span class="section-count">APPLE</span>
+          </div>
+          <div class="platform-switch" id="platformSwitch" role="group" aria-label="Target platform">
+            <button class="platform-button is-active" type="button" data-platform="macos"><span>DESKTOP</span>macOS</button>
+            <button class="platform-button" type="button" data-platform="ios"><span>MOBILE</span>iOS</button>
+          </div>
+          <div class="spec-note" id="specNote"></div>
+        </section>
+
+        <section class="panel-section">
+          <div class="section-heading">
+            <span data-i18n="scaleLabel">图标比例</span>
+            <span class="section-count" id="scaleValue">100%</span>
+          </div>
+          <div class="range-row">
+            <button class="icon-button" type="button" id="scaleDown" aria-label="Scale down">−</button>
+            <input id="scaleRange" type="range" min="20" max="100" step="1" value="100" aria-label="Icon scale">
+            <button class="icon-button" type="button" id="scaleUp" aria-label="Scale up">＋</button>
+          </div>
+          <div class="range-labels"><span>20%</span><span data-i18n="centerScale">中心等比缩放</span><span>100%</span></div>
+          <p class="microcopy" data-i18n="scaleHint">画布尺寸不会改变；缩小时新增的四周区域保持透明。</p>
+        </section>
+      </aside>
+
+      <section class="stage-column">
+        <div class="stage-header">
+          <div>
+            <div class="section-kicker" data-i18n="previewKicker">LIVE PREVIEW</div>
+            <h2 id="previewTitle">macOS AppIcon</h2>
+            <p id="previewMeta" data-i18n="previewMeta">1024 × 1024 · 透明 PNG</p>
+          </div>
+          <div class="alpha-key"><span class="alpha-swatch"></span><span data-i18n="alphaKey">透明区域</span></div>
+        </div>
+
+        <div class="stage-frame">
+          <div class="stage-ruler ruler-top"><span>0</span><span>1024 px</span></div>
+          <div class="stage-ruler ruler-side"><span>0</span><span>1024 px</span></div>
+          <div class="canvas-wrap">
+            <div class="preview-board checkerboard" id="previewBoard">
+              <canvas id="previewCanvas" width="1024" height="1024" aria-label="App icon preview"></canvas>
+              <div class="icon-boundary" id="iconBoundary"></div>
+              <div class="canvas-empty" id="canvasEmpty">
+                <span class="empty-glyph">↗</span>
+                <strong data-i18n="canvasEmptyTitle">先放入一枚图标</strong>
+                <span data-i18n="canvasEmptyBody">预览会显示缩放后的透明边缘</span>
+              </div>
+            </div>
+          </div>
+          <div class="stage-caption">
+            <span><span class="live-dot"></span><span data-i18n="renderCaption">Canvas 实时渲染</span></span>
+            <span id="paddingCaption">边缘留白 0 px</span>
+          </div>
+        </div>
+        <p class="stage-footnote" data-i18n="stageFootnote">缩放以画布中心为锚点；导出时会为每个规格重新绘制，避免二次缩放累积。</p>
+      </section>
+
+      <aside class="panel sidebar-right">
+        <section class="panel-section outputs-section">
+          <div class="section-heading">
+            <span data-i18n="outputsLabel">输出规格</span>
+            <span class="section-count" id="outputCount">10 FILES</span>
+          </div>
+          <div class="output-summary">
+            <span class="summary-platform" id="summaryPlatform">macOS</span>
+            <span data-i18n="xcodeReady">Xcode AppIcon.appiconset</span>
+          </div>
+          <div class="output-list" id="outputList"></div>
+        </section>
+
+        <section class="panel-section export-section">
+          <div class="section-heading">
+            <span data-i18n="exportLabel">批量导出</span>
+            <span class="section-count">PNG + JSON</span>
+          </div>
+          <div class="export-facts">
+            <div><span data-i18n="formatLabel">格式</span><strong>PNG / ALPHA</strong></div>
+            <div><span data-i18n="layoutLabel">结构</span><strong>AppIcon.appiconset</strong></div>
+          </div>
+          <button class="primary-button export-button" type="button" id="exportButton" disabled>
+            <span data-i18n="exportButton">导出 AppIcon ZIP</span><span class="button-arrow">↗</span>
+          </button>
+          <div class="export-progress" id="exportProgress" aria-live="polite"></div>
+          <p class="export-help" data-i18n="exportHelp">解压后，把 AppIcon.appiconset 拖入 Xcode 的 Assets.xcassets 即可。</p>
+        </section>
+
+        <section class="panel-section checklist-section">
+          <div class="section-heading">
+            <span data-i18n="checkLabel">导出检查</span>
+            <span class="section-count">AUTO</span>
+          </div>
+          <div class="check-row"><span class="check-dot" id="checkImage"></span><span data-i18n="checkImageLabel">已读取正方形 PNG</span></div>
+          <div class="check-row"><span class="check-dot" id="checkResolution"></span><span data-i18n="checkResolutionLabel">源图达到最大导出尺寸</span></div>
+          <div class="check-row"><span class="check-dot is-ready"></span><span data-i18n="checkAlphaLabel">透明画布已启用</span></div>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="app-footer">
+      <span>ICON/FORGE · <span data-i18n="footerCopy">一枚源图，完整交付。</span></span>
+      <span><span class="status-dot"></span> <span data-i18n="noUpload">你的图标不会离开浏览器</span></span>
+    </footer>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
